@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Présentation — 4KID | Société Civile Immobilière Abidjan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#1e2227;
+    --navy-900:#212528;
+    --navy-800:#272c31;
+    --navy-700:#2e3439;
+    --navy-600:#363d43;
+    --gold-600:#ac884a;
+    --gold-500:#c09858;
+    --gold-300:#d4b07a;
+    --cream:#f4eee7;
+    --cream-2:#ebe5db;
+    --ink:#1e2227;
+    --paper:#faf8f5;
+    --line: rgba(30,34,39,0.12);
+    --shadow: 0 20px 60px -20px rgba(30,34,39,0.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Montserrat', sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,h4,.display{
+    font-family:'Montserrat', sans-serif; font-weight:800;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  a{color:inherit; text-decoration:none;}
+  img{display:block; max-width:100%;}
+  .wrap{max-width:1240px; margin:0 auto; padding:0 32px;}
+  @media (max-width:720px){ .wrap{padding:0 20px;} }
+
+  /* reveal on scroll */
+  .reveal{opacity:0; transform:translateY(28px); transition:opacity .9s cubic-bezier(.16,.8,.24,1), transform .9s cubic-bezier(.16,.8,.24,1);}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  .reveal-stagger > * { transition-delay: calc(var(--i,0) * 90ms); }
+
+  /* HEADER */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    padding:20px 0;
+    transition: background .4s ease, padding .4s ease, box-shadow .4s ease;
+    background:var(--paper); border-bottom:1px solid rgba(0,0,0,0.05);
+  }
+  header.solid{
+    background:rgba(250,248,245,0.96);
+    backdrop-filter: blur(12px);
+    padding:12px 0;
+    box-shadow:0 8px 30px rgba(0,0,0,0.08);
+  }
+  .nav{display:flex; align-items:center; justify-content:space-between; gap:24px;}
+  .logo{display:flex; align-items:center; gap:12px; font-family:'Montserrat',sans-serif; font-weight:800; font-size:20px; color:var(--navy-950); letter-spacing:0.04em; text-transform:uppercase;}
+  .logo .mark{display:flex; align-items:center; transition:transform .4s ease;}
+  .logo .mark img{height:42px; width:auto; display:block;}
+  .logo:hover .mark{transform:scale(1.08);}
+  nav.links{display:flex; gap:32px; font-size:15px; font-weight:600;}
+  nav.links a{color:var(--navy-800); position:relative; padding:6px 0; transition:color .3s ease;}
+  nav.links a::after{
+    content:''; position:absolute; left:0; bottom:0; width:0; height:2px;
+    background:var(--gold-500); transition:width .35s ease;
+  }
+  nav.links a:hover, nav.links a.active{color:var(--gold-600);}
+  nav.links a:hover::after, nav.links a.active::after{width:100%;}
+  .cta-btn{
+    background:var(--gold-500); color:var(--navy-950); font-weight:700; font-size:14px;
+    padding:12px 22px; border-radius:100px; white-space:nowrap;
+    transition: transform .3s ease, box-shadow .3s ease, background .3s ease;
+    box-shadow: 0 8px 22px rgba(172,136,74,0.35);
+  }
+  .cta-btn:hover{ transform:translateY(-2px); background:var(--gold-300); box-shadow:0 12px 28px rgba(172,136,74,0.5);}
+
+  .burger{display:none; cursor:pointer; color:var(--navy-950); font-size:24px; background:none; border:none;}
+  .mobile-menu{
+    display:none; position:fixed; top:70px; left:0; right:0; background:var(--paper);
+    padding:24px; border-bottom:1px solid rgba(0,0,0,0.05); z-index:99;
+    flex-direction:column; gap:16px; text-align:center; box-shadow:0 8px 30px rgba(0,0,0,0.1);
+  }
+  .mobile-menu a{color:var(--navy-800); font-weight:600; font-size:16px; padding:10px 0;}
+  .mobile-menu.open{display:flex;}
+
+  @media (max-width:940px){
+    nav.links{display:none;}
+    .burger{display:block;}
+  }
+
+  /* ============ PAGE BANNER ============ */
+  .page-banner{
+    position:relative;
+    padding:160px 0 80px;
+    background-image:
+      linear-gradient(180deg, rgba(30,34,39,0.6) 0%, rgba(30,34,39,0.85) 60%, rgba(30,34,39,0.98) 100%),
+      url('https://commons.wikimedia.org/wiki/Special:FilePath/Notre%20Dame%20de%20Cocody%20%C3%A0%20Abidjan%20en%202024%2007.jpg?width=1800');
+    background-size:cover; background-position:center;
+    color:#fff; border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .page-banner h1{ font-size:clamp(38px,5.2vw,62px); color:#fff; margin-bottom:16px; }
+  .page-banner p{ font-size:19px; color:rgba(255,255,255,0.85); max-width:620px; line-height:1.6; }
+  .tag{
+    display:inline-block; font-size:12.5px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--gold-300); margin-bottom:16px;
+    padding:6px 14px; border:1px solid rgba(172,136,74,0.5); border-radius:100px;
+  }
+
+  /* ---- GENERAL COMPANY OVERVIEW SECTION (JUSTE AVANT LE MOT DU DG) ---- */
+  .company-overview{
+    padding:90px 0 60px; background:var(--paper); border-bottom:1px solid var(--line);
+  }
+  .overview-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;
+  }
+  @media (max-width:900px){ .overview-grid{ grid-template-columns:1fr; } }
+  .overview-content h2{ font-size:clamp(30px,3.6vw,44px); color:var(--navy-950); margin-bottom:20px; line-height:1.15; }
+  .overview-content p{ font-size:16.5px; color:#4c5762; line-height:1.75; margin-bottom:20px; }
+  
+  .overview-highlights{
+    display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:30px;
+  }
+  .highlight-card{
+    background:var(--cream); border:1px solid var(--line); border-radius:16px; padding:22px;
+  }
+  .highlight-card h4{ font-size:17px; color:var(--navy-950); margin-bottom:6px; font-family:'Montserrat',sans-serif;font-weight:800; }
+  .highlight-card p{ font-size:14px; color:#5a6673; margin:0; line-height:1.5; }
+
+  /* ---- PRESENTATION DIRECTEUR ---- */
+  .presentation{padding:90px 0; background:var(--cream);}
+  .pres-grid{
+    display:grid; grid-template-columns:0.85fr 1.15fr; gap:70px; align-items:center;
+  }
+  @media (max-width:900px){ .pres-grid{grid-template-columns:1fr;} }
+  .pres-media{ position:relative; }
+  .pres-media .frame{
+    position:relative; border-radius:24px; overflow:hidden; box-shadow:var(--shadow);
+  }
+  .pres-media img{ width:100%; height:520px; object-fit:cover; }
+  .pres-media .float-card{
+    position:absolute; bottom:-28px; right:-28px; background:var(--navy-950); color:#fff;
+    padding:26px 28px; border-radius:18px; width:230px; box-shadow:0 20px 40px rgba(30,34,39,0.4);
+  }
+  @media (max-width:560px){ .pres-media .float-card{right:0; bottom:-20px; width:180px; padding:18px;} }
+  .pres-media .float-card b{font-family:'Montserrat',sans-serif;font-weight:800; font-size:32px; color:var(--gold-300); display:block;}
+  .pres-media .float-card span{font-size:12.5px; color:rgba(255,255,255,0.65);}
+  .pres-body h3{font-size:clamp(28px,3.2vw,40px); color:var(--navy-950); margin-bottom:22px; line-height:1.2;}
+  .pres-body p{color:#4c5762; line-height:1.75; font-size:16.5px; margin-bottom:18px;}
+  .signature{
+    margin-top:36px; padding-top:28px; border-top:1px solid var(--line);
+    display:flex; align-items:center; gap:16px;
+  }
+  .signature .sig-name{font-family:'Montserrat',sans-serif;font-weight:800; font-weight:700; font-size:20px; color:var(--navy-950);}
+  .signature .sig-role{font-size:13.5px; color:var(--gold-600); font-weight:600;}
+
+  /* ---- SECTION NOTRE ÉQUIPE ---- */
+  .team-section{ padding:100px 0; background:var(--paper); border-top:1px solid var(--line); }
+  .team-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:26px; margin-top:50px; }
+  @media (max-width:1020px){ .team-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:560px){ .team-grid{ grid-template-columns:1fr; } }
+
+  .team-card{
+    background:var(--paper); border:1px solid var(--line); border-radius:22px; overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,0.03); transition:transform .4s ease, box-shadow .4s ease, border-color .4s ease;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .team-card:hover{ transform:translateY(-8px); box-shadow:var(--shadow); border-color:var(--gold-500); }
+  
+  .team-avatar{
+    height:220px; background:linear-gradient(135deg, var(--navy-950), var(--navy-800));
+    display:flex; align-items:center; justify-content:center; color:var(--gold-300); position:relative;
+  }
+  .team-avatar svg{ width:80px; height:80px; }
+  .team-badge{
+    position:absolute; bottom:12px; left:16px; background:rgba(172,136,74,0.2); border:1px solid var(--gold-500);
+    color:var(--gold-300); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;
+    padding:4px 12px; border-radius:100px;
+  }
+
+  .team-body{ padding:24px; }
+  .team-body h4{ font-size:20px; color:var(--navy-950); margin-bottom:4px; font-family:'Montserrat',sans-serif;font-weight:800; }
+  .team-role{ font-size:13.5px; font-weight:700; color:var(--gold-600); margin-bottom:12px; display:block; }
+  .team-desc{ font-size:14px; color:#5a6673; line-height:1.55; margin-bottom:20px; }
+
+  .team-contact-btn{
+    width:100%; background:var(--navy-950); color:var(--gold-300); border:none;
+    padding:12px 18px; border-radius:12px; font-weight:700; font-size:13.5px; cursor:pointer;
+    font-family:inherit; transition:background .3s ease, color .3s ease;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .team-card:hover .team-contact-btn{ background:var(--gold-500); color:var(--navy-950); }
+
+  /* ---- VALEURS ---- */
+  .values-section{
+    position:relative; padding:110px 0;
+    background-image:
+      linear-gradient(180deg, rgba(30,34,39,0.88) 0%, rgba(30,34,39,0.94) 100%),
+      url('https://commons.wikimedia.org/wiki/Special:FilePath/Photo%20de%20la%20lagune%20%C3%A0%20Abidjan.jpg?width=1800');
+    background-size:cover; background-position:center; background-attachment:fixed;
+    color:#fff;
+  }
+  .values-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-top:50px; }
+  @media (max-width:960px){ .values-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:540px){ .values-grid{grid-template-columns:1fr;} }
+  .value-card{
+    background:rgba(255,255,255,0.06); backdrop-filter:blur(8px); border-radius:20px; padding:32px 26px; border:1px solid rgba(255,255,255,0.12);
+    transition:transform .35s ease, border-color .35s ease;
+  }
+  .value-card:hover{ transform:translateY(-6px); border-color:var(--gold-300); }
+  .value-num{ font-family:'Montserrat',sans-serif;font-weight:800; font-size:32px; color:var(--gold-300); font-weight:700; margin-bottom:12px; }
+  .value-card h4{ font-size:20px; color:#fff; margin-bottom:10px; }
+  .value-card p{ font-size:14.5px; color:rgba(255,255,255,0.7); line-height:1.6; }
+
+  /* FOOTER */
+  footer{
+    background-image:
+      linear-gradient(180deg, rgba(30,34,39,0.96) 0%, rgba(30,34,39,0.99) 100%),
+      url('https://commons.wikimedia.org/wiki/Special:FilePath/Mairie%20de%20Cocody%2C%20Abidjan.jpg?width=1800');
+    background-size:cover; background-position:center;
+    color:rgba(255,255,255,0.6); padding-top:90px; border-top:1px solid rgba(255,255,255,0.1);
+  }
+  .footer-top{
+    display:grid; grid-template-columns:1.4fr 1fr 1fr 1.2fr; gap:50px; padding-bottom:60px; border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  @media (max-width:860px){ .footer-top{grid-template-columns:1fr 1fr;} }
+  @media (max-width:520px){ .footer-top{grid-template-columns:1fr;} }
+  .footer-top h5{color:#fff; font-size:14px; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:22px; font-weight:700;}
+  .footer-top a, .footer-top p{display:block; font-size:14.5px; color:rgba(255,255,255,0.6); margin-bottom:12px; line-height:1.6;}
+  .footer-top a:hover{color:var(--gold-300);}
+  .foot-logo{display:flex; align-items:center; gap:10px; font-family:'Montserrat',sans-serif;font-weight:800; color:#fff; font-weight:700; font-size:21px; margin-bottom:18px;}
+  .newsletter{display:flex; margin-top:14px; border-radius:100px; overflow:hidden; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14);}
+  .newsletter input{flex:1; background:transparent; border:none; padding:14px 18px; color:#fff; font-family:inherit; font-size:13.5px;}
+  .newsletter input::placeholder{color:rgba(255,255,255,0.4);}
+  .newsletter button{background:var(--gold-500); border:none; padding:0 20px; color:var(--navy-950); cursor:pointer; font-weight:700;}
+  .bottom-bar{ display:flex; justify-content:space-between; align-items:center; padding:26px 0; font-size:13px; flex-wrap:wrap; gap:12px;}
+
+  .cnt{ font-variant-numeric:tabular-nums; }
+</style>
+</head>
+<body>
+
+<header id="siteHeader">
+  <div class="wrap nav">
+    <a href="index.html" class="logo"><span class="mark"><img src="images/image (2).svg" alt="Logo 4KID"></span> 4KID</a>
+    <nav class="links">
+      <a href="index.html">Accueil</a>
+      <a href="presentation.html" class="active">Présentation</a>
+      <a href="biens.html">Biens Immobiliers</a>
+      <a href="services.html">Nos Services</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <a href="contact.html" class="cta-btn">Nous contacter</a>
+    <button class="burger" id="burgerBtn" aria-label="Menu Mobile">☰</button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Accueil</a>
+    <a href="presentation.html">Présentation</a>
+    <a href="biens.html">Biens Immobiliers</a>
+    <a href="services.html">Nos Services</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</header>
+
+<section class="page-banner">
+  <div class="wrap">
+    <div class="tag reveal">À propos de notre société</div>
+    <h1 class="reveal">Excellence, Transparence & Vision Durable</h1>
+    <p class="reveal">Découvrez la vision et l'engagement de 4KID pour développer le patrimoine immobilier d'Abidjan avec rigueur et intégrité.</p>
+  </div>
+</section>
+
+<!-- PRÉSENTATION GÉNÉRALE DE L'ENTREPRISE -->
+<section class="company-overview">
+  <div class="wrap overview-grid">
+    <div class="overview-content reveal">
+      <div class="tag" style="color:var(--gold-600); border-color:var(--gold-500);">Qui sommes-nous</div>
+      <h2>Présentation Générale de 4KID</h2>
+      <p>4KID est une Société Civile Immobilière de référence basée à Abidjan (Cocody, Cité des Arts). Née d'une ambition forte de moderniser et d'assainir le secteur immobilier ivoirien, notre structure s'impose comme l'interlocuteur de confiance privilégié des particuliers, entreprises et investisseurs institutionnels.</p>
+      <p>Forts d'une connaissance intime du marché d'Abidjan et des enjeux fonciers locaux, nous intervenons sur l'ensemble de la chaîne de valeur : achat de terrains viabilisés avec ACD, vente de logements neufs et de prestige, promotion, construction sur-mesure, gestion locative sécurisée et syndic de copropriété.</p>
+      
+      <div class="overview-highlights">
+        <div class="highlight-card">
+          <h4>Expertise Juridique</h4>
+          <p>Toutes nos transactions et acquisitions sont scrupuleusement auditées par des notaires agréés.</p>
+        </div>
+        <div class="highlight-card">
+          <h4>Ancrage Abidjanais</h4>
+          <p>Une présence active dans tous les secteurs stratégiques (Cocody, Plateau, Riviera, Marcory, Bingerville).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="overview-media reveal">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/La%20commune%20du%20Plateau%20-%20Abidjan%2008.jpg?width=900" alt="Immobilier Abidjan" style="border-radius:24px; box-shadow:var(--shadow); width:100%; height:440px; object-fit:cover;">
+    </div>
+  </div>
+</section>
+
+<!-- MOT DU DIRECTEUR GÉNÉRAL -->
+<section class="presentation">
+  <div class="wrap pres-grid">
+    <div class="pres-media reveal">
+      <div class="frame">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Mairie%20de%20Cocody%2C%20Abidjan.jpg?width=900" alt="Cocody, Abidjan">
+      </div>
+      <div class="float-card">
+        <b class="cnt" data-target="14">0</b>
+        <span>quartiers d'Abidjan couverts par notre réseau d'agents</span>
+      </div>
+    </div>
+    <div class="pres-body">
+      <div class="tag reveal" style="color:var(--gold-600); border-color:var(--gold-500);">Mot du directeur</div>
+      <h3 class="reveal">Bâtir des lieux de vie, pas seulement des bâtiments.</h3>
+      <p class="reveal">La Côte d'Ivoire dispose d'un potentiel foncier et immobilier exceptionnel. Chez 4KID, nous pensons que l'immobilier va bien au-delà de la simple construction : il s'agit de concevoir et valoriser des espaces de vie où se rencontrent sécurité, confort moderne et valeur patrimoniale pérenne.</p>
+      <p class="reveal">Chaque projet que nous portons est structuré avec une rigueur absolue, du choix stratégique de l'emplacement à la concrétisation notariée et technique. Nous nous engageons à offrir une expérience transparente et rassurante pour tous nos clients et investisseurs.</p>
+      <p class="reveal">Notre équipe d'experts à taille humaine reste guidée par une conviction simple : la réussite d'un projet immobilier se mesure à la satisfaction et à la tranquillité d'esprit de celles et ceux qui nous accordent leur confiance.</p>
+      <div class="signature reveal">
+        <div>
+          <div class="sig-name">Le Directeur Général</div>
+          <div class="sig-role">4KID — Société Civile Immobilière Abidjan</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION NOTRE ÉQUIPE -->
+<section class="team-section">
+  <div class="wrap">
+    <div class="section-head reveal" style="max-width:640px;">
+      <div class="tag" style="color:var(--gold-600); border-color:var(--gold-500);">Capital Humain</div>
+      <h2>Notre Équipe d'Experts</h2>
+      <p>Des professionnels passionnés et chevronnés à votre service pour vous conseiller à chaque étape de vos projets immobiliers à Abidjan.</p>
+    </div>
+
+    <div class="team-grid reveal-stagger">
+      <!-- Agent 1 -->
+      <div class="team-card reveal" style="--i:0">
+        <div>
+          <div class="team-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
+            <span class="team-badge">Direction</span>
+          </div>
+          <div class="team-body">
+            <h4>M. Jean-Philippe Yao</h4>
+            <span class="team-role">Directeur Général & Fondateur</span>
+            <p class="team-desc">Spécialiste de la structuration foncière et des investissements immobiliers majeurs en Côte d'Ivoire depuis plus de 12 ans.</p>
+          </div>
+        </div>
+        <div style="padding:0 24px 24px;">
+          <button class="team-contact-btn" onclick="contactAgent('Jean-Philippe Yao', 'Directeur Général')">Contacter cet agent →</button>
+        </div>
+      </div>
+
+      <!-- Agent 2 -->
+      <div class="team-card reveal" style="--i:1">
+        <div>
+          <div class="team-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
+            <span class="team-badge">Ventes</span>
+          </div>
+          <div class="team-body">
+            <h4>Mme Sarah Koné</h4>
+            <span class="team-role">Responsable Transactions & Ventes</span>
+            <p class="team-desc">Experte dans la négociation notariée et l'accompagnement personnalisé pour l'acquisition de villas et appartements de standing.</p>
+          </div>
+        </div>
+        <div style="padding:0 24px 24px;">
+          <button class="team-contact-btn" onclick="contactAgent('Sarah Koné', 'Responsable Ventes')">Contacter cet agent →</button>
+        </div>
+      </div>
+
+      <!-- Agent 3 -->
+      <div class="team-card reveal" style="--i:2">
+        <div>
+          <div class="team-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
+            <span class="team-badge">Foncier</span>
+          </div>
+          <div class="team-body">
+            <h4>M. Marc Kouassi</h4>
+            <span class="team-role">Expert Foncier & Juridique ACD</span>
+            <p class="team-desc">Spécialiste du contentieux foncier, de l'obtention des ACD et de la viabilisation des parcelles sur le grand Abidjan.</p>
+          </div>
+        </div>
+        <div style="padding:0 24px 24px;">
+          <button class="team-contact-btn" onclick="contactAgent('Marc Kouassi', 'Expert Foncier')">Contacter cet agent →</button>
+        </div>
+      </div>
+
+      <!-- Agent 4 -->
+      <div class="team-card reveal" style="--i:3">
+        <div>
+          <div class="team-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
+            <span class="team-badge">Gestion</span>
+          </div>
+          <div class="team-body">
+            <h4>Mme Aminata Diop</h4>
+            <span class="team-role">Responsable Gestion Locative & Syndic</span>
+            <p class="team-desc">Supervise la gestion locative des immeubles, les baux commerciaux et la comptabilité transparente des copropriétés.</p>
+          </div>
+        </div>
+        <div style="padding:0 24px 24px;">
+          <button class="team-contact-btn" onclick="contactAgent('Aminata Diop', 'Gestion Locative')">Contacter cet agent →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="values-section">
+  <div class="wrap">
+    <div class="section-head reveal" style="max-width:640px;">
+      <div class="tag" style="color:var(--gold-300); border-color:rgba(172,136,74,0.5);">Nos Piliers</div>
+      <h2 style="color:#fff;">Les engagements de 4KID</h2>
+      <p style="color:rgba(255,255,255,0.75);">Quatre principes fondamentaux qui guident l'ensemble de nos actions au quotidien.</p>
+    </div>
+    <div class="values-grid reveal-stagger">
+      <div class="value-card reveal" style="--i:0">
+        <div class="value-num">01</div>
+        <h4>Rigueur & Sécurité</h4>
+        <p>Toutes nos transactions et projets de construction respectent les exigences juridiques, foncières (ACD) et réglementaires en vigueur en Côte d'Ivoire.</p>
+      </div>
+      <div class="value-card reveal" style="--i:1">
+        <div class="value-num">02</div>
+        <h4>Transparence Totale</h4>
+        <p>Pas de coûts cachés ni de promesses irréalistes. Nous fournissons des bilans clairs, des estimations précises et un suivi continu à nos partenaires.</p>
+      </div>
+      <div class="value-card reveal" style="--i:2">
+        <div class="value-num">03</div>
+        <h4>Ancrage Abidjanais</h4>
+        <p>Une connaissance fine et approfondie des quartiers d'Abidjan, des tendances du marché foncier et des opportunités d'investissement à fort potentiel.</p>
+      </div>
+      <div class="value-card reveal" style="--i:3">
+        <div class="value-num">04</div>
+        <h4>Service Client VIP</h4>
+        <p>Un accompagnement sur-mesure et personnalisé, du premier échange jusqu'à la remise des clés et la gestion à long terme de votre bien.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="foot-logo"><img src="images/image (2).svg" alt="Logo 4KID" style="height:36px;width:auto;"> 4KID</div>
+        <p>Société Civile Immobilière basée à Abidjan — Cocody, Cité des Arts. Achat, vente, location, construction et gestion de patrimoine immobilier.</p>
+        <div class="newsletter">
+          <input type="email" placeholder="Votre adresse email">
+          <button>→</button>
+        </div>
+      </div>
+      <div>
+        <h5>Navigation</h5>
+        <a href="index.html">Accueil</a>
+        <a href="presentation.html">Présentation</a>
+        <a href="biens.html">Biens immobiliers</a>
+        <a href="services.html">Nos Services</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div>
+        <h5>Nos Services</h5>
+        <a href="services.html#acheter">Achat de biens</a>
+        <a href="services.html#vendre">Vente immobilière</a>
+        <a href="services.html#construction">Construction & Projets</a>
+        <a href="services.html#gestion">Gestion locative</a>
+        <a href="services.html#syndic">Syndic de copropriété</a>
+      </div>
+      <div>
+        <h5>Nous contacter</h5>
+        <p>Cocody, Cité des Arts<br>Résidence Paon, 3ème étage<br>Abidjan, Côte d'Ivoire</p>
+        <p><strong>Tél:</strong> +225 07 06 16 50 29</p>
+        <p><strong>Email:</strong> contact@sci4k.com</p>
+      </div>
+    </div>
+    <div class="bottom-bar">
+      <span>© 2026 4KID — Tous droits réservés.</span>
+      <span>Société Civile Immobilière — Abidjan, Côte d'Ivoire</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function contactAgent(name, role) {
+    window.location.href = `contact.html?agent=${encodeURIComponent(name)}&role=${encodeURIComponent(role)}`;
+  }
+
+  // Mobile Burger Toggle
+  const burgerBtn = document.getElementById('burgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if(burgerBtn && mobileMenu) {
+    burgerBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('open');
+    });
+  }
+
+  // Header solid on scroll
+  const header = document.getElementById('siteHeader');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 40) header.classList.add('solid');
+    else header.classList.remove('solid');
+  });
+
+  // Reveal on scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => io.observe(el));
+
+  // Animated counters
+  const counters = document.querySelectorAll('.cnt');
+  const cio = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = parseInt(el.dataset.target, 10);
+      const dur = 1400;
+      const start = performance.now();
+      function tick(t){
+        const p = Math.min((t - start) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(eased * target);
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+      cio.unobserve(el);
+    });
+  }, { threshold: 0.4 });
+  counters.forEach(el => cio.observe(el));
+</script>
+
+</body>
+</html>
