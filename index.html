@@ -3,203 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>4KID — Votre propriété, notre priorité | Accueil</title>
+<title>SCI4K — Votre propriété, notre priorité | Accueil</title>
+<meta name="description" content="SCI4K, Société Civile Immobilière à Abidjan : achat, vente, location, construction et gestion de biens immobiliers à Cocody, Riviera, Bingerville et dans tout le Grand Abidjan.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SCI4K — Votre propriété, notre priorité | Accueil">
+<meta property="og:description" content="SCI4K, Société Civile Immobilière à Abidjan : achat, vente, location, construction et gestion de biens immobiliers à Cocody, Riviera, Bingerville et dans tout le Grand Abidjan.">
+<meta property="og:url" content="https://www.sci4k.com/">
+<meta property="og:image" content="https://www.sci4k.com/images/image%20(3).png">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://www.sci4k.com/">
+<script>(function(){try{var t=localStorage.getItem('sci4k-theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --navy-950:#1e2227; --navy-900:#212528; --navy-800:#272c31; --navy-700:#2e3439; --navy-600:#363d43;
-    --gold-600:#ac884a; --gold-500:#c09858; --gold-300:#d4b07a;
-    --cream:#f4eee7; --cream-2:#ebe5db; --ink:#1e2227; --paper:#faf8f5;
-    --line: rgba(30,34,39,0.12); --shadow: 0 20px 60px -20px rgba(30,34,39,0.35);
-  }
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{margin:0; font-family:'Montserrat',sans-serif; background:var(--cream); color:var(--ink); -webkit-font-smoothing:antialiased; overflow-x:hidden;}
-  h1,h2,h3,.display{font-family:'Montserrat',sans-serif; font-weight:800; letter-spacing:-0.02em; margin:0;}
-  a{color:inherit; text-decoration:none;}
-  img{display:block; max-width:100%;}
-  .wrap{max-width:1240px; margin:0 auto; padding:0 32px;}
-  @media(max-width:720px){.wrap{padding:0 20px;}}
-
-  /* ===== ANIMATIONS KEYFRAMES ===== */
-  @keyframes heroZoom{from{transform:scale(1.14);}to{transform:scale(1.02);}}
-  @keyframes scrollX{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
-  @keyframes pulseGlow{0%,100%{box-shadow:0 8px 22px rgba(172,136,74,0.35);}50%{box-shadow:0 12px 36px rgba(172,136,74,0.65), 0 0 0 6px rgba(172,136,74,0.12);}}
-  @keyframes gradientShift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
-  @keyframes shimmer{0%{background-position:-200% 0;}100%{background-position:200% 0;}}
-  @keyframes fadeSlideLeft{from{opacity:0;transform:translateX(-40px);}to{opacity:1;transform:translateX(0);}}
-  @keyframes fadeSlideRight{from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);}}
-  @keyframes scaleIn{from{opacity:0;transform:scale(0.88);}to{opacity:1;transform:scale(1);}}
-  @keyframes rotateBadge{0%,100%{transform:rotate(-2deg);}50%{transform:rotate(2deg);}}
-  @keyframes borderPulse{0%,100%{border-color:rgba(172,136,74,0.3);}50%{border-color:rgba(172,136,74,0.8);}}
-  @keyframes countBump{0%,100%{transform:scale(1);}50%{transform:scale(1.15);}}
-
-  /* ===== REVEAL ON SCROLL ===== */
-  .reveal{opacity:0;transform:translateY(32px);transition:opacity .85s cubic-bezier(.16,.8,.24,1),transform .85s cubic-bezier(.16,.8,.24,1);}
-  .reveal.in{opacity:1;transform:translateY(0);}
-  .reveal-left{opacity:0;transform:translateX(-40px);transition:opacity .85s cubic-bezier(.16,.8,.24,1),transform .85s cubic-bezier(.16,.8,.24,1);}
-  .reveal-left.in{opacity:1;transform:translateX(0);}
-  .reveal-right{opacity:0;transform:translateX(40px);transition:opacity .85s cubic-bezier(.16,.8,.24,1),transform .85s cubic-bezier(.16,.8,.24,1);}
-  .reveal-right.in{opacity:1;transform:translateX(0);}
-  .reveal-scale{opacity:0;transform:scale(0.88);transition:opacity .85s cubic-bezier(.16,.8,.24,1),transform .85s cubic-bezier(.16,.8,.24,1);}
-  .reveal-scale.in{opacity:1;transform:scale(1);}
-  .reveal-stagger>*{transition-delay:calc(var(--i,0)*90ms);}
-
-  /* ===== HEADER ===== */
-  header{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 0;transition:background .4s ease,padding .4s ease,box-shadow .4s ease;background:var(--paper);border-bottom:1px solid rgba(0,0,0,0.05);}
-  header.solid{background:rgba(250,248,245,0.96);backdrop-filter:blur(12px);padding:12px 0;box-shadow:0 8px 30px rgba(0,0,0,0.08);}
-  .nav{display:flex;align-items:center;justify-content:space-between;gap:24px;}
-  .logo{display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-weight:800;font-size:20px;color:var(--navy-950);letter-spacing:0.04em;text-transform:uppercase;}
-  .logo .mark{display:flex;align-items:center;transition:transform .4s ease;}
-  .logo .mark img{height:42px;width:auto;display:block;}
-  .logo:hover .mark{transform:scale(1.08);}
-  nav.links{display:flex;gap:32px;font-size:15px;font-weight:600;}
-  nav.links a{color:var(--navy-800);position:relative;padding:6px 0;transition:color .3s ease;}
-  nav.links a::after{content:'';position:absolute;left:0;bottom:0;width:0;height:2px;background:var(--gold-500);transition:width .35s ease;}
-  nav.links a:hover,nav.links a.active{color:var(--gold-600);}
-  nav.links a:hover::after,nav.links a.active::after{width:100%;}
-  .cta-btn{background:var(--gold-500);color:var(--navy-950);font-weight:700;font-size:14px;padding:12px 22px;border-radius:100px;white-space:nowrap;transition:transform .3s ease,background .3s ease;animation:pulseGlow 3s ease-in-out infinite;}
-  .cta-btn:hover{transform:translateY(-2px);background:var(--gold-300);}
-  .burger{display:none;cursor:pointer;color:var(--navy-950);font-size:24px;background:none;border:none;}
-  .mobile-menu{display:none;position:fixed;top:70px;left:0;right:0;background:var(--paper);padding:24px;z-index:99;flex-direction:column;gap:16px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,0.1);}
-  .mobile-menu a{color:var(--navy-800);font-weight:600;font-size:16px;padding:10px 0;}
-  .mobile-menu.open{display:flex;}
-  @media(max-width:940px){nav.links{display:none;}.burger{display:block;}}
-
-  /* ===== HERO ===== */
-  .hero{position:relative;min-height:92vh;display:flex;align-items:center;overflow:hidden;background:#1e2227;padding-top:100px;}
-  .hero-media{position:absolute;inset:0;background-image:linear-gradient(180deg,rgba(30,34,39,0.45) 0%,rgba(30,34,39,0.65) 55%,rgba(30,34,39,0.96) 100%),url('https://commons.wikimedia.org/wiki/Special:FilePath/Plateau%20Abidjan%20de%20nuit.jpg?width=1800');background-size:cover;background-position:center;transform:scale(1.08);animation:heroZoom 18s ease-out forwards;}
-  .hero-inner{position:relative;z-index:2;width:100%;padding:60px 0 80px;}
-  .eyebrow{display:inline-flex;align-items:center;gap:10px;color:var(--gold-300);font-weight:700;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:22px;}
-  .eyebrow::before{content:'';width:28px;height:1px;background:var(--gold-300);}
-  .hero h1{color:#fff;font-size:clamp(42px,6.5vw,84px);line-height:1.02;max-width:16ch;margin-bottom:24px;}
-  .hero h1 em{font-style:italic;color:var(--gold-300);}
-  .hero p.lede{color:rgba(255,255,255,0.85);font-size:19px;max-width:48ch;line-height:1.65;margin-bottom:44px;}
-  .hero-actions{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:56px;}
-  .hero-btn-primary{background:linear-gradient(135deg,var(--gold-500),var(--gold-600));color:var(--navy-950);font-weight:800;font-size:15px;padding:16px 36px;border-radius:100px;box-shadow:0 10px 30px rgba(172,136,74,0.4);transition:transform .3s ease,box-shadow .3s ease;display:inline-flex;align-items:center;gap:10px;}
-  .hero-btn-primary:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(172,136,74,0.6);}
-  .hero-btn-primary svg{transition:transform .4s ease;}
-  .hero-btn-primary:hover svg{transform:translateX(5px);}
-  .hero-btn-secondary{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.22);color:#fff;font-weight:700;font-size:15px;padding:16px 32px;border-radius:100px;backdrop-filter:blur(6px);transition:background .3s ease,border-color .3s ease;}
-  .hero-btn-secondary:hover{background:rgba(255,255,255,0.18);border-color:var(--gold-300);}
-  .hero-stats{display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:40px;margin-top:20px;padding-top:36px;border-top:1px solid rgba(255,255,255,0.12);justify-items:center;text-align:center;}
-  .hero-stats .stat{width:100%;max-width:260px;}
-  .hero-stats .stat b{display:block;font-family:'Montserrat',sans-serif;font-size:clamp(64px,8vw,120px);color:#fff;font-weight:900;line-height:0.95;}
-  .hero-stats .stat span{color:rgba(255,255,255,0.78);font-size:18px;letter-spacing:0.03em;margin-top:12px;display:block;}
-
-  /* Floating decorative orb behind hero */
-  .hero-orb{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(172,136,74,0.12),transparent 70%);right:-100px;top:50%;transform:translateY(-50%);z-index:1;animation:float 8s ease-in-out infinite;}
-
-  /* ===== MARQUEE ===== */
-  .marquee-band{background:var(--navy-950);border-top:1px solid rgba(255,255,255,0.08);border-bottom:1px solid rgba(255,255,255,0.08);padding:20px 0;overflow:hidden;}
-  .marquee-track{display:flex;gap:60px;width:max-content;animation:scrollX 34s linear infinite;}
-  .marquee-band:hover .marquee-track{animation-play-state:paused;}
-  .marquee-track span{color:rgba(255,255,255,0.6);font-family:'Montserrat',sans-serif;font-size:15px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;}
-  .marquee-track span b{color:var(--gold-300);}
-
-  /* ===== SECTIONS ===== */
-  section{padding:110px 0;}
-  @media(max-width:720px){section{padding:70px 0;}}
-  .section-head{max-width:680px;margin-bottom:60px;}
-  .tag{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold-600);margin-bottom:16px;padding:6px 14px;border:1px solid var(--gold-500);border-radius:100px;animation:borderPulse 3s ease-in-out infinite;}
-  .section-head h2{font-size:clamp(32px,3.8vw,48px);line-height:1.08;color:var(--navy-950);}
-  .section-head p{margin-top:18px;font-size:17.5px;color:#5a6673;line-height:1.65;}
-
-  /* ===== SERVICES AVEC IMAGES ===== */
-  .services-section{background:var(--paper);}
-  .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;}
-  @media(max-width:900px){.services-grid{grid-template-columns:1fr 1fr;}}
-  @media(max-width:600px){.services-grid{grid-template-columns:1fr;}}
-  .service-card{position:relative;border-radius:24px;padding:40px 32px;overflow:hidden;color:#fff;min-height:340px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 12px 36px rgba(0,0,0,0.12);transition:transform .5s cubic-bezier(.16,.8,.24,1),box-shadow .5s ease;}
-  .service-card-bg{position:absolute;inset:0;z-index:1;background-size:cover;background-position:center;transition:transform .75s cubic-bezier(.16,.8,.24,1);}
-  .service-card-overlay{position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(30,34,39,0.22) 0%,rgba(30,34,39,0.28) 40%,rgba(30,34,39,0.28) 100%);transition:background .4s ease;}
-  .service-card:hover{transform:translateY(-12px);box-shadow:0 28px 56px rgba(30,34,39,0.4);}
-  .service-card:hover .service-card-bg{transform:scale(1.14);}
-  .service-card:hover .service-card-overlay{background:linear-gradient(180deg,rgba(30,34,39,0.45) 0%,rgba(30,34,39,0.75) 60%,rgba(30,34,39,0.94) 100%);}
-  .service-card-content{position:relative;z-index:3;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;padding:140px 24px 24px;}
-  .service-card .icon{position:absolute;top:-29px;left:-15px;width:64px;height:64px;border-radius:20px;background:rgba(255,255,255,0.16);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.24);display:flex;align-items:center;justify-content:center;color:var(--gold-300);transition:background .4s,color .4s,transform .5s cubic-bezier(.34,1.56,.64,1);opacity:1;transform:none;z-index:4;}
-  .service-card:hover .icon{background:var(--gold-500);color:var(--navy-950);transform:rotate(-8deg) scale(1.12);}
-  .service-card h4{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;margin:0;color:#fff;line-height:1.15;letter-spacing:-0.01em;}
-  .service-card p{font-size:15px;color:rgba(255,255,255,0.9);line-height:1.65;margin:0 0 20px;opacity:0;transform:translateY(18px);transition:opacity .35s ease,transform .35s ease;max-height:0;overflow:hidden;}
-  .service-card .link-arrow{font-size:14.5px;font-weight:700;color:var(--gold-300);display:inline-flex;align-items:center;gap:8px;transition:gap .3s ease,color .3s ease,opacity .35s ease,transform .35s ease;opacity:0;transform:translateY(12px);max-height:0;overflow:hidden;}
-  .service-card:hover p,.service-card:hover .link-arrow{opacity:1;transform:translateY(0);max-height:200px;}
-  .service-card:hover .link-arrow{gap:14px;color:#fff;}
-
-  /* Gold bar animate top of card on hover */
-  .service-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold-300),var(--gold-600),var(--gold-300));background-size:200%;z-index:10;transform:scaleX(0);transform-origin:left;transition:transform .55s ease;animation:none;}
-  .service-card:hover::after{transform:scaleX(1);animation:gradientShift 2s linear infinite;}
-
-  /* ===== CTA SECTION ===== */
-  .city-cta-section{position:relative;padding:120px 0;overflow:hidden;background-image:linear-gradient(180deg,rgba(30,34,39,0.85) 0%,rgba(30,34,39,0.92) 100%),url('https://commons.wikimedia.org/wiki/Special:FilePath/Photo%20de%20la%20lagune%20%C3%A0%20Abidjan.jpg?width=1800');background-size:cover;background-position:center;background-attachment:fixed;color:#fff;}
-  .biens-cta-banner{border-radius:28px;padding:60px 48px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;transition:background .4s ease,border-color .4s ease;}
-  .biens-cta-banner:hover{background:rgba(255,255,255,0.1);border-color:rgba(172,136,74,0.4);}
-  .biens-cta-content h3{font-size:34px;color:#fff;margin-bottom:12px;}
-  .biens-cta-content p{font-size:17px;color:rgba(255,255,255,0.8);max-width:540px;margin:0;}
-
-  /* ===== PARTENAIRES CAROUSEL ===== */
-  .partners-section{padding:100px 0;background:var(--cream);border-top:1px solid var(--line);}
-  .slider-controls-wrap{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:36px;flex-wrap:wrap;gap:16px;}
-  .slider-btns{display:flex;gap:12px;margin-top:6px;}
-  .slider-arrow-btn{width:48px;height:48px;border-radius:50%;background:#fff;border:1px solid var(--line);color:var(--navy-900);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,0.08);transition:all .3s cubic-bezier(.34,1.56,.64,1);}
-  .slider-arrow-btn:hover{background:var(--navy-950);color:var(--gold-300);transform:scale(1.15);border-color:var(--navy-950);}
-
-  .partners-carousel-viewport{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;padding:10px 0 24px;overflow:visible;}
-  .partners-carousel-viewport::-webkit-scrollbar{display:none;}
-
-  .partner-logo-card{width:100%;background:var(--paper);border:1.5px solid var(--line);border-radius:20px;padding:28px 22px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.04);transition:transform .4s cubic-bezier(.34,1.56,.64,1),border-color .3s ease,box-shadow .3s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;cursor:pointer;}
-  .partner-logo-card:hover{transform:translateY(-8px) scale(1.03);border-color:var(--gold-500);box-shadow:0 20px 40px rgba(30,34,39,0.12);}
-  .partner-logo-card img{max-height:52px;max-width:150px;width:auto;object-fit:contain;filter:grayscale(20%);transition:filter .3s ease;}
-  .partner-logo-card:hover img{filter:grayscale(0%);}
-  .partner-logo-card .partner-fallback{display:none;align-items:center;justify-content:center;gap:8px;}
-  .partner-logo-card .p-mark{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#fff;letter-spacing:0.5px;text-align:center;line-height:1.2;flex-shrink:0;}
-  .partner-logo-card .p-name{font-size:11.5px;font-weight:700;color:var(--navy-900);line-height:1.3;text-align:center;}
-
-  /* Real SVG Logo styles */
-  .logo-svg-wrap{display:flex;align-items:center;justify-content:center;width:100%;height:56px;}
-  .logo-svg-wrap svg{max-width:150px;max-height:52px;width:auto;height:auto;}
-
-  /* ===== FOOTER ===== */
-  footer{background-image:linear-gradient(180deg,rgba(30,34,39,0.96) 0%,rgba(30,34,39,0.99) 100%),url('https://commons.wikimedia.org/wiki/Special:FilePath/Mairie%20de%20Cocody%2C%20Abidjan.jpg?width=1800');background-size:cover;background-position:center;color:rgba(255,255,255,0.6);padding-top:90px;border-top:1px solid rgba(255,255,255,0.1);}
-  .footer-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.2fr;gap:50px;padding-bottom:60px;border-bottom:1px solid rgba(255,255,255,0.08);}
-  @media(max-width:860px){.footer-top{grid-template-columns:1fr 1fr;}}
-  @media(max-width:520px){.footer-top{grid-template-columns:1fr;}}
-  .footer-top h5{color:#fff;font-size:14px;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:22px;font-weight:700;}
-  .footer-top a,.footer-top p{display:block;font-size:14.5px;color:rgba(255,255,255,0.6);margin-bottom:12px;line-height:1.6;}
-  .footer-top a:hover{color:var(--gold-300);}
-  .foot-logo{display:flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;color:#fff;font-weight:800;font-size:18px;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:18px;}
-  .newsletter{display:flex;margin-top:14px;border-radius:100px;overflow:hidden;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);}
-  .newsletter input{flex:1;background:transparent;border:none;padding:14px 18px;color:#fff;font-family:inherit;font-size:13.5px;}
-  .newsletter input::placeholder{color:rgba(255,255,255,0.4);}
-  .newsletter button{background:var(--gold-500);border:none;padding:0 20px;color:var(--navy-950);cursor:pointer;font-weight:700;transition:background .3s;}
-  .newsletter button:hover{background:var(--gold-300);}
-  .bottom-bar{display:flex;justify-content:space-between;align-items:center;padding:26px 0;font-size:13px;flex-wrap:wrap;gap:12px;}
-  .cnt{font-variant-numeric:tabular-nums;}
-</style>
+<link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body class="page-home">
 
 <header id="siteHeader">
   <div class="wrap nav">
-    <a href="index.html" class="logo"><span class="mark"><img src="images/image (2).svg" alt="Logo 4KID"></span> 4KID</a>
+    <a href="index.html" class="logo"><span class="mark"><img src="images/image (3).png" alt="Logo SCI4K"></span> SCI4K</a>
     <nav class="links">
-      <a href="index.html" class="active">Accueil</a>
-      <a href="presentation.html">Présentation</a>
-      <a href="biens.html">Biens Immobiliers</a>
-      <a href="services.html">Nos Services</a>
-      <a href="contact.html">Contact</a>
+      <a href="index.html" class="active" data-i18n="nav.home">Accueil</a>
+      <a href="presentation.html" data-i18n="nav.about">Présentation</a>
+      <a href="biens.html" data-i18n="nav.properties">Biens Immobiliers</a>
+      <a href="services.html" data-i18n="nav.services">Nos Services</a>
+      <a href="blog.html" data-i18n="nav.blog">Blog</a>
+      <a href="faq.html" data-i18n="nav.faq">FAQ</a>
+      <a href="contact.html" data-i18n="nav.contact">Contact</a>
     </nav>
-    <a href="contact.html" class="cta-btn">Nous contacter</a>
+    <div class="util-switches">
+      <button class="theme-toggle" id="themeToggle" aria-label="Basculer mode sombre / clair" title="Mode sombre / clair">
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
+      </button>
+      <button class="lang-toggle" id="langToggle" aria-label="Changer de langue" title="Français / English">EN</button>
+    </div>
+    <a href="contact.html" class="cta-btn" data-i18n="nav.cta">Nous contacter</a>
     <button class="burger" id="burgerBtn" aria-label="Menu"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg></button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
-    <a href="index.html">Accueil</a>
-    <a href="presentation.html">Présentation</a>
-    <a href="biens.html">Biens Immobiliers</a>
-    <a href="services.html">Nos Services</a>
-    <a href="contact.html">Contact</a>
+    <a href="index.html" data-i18n="nav.home">Accueil</a>
+    <a href="presentation.html" data-i18n="nav.about">Présentation</a>
+    <a href="biens.html" data-i18n="nav.properties">Biens Immobiliers</a>
+    <a href="services.html" data-i18n="nav.services">Nos Services</a>
+    <a href="blog.html" data-i18n="nav.blog">Blog</a>
+      <a href="faq.html" data-i18n="nav.faq">FAQ</a>
+    <a href="contact.html" data-i18n="nav.contact">Contact</a>
+    <div class="util-switches">
+      <button class="theme-toggle" id="themeToggleMobile" aria-label="Basculer mode sombre / clair" title="Mode sombre / clair">
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
+      </button>
+      <button class="lang-toggle" aria-label="Changer de langue" title="Français / English">EN</button>
+    </div>
   </div>
 </header>
 
@@ -207,20 +65,20 @@
   <div class="hero-media"></div>
   <div class="hero-orb"></div>
   <div class="wrap hero-inner">
-    <div class="eyebrow reveal">Société Civile Immobilière — Abidjan</div>
-    <h1 class="reveal" style="transition-delay:.1s">Votre propriété,<br><em>notre priorité.</em></h1>
-    <p class="lede reveal" style="transition-delay:.2s">4KID accompagne particuliers et investisseurs dans l'achat, la vente, la location et la construction de biens d'exception à Abidjan — avec rigueur, transparence et un vrai sens du service.</p>
+    <div class="eyebrow reveal" data-i18n="home.hero.eyebrow">Société Civile Immobilière — Abidjan</div>
+    <h1 class="reveal" style="transition-delay:.1s" data-i18n-html="home.hero.title">Votre propriété,<br><em>notre priorité.</em></h1>
+    <p class="lede reveal" style="transition-delay:.2s" data-i18n="home.hero.lede">SCI4K accompagne particuliers et investisseurs dans l'achat, la vente, la location et la construction de biens d'exception à Abidjan — avec rigueur, transparence et un vrai sens du service.</p>
     <div class="hero-actions reveal" style="transition-delay:.3s">
       <a href="biens.html" class="hero-btn-primary">
-        <span>Rechercher un bien</span>
+        <span data-i18n="home.hero.btnPrimary">Rechercher un bien</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
       </a>
-      <a href="presentation.html" class="hero-btn-secondary">Découvrir 4KID</a>
+      <a href="presentation.html" class="hero-btn-secondary" data-i18n="home.hero.btnSecondary">Découvrir SCI4K</a>
     </div>
     <div class="hero-stats reveal" style="transition-delay:.4s">
-      <div class="stat"><b class="cnt" data-target="120">0</b><span>Biens commercialisés</span></div>
-      <div class="stat"><b class="cnt" data-target="8">0</b><span>Années d'expérience</span></div>
-      <div class="stat"><b class="cnt" data-target="96">0</b><span>% clients satisfaits</span></div>
+      <div class="stat"><b class="cnt" data-target="120">0</b><span data-i18n="home.hero.stat1">Biens commercialisés</span></div>
+      <div class="stat"><b class="cnt" data-target="8">0</b><span data-i18n="home.hero.stat2">Années d'expérience</span></div>
+      <div class="stat"><b class="cnt" data-target="96">0</b><span data-i18n="home.hero.stat3">% clients satisfaits</span></div>
     </div>
   </div>
 </section>
@@ -236,57 +94,57 @@
 <section class="services-section" id="services">
   <div class="wrap">
     <div class="section-head">
-      <div class="tag reveal">Nos services</div>
-      <h2 class="reveal" style="transition-delay:.1s">Un accompagnement sur-mesure, à chaque étape</h2>
-      <p class="reveal" style="transition-delay:.15s">De la recherche de biens à la signature et la gestion locative : 4KID structure chaque projet avec la même exigence et rigueur professionnelle.</p>
+      <div class="tag tag-home reveal" data-i18n="home.services.tag">Nos services</div>
+      <h2 class="reveal" style="transition-delay:.1s" data-i18n="home.services.title">Un accompagnement sur-mesure, à chaque étape</h2>
+      <p class="reveal" style="transition-delay:.15s" data-i18n="home.services.lede">De la recherche de biens à la signature et la gestion locative : SCI4K structure chaque projet avec la même exigence et rigueur professionnelle.</p>
     </div>
     <div class="services-grid reveal-stagger">
       <div class="service-card reveal" style="--i:0">
         <div class="service-card-bg" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Plateau%20Abidjan%20de%20nuit.jpg?width=900');"></div>
         <div class="service-card-overlay"></div>
         <div class="service-card-content">
-          <div><div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9h14v-9"/></svg></div><h4>Acheter</h4><p>Résidence principale ou investissement locatif : nous cadrons vos critères et sécurisons chaque étape de l'acquisition foncière ou immobilière.</p></div>
-          <a href="services.html#acheter" class="link-arrow">En savoir plus <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
+          <div><div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg></div><h4 data-i18n="svc.foncier.name">Foncier</h4><p data-i18n="svc.foncier.short">Sécurisation des titres fonciers, obtention des ACD et étude juridique complète de vos parcelles avant tout projet.</p></div>
+          <a href="services.html#foncier" class="link-arrow"><span data-i18n="home.services.more">En savoir plus</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
         </div>
       </div>
       <div class="service-card reveal" style="--i:1">
         <div class="service-card-bg" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/La%20commune%20du%20Plateau%20-%20Abidjan%2008.jpg?width=900');"></div>
         <div class="service-card-overlay"></div>
         <div class="service-card-content">
-          <div><div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg></div><h4>Vendre</h4><p>Estimation précise, valorisation soignée du bien, filtrage rigoureux des acquéreurs : nous concluons rapidement aux meilleures conditions.</p></div>
-          <a href="services.html#vendre" class="link-arrow">En savoir plus <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
+          <div><div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div><h4 data-i18n="svc.construction.name">Construction</h4><p data-i18n="svc.construction.short">Choix des matériaux nobles, respect strict des normes de sécurité et suivi minutieux de vos chantiers de construction.</p></div>
+          <a href="services.html#construction" class="link-arrow"><span data-i18n="home.services.more">En savoir plus</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
         </div>
       </div>
       <div class="service-card reveal" style="--i:2">
         <div class="service-card-bg" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Mairie%20de%20Cocody%2C%20Abidjan.jpg?width=900');"></div>
         <div class="service-card-overlay"></div>
         <div class="service-card-content">
-          <div><div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div><h4>Construction</h4><p>Choix des matériaux nobles, respect strict des normes de sécurité et suivi minutieux de vos chantiers de construction.</p></div>
-          <a href="services.html#construction" class="link-arrow">En savoir plus <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
+          <div><div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg></div><h4 data-i18n="svc.gestion.name">Gestion / Location</h4><p data-i18n="svc.gestion.short">Recherche de locataires solvables, rédaction des baux, états des lieux et recouvrement sécurisé des loyers sans aucun tracas.</p></div>
+          <a href="services.html#gestion" class="link-arrow"><span data-i18n="home.services.more">En savoir plus</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
         </div>
       </div>
       <div class="service-card reveal" style="--i:3">
         <div class="service-card-bg" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Photo%20de%20la%20lagune%20%C3%A0%20Abidjan.jpg?width=900');"></div>
         <div class="service-card-overlay"></div>
         <div class="service-card-content">
-          <div><div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg></div><h4>Gestion locative</h4><p>Recherche de locataires solvables, rédaction des baux, états des lieux et recouvrement sécurisé des loyers sans aucun tracas.</p></div>
-          <a href="services.html#gestion" class="link-arrow">En savoir plus <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
+          <div><div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9h14v-9"/></svg></div><h4 data-i18n="svc.achat.name">Achat</h4><p data-i18n="svc.achat.short">Résidence principale ou investissement locatif : nous cadrons vos critères et sécurisons chaque étape de l'acquisition.</p></div>
+          <a href="services.html#achat" class="link-arrow"><span data-i18n="home.services.more">En savoir plus</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
         </div>
       </div>
       <div class="service-card reveal" style="--i:4">
         <div class="service-card-bg" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Notre%20Dame%20de%20Cocody%20%C3%A0%20Abidjan%20en%202024%2007.jpg?width=900');"></div>
         <div class="service-card-overlay"></div>
         <div class="service-card-content">
-          <div><div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.9-7-10a7 7 0 0 1 14 0c0 5.1-7 10-7 10Z"/><circle cx="12" cy="11" r="2.4"/></svg></div><h4>Syndic de copropriété</h4><p>Gestion administrative, financière et technique de vos copropriétés à Abidjan en toute transparence et sérénité.</p></div>
-          <a href="services.html#syndic" class="link-arrow">En savoir plus <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
+          <div><div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg></div><h4 data-i18n="svc.vente.name">Vente</h4><p data-i18n="svc.vente.short">Estimation précise, valorisation soignée du bien, filtrage rigoureux des acquéreurs : nous concluons rapidement aux meilleures conditions.</p></div>
+          <a href="services.html#vente" class="link-arrow"><span data-i18n="home.services.more">En savoir plus</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
         </div>
       </div>
       <div class="service-card reveal" style="--i:5">
-        <div class="service-card-bg" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Abidjan_Cocody_2023.jpg?width=900');"></div>
+        <div class="service-card-bg" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Copropri%C3%A9t%C3%A9s%20Abidjan%20Rivi%C3%A9ra%20Golf.jpg?width=900');"></div>
         <div class="service-card-overlay"></div>
         <div class="service-card-content">
-          <div><div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 13h6l2-5 2 9 2-4h4"/></svg></div><h4>Facility Management</h4><p>Maintenance préventive, entretien technique et aménagement continu : votre patrimoine conserve toute sa valeur dans le temps.</p></div>
-          <a href="services.html#facility" class="link-arrow">En savoir plus <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
+          <div><div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 3v2h6V3"/><path d="M9 10h6M9 14h6M9 18h3"/></svg></div><h4 data-i18n="svc.administration.name">Administration de biens</h4><p data-i18n="svc.administration.short">Comptabilité, syndic de copropriété, maintenance technique et suivi administratif complet de votre patrimoine.</p></div>
+          <a href="services.html#administration" class="link-arrow"><span data-i18n="home.services.more">En savoir plus</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
         </div>
       </div>
     </div>
@@ -297,10 +155,96 @@
   <div class="wrap">
     <div class="biens-cta-banner reveal">
       <div class="biens-cta-content">
-        <h3>Prêt à concrétiser votre projet immobilier ?</h3>
-        <p>Découvrez notre catalogue complet d'appartements, villas et terrains disponibles à l'achat et à la location sur notre page dédiée.</p>
+        <h3 data-i18n="home.cta.title">Prêt à concrétiser votre projet immobilier ?</h3>
+        <p data-i18n="home.cta.text">Découvrez notre catalogue complet d'appartements, villas et terrains disponibles à l'achat et à la location sur notre page dédiée.</p>
       </div>
-      <a href="biens.html" class="cta-btn" style="padding:16px 32px;font-size:15px;">Consulter les biens <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
+      <a href="biens.html" class="cta-btn" style="padding:16px 32px;font-size:15px;"><span data-i18n="home.cta.btn">Consulter les biens</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- ARTICLES / BLOG -->
+<section class="articles-section" id="articles">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="tag tag-home reveal" data-i18n="home.articles.tag">Actualités & conseils</div>
+      <h2 class="reveal" style="transition-delay:.1s" data-i18n="home.articles.title">Nos derniers articles</h2>
+      <p class="reveal" style="transition-delay:.15s" data-i18n="home.articles.lede">Foncier, marché et gestion locative : nos conseils d'experts pour réussir vos projets immobiliers à Abidjan.</p>
+    </div>
+    <div class="articles-grid reveal-stagger">
+      <a href="blog.html#acd-securiser-terrain" class="article-card reveal" style="--i:0">
+        <div class="article-card-cover-wrap"><div class="article-card-cover" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/La%20commune%20du%20Plateau%20-%20Abidjan%2008.jpg?width=700');"></div></div>
+        <div class="article-card-body">
+          <div class="article-card-cat" data-i18n="svc.foncier.name">Foncier</div>
+          <h4 data-i18n="blog.a1.title">ACD, titre foncier : comment sécuriser l'achat d'un terrain à Abidjan</h4>
+          <p data-i18n="home.articles.a1.excerpt">Les vérifications essentielles avant d'acheter un terrain : ACD, bornage et viabilisation.</p>
+          <span class="link-arrow"><span data-i18n="home.articles.read">Lire l'article</span> <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+      <a href="blog.html#marche-immobilier-abidjan-2026" class="article-card reveal" style="--i:1">
+        <div class="article-card-cover-wrap"><div class="article-card-cover" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Mairie%20de%20Cocody%2C%20Abidjan.jpg?width=700');"></div></div>
+        <div class="article-card-body">
+          <div class="article-card-cat" data-i18n="blog.category.market">Marché</div>
+          <h4 data-i18n="blog.a2.title">Marché immobilier à Abidjan : les tendances à suivre en 2026</h4>
+          <p data-i18n="home.articles.a2.excerpt">Cocody, Riviera, Bingerville : où et comment investir cette année.</p>
+          <span class="link-arrow"><span data-i18n="home.articles.read">Lire l'article</span> <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+      <a href="blog.html#gestion-locative-conseils" class="article-card reveal" style="--i:2">
+        <div class="article-card-cover-wrap"><div class="article-card-cover" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Copropri%C3%A9t%C3%A9s%20Abidjan%20Rivi%C3%A9ra%20Golf.jpg?width=700');"></div></div>
+        <div class="article-card-body">
+          <div class="article-card-cat" data-i18n="svc.gestion.name">Gestion / Location</div>
+          <h4 data-i18n="blog.a3.title">5 conseils pour une gestion locative sereine à Abidjan</h4>
+          <p data-i18n="home.articles.a3.excerpt">Sélection des locataires, bail, état des lieux : nos bonnes pratiques au quotidien.</p>
+          <span class="link-arrow"><span data-i18n="home.articles.read">Lire l'article</span> <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- TÉMOIGNAGES -->
+<section class="testimonials-section">
+  <div class="wrap">
+    <div class="section-head" style="max-width:640px;">
+      <div class="tag reveal" data-i18n="home.testimonials.tag">Avis clients</div>
+      <h2 class="reveal" style="color:#fff;" data-i18n="home.testimonials.title">Ce que disent nos clients</h2>
+      <p class="reveal" style="color:rgba(255,255,255,0.75);" data-i18n="home.testimonials.lede">Quelques retours de propriétaires, acheteurs et locataires accompagnés par SCI4K à Abidjan.</p>
+    </div>
+    <div class="testimonials-grid reveal-stagger">
+      <div class="testimonial-card reveal" style="--i:0">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-quote" data-i18n="home.testimonials.t1.quote">« SCI4K a sécurisé l'achat de mon terrain à Bingerville de bout en bout. L'équipe a vérifié l'ACD et le bornage avant même que je signe quoi que ce soit. Un vrai sérieux. »</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">MK</div>
+          <div>
+            <div class="testimonial-name">Mireille K.</div>
+            <div class="testimonial-role" data-i18n="home.testimonials.t1.role">Acheteuse à Bingerville</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal" style="--i:1">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-quote" data-i18n="home.testimonials.t2.quote">« Je confie la gestion locative de mes trois appartements à SCI4K depuis deux ans. Les loyers arrivent toujours à date et le suivi est transparent. »</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">SD</div>
+          <div>
+            <div class="testimonial-name">Serge D.</div>
+            <div class="testimonial-role" data-i18n="home.testimonials.t2.role">Propriétaire à Cocody</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal" style="--i:2">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-quote" data-i18n="home.testimonials.t3.quote">« Vente de notre villa conclue en six semaines, à un prix conforme à l'estimation. L'équipe a su filtrer les acquéreurs sérieux et nous faire gagner du temps. »</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">AY</div>
+          <div>
+            <div class="testimonial-name">Aïcha Y.</div>
+            <div class="testimonial-role" data-i18n="home.testimonials.t3.role">Vendeuse, Riviera</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -310,188 +254,89 @@
   <div class="wrap">
     <div class="slider-controls-wrap reveal">
       <div>
-        <div class="tag">Écosystème institutionnel & financier</div>
-        <h2 style="font-size:clamp(28px,3vw,42px);color:var(--navy-950);margin-top:8px;">Nos Partenaires Privilégiés</h2>
+        <div class="tag tag-home" data-i18n="home.partners.tag">Écosystème institutionnel & financier</div>
+        <h2 style="font-size:clamp(28px,3vw,42px);color:var(--navy-950);margin-top:8px;" data-i18n="home.partners.title">Nos Partenaires Privilégiés</h2>
       </div>
       <div class="slider-btns"></div>
     </div>
     <div class="partners-carousel-viewport reveal" id="partnersViewport">
 
-      <!-- BANK OF AFRICA -->
+      <!-- BANK OF AFRICA (logo officiel — Wikimedia Commons) -->
       <div class="partner-logo-card">
         <div class="logo-svg-wrap">
-          <svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
-            <rect x="2" y="2" width="56" height="56" rx="4" fill="#008751"/>
-            <text x="30" y="20" text-anchor="middle" fill="white" font-family="Arial Black,sans-serif" font-size="11" font-weight="900">BANK</text>
-            <text x="30" y="33" text-anchor="middle" fill="white" font-family="Arial Black,sans-serif" font-size="9" font-weight="900">OF</text>
-            <text x="30" y="46" text-anchor="middle" fill="white" font-family="Arial Black,sans-serif" font-size="11" font-weight="900">AFRICA</text>
-            <text x="68" y="24" fill="#008751" font-family="Arial Black,sans-serif" font-size="14" font-weight="900">BOA</text>
-            <text x="68" y="40" fill="#333" font-family="Arial,sans-serif" font-size="8">GROUPE BANK OF AFRICA</text>
-          </svg>
+          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bank%20of%20Africa%20Logo.png?width=300" alt="Bank of Africa" style="max-height:52px;max-width:150px;width:auto;height:auto;object-fit:contain;" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'p-name-fallback',textContent:'BANK OF AFRICA'}))">
         </div>
         <span class="p-name">BANK OF AFRICA</span>
       </div>
 
-      <!-- CEDEAO / ECOWAS -->
+      <!-- CEDEAO / ECOWAS (logo officiel — Wikimedia Commons) -->
       <div class="partner-logo-card">
         <div class="logo-svg-wrap">
-          <svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="30" cy="30" r="28" fill="#007a3d" stroke="#f5c400" stroke-width="3"/>
-            <circle cx="30" cy="30" r="18" fill="none" stroke="#f5c400" stroke-width="1.5"/>
-            <!-- Africa silhouette simplified -->
-            <ellipse cx="30" cy="32" rx="8" ry="12" fill="#f5c400" opacity="0.85"/>
-            <text x="66" y="22" fill="#007a3d" font-family="Arial Black,sans-serif" font-size="10" font-weight="900">CEDEAO</text>
-            <text x="66" y="35" fill="#555" font-family="Arial,sans-serif" font-size="8">ECOWAS</text>
-            <text x="66" y="47" fill="#007a3d" font-family="Arial,sans-serif" font-size="7">Côte d'Ivoire</text>
-          </svg>
+          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/ECOWAS%20logo%20(cropped).png?width=300" alt="CEDEAO / ECOWAS" style="max-height:52px;max-width:150px;width:auto;height:auto;object-fit:contain;" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'p-name-fallback',textContent:'CEDEAO / ECOWAS'}))">
         </div>
         <span class="p-name">CEDEAO / ECOWAS</span>
       </div>
 
-      <!-- BCRG -->
+      <!-- CREDIT ACCESS (logo officiel — creditaccess.ci) -->
       <div class="partner-logo-card">
         <div class="logo-svg-wrap">
-          <svg viewBox="0 0 140 60" xmlns="http://www.w3.org/2000/svg">
-            <rect x="2" y="8" width="44" height="44" rx="3" fill="#111"/>
-            <text x="24" y="29" text-anchor="middle" fill="white" font-family="Arial Black,sans-serif" font-size="10" font-weight="900">BC</text>
-            <text x="24" y="44" text-anchor="middle" fill="white" font-family="Arial Black,sans-serif" font-size="10" font-weight="900">RG</text>
-            <rect x="52" y="14" width="82" height="30" rx="3" fill="#222"/>
-            <text x="93" y="30" text-anchor="middle" fill="white" font-family="Arial Black,sans-serif" font-size="11" font-weight="900">BCRG</text>
-            <text x="93" y="40" text-anchor="middle" fill="#aaa" font-family="Arial,sans-serif" font-size="6.5">BANQUE CENTRALE</text>
-          </svg>
-        </div>
-        <span class="p-name">BCRG BANQUE</span>
-      </div>
-
-      <!-- CREDIT ACCESS -->
-      <div class="partner-logo-card">
-        <div class="logo-svg-wrap">
-          <svg viewBox="0 0 130 60" xmlns="http://www.w3.org/2000/svg">
-            <!-- CA symbol -->
-            <rect x="2" y="8" width="44" height="44" rx="8" fill="#cc0000"/>
-            <text x="23" y="38" text-anchor="middle" fill="white" font-family="Arial Black,sans-serif" font-size="18" font-weight="900">CA</text>
-            <text x="54" y="26" fill="#cc0000" font-family="Arial Black,sans-serif" font-size="11" font-weight="900">Credit</text>
-            <text x="54" y="41" fill="#cc0000" font-family="Arial Black,sans-serif" font-size="11" font-weight="900">Access</text>
-          </svg>
+          <img src="images/partners/credit-access.png" alt="Credit Access CI" style="max-height:52px;max-width:150px;width:auto;height:auto;object-fit:contain;" loading="lazy">
         </div>
         <span class="p-name">Credit Access CI</span>
       </div>
 
-      <!-- NSIA ASSURANCES -->
+      <!-- NSIA BANQUE (logo officiel — nsiabanque.ci) -->
       <div class="partner-logo-card">
         <div class="logo-svg-wrap">
-          <svg viewBox="0 0 150 60" xmlns="http://www.w3.org/2000/svg">
-            <!-- N letter stylized -->
-            <polygon points="4,52 4,8 18,8 32,38 32,8 46,8 46,52 32,52 18,22 18,52" fill="#d4872b"/>
-            <text x="54" y="28" fill="#d4872b" font-family="Arial Black,sans-serif" font-size="14" font-weight="900">NSIA</text>
-            <text x="54" y="44" fill="#888" font-family="Arial,sans-serif" font-size="9">ASSURANCES CI</text>
-          </svg>
+          <img src="images/partners/nsia-banque.png" alt="NSIA Banque" style="max-height:52px;max-width:150px;width:auto;height:auto;object-fit:contain;" loading="lazy">
         </div>
-        <span class="p-name">NSIA ASSURANCES</span>
+        <span class="p-name">NSIA Banque</span>
       </div>
 
-      <!-- BMS-CI -->
+      <!-- BMS-CI (logo officiel — bms-ci.net) -->
       <div class="partner-logo-card">
         <div class="logo-svg-wrap">
-          <svg viewBox="0 0 150 60" xmlns="http://www.w3.org/2000/svg">
-            <!-- building icon -->
-            <rect x="4" y="18" width="12" height="34" fill="#b5621a"/>
-            <rect x="18" y="10" width="12" height="42" fill="#d4872b"/>
-            <rect x="32" y="20" width="12" height="32" fill="#b5621a"/>
-            <text x="52" y="26" fill="#b5621a" font-family="Arial Black,sans-serif" font-size="13" font-weight="900">BMS-CI</text>
-            <text x="52" y="40" fill="#666" font-family="Arial,sans-serif" font-size="7">BANQUE MALIENNE</text>
-            <text x="52" y="50" fill="#666" font-family="Arial,sans-serif" font-size="7">DE SOLIDARITÉ CI</text>
-          </svg>
+          <img src="images/partners/bms-ci.png" alt="BMS-CI" style="max-height:52px;max-width:150px;width:auto;height:auto;object-fit:contain;" loading="lazy">
         </div>
         <span class="p-name">BMS-CI</span>
       </div>
 
-      <!-- FPPN -->
+      <!-- FPPN (logo officiel — fppn.ci) -->
       <div class="partner-logo-card">
         <div class="logo-svg-wrap">
-          <svg viewBox="0 0 150 60" xmlns="http://www.w3.org/2000/svg">
-            <rect x="2" y="8" width="44" height="44" rx="4" fill="#006633"/>
-            <text x="24" y="26" text-anchor="middle" fill="white" font-family="Arial Black,sans-serif" font-size="9" font-weight="900">FPPN</text>
-            <text x="24" y="38" text-anchor="middle" fill="#f5c400" font-family="Arial,sans-serif" font-size="6">PRÉVOYANCE</text>
-            <text x="24" y="48" text-anchor="middle" fill="#f5c400" font-family="Arial,sans-serif" font-size="6">POLICE NAT.</text>
-            <text x="54" y="32" fill="#006633" font-family="Arial Black,sans-serif" font-size="11" font-weight="900">FPPN</text>
-            <text x="54" y="45" fill="#777" font-family="Arial,sans-serif" font-size="7">FONDS PRÉVOYANCE</text>
-          </svg>
+          <img src="images/partners/fppn.png" alt="Fonds de Prévoyance de la Police Nationale" style="max-height:52px;max-width:150px;width:auto;height:auto;object-fit:contain;" loading="lazy">
         </div>
         <span class="p-name">Fonds Prévoyance Police</span>
       </div>
 
-      <!-- CNPS -->
+      <!-- CNPS (logo officiel — cnps.ci) -->
       <div class="partner-logo-card">
         <div class="logo-svg-wrap">
-          <svg viewBox="0 0 150 60" xmlns="http://www.w3.org/2000/svg">
-            <!-- person icon -->
-            <circle cx="20" cy="16" r="8" fill="#0055a5"/>
-            <path d="M4 52 Q4 32 20 32 Q36 32 36 52Z" fill="#0055a5"/>
-            <text x="44" y="26" fill="#0055a5" font-family="Arial Black,sans-serif" font-size="14" font-weight="900">CNPS</text>
-            <text x="44" y="40" fill="#666" font-family="Arial,sans-serif" font-size="7.5">CAISSE NATIONALE</text>
-            <text x="44" y="50" fill="#666" font-family="Arial,sans-serif" font-size="7.5">DE PRÉVOYANCE SOCIALE</text>
-          </svg>
+          <img src="images/partners/cnps.jpeg" alt="CNPS Côte d'Ivoire" style="max-height:52px;max-width:150px;width:auto;height:auto;object-fit:contain;" loading="lazy">
         </div>
         <span class="p-name">CNPS Côte d'Ivoire</span>
       </div>
 
-      <!-- CIE -->
+      <!-- CIE (logo officiel — cie.ci) -->
       <div class="partner-logo-card">
         <div class="logo-svg-wrap">
-          <svg viewBox="0 0 140 60" xmlns="http://www.w3.org/2000/svg">
-            <!-- lightning bolt -->
-            <polygon points="22,6 10,32 20,32 14,54 36,24 24,24" fill="#e65100"/>
-            <rect x="42" y="18" width="4" height="24" fill="#008751"/>
-            <text x="52" y="30" fill="#e65100" font-family="Arial Black,sans-serif" font-size="18" font-weight="900">CIE</text>
-            <text x="42" y="50" fill="#666" font-family="Arial,sans-serif" font-size="7">Compagnie Ivoirienne</text>
-          </svg>
+          <img src="images/partners/cie.webp" alt="CIE — Compagnie Ivoirienne d'Électricité" style="max-height:52px;max-width:150px;width:auto;height:auto;object-fit:contain;" loading="lazy">
         </div>
         <span class="p-name">CIE — Électricité CI</span>
       </div>
 
-      <!-- RTI -->
+      <!-- RTI (logo officiel — Wikimedia Commons) -->
       <div class="partner-logo-card">
         <div class="logo-svg-wrap">
-          <svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
-            <rect x="2" y="8" width="116" height="44" rx="6" fill="#ff5c00"/>
-            <text x="60" y="35" text-anchor="middle" fill="white" font-family="Arial Black,sans-serif" font-size="22" font-weight="900" letter-spacing="2">RTI</text>
-            <text x="60" y="48" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="Arial,sans-serif" font-size="7" letter-spacing="1">RADIODIFFUSION TV IVOIRIENNE</text>
-          </svg>
+          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Logo%20RTI%202021.svg?width=300" alt="RTI — Radiodiffusion Télévision Ivoirienne" style="max-height:52px;max-width:150px;width:auto;height:auto;object-fit:contain;" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'p-name-fallback',textContent:'RTI GROUPE'}))">
         </div>
         <span class="p-name">RTI GROUPE</span>
       </div>
 
-      <!-- CHAMBRE DES NOTAIRES -->
+      <!-- ORDRE ARCHITECTES (logo officiel — oarchitectes.ci) -->
       <div class="partner-logo-card">
         <div class="logo-svg-wrap">
-          <svg viewBox="0 0 150 60" xmlns="http://www.w3.org/2000/svg">
-            <!-- building -->
-            <rect x="15" y="28" width="24" height="24" fill="#2c3e50"/>
-            <polygon points="5,30 27,12 49,30" fill="#2c3e50"/>
-            <rect x="20" y="38" width="7" height="14" fill="white"/>
-            <rect x="31" y="38" width="7" height="14" fill="white"/>
-            <text x="58" y="28" fill="#2c3e50" font-family="Arial Black,sans-serif" font-size="9" font-weight="900">CHAMBRE</text>
-            <text x="58" y="40" fill="#2c3e50" font-family="Arial Black,sans-serif" font-size="9" font-weight="900">DES NOTAIRES</text>
-            <text x="58" y="52" fill="#888" font-family="Arial,sans-serif" font-size="7.5">Côte d'Ivoire</text>
-          </svg>
-        </div>
-        <span class="p-name">Chambre des Notaires</span>
-      </div>
-
-      <!-- ORDRE ARCHITECTES -->
-      <div class="partner-logo-card">
-        <div class="logo-svg-wrap">
-          <svg viewBox="0 0 150 60" xmlns="http://www.w3.org/2000/svg">
-            <!-- compass icon -->
-            <circle cx="28" cy="30" r="24" fill="none" stroke="#1565c0" stroke-width="3"/>
-            <line x1="28" y1="10" x2="28" y2="50" stroke="#1565c0" stroke-width="2"/>
-            <line x1="8" y1="30" x2="48" y2="30" stroke="#1565c0" stroke-width="2"/>
-            <circle cx="28" cy="30" r="4" fill="#1565c0"/>
-            <text x="58" y="24" fill="#1565c0" font-family="Arial Black,sans-serif" font-size="8" font-weight="900">ORDRE DES</text>
-            <text x="58" y="36" fill="#1565c0" font-family="Arial Black,sans-serif" font-size="8" font-weight="900">ARCHITECTES</text>
-            <text x="58" y="48" fill="#888" font-family="Arial,sans-serif" font-size="7">Côte d'Ivoire</text>
-          </svg>
+          <img src="images/partners/ordre-architectes.png" alt="Ordre des Architectes de Côte d'Ivoire" style="max-height:52px;max-width:150px;width:auto;height:auto;object-fit:contain;" loading="lazy">
         </div>
         <span class="p-name">Ordre des Architectes CI</span>
       </div>
@@ -504,74 +349,38 @@
   <div class="wrap">
     <div class="footer-top">
       <div>
-        <div class="foot-logo"><img src="images/image (2).svg" alt="Logo 4KID" style="height:36px;width:auto;"> 4KID</div>
-        <p>Société Civile Immobilière basée à Abidjan — Cocody, Cité des Arts. Achat, vente, location, construction et gestion de patrimoine immobilier.</p>
-        <div class="newsletter"><input type="email" placeholder="Votre adresse email"><button><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></button></div>
+        <div class="foot-logo"><img src="images/image (3).png" alt="Logo SCI4K" style="height:36px;width:auto;" loading="lazy"> SCI4K</div>
+        <p data-i18n="footer.about">Société Civile Immobilière basée à Abidjan — Cocody, Cité des Arts. Achat, vente, location, construction et gestion de patrimoine immobilier.</p>
+        <div class="newsletter"><input type="email" placeholder="Votre adresse email" data-i18n-ph="footer.newsletterPh"><button><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></button></div>
       </div>
       <div>
-        <h5>Navigation</h5>
-        <a href="index.html">Accueil</a><a href="presentation.html">Présentation</a><a href="biens.html">Biens immobiliers</a><a href="services.html">Nos Services</a><a href="contact.html">Contact</a>
+        <h5 data-i18n="footer.navTitle">Navigation</h5>
+        <a href="index.html" data-i18n="nav.home">Accueil</a><a href="presentation.html" data-i18n="nav.about">Présentation</a><a href="biens.html" data-i18n="nav.properties">Biens immobiliers</a><a href="services.html" data-i18n="nav.services">Nos Services</a><a href="blog.html" data-i18n="nav.blog">Blog</a>
+      <a href="faq.html" data-i18n="nav.faq">FAQ</a><a href="contact.html" data-i18n="nav.contact">Contact</a>
       </div>
       <div>
-        <h5>Nos Services</h5>
-        <a href="services.html#acheter">Achat de biens</a><a href="services.html#vendre">Vente immobilière</a><a href="services.html#construction">Construction & Projets</a><a href="services.html#gestion">Gestion locative</a><a href="services.html#syndic">Syndic de copropriété</a>
+        <h5 data-i18n="footer.servicesTitle">Nos Services</h5>
+        <a href="services.html#foncier" data-i18n="svc.foncier.name">Foncier</a><a href="services.html#construction" data-i18n="svc.construction.name">Construction</a><a href="services.html#gestion" data-i18n="svc.gestion.name">Gestion / Location</a><a href="services.html#achat" data-i18n="svc.achat.name">Achat</a><a href="services.html#vente" data-i18n="svc.vente.name">Vente</a><a href="services.html#administration" data-i18n="svc.administration.name">Administration de biens</a>
       </div>
       <div>
-        <h5>Nous contacter</h5>
-        <p>Cocody, Cité des Arts<br>Résidence Paon, 3ème étage<br>Abidjan, Côte d'Ivoire</p>
-        <p><strong>Tél:</strong> +225 07 06 16 50 29</p>
-        <p><strong>Email:</strong> contact@sci4k.com</p>
+        <h5 data-i18n="footer.contactTitle">Nous contacter</h5>
+        <p data-i18n-html="footer.address">Cocody, Cité des Arts<br>Résidence Paon, 3ème étage<br>Abidjan, Côte d'Ivoire</p>
+        <p><strong data-i18n="footer.telLabel">Tél:</strong> +225 07 06 16 50 29</p>
+        <p><strong data-i18n="footer.emailLabel">Email:</strong> contact@sci4k.com</p>
       </div>
     </div>
     <div class="bottom-bar">
-      <span>© 2026 4KID — Tous droits réservés.</span>
-      <span>Société Civile Immobilière — Abidjan, Côte d'Ivoire</span>
+      <span data-i18n="footer.copyright">© 2026 SCI4K — Tous droits réservés.</span>
+      <span class="legal-links"><a href="mentions-legales.html" data-i18n="footer.legal">Mentions légales</a> · <a href="politique-confidentialite.html" data-i18n="footer.privacy">Politique de confidentialité</a></span>
+      <span data-i18n="footer.tagline">Société Civile Immobilière — Abidjan, Côte d'Ivoire</span>
     </div>
   </div>
 </footer>
 
-<script>
-  function scrollPartners(amount) {
-    const v = document.getElementById('partnersViewport');
-    if(v) v.scrollBy({left:amount, behavior:'smooth'});
-  }
+<script src="assets/main.js"></script>
+<a href="https://wa.me/2250706165029?text=Bonjour%20SCI4K%2C%20je%20souhaite%20avoir%20des%20informations." target="_blank" rel="noopener noreferrer" class="whatsapp-float" aria-label="Discuter sur WhatsApp" title="Discuter sur WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.9 4.44-9.9 9.9 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.9-4.44 9.9-9.9 0-2.64-1.03-5.12-2.9-6.99A9.82 9.82 0 0 0 12.04 2zm5.8 14.16c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.12.11-1.8-.11-.42-.13-.96-.31-1.65-.6-2.9-1.25-4.8-4.17-4.94-4.36-.14-.19-1.18-1.57-1.18-3 0-1.42.75-2.12 1.01-2.41.26-.29.58-.36.77-.36.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.83 2 .9 2.15.07.15.12.32.02.51-.1.19-.15.31-.29.48-.14.17-.3.37-.43.5-.14.14-.29.29-.13.57.17.29.75 1.24 1.6 2 1.1.98 2.03 1.28 2.32 1.43.29.14.46.12.63-.07.17-.19.72-.84.92-1.13.19-.29.38-.24.64-.14.26.1 1.66.78 1.94.93.29.14.48.21.55.33.07.12.07.68-.17 1.35z"/></svg>
+</a>
 
-  const burgerBtn = document.getElementById('burgerBtn');
-  const mobileMenu = document.getElementById('mobileMenu');
-  if(burgerBtn) burgerBtn.addEventListener('click', ()=> mobileMenu.classList.toggle('open'));
-
-  const header = document.getElementById('siteHeader');
-  window.addEventListener('scroll', ()=>{
-    header.classList.toggle('solid', window.scrollY > 40);
-  });
-
-  // Reveal all types
-  const allReveal = document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-scale');
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, {threshold:0.1});
-  allReveal.forEach(el => io.observe(el));
-
-  // Animated counters with bounce
-  const counters = document.querySelectorAll('.cnt');
-  const cio = new IntersectionObserver((entries)=>{
-    entries.forEach(e => {
-      if(!e.isIntersecting) return;
-      const el = e.target;
-      const target = parseInt(el.dataset.target, 10);
-      const dur = 1600; const start = performance.now();
-      function tick(t){
-        const p = Math.min((t-start)/dur, 1);
-        const eased = 1 - Math.pow(1-p, 3);
-        el.textContent = Math.round(eased * target);
-        if(p < 1) requestAnimationFrame(tick);
-        else el.style.animation = 'countBump .4s ease';
-      }
-      requestAnimationFrame(tick);
-      cio.unobserve(el);
-    });
-  }, {threshold:0.5});
-  counters.forEach(el => cio.observe(el));
-</script>
 </body>
 </html>
