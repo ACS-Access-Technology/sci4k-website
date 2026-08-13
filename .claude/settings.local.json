@@ -75,7 +75,12 @@
       "Bash(node check_media_dupes.js)",
       "Bash(node check_braces.js)",
       "Bash(node swap_assets.js)",
-      "Bash(pkill -f staticserver.js)"
+      "Bash(pkill -f staticserver.js)",
+      "Bash(git commit -m ' *)",
+      "Bash(npm -v)",
+      "Bash(find 'C:\\\\Users\\\\LENOVO\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-LENOVO-Desktop-4KID---Copie\\\\4df84784-ff61-425f-b9f3-ec0018d68a7a\\\\scratchpad\\\\tailadmin_extract\\\\tailadmin-free-tailwind-dashboard-template-main' -iname *server* -o -iname *api* -o -iname *.php -o -iname *database* -o -iname *.sql)",
+      "Bash(echo \"---\")",
+      "Bash(find 'C:\\\\Users\\\\LENOVO\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-LENOVO-Desktop-4KID---Copie\\\\4df84784-ff61-425f-b9f3-ec0018d68a7a\\\\scratchpad\\\\tailadmin_extract\\\\tailadmin-free-tailwind-dashboard-template-main/src' -maxdepth 1 -name *.html)"
     ]
   }
 }
