@@ -1,5 +1,16 @@
 /* ===== SCI4K - Script unique du site ===== */
 
+/* ---- Mouvement reduit ----
+   Le CSS ne peut rien contre un defilement anime demande explicitement en
+   JavaScript : scrollTo({behavior:'smooth'}) ignore scroll-behavior. On
+   interroge donc la preference systeme a chaque appel, car elle peut changer
+   pendant la visite. */
+function sci4kDefilement() {
+  return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ? 'auto'
+    : 'smooth';
+}
+
 /* ---- Dictionnaire FR/EN ---- */
 /* SCI4K — FR / EN dictionary. Each key maps to {fr:'...', en:'...'} */
 window.SCI4K_I18N = {
@@ -710,7 +721,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   window.scrollPartners = function (amount) {
     var v = document.getElementById('partnersViewport');
-    if (v) v.scrollBy({ left: amount, behavior: 'smooth' });
+    if (v) v.scrollBy({ left: amount, behavior: sci4kDefilement() });
   };
 })();
 
@@ -923,7 +934,7 @@ document.addEventListener('DOMContentLoaded', function () {
     event.preventDefault();
     document.getElementById('successAlert').style.display = 'block';
     document.getElementById('contactForm').reset();
-    window.scrollTo({ top: document.querySelector('.contact-card').offsetTop - 120, behavior: 'smooth' });
+    window.scrollTo({ top: document.querySelector('.contact-card').offsetTop - 120, behavior: sci4kDefilement() });
   };
 })();
 
@@ -944,7 +955,7 @@ document.addEventListener('DOMContentLoaded', function () {
     event.preventDefault();
     document.getElementById('askSuccessAlert').style.display = 'block';
     document.getElementById('askForm').reset();
-    window.scrollTo({ top: document.querySelector('.ask-card').offsetTop - 120, behavior: 'smooth' });
+    window.scrollTo({ top: document.querySelector('.ask-card').offsetTop - 120, behavior: sci4kDefilement() });
   };
 })();
 
@@ -954,7 +965,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (window.location.hash) {
     var target = document.querySelector(window.location.hash);
-    if (target) setTimeout(function () { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+    if (target) setTimeout(function () { target.scrollIntoView({ behavior: sci4kDefilement(), block: 'start' }); }, 100);
   }
 })();
 
