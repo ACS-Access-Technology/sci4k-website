@@ -205,7 +205,7 @@ def pages_edit():
 
 # ------------------------------------------------------------------ services
 def service_list():
-    rows = [("Foncier","Recherche, verification des titres et securisation des parcelles","pages","success",1,"services/foncier.png"),
+    rows = [("Foncier","Recherche, verification des titres et securisation des parcelles","pages","success",1,"services/foncier.jpg"),
             ("Construction","Suivi de chantier et coordination des corps de metier","tools","warning",2,"services/construction.jpg"),
             ("Gestion / Location","Recherche de locataire, encaissement des loyers et suivi technique","key","info",3,"services/gestion-location.jpg"),
             ("Achat","Accompagnement de l'acquereur, de la recherche a la signature","building","primary",4,"services/achat.jpg"),
