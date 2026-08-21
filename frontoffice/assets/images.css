@@ -1,0 +1,37 @@
+/* ==========================================================================
+   FONDS IMAGES DU SITE — source unique
+   Ce fichier ne contient que des variables. Chaque emplacement de fond du site
+   y pointe. Changer une image = changer une ligne ici, rien d'autre.
+   C'est ce fichier que le backoffice réécrit (Blocs du site > Images de fond).
+   Ne pas ajouter d'autres règles ici.
+   ========================================================================== */
+:root{
+
+  /* --- Bannières de page --- */
+  --img-banniere-biens:          url('../images/hero/biens.jpg');   /* Bannière — page Biens */
+  --img-banniere-presentation:   url('../images/hero/presentation.jpg');   /* Bannière — page Présentation */
+  --img-banniere-services:       url('../images/hero/services.jpg');   /* Bannière — page Services */
+  --img-banniere-actualites:           url('../images/hero/actualites.jpg');   /* Bannière — page Actualités */
+  --img-banniere-faq:            url('../images/hero/faq.jpg');   /* Bannière — page FAQ */
+  --img-banniere-contact:        url('../images/hero/contact.jpg');   /* Bannière — page Contact */
+
+  /* --- Sections de l'accueil --- */
+  --img-accueil-hero:            url('../images/WhatsApp Image 2026-08-12 at 12.58.56 PM.jpeg');   /* Accueil — visuel de la bannière */
+  --img-cta:                     url('../images/sections/lagune.jpg');   /* Accueil — bandeau d'appel à l'action */
+  --img-temoignages:             url('../images/sections/lagune.jpg');   /* Accueil — témoignages */
+  --img-valeurs:                 url('../images/sections/lagune.jpg');   /* Présentation — engagements */
+  --img-processus:               url('../images/sections/lagune.jpg');   /* Services — processus */
+
+  /* --- Cartes services --- */
+  --img-service-foncier:         url('../images/services/foncier.jpg');   /* Carte service — Foncier */
+  --img-service-construction:    url('../images/images (1).jpg');   /* Carte service — Construction */
+  --img-service-gestion:         url('../images/services/gestion-location.jpg');   /* Carte service — Gestion / Location */
+  --img-service-achat:           url('../images/images (2).jpg');   /* Carte service — Achat */
+  --img-service-vente:           url('../images/services/vente.jpg');   /* Carte service — Vente */
+  --img-service-administration:  url('../images/images (3).jpg');   /* Carte service — Administration */
+
+  /* --- Divers --- */
+  --img-info-box:                url('../images/sections/info-box.jpg');   /* Encadré d'information */
+  --img-footer:                  url('../images/sections/footer.jpg');   /* Pied de page */
+  --img-erreur:                  url('../images/404error.jpg');   /* Pages d'erreur 404 / 500 */
+}

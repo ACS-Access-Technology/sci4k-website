@@ -1,0 +1,127 @@
+/* SCI4K - ajustements maquette (icones SVG inline, le pack d'icones du template
+   n'etant pas disponible dans la copie locale). */
+.app-menubar-tabs .side-menubar .menu-item .menu-link > i{display:inline-flex;align-items:center;justify-content:center;width:20px}
+.app-menubar-tabs .side-menubar .menu-item .menu-link.active{color:var(--bs-primary);font-weight:600}
+.app-menubar-tabs .side-menubar .menu-item .menu-link.active > i{color:var(--bs-primary)}
+.app-navbar-tabs .nav .nav-item .menu-link{display:flex;align-items:center;justify-content:center}
+.theme-btn .icon-light,.theme-btn .icon-dark{align-items:center;justify-content:center}
+.stat-tile{border:1px solid var(--bs-border-color);border-radius:14px;padding:20px;height:100%;background:var(--bs-card-bg,var(--bs-body-bg))}
+.stat-tile .stat-ico{width:44px;height:44px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center}
+.stat-tile .stat-value{font-size:26px;font-weight:700;line-height:1.2;margin:10px 0 2px}
+.thumb-64{width:64px;height:48px;border-radius:8px;object-fit:cover;background:var(--bs-secondary-bg);display:inline-flex;align-items:center;justify-content:center;color:var(--bs-secondary-color)}
+.media-tile{border:1px solid var(--bs-border-color);border-radius:12px;overflow:hidden}
+.media-tile .media-ph{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;background:var(--bs-secondary-bg);color:var(--bs-secondary-color)}
+.dropzone{border:2px dashed var(--bs-border-color);border-radius:12px;padding:32px;text-align:center;color:var(--bs-secondary-color)}
+.fs-12{font-size:12px}.fs-13{font-size:13px}.fs-14{font-size:14px}
+
+/* --- barre laterale deroulee : les 5 groupes visibles d'un seul tenant ----- */
+.app-menubar-tabs .side-menubar-full .menu-heading{position:sticky;top:0;z-index:2;background:var(--app-sidebar-bg,var(--bs-body-bg))}
+.app-menubar-tabs .side-menubar-full .menu-heading:not(:first-child){margin-top:10px;padding-top:16px;border-top:1px solid var(--bs-border-color)}
+.app-menubar-tabs .side-menubar-full .menu-item .menu-link{scroll-margin-top:40px}
+.app-menubar-tabs .app-content-inner{height:calc(100vh - var(--app-header-height))}
+
+/* rail d'icones : etat actif (le basculement par onglets a ete retire) */
+.app-navbar-tabs .nav .nav-item .menu-link{display:flex;align-items:center;justify-content:center;
+  width:44px;height:44px;margin:2px auto;border-radius:12px;color:var(--bs-body-color);transition:.2s}
+.app-navbar-tabs .nav .nav-item .menu-link:hover{background:var(--bs-secondary-bg)}
+.app-navbar-tabs .nav .nav-item .menu-link.active{background:var(--bs-primary);color:#fff}
+
+/* en mode range, le rail reste la seule navigation : on aere les categories */
+[data-app-sidebar=mini] .app-navbar-tabs .nav .nav-item-hr{margin:8px 12px}
+
+/* fleche « voir sur le site public » */
+.front-link{flex-shrink:0}
+
+/* --- barre laterale sur tablette et petit ecran --------------------------- */
+/* Le voile du bouton (.app-toggler::after) est pose a z-index 99999 alors que
+   la barre reste a 9 : ouverte, elle passait donc DERRIERE le voile. On la
+   remonte au-dessus, et le clic sur le voile continue de la refermer puisque
+   ce voile est un pseudo-element du bouton lui-meme. */
+@media (max-width:1480px){
+  .app-menubar-tabs.open{z-index:100000;}
+  .app-menubar-tabs.open .app-tab-content{background-color:var(--bs-body-bg);
+    box-shadow:6px 0 24px rgba(0,0,0,.18);}
+}
+@media (max-width:1199.98px){
+  .app-menubar-tabs{z-index:9;}
+  .app-menubar-tabs.open{z-index:100000;}
+}
+
+/* ==========================================================================
+   PALETTE OFFICIELLE SCI4K appliquee au backoffice
+   Le gabarit d'origine etait violet (#5955D1). On rebranche les variables
+   Bootstrap sur le navy et l'or du projet. En theme sombre le navy devient
+   illisible sur fond sombre : c'est l'or qui prend le role d'accent.
+   ========================================================================== */
+:root{
+  --sci-navy-950:#1F3346; --sci-navy-900:#24394F; --sci-navy-700:#2F4C6A;
+  --sci-gold-600:#8A5F52; --sci-gold-500:#D3B6AC; --sci-gold-300:#E7D6D0;
+  --sci-cream:#E2EBF0;    --sci-paper:#F4F8FA;
+
+  --bs-primary:#1F3346;
+  --bs-primary-rgb:31, 51, 70;
+  --bs-primary-bg-subtle:#E6EDF3;
+  --bs-primary-border-subtle:#C2D2DF;
+  --bs-primary-text-emphasis:#16242F;
+  --bs-link-color:#2F4C6A;
+  --bs-link-color-rgb:47, 76, 106;
+  --bs-link-hover-color:#8A5F52;
+}
+:root[data-bs-theme="dark"]{
+  --bs-primary:#D3B6AC;
+  --bs-primary-rgb:211, 182, 172;
+  --bs-primary-bg-subtle:#22303C;
+  --bs-primary-border-subtle:#3C4E5E;
+  --bs-primary-text-emphasis:#E7D6D0;
+  --bs-link-color:#D3B6AC;
+  --bs-link-color-rgb:211, 182, 172;
+  --bs-link-hover-color:#E7D6D0;
+}
+
+/* boutons : Bootstrap 5.3 lit ces variables, l'override fonctionne sur du CSS compile */
+.btn-primary{
+  --bs-btn-bg:#1F3346; --bs-btn-border-color:#1F3346; --bs-btn-color:#fff;
+  --bs-btn-hover-bg:#2F4C6A; --bs-btn-hover-border-color:#2F4C6A; --bs-btn-hover-color:#fff;
+  --bs-btn-active-bg:#16242F; --bs-btn-active-border-color:#16242F;
+  --bs-btn-disabled-bg:#1F3346; --bs-btn-disabled-border-color:#1F3346;
+}
+:root[data-bs-theme="dark"] .btn-primary{
+  --bs-btn-bg:#D3B6AC; --bs-btn-border-color:#D3B6AC; --bs-btn-color:#1F3346;
+  --bs-btn-hover-bg:#E7D6D0; --bs-btn-hover-border-color:#E7D6D0; --bs-btn-hover-color:#1F3346;
+  --bs-btn-active-bg:#E7D6D0; --bs-btn-active-border-color:#E7D6D0;
+  --bs-btn-disabled-bg:#D3B6AC; --bs-btn-disabled-border-color:#D3B6AC;
+}
+.btn-outline-primary{
+  --bs-btn-color:#1F3346; --bs-btn-border-color:#1F3346;
+  --bs-btn-hover-bg:#1F3346; --bs-btn-hover-border-color:#1F3346; --bs-btn-hover-color:#fff;
+  --bs-btn-active-bg:#1F3346; --bs-btn-active-border-color:#1F3346;
+}
+:root[data-bs-theme="dark"] .btn-outline-primary{
+  --bs-btn-color:#D3B6AC; --bs-btn-border-color:#D3B6AC;
+  --bs-btn-hover-bg:#D3B6AC; --bs-btn-hover-color:#1F3346;
+}
+
+/* marque et rail */
+.app-navbar-brand .rounded-3,
+.avatar-initial.bg-primary{background:var(--sci-navy-950)!important;color:#fff!important;}
+:root[data-bs-theme="dark"] .app-navbar-brand .rounded-3,
+:root[data-bs-theme="dark"] .avatar-initial.bg-primary{background:var(--sci-gold-500)!important;color:var(--sci-navy-950)!important;}
+.app-navbar-tabs .nav .nav-item .menu-link.active{background:var(--sci-navy-950);color:#fff;}
+:root[data-bs-theme="dark"] .app-navbar-tabs .nav .nav-item .menu-link.active{background:var(--sci-gold-500);color:var(--sci-navy-950);}
+
+/* accents secondaires en or */
+.news-chip.active,.badge.bg-primary{background-color:var(--sci-navy-950)!important;}
+:root[data-bs-theme="dark"] .badge.bg-primary{background-color:var(--sci-gold-500)!important;color:var(--sci-navy-950)!important;}
+.progress-bar{background-color:var(--bs-primary);}
+.form-check-input:checked{background-color:var(--bs-primary);border-color:var(--bs-primary);}
+.nav-tabs .nav-link.active{color:var(--bs-primary);border-bottom-color:var(--bs-primary);}
+.page-item.active .page-link{background-color:var(--bs-primary);border-color:var(--bs-primary);}
+
+/* ==========================================================================
+   BARRE LATERALE — deroulee par defaut, sur toute la hauteur
+   Le gabarit reservait 285px en bas (bloc promotionnel supprime) : la liste
+   etait tronquee. On rend la colonne au menu jusqu'au bas de l'ecran.
+   ========================================================================== */
+.app-menubar-tabs .app-tab-content .app-navbar{height:calc(100vh - var(--app-header-height, 70px));}
+.app-menubar-tabs .app-content-inner{height:calc(100vh - var(--app-header-height, 70px));}
+.app-menubar-tabs .side-menubar-full{padding-bottom:24px;}

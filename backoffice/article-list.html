@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="fr" data-bs-theme="light" data-app-sidebar="default">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Articles | SCI4K Admin</title>
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/libs/simplebar/simplebar.css">
+<link rel="stylesheet" href="assets/libs/node-waves/waves.css">
+<link rel="stylesheet" href="assets/libs/flatpickr/flatpickr.min.css">
+<link rel="stylesheet" href="assets/css/styles.css">
+<link rel="stylesheet" href="assets/css/sci4k.css">
+</head>
+<body>
+<div class="page-layout">
+
+  <header class="app-header">
+    <div class="app-header-inner">
+      <button class="app-toggler" type="button" aria-label="Afficher/masquer le menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="app-header-start d-none d-md-flex">
+        <form class="d-flex align-items-center h-100 w-lg-250px w-xxl-300px position-relative" onsubmit="return false">
+          <span class="position-absolute start-0 ms-3 text-body d-flex"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span>
+          <input type="text" class="form-control form-control-fill ps-5" placeholder="Rechercher un bien, un article...">
+        </form>
+        <div class="badge-standard d-none d-lg-inline-block">
+          Demandes du jour <span class="badge bg-primary-subtle text-primary">7</span>
+        </div>
+      </div>
+      <div class="app-header-end">
+        <div class="px-lg-4 px-2 ps-0 d-flex align-items-center">
+          <a href="javascript:void(0);" class="theme-btn" role="button" aria-label="Theme">
+            <span class="icon-light d-flex"><svg class="" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></span>
+            <div class="theme-toggle"></div>
+            <span class="icon-dark d-flex"><svg class="" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></span>
+          </a>
+          <a href="../frontoffice/actualites.html" target="_blank" rel="noopener" class="btn btn-icon btn-action-gray rounded-circle waves-effect waves-light ms-1 front-link" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Voir &laquo; Actualités &raquo; sur le site public"><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></a>
+        </div>
+        <div class="vr my-3"></div>
+        <div class="d-flex align-items-center gap-sm-2 gap-0 px-lg-4 px-sm-2 px-1">
+          <a href="javascript:void(0);" class="btn btn-icon btn-action-gray rounded-circle waves-effect waves-light position-relative">
+            <svg class="" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+            <span class="position-absolute top-0 end-0 p-1 mt-1 me-1 bg-primary border border-3 border-light rounded-circle"></span>
+          </a>
+          <div class="dropdown text-end">
+            <button type="button" class="btn btn-icon btn-action-gray rounded-circle waves-effect waves-light" data-bs-toggle="dropdown" aria-expanded="false">
+              <svg class="" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end p-0" style="min-width:300px">
+              <li class="px-3 py-2 border-bottom fw-semibold">Notifications</li>
+              <li><a class="dropdown-item py-2" href="javascript:void(0);"><span class="d-block fw-medium">Nouvelle demande de visite</span><span class="text-body-secondary fs-12">Villa Cocody &mdash; il y a 15 min</span></a></li>
+              <li><a class="dropdown-item py-2" href="javascript:void(0);"><span class="d-block fw-medium">Formulaire de contact</span><span class="text-body-secondary fs-12">Emma D. &mdash; il y a 1 h</span></a></li>
+              <li><a class="dropdown-item py-2" href="javascript:void(0);"><span class="d-block fw-medium">Article publié</span><span class="text-body-secondary fs-12">Marché immobilier Q3</span></a></li>
+              <li class="border-top text-center"><a class="dropdown-item py-2 text-primary" href="javascript:void(0);">Tout afficher</a></li>
+            </ul>
+          </div>
+          <div class="dropdown text-end ms-1">
+            <button type="button" class="btn p-0 border-0 bg-transparent d-flex align-items-center gap-2" data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="avatar-initial rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width:36px;height:36px;font-size:13px;font-weight:600">IK</span>
+              <span class="d-none d-lg-block text-start lh-sm">
+                <span class="d-block fw-semibold fs-14">Ilyas K.</span>
+                <span class="d-block text-body-secondary fs-12">Administrateur</span>
+              </span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="settings.html">Mon profil</a></li>
+              <li><a class="dropdown-item" href="settings.html">Paramètres</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="login.html">Déconnexion</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <aside class="app-menubar-tabs" id="appMenubar">
+    <div class="app-navbar-brand">
+      <a class="navbar-brand-logo" href="dashboard.html">
+        <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary text-white fw-bold" style="width:40px;height:40px">S4</span>
+      </a>
+    </div>
+    <div class="app-navbar-tabs" data-simplebar>
+      <ul class="nav" id="appMenubarTabs" aria-orientation="vertical">
+        <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Pilotage"><a class="menu-link" href="#grp-dashboardTab"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></a></li><li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Contenu"><a class="menu-link active" href="#grp-contentTab"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg></a></li><li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Blocs du site"><a class="menu-link" href="#grp-blocksTab"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a1 1 0 0 1-1-1V7a3 3 0 0 1 3-3"/><path d="M4 11c0 5 2 7 5 8"/><path d="M20 11h-4a1 1 0 0 1-1-1V7a3 3 0 0 1 3-3"/><path d="M15 11c0 5 2 7 5 8"/></svg></a></li><li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Demandes"><a class="menu-link" href="#grp-leadsTab"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13l3.5 7v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/></svg></a></li><li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Réglages"><a class="menu-link" href="#grp-settingsTab"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></a></li>
+        <li class="nav-item-hr"></li>
+        <li class="nav-item mt-auto" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Déconnexion">
+          <a class="menu-link" href="login.html"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg></a>
+        </li>
+      </ul>
+    </div>
+    <div class="app-tab-content">
+      <div class="app-side-brands">
+        <a class="navbar-brand-text h5 mb-0 fw-bold" href="dashboard.html">SCI4K <span class="text-primary">Admin</span></a>
+      </div>
+      <div class="app-content-inner">
+        <nav class="app-navbar" data-simplebar>
+          <ul class="side-menubar side-menubar-full"><li class="menu-heading" id="grp-dashboardTab"><span class="menu-label">Pilotage</span></li><li class="menu-item"><a class="menu-link" href="dashboard.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></i><span class="menu-label">Tableau de bord</span></a></li><li class="menu-item"><a class="menu-link" href="analytics.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m7 15 3-4 3 3 5-6"/></svg></i><span class="menu-label">Statistiques</span></a></li><li class="menu-heading" id="grp-contentTab"><span class="menu-label">Contenu</span></li><li class="menu-item"><a class="menu-link" href="bien-list.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"/><path d="M15 9h2a2 2 0 0 1 2 2v10"/><path d="M9 7h2M9 11h2M9 15h2"/></svg></i><span class="menu-label">Biens immobiliers</span></a></li><li class="menu-item"><a class="menu-link active" href="article-list.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></i><span class="menu-label">Articles / Actualités</span></a></li><li class="menu-item"><a class="menu-link" href="faq-list.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></i><span class="menu-label">FAQ</span></a></li><li class="menu-item"><a class="menu-link" href="service-list.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0 5 5L21 21H3l7.6-7.6a4 4 0 0 0 4.1-7.1z"/></svg></i><span class="menu-label">Services</span></a></li><li class="menu-item"><a class="menu-link" href="pages-list.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></i><span class="menu-label">Pages du site</span></a></li><li class="menu-item"><a class="menu-link" href="media-gallery.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></i><span class="menu-label">Médiathèque</span></a></li><li class="menu-heading" id="grp-blocksTab"><span class="menu-label">Blocs du site</span></li><li class="menu-item"><a class="menu-link" href="testimonials-list.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a1 1 0 0 1-1-1V7a3 3 0 0 1 3-3"/><path d="M4 11c0 5 2 7 5 8"/><path d="M20 11h-4a1 1 0 0 1-1-1V7a3 3 0 0 1 3-3"/><path d="M15 11c0 5 2 7 5 8"/></svg></i><span class="menu-label">Témoignages</span></a></li><li class="menu-item"><a class="menu-link" href="partners-list.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 0 0 1.5-1.3"/><path d="m14 18 2.5 2.5a1 1 0 0 0 1.5-1.4"/><path d="M2 12 6 8l4 3 3-3 5 5"/><path d="M18 13h4V7l-4-4-4 3"/><path d="M6 8 2 4v9l5 5"/></svg></i><span class="menu-label">Partenaires</span></a></li><li class="menu-item"><a class="menu-link" href="stats-list.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></i><span class="menu-label">Chiffres clés</span></a></li><li class="menu-item"><a class="menu-link" href="communes-band.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M9 19h6a4 4 0 0 0 0-8H9a4 4 0 0 1 0-8h6"/></svg></i><span class="menu-label">Banderole communes</span></a></li><li class="menu-item"><a class="menu-link" href="ads-list.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></i><span class="menu-label">Encarts & annonces</span></a></li><li class="menu-item"><a class="menu-link" href="backgrounds.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></i><span class="menu-label">Images de fond</span></a></li><li class="menu-item"><a class="menu-link" href="team-list.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 21v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/><path d="M9 3h6"/></svg></i><span class="menu-label">Équipe</span></a></li><li class="menu-item"><a class="menu-link" href="values-list.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></i><span class="menu-label">Valeurs</span></a></li><li class="menu-item"><a class="menu-link" href="process-list.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M9 19h6a4 4 0 0 0 0-8H9a4 4 0 0 1 0-8h6"/></svg></i><span class="menu-label">Processus</span></a></li><li class="menu-heading" id="grp-leadsTab"><span class="menu-label">Demandes</span></li><li class="menu-item"><a class="menu-link" href="messages-list.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13l3.5 7v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/></svg></i><span class="menu-label">Messages de contact</span></a></li><li class="menu-item"><a class="menu-link" href="visits-list.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8.2-8.2"/><path d="m17 6 2 2"/><path d="m14 9 2 2"/></svg></i><span class="menu-label">Demandes de visite</span></a></li><li class="menu-item"><a class="menu-link" href="newsletter-list.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg></i><span class="menu-label">Abonnés newsletter</span></a></li><li class="menu-heading" id="grp-settingsTab"><span class="menu-label">Réglages</span></li><li class="menu-item"><a class="menu-link" href="settings.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></i><span class="menu-label">Configuration</span></a></li><li class="menu-item"><a class="menu-link" href="users-list.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></i><span class="menu-label">Utilisateurs</span></a></li><li class="menu-item"><a class="menu-link" href="menus.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></i><span class="menu-label">Menus du site</span></a></li><li class="menu-item"><a class="menu-link" href="referentials.html"><i><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 12 22l-9-9V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><path d="M7.5 7.5h.01"/></svg></i><span class="menu-label">Referentiels</span></a></li></ul>
+        </nav>
+      </div>
+    </div>
+  </aside>
+
+  <main class="app-wrapper">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+      <div>
+        <h4 class="mb-1">Articles &amp; actualités</h4>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb mb-0 fs-13"><li class="breadcrumb-item"><a href="dashboard.html">Accueil</a></li><li class="breadcrumb-item active" aria-current="page">Contenu</li><li class="breadcrumb-item active" aria-current="page">Articles</li></ol></nav>
+        <p class="text-body-secondary mb-0 mt-1 fs-13">52 articles publies, 6 affichés</p>
+      </div>
+      <div class="d-flex flex-wrap gap-2"><a href="article-edit.html" class="btn btn-primary waves-effect waves-light"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Nouvel article</a></div>
+    </div>
+    <div class="row g-3 mb-3">
+      
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-tile">
+          <span class="stat-ico bg-primary-subtle text-primary"><svg class="" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span>
+          <div class="stat-value">52</div>
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="text-body-secondary fs-13">Articles publies</span>
+            <span class="badge bg-success-subtle text-success fs-12">&#8593; 8 %</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-tile">
+          <span class="stat-ico bg-warning-subtle text-warning"><svg class="" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></span>
+          <div class="stat-value">7</div>
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="text-body-secondary fs-13">Brouillons</span>
+            <span class="badge bg-success-subtle text-success fs-12">&#8593; 2</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-tile">
+          <span class="stat-ico bg-success-subtle text-success"><svg class="" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></span>
+          <div class="stat-value">18 420</div>
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="text-body-secondary fs-13">Vues ce mois</span>
+            <span class="badge bg-success-subtle text-success fs-12">&#8593; 14 %</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-tile">
+          <span class="stat-ico bg-info-subtle text-info"><svg class="" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span>
+          <div class="stat-value">96</div>
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="text-body-secondary fs-13">Commentaires</span>
+            <span class="badge bg-success-subtle text-success fs-12">&#8593; 6 %</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="row g-3 align-items-end">
+          <div class="col-lg-4 col-md-6"><label class="form-label">Recherche</label>
+            <input type="text" class="form-control" placeholder="Titre de l'article..."></div>
+          <div class="col-lg-2 col-md-6"><label class="form-label">Catégorie</label>
+            <select class="form-select"><option>Toutes</option><option>Marché</option><option>Conseils</option><option>Actualités</option><option>Juridique</option></select></div>
+          <div class="col-lg-2 col-md-6"><label class="form-label">Auteur</label>
+            <select class="form-select"><option>Tous</option><option>Ilyas K.</option><option>Emma D.</option><option>Marc T.</option></select></div>
+          <div class="col-lg-2 col-md-6"><label class="form-label">Statut</label>
+            <select class="form-select"><option>Tous</option><option>Publié</option><option>Brouillon</option><option>Archivé</option></select></div>
+          <div class="col-lg-2"><button class="btn btn-primary w-100 waves-effect waves-light"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg> Filtrer</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr><th style="width:36px"><input class="form-check-input" type="checkbox"></th>
+            <th>Article</th><th>Catégorie</th><th>Auteur</th><th>Date</th><th>Vues</th><th>Statut</th><th class="text-end">Actions</th></tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><input class="form-check-input" type="checkbox"></td>
+            <td>
+              <div class="d-flex align-items-center gap-3">
+                <span class="thumb-64"><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span>
+                <div><span class="d-block fw-medium">Marché immobilier ivoirien : bilan du 3e trimestre</span><span class="text-body-secondary fs-12">/actualites/marche-immobilier-ivoirien-:</span></div>
+              </div>
+            </td>
+            <td>Marché</td><td>Ilyas K.</td><td>18/08/2026</td>
+            <td><span class="d-inline-flex align-items-center gap-1"><svg class="" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg> 342</span></td>
+            <td><span class="badge bg-success-subtle text-success">Publié</span></td>
+            <td class="text-end"><div class="d-flex gap-1 justify-content-end"><a href="article-edit.html" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect" title="Modifier"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></a><a href="javascript:void(0);" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect" title="Voir"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a><a href="javascript:void(0);" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect text-danger" title="Supprimer"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg></a></div></td>
+          </tr>
+          <tr>
+            <td><input class="form-check-input" type="checkbox"></td>
+            <td>
+              <div class="d-flex align-items-center gap-3">
+                <span class="thumb-64"><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span>
+                <div><span class="d-block fw-medium">Cinq conseils avant d'investir dans un terrain</span><span class="text-body-secondary fs-12">/actualites/cinq-conseils-avant-d'invest</span></div>
+              </div>
+            </td>
+            <td>Conseils</td><td>Emma D.</td><td>15/08/2026</td>
+            <td><span class="d-inline-flex align-items-center gap-1"><svg class="" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg> 218</span></td>
+            <td><span class="badge bg-success-subtle text-success">Publié</span></td>
+            <td class="text-end"><div class="d-flex gap-1 justify-content-end"><a href="article-edit.html" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect" title="Modifier"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></a><a href="javascript:void(0);" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect" title="Voir"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a><a href="javascript:void(0);" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect text-danger" title="Supprimer"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg></a></div></td>
+          </tr>
+          <tr>
+            <td><input class="form-check-input" type="checkbox"></td>
+            <td>
+              <div class="d-flex align-items-center gap-3">
+                <span class="thumb-64"><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span>
+                <div><span class="d-block fw-medium">Zoom sur Cocody : quartiers et prix au m2</span><span class="text-body-secondary fs-12">/actualites/zoom-sur-cocody-:-quartiers-</span></div>
+              </div>
+            </td>
+            <td>Actualités</td><td>Ilyas K.</td><td>10/08/2026</td>
+            <td><span class="d-inline-flex align-items-center gap-1"><svg class="" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg> 156</span></td>
+            <td><span class="badge bg-warning-subtle text-warning">Brouillon</span></td>
+            <td class="text-end"><div class="d-flex gap-1 justify-content-end"><a href="article-edit.html" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect" title="Modifier"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></a><a href="javascript:void(0);" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect" title="Voir"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a><a href="javascript:void(0);" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect text-danger" title="Supprimer"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg></a></div></td>
+          </tr>
+          <tr>
+            <td><input class="form-check-input" type="checkbox"></td>
+            <td>
+              <div class="d-flex align-items-center gap-3">
+                <span class="thumb-64"><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span>
+                <div><span class="d-block fw-medium">Location meublee : ce que dit la loi</span><span class="text-body-secondary fs-12">/actualites/location-meublee-:-ce-que-di</span></div>
+              </div>
+            </td>
+            <td>Juridique</td><td>Marc T.</td><td>02/08/2026</td>
+            <td><span class="d-inline-flex align-items-center gap-1"><svg class="" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg> 489</span></td>
+            <td><span class="badge bg-success-subtle text-success">Publié</span></td>
+            <td class="text-end"><div class="d-flex gap-1 justify-content-end"><a href="article-edit.html" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect" title="Modifier"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></a><a href="javascript:void(0);" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect" title="Voir"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a><a href="javascript:void(0);" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect text-danger" title="Supprimer"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg></a></div></td>
+          </tr>
+          <tr>
+            <td><input class="form-check-input" type="checkbox"></td>
+            <td>
+              <div class="d-flex align-items-center gap-3">
+                <span class="thumb-64"><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span>
+                <div><span class="d-block fw-medium">Construire ou acheter : comment choisir</span><span class="text-body-secondary fs-12">/actualites/construire-ou-acheter-:-comm</span></div>
+              </div>
+            </td>
+            <td>Conseils</td><td>Emma D.</td><td>28/07/2026</td>
+            <td><span class="d-inline-flex align-items-center gap-1"><svg class="" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg> 301</span></td>
+            <td><span class="badge bg-success-subtle text-success">Publié</span></td>
+            <td class="text-end"><div class="d-flex gap-1 justify-content-end"><a href="article-edit.html" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect" title="Modifier"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></a><a href="javascript:void(0);" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect" title="Voir"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a><a href="javascript:void(0);" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect text-danger" title="Supprimer"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg></a></div></td>
+          </tr>
+          <tr>
+            <td><input class="form-check-input" type="checkbox"></td>
+            <td>
+              <div class="d-flex align-items-center gap-3">
+                <span class="thumb-64"><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span>
+                <div><span class="d-block fw-medium">Nos nouveaux programmes à Bingerville</span><span class="text-body-secondary fs-12">/actualites/nos-nouveaux-programmes-a-bi</span></div>
+              </div>
+            </td>
+            <td>Actualités</td><td>Ilyas K.</td><td>20/07/2026</td>
+            <td><span class="d-inline-flex align-items-center gap-1"><svg class="" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg> 97</span></td>
+            <td><span class="badge bg-secondary-subtle text-secondary">Archivé</span></td>
+            <td class="text-end"><div class="d-flex gap-1 justify-content-end"><a href="article-edit.html" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect" title="Modifier"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></a><a href="javascript:void(0);" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect" title="Voir"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a><a href="javascript:void(0);" class="btn btn-sm btn-icon btn-action-gray rounded-circle waves-effect text-danger" title="Supprimer"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg></a></div></td>
+          </tr></tbody>
+        </table>
+      </div>
+      <div class="card-footer d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <span class="text-body-secondary fs-13">Affichage de 1 à 6 sur 52 articles</span>
+        <nav><ul class="pagination pagination-sm mb-0">
+          <li class="page-item disabled"><a class="page-link" href="javascript:void(0);">Précédent</a></li>
+          <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
+          <li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>
+          <li class="page-item"><a class="page-link" href="javascript:void(0);">Suivant</a></li>
+        </ul></nav>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer-wrapper bg-body">
+    <div class="container-fluid">
+      <div class="row g-2">
+        <div class="col-md-6 text-center text-md-start">
+          <p class="mb-0">&copy; 2026 SCI4K &mdash; Panneau d'administration.</p>
+        </div>
+        <div class="col-md-6">
+          <ul class="d-flex list-inline mb-0 gap-3 flex-wrap justify-content-center justify-content-md-end">
+            <li><a class="text-body" href="dashboard.html">Accueil</a></li>
+            <li><a class="text-body" href="faq-list.html">FAQ</a></li>
+            <li><a class="text-body" href="settings.html">Réglages</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+<script src="assets/libs/global/global.min.js"></script>
+<script src="assets/js/app.js"></script>
+
+</body>
+</html>

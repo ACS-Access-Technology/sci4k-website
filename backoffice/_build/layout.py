@@ -1,0 +1,305 @@
+# -*- coding: utf-8 -*-
+"""Chrome commun des maquettes backoffice2 (SCI4K) - habillage NexLink."""
+
+ICONS = {
+ "home":'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+ "layers":'<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
+ "gear":'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/>',
+ "building":'<path d="M3 21h18"/><path d="M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"/><path d="M15 9h2a2 2 0 0 1 2 2v10"/><path d="M9 7h2M9 11h2M9 15h2"/>',
+ "file":'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/>',
+ "help":'<circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
+ "tools":'<path d="M14.7 6.3a4 4 0 0 0 5 5L21 21H3l7.6-7.6a4 4 0 0 0 4.1-7.1z"/>',
+ "pages":'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>',
+ "image":'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
+ "chart":'<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m7 15 3-4 3 3 5-6"/>',
+ "users":'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
+ "logout":'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
+ "search":'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+ "bell":'<path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
+ "mail":'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
+ "plus":'<path d="M12 5v14M5 12h14"/>',
+ "edit":'<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/>',
+ "trash":'<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/>',
+ "eye":'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+ "upload":'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 9 5-5 5 5"/><path d="M12 4v12"/>',
+ "check":'<path d="m20 6-11 11-5-5"/>',
+ "arrow-left":'<path d="M19 12H5"/><path d="m12 19-7-7 7-7"/>',
+ "filter":'<path d="M3 5h18l-7 8v6l-4 2v-8z"/>',
+ "sun":'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+ "quote":'<path d="M9 11H5a1 1 0 0 1-1-1V7a3 3 0 0 1 3-3"/><path d="M4 11c0 5 2 7 5 8"/><path d="M20 11h-4a1 1 0 0 1-1-1V7a3 3 0 0 1 3-3"/><path d="M15 11c0 5 2 7 5 8"/>',
+ "handshake":'<path d="m11 17 2 2a1 1 0 0 0 1.5-1.3"/><path d="m14 18 2.5 2.5a1 1 0 0 0 1.5-1.4"/><path d="M2 12 6 8l4 3 3-3 5 5"/><path d="M18 13h4V7l-4-4-4 3"/><path d="M6 8 2 4v9l5 5"/>',
+ "trending":'<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+ "badge":'<circle cx="12" cy="8" r="4"/><path d="M6 21v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/><path d="M9 3h6"/>',
+ "shield":'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
+ "route":'<circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M9 19h6a4 4 0 0 0 0-8H9a4 4 0 0 1 0-8h6"/>',
+ "inbox":'<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13l3.5 7v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/>',
+ "key":'<circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8.2-8.2"/><path d="m17 6 2 2"/><path d="m14 9 2 2"/>',
+ "send":'<path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/>',
+ "menu":'<path d="M4 6h16M4 12h16M4 18h16"/>',
+ "tag":'<path d="M20.6 13.4 12 22l-9-9V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><path d="M7.5 7.5h.01"/>',
+ "arrow-ur":'<path d="M7 17 17 7"/><path d="M8 7h9v9"/>',
+ "calendar":'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+}
+
+def icon(name, size=20, cls=""):
+    return ('<svg class="%s" width="%d" height="%d" viewBox="0 0 24 24" fill="none" '
+            'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" '
+            'stroke-linejoin="round">%s</svg>') % (cls, size, size, ICONS[name])
+
+# ---------------------------------------------------------------- menus
+MENUS = [
+ ("dashboardTab", "home", "Pilotage", [
+    ("Tableau de bord", "dashboard.html", "home"),
+    ("Statistiques",    "analytics.html", "chart"),
+ ]),
+ ("contentTab", "layers", "Contenu", [
+    ("Biens immobiliers", "bien-list.html",     "building"),
+    ("Articles / Actualités","article-list.html",  "file"),
+    ("FAQ",               "faq-list.html",      "help"),
+    ("Services",          "service-list.html",  "tools"),
+    ("Pages du site",     "pages-list.html",    "pages"),
+    ("Mediatheque",       "media-gallery.html", "image"),
+ ]),
+ ("blocksTab", "quote", "Blocs du site", [
+    ("Temoignages",  "testimonials-list.html", "quote"),
+    ("Partenaires",  "partners-list.html",     "handshake"),
+    ("Chiffres cles","stats-list.html",        "trending"),
+    ("Banderole communes","communes-band.html","route"),
+    ("Encarts & annonces","ads-list.html","trending"),
+    ("Images de fond","backgrounds.html","image"),
+    ("Equipe",       "team-list.html",         "badge"),
+    ("Valeurs",      "values-list.html",       "shield"),
+    ("Processus",    "process-list.html",      "route"),
+ ]),
+ ("leadsTab", "inbox", "Demandes", [
+    ("Messages de contact", "messages-list.html",  "inbox"),
+    ("Demandes de visite",  "visits-list.html",    "key"),
+    ("Abonnes newsletter",  "newsletter-list.html","send"),
+ ]),
+ ("settingsTab", "gear", "Reglages", [
+    ("Configuration", "settings.html",     "gear"),
+    ("Utilisateurs",  "users-list.html",   "users"),
+    ("Menus du site", "menus.html",        "menu"),
+    ("Referentiels",  "referentials.html", "tag"),
+ ]),
+]
+
+
+# --------------------------------------------- correspondance page publique
+FRONT_MAP = {
+ "dashboard.html":         ("index.html",        "Accueil"),
+ "analytics.html":         ("index.html",        "Accueil"),
+ "bien-list.html":         ("biens.html",        "Biens immobiliers"),
+ "bien-edit.html":         ("biens.html",        "Biens immobiliers"),
+ "article-list.html":      ("actualites.html",   "Actualités"),
+ "article-edit.html":      ("actualites.html",   "Actualités"),
+ "faq-list.html":          ("faq.html",          "FAQ"),
+ "service-list.html":      ("services.html",     "Nos services"),
+ "pages-list.html":        ("index.html",        "Accueil"),
+ "pages-edit.html":        ("index.html",        "Accueil"),
+ "media-gallery.html":     ("index.html",        "Accueil"),
+ "testimonials-list.html": ("index.html#temoignages", "Temoignages"),
+ "partners-list.html":     ("index.html#partenaires", "Partenaires"),
+ "stats-list.html":        ("index.html",        "Chiffres cles"),
+ "communes-band.html":     ("index.html",        "Banderole des communes"),
+ "ads-list.html":          ("index.html#encart-accueil", "Encart de l'accueil"),
+ "backgrounds.html":       ("index.html",        "Accueil"),
+ "team-list.html":         ("presentation.html", "Notre equipe"),
+ "values-list.html":       ("presentation.html", "Nos engagements"),
+ "process-list.html":      ("services.html",     "Notre processus"),
+ "messages-list.html":     ("contact.html",      "Contact"),
+ "visits-list.html":       ("biens.html",        "Biens immobiliers"),
+ "newsletter-list.html":   ("index.html",        "Accueil"),
+ "settings.html":          ("index.html",        "Accueil"),
+ "users-list.html":        ("index.html",        "Accueil"),
+ "menus.html":             ("index.html",        "Accueil"),
+ "referentials.html":      ("biens.html",        "Biens immobiliers"),
+ "error-500.html":         ("500.html",          "Erreur 500"),
+}
+FRONT_BASE = "../frontoffice/"
+
+def front_link(path):
+    page, label = FRONT_MAP.get(path, ("index.html", "Accueil"))
+    return ('<a href="{b}{p}" target="_blank" rel="noopener" class="btn btn-icon btn-action-gray '
+            'rounded-circle waves-effect waves-light ms-1 front-link" data-bs-toggle="tooltip" '
+            'data-bs-placement="bottom" data-bs-title="Voir &laquo; {l} &raquo; sur le site public">{i}</a>'
+            ).format(b=FRONT_BASE, p=page, l=label, i=icon("arrow-ur", 18))
+
+HEAD = """<!doctype html>
+<html lang="fr" data-bs-theme="light" data-app-sidebar="default">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>{title} | SCI4K Admin</title>
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/libs/simplebar/simplebar.css">
+<link rel="stylesheet" href="assets/libs/node-waves/waves.css">
+<link rel="stylesheet" href="assets/libs/flatpickr/flatpickr.min.css">
+<link rel="stylesheet" href="assets/css/styles.css">
+<link rel="stylesheet" href="assets/css/sci4k.css">
+</head>
+<body>
+<div class="page-layout">
+"""
+
+FOOT = """
+  <footer class="footer-wrapper bg-body">
+    <div class="container-fluid">
+      <div class="row g-2">
+        <div class="col-md-6 text-center text-md-start">
+          <p class="mb-0">&copy; 2026 SCI4K &mdash; Panneau d'administration.</p>
+        </div>
+        <div class="col-md-6">
+          <ul class="d-flex list-inline mb-0 gap-3 flex-wrap justify-content-center justify-content-md-end">
+            <li><a class="text-body" href="dashboard.html">Accueil</a></li>
+            <li><a class="text-body" href="faq-list.html">FAQ</a></li>
+            <li><a class="text-body" href="settings.html">Reglages</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+<script src="assets/libs/global/global.min.js"></script>
+<script src="assets/js/app.js"></script>
+{extra_js}
+</body>
+</html>
+"""
+
+def header_html(path=""):
+    return """
+  <header class="app-header">
+    <div class="app-header-inner">
+      <button class="app-toggler" type="button" aria-label="Afficher/masquer le menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="app-header-start d-none d-md-flex">
+        <form class="d-flex align-items-center h-100 w-lg-250px w-xxl-300px position-relative" onsubmit="return false">
+          <span class="position-absolute start-0 ms-3 text-body d-flex">{search}</span>
+          <input type="text" class="form-control form-control-fill ps-5" placeholder="Rechercher un bien, un article...">
+        </form>
+        <div class="badge-standard d-none d-lg-inline-block">
+          Demandes du jour <span class="badge bg-primary-subtle text-primary">7</span>
+        </div>
+      </div>
+      <div class="app-header-end">
+        <div class="px-lg-4 px-2 ps-0 d-flex align-items-center">
+          <a href="javascript:void(0);" class="theme-btn" role="button" aria-label="Theme">
+            <span class="icon-light d-flex">{sun}</span>
+            <div class="theme-toggle"></div>
+            <span class="icon-dark d-flex">{moon}</span>
+          </a>
+          {frontlink}
+        </div>
+        <div class="vr my-3"></div>
+        <div class="d-flex align-items-center gap-sm-2 gap-0 px-lg-4 px-sm-2 px-1">
+          <a href="javascript:void(0);" class="btn btn-icon btn-action-gray rounded-circle waves-effect waves-light position-relative">
+            {mail}
+            <span class="position-absolute top-0 end-0 p-1 mt-1 me-1 bg-primary border border-3 border-light rounded-circle"></span>
+          </a>
+          <div class="dropdown text-end">
+            <button type="button" class="btn btn-icon btn-action-gray rounded-circle waves-effect waves-light" data-bs-toggle="dropdown" aria-expanded="false">
+              {bell}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end p-0" style="min-width:300px">
+              <li class="px-3 py-2 border-bottom fw-semibold">Notifications</li>
+              <li><a class="dropdown-item py-2" href="javascript:void(0);"><span class="d-block fw-medium">Nouvelle demande de visite</span><span class="text-body-secondary fs-12">Villa Cocody &mdash; il y a 15 min</span></a></li>
+              <li><a class="dropdown-item py-2" href="javascript:void(0);"><span class="d-block fw-medium">Formulaire de contact</span><span class="text-body-secondary fs-12">Emma D. &mdash; il y a 1 h</span></a></li>
+              <li><a class="dropdown-item py-2" href="javascript:void(0);"><span class="d-block fw-medium">Article publie</span><span class="text-body-secondary fs-12">Marche immobilier Q3</span></a></li>
+              <li class="border-top text-center"><a class="dropdown-item py-2 text-primary" href="javascript:void(0);">Tout afficher</a></li>
+            </ul>
+          </div>
+          <div class="dropdown text-end ms-1">
+            <button type="button" class="btn p-0 border-0 bg-transparent d-flex align-items-center gap-2" data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="avatar-initial rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width:36px;height:36px;font-size:13px;font-weight:600">IK</span>
+              <span class="d-none d-lg-block text-start lh-sm">
+                <span class="d-block fw-semibold fs-14">Ilyas K.</span>
+                <span class="d-block text-body-secondary fs-12">Administrateur</span>
+              </span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="settings.html">Mon profil</a></li>
+              <li><a class="dropdown-item" href="settings.html">Parametres</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="login.html">Deconnexion</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+""".format(search=icon("search",16), sun=icon("sun",20), moon=icon("home",20).replace(ICONS["home"],
+       '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>'),
+       mail=icon("mail",22), bell=icon("bell",22), frontlink=front_link(path))
+
+def sidebar_html(active_tab, active_href):
+    """Rail d'icones (visible aussi en mode range) + colonne unique listant
+    TOUS les groupes, sans compartiment a ouvrir."""
+    rail, groups = [], []
+    for tab_id, ic, label, items in MENUS:
+        act = " active" if tab_id == active_tab else ""
+        rail.append(
+          '<li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="%s">'
+          '<a class="menu-link%s" href="#grp-%s">%s</a></li>'
+          % (label, act, tab_id, icon(ic, 24)))
+        links = ['<li class="menu-heading" id="grp-%s"><span class="menu-label">%s</span></li>' % (tab_id, label)]
+        for name, href, i2 in items:
+            a = " active" if href == active_href else ""
+            links.append('<li class="menu-item"><a class="menu-link%s" href="%s"><i>%s</i><span class="menu-label">%s</span></a></li>'
+                         % (a, href, icon(i2, 18), name))
+        groups.append('<li class="menu-group">%s</li>' % "".join(links) if False else "".join(links))
+    return """
+  <aside class="app-menubar-tabs" id="appMenubar">
+    <div class="app-navbar-brand">
+      <a class="navbar-brand-logo" href="dashboard.html">
+        <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary text-white fw-bold" style="width:40px;height:40px">S4</span>
+      </a>
+    </div>
+    <div class="app-navbar-tabs" data-simplebar>
+      <ul class="nav" id="appMenubarTabs" aria-orientation="vertical">
+        {rail}
+        <li class="nav-item-hr"></li>
+        <li class="nav-item mt-auto" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Deconnexion">
+          <a class="menu-link" href="login.html">{logout}</a>
+        </li>
+      </ul>
+    </div>
+    <div class="app-tab-content">
+      <div class="app-side-brands">
+        <a class="navbar-brand-text h5 mb-0 fw-bold" href="dashboard.html">SCI4K <span class="text-primary">Admin</span></a>
+      </div>
+      <div class="app-content-inner">
+        <nav class="app-navbar" data-simplebar>
+          <ul class="side-menubar side-menubar-full">{groups}</ul>
+        </nav>
+      </div>
+    </div>
+  </aside>
+""".format(rail="".join(rail), groups="".join(groups), logout=icon("logout", 24))
+
+def page_head(title, subtitle, crumbs, actions=""):
+    items = "".join(
+      '<li class="breadcrumb-item"><a href="%s">%s</a></li>' % (h, n) if h
+      else '<li class="breadcrumb-item active" aria-current="page">%s</li>' % n
+      for n, h in crumbs)
+    return """
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+      <div>
+        <h4 class="mb-1">%s</h4>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb mb-0 fs-13">%s</ol></nav>
+        %s
+      </div>
+      <div class="d-flex flex-wrap gap-2">%s</div>
+    </div>""" % (title, items, ('<p class="text-body-secondary mb-0 mt-1 fs-13">%s</p>' % subtitle) if subtitle else "", actions)
+
+def render(path, title, body, active_tab, extra_js=""):
+    html = (HEAD.format(title=title) + header_html(path) + sidebar_html(active_tab, path)
+            + '\n  <main class="app-wrapper">\n' + body + '\n  </main>\n'
+            + FOOT.format(extra_js=extra_js))
+    open(path, "w", encoding="utf-8").write(html)
+    return path
