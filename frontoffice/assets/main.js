@@ -945,19 +945,44 @@ document.addEventListener('DOMContentLoaded', function () {
       valeur('messageTextarea')
     ];
 
-    var url = 'https://wa.me/' + WHATSAPP_NUMERO + '?text=' + encodeURIComponent(lignes.join('\n'));
+    /* Une URL trop longue est rejetee silencieusement par le navigateur ou par
+       WhatsApp. La borne maxlength du formulaire ne suffit pas a l'empecher :
+       un caractere accentue occupe six caracteres une fois encode, si bien
+       qu'un message francais peut tripler de taille. On mesure donc l'URL
+       reelle et on abrege le corps du message plutot que de le perdre. */
+    var LIMITE_URL = 1900;
+    var entete = lignes.slice(0, 7).join('\n');
+    var corps = lignes[7];
+
+    function composer(texte) {
+      return 'https://wa.me/' + WHATSAPP_NUMERO + '?text=' + encodeURIComponent(entete + '\n' + texte);
+    }
+
+    var url = composer(corps);
+    if (url.length > LIMITE_URL) {
+      var suffixe = '\n\n[...] Message abrege, je le complete ici.';
+      var coupe = corps.length;
+      while (coupe > 0 && composer(corps.slice(0, coupe) + suffixe).length > LIMITE_URL) {
+        coupe -= 20;
+      }
+      url = composer(corps.slice(0, Math.max(coupe, 0)) + suffixe);
+    }
 
     /* Ouvert avant tout reset : sur mobile, un window.open differe est bloque
        par le navigateur car il n'est plus rattache au clic de l'utilisateur. */
     var onglet = window.open(url, '_blank', 'noopener');
 
+    /* Ouverture bloquee : on quitte la page vers WhatsApp. Le formulaire n'est
+       alors ni vide ni confirme, pour que la saisie soit encore la si le
+       visiteur revient en arriere. */
+    if (!onglet) {
+      window.location.href = url;
+      return;
+    }
+
     document.getElementById('successAlert').style.display = 'block';
     document.getElementById('contactForm').reset();
     window.scrollTo({ top: document.querySelector('.contact-card').offsetTop - 120, behavior: 'smooth' });
-
-    /* Si le navigateur a bloque l'ouverture, on bascule sur la navigation
-       directe plutot que de laisser croire au visiteur que c'est parti. */
-    if (!onglet) window.location.href = url;
   };
 })();
 

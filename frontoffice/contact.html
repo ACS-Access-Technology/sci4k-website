@@ -83,17 +83,17 @@
           <div class="form-row">
             <div class="form-group">
               <label for="contactName" data-i18n="contact.form.name">Nom complet *</label>
-              <input type="text" id="contactName" name="nom" required autocomplete="name" placeholder="Ex: Jean Kouassi" data-i18n-ph="contact.form.namePh">
+              <input type="text" id="contactName" name="nom" required autocomplete="name" maxlength="80" placeholder="Ex: Jean Kouassi" data-i18n-ph="contact.form.namePh">
             </div>
             <div class="form-group">
               <label for="contactPhone" data-i18n="contact.form.phone">Téléphone *</label>
-              <input type="tel" id="contactPhone" name="telephone" required autocomplete="tel" placeholder="+225 07 00 00 00 00">
+              <input type="tel" id="contactPhone" name="telephone" required autocomplete="tel" maxlength="30" placeholder="+225 07 00 00 00 00">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
               <label for="contactEmail" data-i18n="contact.form.email">Adresse Email *</label>
-              <input type="email" id="contactEmail" name="email" required autocomplete="email" placeholder="j.kouassi@email.com">
+              <input type="email" id="contactEmail" name="email" required autocomplete="email" maxlength="100" placeholder="j.kouassi@email.com">
             </div>
             <div class="form-group">
               <label for="contactSubject" data-i18n="contact.form.subject">Sujet de votre demande</label>
@@ -110,7 +110,7 @@
           </div>
           <div class="form-group">
             <label for="messageTextarea" data-i18n="contact.form.message">Votre message *</label>
-            <textarea id="messageTextarea" rows="5" required placeholder="Précisez les détails de votre projet, le quartier souhaité, le budget approximatif..." data-i18n-ph="contact.form.messagePh"></textarea>
+            <textarea id="messageTextarea" rows="5" required maxlength="900" placeholder="Précisez les détails de votre projet, le quartier souhaité, le budget approximatif..." data-i18n-ph="contact.form.messagePh"></textarea>
           </div>
           <button type="submit" class="submit-btn" data-i18n="contact.form.submit">Envoyer mon message</button>
         </form>
