@@ -1858,3 +1858,52 @@ a.partner-logo-card:hover .p-name{color:var(--gold-600);}
 
   .reveal-stagger > * { transition-delay: 0ms !important; }
 }
+
+/* ---------------------------------------------------------------
+   Appareils tactiles
+   Cible pointer:coarse (doigt) et non une largeur d'ecran : un poste
+   de travail a la souris est pointer:fine et n'est donc jamais
+   concerne par ce bloc, quelle que soit la taille de sa fenetre.
+   --------------------------------------------------------------- */
+@media (pointer: coarse) {
+
+  /* iOS Safari zoome de lui-meme sur tout champ dont la police est
+     inferieure a 16px. La page se decale alors au premier appui et
+     l'utilisateur doit dezoomer a la main, en plein formulaire. */
+  /* :root eleve la specificite au niveau des regles existantes
+     (.form-group input, .newsletter input...) sans recourir a
+     !important, que ce bloc n'a pas besoin d'imposer. */
+  :root input,
+  :root select,
+  :root textarea {
+    font-size: 16px;
+  }
+
+  /* Cibles d'au moins 44px : en deca, le taux d'erreur au doigt grimpe
+     (WCAG 2.5.5, recommandation Apple). */
+  .burger {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .util-switches > * {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .theme-toggle,
+  .lang-toggle {
+    min-width: 44px;
+  }
+
+  .fab-action,
+  .fab-main {
+    min-width: 48px;
+    min-height: 48px;
+  }
+}
