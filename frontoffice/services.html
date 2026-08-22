@@ -19,6 +19,177 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/images.css">
 <link rel="stylesheet" href="assets/style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "RealEstateAgent",
+      "@id": "https://www.sci4k.com/#organisation",
+      "name": "SCI4K",
+      "legalName": "SCI4K — Société Civile Immobilière",
+      "url": "https://www.sci4k.com/",
+      "logo": "https://www.sci4k.com/images/image%20(3).png",
+      "image": "https://www.sci4k.com/images/image%20(3).png",
+      "description": "Société Civile Immobilière basée à Abidjan : achat, vente, location, construction et gestion de patrimoine immobilier.",
+      "telephone": "+2250706165029",
+      "email": "contact@sci4k.com",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Cité des Arts, Résidence Paon, 3ème étage",
+        "addressLocality": "Cocody",
+        "addressRegion": "Abidjan",
+        "addressCountry": "CI"
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday"
+          ],
+          "opens": "08:00",
+          "closes": "18:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Saturday"
+          ],
+          "opens": "09:00",
+          "closes": "13:00"
+        }
+      ],
+      "areaServed": [
+        {
+          "@type": "Place",
+          "name": "Cocody"
+        },
+        {
+          "@type": "Place",
+          "name": "Riviera"
+        },
+        {
+          "@type": "Place",
+          "name": "Plateau"
+        },
+        {
+          "@type": "Place",
+          "name": "Marcory"
+        },
+        {
+          "@type": "Place",
+          "name": "Abidjan"
+        }
+      ],
+      "knowsLanguage": [
+        "fr",
+        "en"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.sci4k.com/#site",
+      "url": "https://www.sci4k.com/",
+      "name": "SCI4K",
+      "inLanguage": "fr",
+      "publisher": {
+        "@id": "https://www.sci4k.com/#organisation"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://www.sci4k.com/services.html#page",
+      "url": "https://www.sci4k.com/services.html",
+      "name": "Nos Services — SCI4K | Solutions Immobilières Abidjan",
+      "description": "Foncier, construction, gestion locative, achat, vente, administration de biens : découvrez tous les services immobiliers de SCI4K à Abidjan.",
+      "inLanguage": "fr",
+      "isPartOf": {
+        "@id": "https://www.sci4k.com/#site"
+      },
+      "about": {
+        "@id": "https://www.sci4k.com/#organisation"
+      }
+    },
+    {
+      "@type": "Service",
+      "name": "Foncier",
+      "description": "Avant tout achat ou construction, nous auditons la situation juridique de la parcelle : titre foncier, Arrêté de Concession Définitive (ACD), bornage et viabilisation. Nous sécurisons vos investissements fonciers du premier jour jusqu'à la mutation notariée.",
+      "provider": {
+        "@id": "https://www.sci4k.com/#organisation"
+      },
+      "areaServed": {
+        "@type": "Place",
+        "name": "Abidjan"
+      }
+    },
+    {
+      "@type": "Service",
+      "name": "Construction",
+      "description": "De l'élaboration des plans architecturaux jusqu'à la livraison finale des clés : nous coordonnons les corps de métier, veillons au respect des délais et assurons un contrôle qualité rigoureux.",
+      "provider": {
+        "@id": "https://www.sci4k.com/#organisation"
+      },
+      "areaServed": {
+        "@type": "Place",
+        "name": "Abidjan"
+      }
+    },
+    {
+      "@type": "Service",
+      "name": "Gestion / Location",
+      "description": "Libérez-vous de la gestion quotidienne de vos locataires. SCI4K prend en charge la recherche, la sélection, la rédaction des baux, l'encaissement et le reversement ponctuel de vos loyers.",
+      "provider": {
+        "@id": "https://www.sci4k.com/#organisation"
+      },
+      "areaServed": {
+        "@type": "Place",
+        "name": "Abidjan"
+      }
+    },
+    {
+      "@type": "Service",
+      "name": "Achat",
+      "description": "Résidence principale, villa de standing ou terrain à bâtir : nous analysons vos besoins et vous proposons des opportunités vérifiées sur le plan juridique et foncier (titre foncier, ACD disponible).",
+      "provider": {
+        "@id": "https://www.sci4k.com/#organisation"
+      },
+      "areaServed": {
+        "@type": "Place",
+        "name": "Abidjan"
+      }
+    },
+    {
+      "@type": "Service",
+      "name": "Vente",
+      "description": "Valorisez au mieux votre patrimoine. SCI4K réalise une estimation rigoureuse basée sur les prix réels du marché à Abidjan et déploie un plan marketing ciblé pour trouver des acheteurs solvables.",
+      "provider": {
+        "@id": "https://www.sci4k.com/#organisation"
+      },
+      "areaServed": {
+        "@type": "Place",
+        "name": "Abidjan"
+      }
+    },
+    {
+      "@type": "Service",
+      "name": "Administration de biens",
+      "description": "Une gestion transparente de vos immeubles et copropriétés : syndic, comptabilité claire, maintenance préventive, interventions techniques et suivi administratif pour préserver la valeur de votre patrimoine dans la durée.",
+      "provider": {
+        "@id": "https://www.sci4k.com/#organisation"
+      },
+      "areaServed": {
+        "@type": "Place",
+        "name": "Abidjan"
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body class="page-services">
 
