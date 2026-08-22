@@ -1858,3 +1858,80 @@ a.partner-logo-card:hover .p-name{color:var(--gold-600);}
 
   .reveal-stagger > * { transition-delay: 0ms !important; }
 }
+
+/* ---------------------------------------------------------------
+   Appareils tactiles
+   Cible pointer:coarse (doigt) et non une largeur d'ecran : un poste
+   de travail a la souris est pointer:fine et n'est donc jamais
+   concerne par ce bloc, quelle que soit la taille de sa fenetre.
+   --------------------------------------------------------------- */
+@media (pointer: coarse) {
+
+  /* iOS Safari zoome de lui-meme sur tout champ dont la police est
+     inferieure a 16px. La page se decale alors au premier appui et
+     l'utilisateur doit dezoomer a la main, en plein formulaire. */
+  /* :root eleve la specificite au niveau des regles existantes
+     (.form-group input, .newsletter input...) sans recourir a
+     !important, que ce bloc n'a pas besoin d'imposer. */
+  :root input,
+  :root select,
+  :root textarea {
+    font-size: 16px;
+  }
+
+  /* Cibles d'au moins 44px : en deca, le taux d'erreur au doigt grimpe
+     (WCAG 2.5.5, recommandation Apple). */
+  .burger {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .util-switches > * {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .theme-toggle,
+  .lang-toggle {
+    min-width: 44px;
+  }
+
+  .fab-action,
+  .fab-main {
+    min-width: 48px;
+    min-height: 48px;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Images allegees pour petits ecrans
+   Une banniere de 1600px servie a un telephone de 375px transporte
+   quatre fois trop de pixels. Ces regles ne s'appliquent qu'en dessous
+   de 820px : au-dela, les visuels d'origine restent servis intacts.
+   Les variables proviennent de images.css, que le backoffice pilote ;
+   elles sont redefinies ici pour ne pas alourdir ce fichier de reglages.
+   --------------------------------------------------------------- */
+@media (max-width: 820px) {
+  :root {
+    --img-banniere-faq:    url('../images/hero/faq-800.webp');
+    --img-accueil-hero:    url('../images/WhatsApp Image 2026-08-12 at 12.58.56 PM-800.webp');
+    --img-service-foncier: url('../images/services/foncier-800.webp');
+  }
+
+  /* Fonds poses directement dans le HTML : seul !important peut primer
+     sur un attribut style, dont la specificite est maximale. */
+  [style*="services/foncier.jpg"] {
+    background-image: url('../images/services/foncier-800.webp') !important;
+  }
+  [style*="actualites/article-1.jpg"] {
+    background-image: url('../images/actualites/article-1-800.webp') !important;
+  }
+  [style*="actualites/article-9.jpg"] {
+    background-image: url('../images/actualites/article-9-800.webp') !important;
+  }
+}

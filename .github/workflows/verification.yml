@@ -1,0 +1,39 @@
+name: Vérification du site
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  verifier:
+    name: Contrôles de non-régression
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Installer Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Références, données structurées, formulaires, syntaxe
+        run: python3 tools/verifier-site.py
+
+      - name: Le backoffice est-il à jour vis-à-vis de ses sources ?
+        run: |
+          # Les maquettes sont generees par _build/. Si le HTML versionne
+          # differe de ce que produisent les scripts, c'est qu'une modification
+          # a ete faite a la main et sera perdue a la prochaine generation.
+          cd backoffice && python3 _build/build.py > /dev/null
+          cd .. && git diff --exit-code --stat backoffice/ || {
+            echo "::error::Le backoffice versionne ne correspond plus a ses scripts."
+            echo "Relancez : cd backoffice && python3 _build/build.py"
+            exit 1
+          }

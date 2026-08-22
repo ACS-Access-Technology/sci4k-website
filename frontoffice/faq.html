@@ -368,21 +368,21 @@
     <div class="ask-card reveal">
       <h3 data-i18n="faq.ask.title">Vous ne trouvez pas votre réponse ?</h3>
       <p class="sub" data-i18n="faq.ask.sub">Posez-nous directement votre question, un conseiller SCI4K vous répondra sous 24 heures ouvrées.</p>
-      <div class="ask-alert-success" id="askSuccessAlert" data-i18n="faq.ask.success">✓ Merci ! Votre question a bien été envoyée. Un conseiller SCI4K vous répondra très rapidement.</div>
+      <div class="ask-alert-success" id="askSuccessAlert" data-i18n="faq.ask.success">✓ Votre question est prête : la conversation WhatsApp s'ouvre dans un nouvel onglet. Appuyez sur Envoyer pour la transmettre à SCI4K.</div>
       <form id="askForm" onsubmit="handleAskSubmit(event)">
         <div class="ask-form-row">
           <div class="ask-form-group">
-            <label data-i18n="faq.ask.name">Nom complet *</label>
-            <input type="text" required placeholder="Ex: Jean Kouassi">
+            <label for="askName" data-i18n="faq.ask.name">Nom complet *</label>
+            <input type="text" id="askName" name="nom" required autocomplete="name" maxlength="80" placeholder="Ex: Jean Kouassi">
           </div>
           <div class="ask-form-group">
-            <label data-i18n="faq.ask.email">Adresse Email *</label>
-            <input type="email" required placeholder="j.kouassi@email.com">
+            <label for="askEmail" data-i18n="faq.ask.email">Adresse Email *</label>
+            <input type="email" id="askEmail" name="email" required autocomplete="email" maxlength="100" placeholder="j.kouassi@email.com">
           </div>
         </div>
         <div class="ask-form-group">
-          <label data-i18n="faq.ask.question">Votre question *</label>
-          <textarea rows="4" required placeholder="Écrivez votre question ici..." data-i18n-ph="faq.ask.questionPh"></textarea>
+          <label for="askQuestion" data-i18n="faq.ask.question">Votre question *</label>
+          <textarea id="askQuestion" name="question" rows="4" required maxlength="900" placeholder="Écrivez votre question ici..." data-i18n-ph="faq.ask.questionPh"></textarea>
         </div>
         <button type="submit" class="ask-submit-btn" data-i18n="faq.ask.submit">Envoyer ma question →</button>
       </form>

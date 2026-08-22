@@ -5,6 +5,42 @@
    JavaScript : scrollTo({behavior:'smooth'}) ignore scroll-behavior. On
    interroge donc la preference systeme a chaque appel, car elle peut changer
    pendant la visite. */
+/* ---- Acheminement des formulaires vers WhatsApp ----
+   Deux formulaires (contact et question de la FAQ) composent un message et
+   l'ouvrent dans WhatsApp, seul canal reellement releve par l'agence. La
+   logique est partagee ici plutot que dupliquee dans chaque page. */
+var SCI4K_WHATSAPP = '2250706165029';
+
+function sci4kValeur(id) {
+  var el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+/* Compose le lien en garantissant une URL exploitable. Une URL trop longue
+   est rejetee sans message par le navigateur ou par WhatsApp : la demande
+   serait perdue au moment meme ou le visiteur croit l'envoyer. La borne
+   maxlength des champs n'y suffit pas, un caractere accentue occupant six
+   caracteres une fois encode. On mesure donc l'URL reelle et on abrege le
+   corps du message, avec mention explicite, plutot que de le perdre. */
+function sci4kLienWhatsApp(entete, corps) {
+  var LIMITE = 1900;
+
+  function composer(texte) {
+    return 'https://wa.me/' + SCI4K_WHATSAPP + '?text=' +
+           encodeURIComponent(entete + '\n' + texte);
+  }
+
+  var url = composer(corps);
+  if (url.length <= LIMITE) return url;
+
+  var suffixe = '\n\n[...] Message abrege, je le complete ici.';
+  var coupe = corps.length;
+  while (coupe > 0 && composer(corps.slice(0, coupe) + suffixe).length > LIMITE) {
+    coupe -= 20;
+  }
+  return composer(corps.slice(0, Math.max(coupe, 0)) + suffixe);
+}
+
 function sci4kDefilement() {
   return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
     ? 'auto'
@@ -350,7 +386,7 @@ window.SCI4K_I18N = {
 
   "faq.ask.title": { fr: "Vous ne trouvez pas votre réponse ?", en: "Can't find your answer?" },
   "faq.ask.sub": { fr: "Posez-nous directement votre question, un conseiller SCI4K vous répondra sous 24 heures ouvrées.", en: "Ask us your question directly, an SCI4K advisor will get back to you within 24 business hours." },
-  "faq.ask.success": { fr: "Merci ! Votre question a bien été envoyée. Un conseiller SCI4K vous répondra très rapidement.", en: "Thank you! Your question has been sent. An SCI4K advisor will reply shortly." },
+  "faq.ask.success": { fr: "Votre question est prête : la conversation WhatsApp s'ouvre dans un nouvel onglet. Appuyez sur Envoyer pour la transmettre à SCI4K.", en: "Your question is ready: the WhatsApp conversation is opening in a new tab. Press Send to deliver it to SCI4K." },
   "faq.ask.name": { fr: "Nom complet *", en: "Full name *" },
   "faq.ask.email": { fr: "Adresse Email *", en: "Email address *" },
   "faq.ask.question": { fr: "Votre question *", en: "Your question *" },
@@ -931,14 +967,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (map[serviceParam]) document.getElementById('contactSubject').value = map[serviceParam];
   }
 
-  /* Numero WhatsApp de SCI4K, identique a celui du bouton flottant. */
-  var WHATSAPP_NUMERO = '2250706165029';
-
-  function valeur(id) {
-    var el = document.getElementById(id);
-    return el ? el.value.trim() : '';
-  }
-
   window.handleContactSubmit = function (event) {
     event.preventDefault();
 
@@ -948,36 +976,14 @@ document.addEventListener('DOMContentLoaded', function () {
     var lignes = [
       'Bonjour SCI4K,',
       '',
-      'Nom : ' + valeur('contactName'),
-      'Telephone : ' + valeur('contactPhone'),
-      'Email : ' + valeur('contactEmail'),
-      'Sujet : ' + valeur('contactSubject'),
-      '',
-      valeur('messageTextarea')
+      'Nom : ' + sci4kValeur('contactName'),
+      'Telephone : ' + sci4kValeur('contactPhone'),
+      'Email : ' + sci4kValeur('contactEmail'),
+      'Sujet : ' + sci4kValeur('contactSubject'),
+      ''
     ];
 
-    /* Une URL trop longue est rejetee silencieusement par le navigateur ou par
-       WhatsApp. La borne maxlength du formulaire ne suffit pas a l'empecher :
-       un caractere accentue occupe six caracteres une fois encode, si bien
-       qu'un message francais peut tripler de taille. On mesure donc l'URL
-       reelle et on abrege le corps du message plutot que de le perdre. */
-    var LIMITE_URL = 1900;
-    var entete = lignes.slice(0, 7).join('\n');
-    var corps = lignes[7];
-
-    function composer(texte) {
-      return 'https://wa.me/' + WHATSAPP_NUMERO + '?text=' + encodeURIComponent(entete + '\n' + texte);
-    }
-
-    var url = composer(corps);
-    if (url.length > LIMITE_URL) {
-      var suffixe = '\n\n[...] Message abrege, je le complete ici.';
-      var coupe = corps.length;
-      while (coupe > 0 && composer(corps.slice(0, coupe) + suffixe).length > LIMITE_URL) {
-        coupe -= 20;
-      }
-      url = composer(corps.slice(0, Math.max(coupe, 0)) + suffixe);
-    }
+    var url = sci4kLienWhatsApp(lignes.join('\n'), sci4kValeur('messageTextarea'));
 
     /* Ouvert avant tout reset : sur mobile, un window.open differe est bloque
        par le navigateur car il n'est plus rattache au clic de l'utilisateur. */
@@ -1012,6 +1018,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
   window.handleAskSubmit = function (event) {
     event.preventDefault();
+
+    /* Meme acheminement que le formulaire de contact : la question part sur
+       WhatsApp, seul canal reellement releve par l'agence. */
+    var lignes = [
+      'Bonjour SCI4K,',
+      '',
+      'Nom : ' + sci4kValeur('askName'),
+      'Email : ' + sci4kValeur('askEmail'),
+      '',
+      'Ma question :',
+      sci4kValeur('askQuestion')
+    ];
+
+    var url = sci4kLienWhatsApp(lignes.slice(0, 6).join('\n'), lignes[6]);
+    var onglet = window.open(url, '_blank', 'noopener');
+
+    if (!onglet) {
+      window.location.href = url;
+      return;
+    }
+
     document.getElementById('askSuccessAlert').style.display = 'block';
     document.getElementById('askForm').reset();
     window.scrollTo({ top: document.querySelector('.ask-card').offsetTop - 120, behavior: sci4kDefilement() });
