@@ -15,6 +15,7 @@ window.SCI4K_I18N = {
 
   "footer.about": { fr: "Société Civile Immobilière basée à Abidjan — Cocody, Cité des Arts. Achat, vente, location, construction et gestion de patrimoine immobilier.", en: "Real estate company based in Abidjan — Cocody, Cité des Arts. Buying, selling, renting, construction and property management." },
   "footer.newsletterPh": { fr: "Votre adresse email", en: "Your email address" },
+  "footer.newsletterBtn": { fr: "S'inscrire à la newsletter", en: "Subscribe to the newsletter" },
   "footer.navTitle": { fr: "Navigation", en: "Navigation" },
   "footer.servicesTitle": { fr: "Nos Services", en: "Our Services" },
   "footer.contactTitle": { fr: "Nous contacter", en: "Contact us" },
@@ -256,7 +257,7 @@ window.SCI4K_I18N = {
   "contact.page.lede": { fr: "Une question, un projet d'achat, de vente, de location ou de construction à Abidjan ? Notre équipe d'experts est à votre entière disposition.", en: "A question, or a buying, selling, renting or construction project in Abidjan? Our team of experts is entirely at your disposal." },
   "contact.form.title": { fr: "Envoyez-nous un message", en: "Send us a message" },
   "contact.form.sub": { fr: "Remplissez le formulaire ci-dessous et notre équipe vous recontactera sous 24 heures ouvrées.", en: "Fill in the form below and our team will get back to you within 24 business hours." },
-  "contact.form.success": { fr: "Merci ! Votre message a bien été envoyé. Un conseiller SCI4K vous recontactera très rapidement.", en: "Thank you! Your message has been sent. An SCI4K advisor will get back to you shortly." },
+  "contact.form.success": { fr: "Votre message est prêt : la conversation WhatsApp s'ouvre dans un nouvel onglet. Appuyez sur Envoyer pour le transmettre à SCI4K.", en: "Your message is ready: the WhatsApp conversation is opening in a new tab. Press Send to deliver it to SCI4K." },
   "contact.form.name": { fr: "Nom complet *", en: "Full name *" },
   "contact.form.namePh": { fr: "Ex: Jean Kouassi", en: "E.g. Jean Kouassi" },
   "contact.form.phone": { fr: "Téléphone *", en: "Phone *" },
@@ -919,8 +920,66 @@ document.addEventListener('DOMContentLoaded', function () {
     if (map[serviceParam]) document.getElementById('contactSubject').value = map[serviceParam];
   }
 
+  /* Numero WhatsApp de SCI4K, identique a celui du bouton flottant. */
+  var WHATSAPP_NUMERO = '2250706165029';
+
+  function valeur(id) {
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
   window.handleContactSubmit = function (event) {
     event.preventDefault();
+
+    /* La demande part sur WhatsApp : c'est le canal reellement releve par
+       l'agence. Le formulaire ne fait que composer le message, l'envoi final
+       reste un geste explicite du visiteur dans WhatsApp. */
+    var lignes = [
+      'Bonjour SCI4K,',
+      '',
+      'Nom : ' + valeur('contactName'),
+      'Telephone : ' + valeur('contactPhone'),
+      'Email : ' + valeur('contactEmail'),
+      'Sujet : ' + valeur('contactSubject'),
+      '',
+      valeur('messageTextarea')
+    ];
+
+    /* Une URL trop longue est rejetee silencieusement par le navigateur ou par
+       WhatsApp. La borne maxlength du formulaire ne suffit pas a l'empecher :
+       un caractere accentue occupe six caracteres une fois encode, si bien
+       qu'un message francais peut tripler de taille. On mesure donc l'URL
+       reelle et on abrege le corps du message plutot que de le perdre. */
+    var LIMITE_URL = 1900;
+    var entete = lignes.slice(0, 7).join('\n');
+    var corps = lignes[7];
+
+    function composer(texte) {
+      return 'https://wa.me/' + WHATSAPP_NUMERO + '?text=' + encodeURIComponent(entete + '\n' + texte);
+    }
+
+    var url = composer(corps);
+    if (url.length > LIMITE_URL) {
+      var suffixe = '\n\n[...] Message abrege, je le complete ici.';
+      var coupe = corps.length;
+      while (coupe > 0 && composer(corps.slice(0, coupe) + suffixe).length > LIMITE_URL) {
+        coupe -= 20;
+      }
+      url = composer(corps.slice(0, Math.max(coupe, 0)) + suffixe);
+    }
+
+    /* Ouvert avant tout reset : sur mobile, un window.open differe est bloque
+       par le navigateur car il n'est plus rattache au clic de l'utilisateur. */
+    var onglet = window.open(url, '_blank', 'noopener');
+
+    /* Ouverture bloquee : on quitte la page vers WhatsApp. Le formulaire n'est
+       alors ni vide ni confirme, pour que la saisie soit encore la si le
+       visiteur revient en arriere. */
+    if (!onglet) {
+      window.location.href = url;
+      return;
+    }
+
     document.getElementById('successAlert').style.display = 'block';
     document.getElementById('contactForm').reset();
     window.scrollTo({ top: document.querySelector('.contact-card').offsetTop - 120, behavior: 'smooth' });
@@ -1119,5 +1178,42 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && !modal.hidden) fermer();
+  });
+})();
+
+
+/* ---- Newsletter (pied de page, toutes pages) ----
+   Aucun backend n'est encore branche : l'inscription part par email vers
+   l'agence plutot que d'etre silencieusement perdue. */
+(function () {
+  var EMAIL_AGENCE = 'contact@sci4k.com';
+
+  document.querySelectorAll('.newsletter').forEach(function (bloc) {
+    var champ = bloc.querySelector('input[type="email"]');
+    var bouton = bloc.querySelector('.newsletter-btn');
+    if (!champ || !bouton) return;
+
+    function inscrire() {
+      var adresse = champ.value.trim();
+
+      /* On s'appuie sur la validation native du navigateur plutot que sur une
+         expression reguliere maison, toujours plus laxiste ou plus stricte. */
+      if (!adresse || !champ.checkValidity()) {
+        champ.setAttribute('aria-invalid', 'true');
+        champ.focus();
+        return;
+      }
+      champ.removeAttribute('aria-invalid');
+
+      var sujet = encodeURIComponent('Inscription newsletter SCI4K');
+      var corps = encodeURIComponent('Bonjour,\n\nJe souhaite m\'inscrire à la newsletter SCI4K.\n\nAdresse email : ' + adresse + '\n');
+      window.location.href = 'mailto:' + EMAIL_AGENCE + '?subject=' + sujet + '&body=' + corps;
+      champ.value = '';
+    }
+
+    bouton.addEventListener('click', inscrire);
+    champ.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); inscrire(); }
+    });
   });
 })();

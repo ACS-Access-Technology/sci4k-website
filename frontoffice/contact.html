@@ -78,25 +78,25 @@
       <div class="contact-card reveal">
         <h3 id="formTitle" data-i18n="contact.form.title">Envoyez-nous un message</h3>
         <p class="sub" id="formSub" data-i18n="contact.form.sub">Remplissez le formulaire ci-dessous et notre équipe vous recontactera sous 24 heures ouvrées.</p>
-        <div class="alert-success" id="successAlert" data-i18n="contact.form.success">Merci ! Votre message a bien été envoyé. Un conseiller SCI4K vous recontactera très rapidement.</div>
+        <div class="alert-success" id="successAlert" data-i18n="contact.form.success">Votre message est prêt : la conversation WhatsApp s'ouvre dans un nouvel onglet. Appuyez sur Envoyer pour le transmettre à SCI4K.</div>
         <form id="contactForm" onsubmit="handleContactSubmit(event)">
           <div class="form-row">
             <div class="form-group">
-              <label data-i18n="contact.form.name">Nom complet *</label>
-              <input type="text" required placeholder="Ex: Jean Kouassi" data-i18n-ph="contact.form.namePh">
+              <label for="contactName" data-i18n="contact.form.name">Nom complet *</label>
+              <input type="text" id="contactName" name="nom" required autocomplete="name" maxlength="80" placeholder="Ex: Jean Kouassi" data-i18n-ph="contact.form.namePh">
             </div>
             <div class="form-group">
-              <label data-i18n="contact.form.phone">Téléphone *</label>
-              <input type="tel" required placeholder="+225 07 00 00 00 00">
+              <label for="contactPhone" data-i18n="contact.form.phone">Téléphone *</label>
+              <input type="tel" id="contactPhone" name="telephone" required autocomplete="tel" maxlength="30" placeholder="+225 07 00 00 00 00">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label data-i18n="contact.form.email">Adresse Email *</label>
-              <input type="email" required placeholder="j.kouassi@email.com">
+              <label for="contactEmail" data-i18n="contact.form.email">Adresse Email *</label>
+              <input type="email" id="contactEmail" name="email" required autocomplete="email" maxlength="100" placeholder="j.kouassi@email.com">
             </div>
             <div class="form-group">
-              <label data-i18n="contact.form.subject">Sujet de votre demande</label>
+              <label for="contactSubject" data-i18n="contact.form.subject">Sujet de votre demande</label>
               <select id="contactSubject" aria-label="Sujet de votre demande">
                 <option value="Achat" data-i18n="contact.form.subj.achat">Achat de bien / terrain</option>
                 <option value="Vente" data-i18n="contact.form.subj.vente">Vente / Estimation de bien</option>
@@ -109,8 +109,8 @@
             </div>
           </div>
           <div class="form-group">
-            <label data-i18n="contact.form.message">Votre message *</label>
-            <textarea id="messageTextarea" rows="5" required placeholder="Précisez les détails de votre projet, le quartier souhaité, le budget approximatif..." data-i18n-ph="contact.form.messagePh"></textarea>
+            <label for="messageTextarea" data-i18n="contact.form.message">Votre message *</label>
+            <textarea id="messageTextarea" rows="5" required maxlength="900" placeholder="Précisez les détails de votre projet, le quartier souhaité, le budget approximatif..." data-i18n-ph="contact.form.messagePh"></textarea>
           </div>
           <button type="submit" class="submit-btn" data-i18n="contact.form.submit">Envoyer mon message</button>
         </form>
@@ -183,7 +183,7 @@
       <div>
         <div class="foot-logo"><img src="images/image (3).png" alt="Logo SCI4K" style="height:36px;width:auto;" loading="lazy"> SCI4K</div>
         <p data-i18n="footer.about">Société Civile Immobilière basée à Abidjan — Cocody, Cité des Arts. Achat, vente, location, construction et gestion de patrimoine immobilier.</p>
-        <div class="newsletter"><input type="email" aria-label="Votre adresse email" placeholder="Votre adresse email" data-i18n-ph="footer.newsletterPh"><button>→</button></div>
+        <div class="newsletter"><input type="email" aria-label="Votre adresse email" placeholder="Votre adresse email" data-i18n-ph="footer.newsletterPh"><button type="button" class="newsletter-btn" aria-label="S'inscrire à la newsletter" data-i18n-aria="footer.newsletterBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></button></div>
       </div>
       <div>
         <h5 data-i18n="footer.navTitle">Navigation</h5>
