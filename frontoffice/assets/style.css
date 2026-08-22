@@ -1828,3 +1828,33 @@ a.partner-logo-card:hover .p-name{color:var(--gold-600);}
   .service-tile{aspect-ratio:auto;min-height:280px;}
   .svc-modal-box{padding:30px 22px 26px;}
 }
+
+/* ---------------------------------------------------------------
+   Mouvement reduit
+   Respecte le reglage systeme des personnes sensibles au mouvement
+   (vertiges, migraines, troubles vestibulaires).
+   Les revelations au scroll sont neutralisees en position finale :
+   se contenter de couper la transition laisserait .reveal a
+   opacity:0 pour tout element que l'observateur n'atteint pas.
+   --------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+
+  html { scroll-behavior: auto !important; }
+
+  .reveal,
+  .reveal-left,
+  .reveal-right,
+  .reveal-scale {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .reveal-stagger > * { transition-delay: 0ms !important; }
+}
