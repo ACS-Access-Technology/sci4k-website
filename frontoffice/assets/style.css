@@ -1907,3 +1907,31 @@ a.partner-logo-card:hover .p-name{color:var(--gold-600);}
     min-height: 48px;
   }
 }
+
+/* ---------------------------------------------------------------
+   Images allegees pour petits ecrans
+   Une banniere de 1600px servie a un telephone de 375px transporte
+   quatre fois trop de pixels. Ces regles ne s'appliquent qu'en dessous
+   de 820px : au-dela, les visuels d'origine restent servis intacts.
+   Les variables proviennent de images.css, que le backoffice pilote ;
+   elles sont redefinies ici pour ne pas alourdir ce fichier de reglages.
+   --------------------------------------------------------------- */
+@media (max-width: 820px) {
+  :root {
+    --img-banniere-faq:    url('../images/hero/faq-800.webp');
+    --img-accueil-hero:    url('../images/WhatsApp Image 2026-08-12 at 12.58.56 PM-800.webp');
+    --img-service-foncier: url('../images/services/foncier-800.webp');
+  }
+
+  /* Fonds poses directement dans le HTML : seul !important peut primer
+     sur un attribut style, dont la specificite est maximale. */
+  [style*="services/foncier.jpg"] {
+    background-image: url('../images/services/foncier-800.webp') !important;
+  }
+  [style*="actualites/article-1.jpg"] {
+    background-image: url('../images/actualites/article-1-800.webp') !important;
+  }
+  [style*="actualites/article-9.jpg"] {
+    background-image: url('../images/actualites/article-9-800.webp') !important;
+  }
+}
