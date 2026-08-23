@@ -1970,3 +1970,107 @@ a.partner-logo-card:hover .p-name{color:var(--gold-600);}
     gap: 14px;
   }
 }
+
+/* ---------------------------------------------------------------
+   Proportions des cartes sur telephone
+   A deux colonnes, une carte ne fait que 161px de large : conservee
+   telle quelle, elle devenait quatre fois plus haute que large et la
+   grille se lisait encore comme une liste. Les visuels sont abaisses,
+   les marges resserrees et les textes bornes a un nombre de lignes
+   fixe, ce qui rapproche les cartes du carre et rend la hauteur
+   previsible quel que soit le titre.
+   Le nombre de lignes est impose par -webkit-line-clamp, qui exige
+   display:-webkit-box ; la troncature ajoute d'elle-meme les points
+   de suspension.
+   --------------------------------------------------------------- */
+@media (max-width: 640px) {
+
+  /* --- visuels --- */
+  .news-card-cover,
+  .article-card-cover-wrap,
+  .article-card-cover { height: 96px; }
+  .prop-visual { height: 96px; }
+
+  /* --- corps resserres --- */
+  .news-card-body,
+  .article-card-body { padding: 12px 12px 14px; gap: 6px; }
+  .prop-body { padding: 12px; gap: 5px; }
+  .testimonial-card { padding: 14px 14px 16px; }
+  .service-tile-inner { padding: 14px; }
+
+  /* --- titres bornes --- */
+  .news-card-body h3,
+  .article-card-body h4 {
+    font-size: 14px;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .prop-body h4 {
+    font-size: 15px;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .service-tile-title { font-size: 16px; }
+
+  /* --- textes secondaires --- */
+  /* L extrait des cartes d article disparait : reduit a deux lignes sur
+     161px de large, il n apprend rien que le titre ne dise deja, et
+     represente a lui seul un cinquieme de la hauteur de la carte. */
+  .news-card-body p,
+  .article-card-body p { display: none; }
+  /* Une seule ligne pour l adresse : deux lignes sur certaines fiches
+     et une seule sur d autres donnaient des rangees de hauteurs
+     differentes. */
+  .prop-loc {
+    font-size: 12.5px;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .testimonial-quote {
+    font-size: 13px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* --- marges internes neutralisees ---
+     Les marges par defaut des titres et paragraphes representaient plus
+     de place que le texte lui-meme une fois celui-ci borne. */
+  .news-card-body h3,
+  .news-card-body p,
+  .article-card-body h4,
+  .article-card-body p,
+  .prop-body h4,
+  .prop-body .prop-loc,
+  .testimonial-quote { margin: 0; }
+
+  .article-card-body { gap: 6px; }
+
+  /* Les etiquettes de service occupaient 134px a elles seules :
+     seules les deux premieres restent visibles. */
+  .service-tile-tags { gap: 5px; max-height: 58px; overflow: hidden; }
+  .service-tile-tags > * { font-size: 11px; padding: 4px 8px; }
+
+  /* La tuile de service imposait une hauteur minimale de 280px qui
+     annulait toute reduction de son contenu. */
+  .service-tile { min-height: 210px; }
+
+  .article-card-cat { margin-bottom: 0; }
+
+  /* --- details compactes --- */
+  .prop-meta { font-size: 12px; gap: 6px; }
+  .prop-type { font-size: 11px; }
+  .testimonial-avatar { width: 36px; height: 36px; }
+  .service-icon-box { width: 40px; height: 40px; }
+}
