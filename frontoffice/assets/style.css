@@ -2074,3 +2074,34 @@ a.partner-logo-card:hover .p-name{color:var(--gold-600);}
   .testimonial-avatar { width: 36px; height: 36px; }
   .service-icon-box { width: 40px; height: 40px; }
 }
+
+/* ---------------------------------------------------------------
+   En-tete sur telephone
+   La barre se repliait sur deux rangees : logo et bascules en haut,
+   bouton d'appel et menu en bas, le tout centre. Elle occupait 141px,
+   soit un sixieme de l'ecran, avant meme le contenu.
+   Les bascules de theme et de langue sont retirees de la barre : le
+   menu deroulant porte deja les siennes, une regle les y forcait en
+   double. Il reste une seule rangee, logo a gauche, appel a l'action
+   et menu a droite.
+   --------------------------------------------------------------- */
+@media (max-width: 640px) {
+  #siteHeader { padding: 10px 0; }
+
+  .nav {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    text-align: left;
+    gap: 10px;
+  }
+
+  .nav > .util-switches { display: none !important; }
+
+  .logo { font-size: 17px; gap: 8px; flex: 0 1 auto; min-width: 0; }
+  .logo .mark { width: 34px; height: 34px; flex-shrink: 0; }
+  .logo .mark img { width: 100%; height: 100%; }
+
+  .cta-btn { padding: 10px 15px; font-size: 12.5px; box-shadow: none; }
+
+  .burger { flex-shrink: 0; }
+}
