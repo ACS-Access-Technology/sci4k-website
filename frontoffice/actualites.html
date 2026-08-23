@@ -178,6 +178,19 @@
         <input type="search" id="newsQ" data-i18n-ph="news.filter.searchPh" placeholder="Titre, mot-clé…">
       </div>
       <div class="nt-field">
+        <label for="newsCat" data-i18n="news.filter.categoryLabel">Catégorie</label>
+        <select id="newsCat">
+          <option value="all" data-i18n="news.filter.all">Toutes</option>
+          <option value="Achat" data-i18n="svc.achat.name">Achat</option>
+          <option value="Construction" data-i18n="svc.construction.name">Construction</option>
+          <option value="Foncier" data-i18n="svc.foncier.name">Foncier</option>
+          <option value="Gestion / Location" data-i18n="svc.gestion.name">Gestion / Location</option>
+          <option value="Marché" data-i18n="news.category.market">Marché</option>
+          <option value="Administration de biens" data-i18n="svc.administration.name">Administration de biens</option>
+          <option value="Vente" data-i18n="svc.vente.name">Vente</option>
+        </select>
+      </div>
+      <div class="nt-field">
         <label for="newsFrom" data-i18n="news.filter.from">Du</label>
         <input type="date" id="newsFrom">
       </div>
@@ -187,8 +200,6 @@
       </div>
       <button class="nt-btn" type="button" id="newsSearch" data-i18n="news.filter.submit">Rechercher</button>
     </form>
-
-    <div class="news-chips reveal" id="newsChips"><button class="news-chip active" data-cat="all" type="button"><span data-i18n="news.filter.all">Toutes</span><span class="news-chip-count">12</span></button><button class="news-chip" data-cat="Achat" type="button"><span data-i18n="svc.achat.name">Achat</span><span class="news-chip-count">2</span></button><button class="news-chip" data-cat="Construction" type="button"><span data-i18n="svc.construction.name">Construction</span><span class="news-chip-count">2</span></button><button class="news-chip" data-cat="Foncier" type="button"><span data-i18n="svc.foncier.name">Foncier</span><span class="news-chip-count">2</span></button><button class="news-chip" data-cat="Gestion / Location" type="button"><span data-i18n="svc.gestion.name">Gestion / Location</span><span class="news-chip-count">2</span></button><button class="news-chip" data-cat="Marché" type="button"><span data-i18n="news.category.market">Marché</span><span class="news-chip-count">2</span></button><button class="news-chip" data-cat="Administration de biens" type="button"><span data-i18n="svc.administration.name">Administration de biens</span><span class="news-chip-count">1</span></button><button class="news-chip" data-cat="Vente" type="button"><span data-i18n="svc.vente.name">Vente</span><span class="news-chip-count">1</span></button></div>
 
     <div class="news-grid reveal-stagger" id="newsGrid">
         <a class="news-card reveal" href="actualite-detail.html?id=acd-securiser-terrain" data-cat="Foncier" data-date="2026-08-12">

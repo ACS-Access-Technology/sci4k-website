@@ -399,6 +399,7 @@ window.SCI4K_I18N = {
   "news.filter.all": { fr: "Toutes", en: "All" },
   "news.filter.searchLabel": { fr: "Rechercher", en: "Search" },
   "news.filter.searchPh": { fr: "Titre, mot-clé…", en: "Title, keyword…" },
+  "news.filter.categoryLabel": { fr: "Catégorie", en: "Category" },
   "news.filter.from": { fr: "Du", en: "From" },
   "news.filter.to": { fr: "Au", en: "To" },
   "news.filter.submit": { fr: "Rechercher", en: "Search" },
@@ -1061,7 +1062,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var grid = document.getElementById('newsGrid');
   if (!grid) return;
   var cards = [].slice.call(grid.querySelectorAll('.news-card'));
-  var chips = [].slice.call(document.querySelectorAll('#newsChips .news-chip'));
+  var selCat = document.getElementById('newsCat');
   var q = document.getElementById('newsQ');
   var from = document.getElementById('newsFrom');
   var to = document.getElementById('newsTo');
@@ -1085,14 +1086,28 @@ document.addEventListener('DOMContentLoaded', function () {
     if (empty) empty.hidden = (visibles !== 0);
   }
 
-  chips.forEach(function (b) {
-    b.addEventListener('click', function () {
-      chips.forEach(function (x) { x.classList.remove('active'); });
-      b.classList.add('active');
-      cat = b.getAttribute('data-cat');
+  /* Le nombre d'articles par categorie complete chaque intitule. Il est
+     reapplique apres chaque traduction : applyLang reecrit le texte des
+     elements porteurs de data-i18n, et effacerait donc le compteur. */
+  function garnirCompteurs() {
+    if (!selCat) return;
+    [].slice.call(selCat.options).forEach(function (opt) {
+      var valeur = opt.value;
+      var n = (valeur === 'all')
+        ? cards.length
+        : cards.filter(function (c) { return c.getAttribute('data-cat') === valeur; }).length;
+      opt.textContent = opt.textContent.replace(/\s*\(\d+\)$/, '') + ' (' + n + ')';
+    });
+  }
+
+  if (selCat) {
+    selCat.addEventListener('change', function () {
+      cat = selCat.value;
       apply();
     });
-  });
+    garnirCompteurs();
+    document.addEventListener('sci4k:langchange', garnirCompteurs);
+  }
   [q, from, to].forEach(function (el) { if (el) el.addEventListener('input', apply); });
   var btn = document.getElementById('newsSearch');
   if (btn) btn.addEventListener('click', apply);
