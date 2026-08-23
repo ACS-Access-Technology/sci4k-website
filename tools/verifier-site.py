@@ -106,12 +106,31 @@ def controle_plan_de_site():
             anomalies.append('plan de site : %s ne correspond a aucune page' % url)
 
 
+# ------------------------------------------------------- chargement du script
+def controle_chargement_script():
+    """main.js doit etre differe.
+
+    Sans `defer`, un script s'execute a l'endroit ou il est rencontre : tout
+    element declare apres lui est absent du DOM a ce moment-la. Le bouton
+    flottant, place juste apres la balise, est reste inerte sur les douze
+    pages pour cette seule raison. `defer` repousse l'execution apres
+    l'analyse complete du document et rend l'ordre indifferent.
+    """
+    for page in pages_html(FRONT):
+        s = lire(page)
+        for balise in re.findall(r'<script[^>]*src="[^"]*main\.js"[^>]*>', s):
+            if 'defer' not in balise and 'async' not in balise:
+                anomalies.append('script non differe dans %s : %s'
+                                 % (os.path.basename(page), balise))
+
+
 CONTROLES = [
     ('references internes', controle_references),
     ('donnees structurees', controle_donnees_structurees),
     ('champs de formulaire', controle_formulaires),
     ('syntaxe JavaScript', controle_javascript),
     ('plan de site', controle_plan_de_site),
+    ('chargement du script', controle_chargement_script),
 ]
 
 if __name__ == '__main__':
