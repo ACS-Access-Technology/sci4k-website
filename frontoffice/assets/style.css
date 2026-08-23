@@ -1943,3 +1943,30 @@ a.partner-logo-card:hover .p-name{color:var(--gold-600);}
     background-image: url('../images/actualites/article-9-800.webp') !important;
   }
 }
+
+/* ---------------------------------------------------------------
+   Cartes en grille sur telephone
+   Les grilles de cartes restent a deux colonnes plutot que de
+   s'empiler : la page reste parcourable d'un coup d'oeil au lieu de
+   demander un long defilement. Les gouttieres sont resserrees pour
+   rendre la largeur perdue aux cartes elles-memes.
+   Sont volontairement exclus les formulaires (.form-row, .field-grid,
+   .news-toolbar) et les blocs texte-image (.overview-grid, .pres-grid,
+   .service-item-block) : deux colonnes y donneraient des champs de
+   160px, inutilisables au doigt, et des paragraphes illisibles.
+   --------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .partners-carousel-viewport,
+  .testimonials-grid,
+  .prop-grid,
+  .services-grid,
+  .services-detail .services-grid,
+  .articles-grid,
+  .news-grid,
+  .team-grid,
+  .values-grid,
+  .process-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
