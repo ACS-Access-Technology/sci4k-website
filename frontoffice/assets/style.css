@@ -1560,31 +1560,23 @@ body.page-biens .results-count{color:var(--navy-700);}
 .news-section{padding:70px 0 110px;background:var(--paper);}
 
 /* --- barre de recherche + plage de dates --------------------------------- */
-.news-toolbar{display:grid;grid-template-columns:1fr 190px 190px auto;gap:14px;align-items:end;
+.news-toolbar{display:grid;grid-template-columns:1fr 210px 175px 175px auto;gap:14px;align-items:end;
   background:var(--cream);border:1px solid var(--line);border-radius:20px;padding:22px 24px;
   box-shadow:0 12px 32px rgba(47,76,106,0.06);margin-bottom:28px;}
 .nt-field{display:flex;flex-direction:column;gap:7px;min-width:0;}
 .nt-field label{font-size:11.5px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--navy-600);}
-.nt-field input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;
+.nt-field input,
+.nt-field select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;
   background:#fff;color:var(--ink);font-size:14.5px;font-family:inherit;transition:border-color .3s ease-in-out,box-shadow .3s ease-in-out;}
-.nt-field input:focus{outline:none;border-color:var(--gold-500);box-shadow:0 0 0 3px rgba(211,182,172,0.35);}
+.nt-field select{appearance:none;-webkit-appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232F4C6A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;background-size:16px;padding-right:38px;}
+.nt-field input:focus,
+.nt-field select:focus{outline:none;border-color:var(--gold-500);box-shadow:0 0 0 3px rgba(211,182,172,0.35);}
 .nt-btn{padding:13px 26px;border:none;border-radius:12px;background:var(--gold-500);color:var(--navy-950);
   font-weight:700;font-size:14.5px;font-family:inherit;cursor:pointer;white-space:nowrap;
   transition:background .3s ease-in-out,transform .3s ease-in-out;}
 .nt-btn:hover{background:var(--gold-600);color:#fff;transform:translateY(-2px);}
-
-/* --- pastilles de categorie avec compteur -------------------------------- */
-.news-chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:32px;}
-.news-chip{display:inline-flex;align-items:center;gap:9px;padding:9px 18px;border-radius:100px;
-  border:1px solid var(--line);background:var(--cream);color:var(--navy-700);
-  font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;
-  transition:background .3s ease-in-out,color .3s ease-in-out,border-color .3s ease-in-out;}
-.news-chip:hover{border-color:var(--gold-500);}
-.news-chip.active{background:var(--gold-500);border-color:var(--gold-500);color:var(--navy-950);font-weight:700;}
-.news-chip-count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;
-  padding:0 6px;border-radius:100px;background:rgba(47,76,106,0.10);color:var(--navy-700);
-  font-size:12px;font-weight:700;transition:background .3s ease-in-out,color .3s ease-in-out;}
-.news-chip.active .news-chip-count{background:rgba(31,51,70,0.18);color:var(--navy-950);}
 
 /* --- grille de cartes ---------------------------------------------------- */
 .news-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;}
@@ -1639,10 +1631,7 @@ body.page-biens .results-count{color:var(--navy-700);}
 [data-theme="dark"] .news-toolbar{background:var(--dark-surface);border-color:var(--dark-border);box-shadow:none;}
 [data-theme="dark"] .nt-field label{color:var(--dark-text-muted);}
 [data-theme="dark"] .nt-field input{background:var(--dark-surface-2);border-color:var(--dark-border);color:var(--dark-text);}
-[data-theme="dark"] .news-chip{background:var(--dark-surface);border-color:var(--dark-border);color:var(--dark-text-muted);}
-[data-theme="dark"] .news-chip.active{background:var(--gold-500);color:var(--navy-950);}
-[data-theme="dark"] .news-chip-count{background:rgba(226,235,240,0.10);color:var(--dark-text-muted);}
-[data-theme="dark"] .news-card{background:var(--dark-surface);border-color:var(--dark-border);}
+[data-theme="dark"] [data-theme="dark"] [data-theme="dark"] [data-theme="dark"] .news-card{background:var(--dark-surface);border-color:var(--dark-border);}
 [data-theme="dark"] .news-card h3{color:var(--dark-text);}
 [data-theme="dark"] .news-card p{color:var(--dark-text-muted);}
 [data-theme="dark"] .news-date{color:var(--dark-text-muted);}
