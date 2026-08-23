@@ -1684,7 +1684,7 @@ nav.links{gap:26px;}
 }
 
 /* --- signature manuscrite du mot du directeur ----------------------------- */
-.sig-hand{font-family:'Great Vibes',cursive;font-size:clamp(30px,3.4vw,42px);line-height:1.1;
+.sig-hand{font-family:'Allura',cursive;font-size:clamp(32px,3.6vw,46px);line-height:1.15;
   color:var(--gold-600);margin-bottom:6px;}
 [data-theme="dark"] .sig-hand{color:var(--gold-300);}
 
