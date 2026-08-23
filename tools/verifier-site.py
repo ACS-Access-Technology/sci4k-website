@@ -124,6 +124,25 @@ def controle_chargement_script():
                                  % (os.path.basename(page), balise))
 
 
+# ------------------------------------------------- couleurs et theme sombre
+def controle_couleurs_inline():
+    """Aucune couleur figee ne doit etre posee en attribut style.
+
+    Un attribut style l'emporte sur tout selecteur : une couleur ecrite la
+    empeche les regles du theme sombre de s'appliquer, et le texte reste
+    sombre sur fond sombre. Les couleurs neutres sur fond image (blanc,
+    gold-300) sont tolerees, leur lisibilite ne dependant pas du theme.
+    """
+    figees = re.compile(r'(?<!-)\bcolor\s*:\s*var\(--(navy-\d+|gold-(?:500|600))\)')
+    for page in pages_html(FRONT):
+        s = lire(page)
+        for balise in re.findall(r'<[^>]*style="[^"]*"[^>]*>', s):
+            m = figees.search(balise)
+            if m:
+                anomalies.append('couleur figee en attribut style dans %s : --%s'
+                                 % (os.path.basename(page), m.group(1)))
+
+
 CONTROLES = [
     ('references internes', controle_references),
     ('donnees structurees', controle_donnees_structurees),
@@ -131,6 +150,7 @@ CONTROLES = [
     ('syntaxe JavaScript', controle_javascript),
     ('plan de site', controle_plan_de_site),
     ('chargement du script', controle_chargement_script),
+    ('couleurs et theme sombre', controle_couleurs_inline),
 ]
 
 if __name__ == '__main__':

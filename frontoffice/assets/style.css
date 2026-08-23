@@ -62,6 +62,26 @@ html[data-theme="dark"] .section-head p{ color:var(--dark-text-muted); }
     --dark-bg:#101B26; --dark-surface:#16222D; --dark-surface-2:#1D2C39; --dark-text:#EDF2F5; --dark-text-muted:#AEBECB; --dark-border:rgba(226,235,240,0.14);
   }
 
+/* ---------------------------------------------------------------
+   Couleurs de texte dependantes du theme
+   Plusieurs titres et etiquettes portent leur couleur en attribut
+   style, dont la specificite depasse tout selecteur : les regles du
+   theme sombre ne pouvaient donc pas s'appliquer et ces textes
+   restaient sombres sur fond sombre. Ces variables basculent avec le
+   theme, ce qui rend l'attribut style inoffensif.
+   --------------------------------------------------------------- */
+:root{
+  --texte-titre:      var(--navy-950);
+  --texte-appuye:     var(--navy-700);
+  --accent-etiquette: var(--gold-600);
+}
+html[data-theme="dark"]{
+  --texte-titre:      var(--dark-text);
+  --texte-appuye:     var(--dark-text);
+  --accent-etiquette: var(--gold-300);
+}
+
+
 *{box-sizing:border-box;}
 
 html{scroll-behavior:smooth;}
