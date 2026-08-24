@@ -15,6 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
         ]);
+
+        $middleware->web(append: [
+            \App\Http\Middleware\AppliqueLangue::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
