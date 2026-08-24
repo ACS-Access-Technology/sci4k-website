@@ -291,7 +291,304 @@ git commit -m "feat(admin): protege l'administration par trois roles"
 
 ---
 
-### Task 3 : Table des catégories
+### Task 3 : Bascule de langue du backoffice
+
+**Files:**
+- Create: `app-laravel/lang/en.json`
+- Create: `app-laravel/app/Http/Middleware/AppliqueLangue.php`
+- Create: `app-laravel/app/Http/Controllers/LangueController.php`
+- Create: `app-laravel/resources/views/components/bascule-langue.blade.php`
+- Create: `app-laravel/tests/Feature/BasculeLangueTest.php`
+- Modify: `app-laravel/bootstrap/app.php`
+- Modify: `app-laravel/routes/web.php`
+- Modify: `app-laravel/resources/views/admin/tableau-de-bord.blade.php`
+
+**Interfaces:**
+- Consumes: l'administration protégée de la tâche 2
+- Produces: `app()->getLocale()` vaut `fr` ou `en` selon le choix de l'utilisateur, conservé en session ; helper Blade `<x-bascule-langue />` ; les tâches suivantes lisent la langue par `app()->getLocale()`
+
+- [ ] **Step 1: Écrire le test qui échoue**
+
+`app-laravel/tests/Feature/BasculeLangueTest.php` :
+
+```php
+<?php
+
+use App\Models\User;
+use Spatie\Permission\Models\Role;
+
+beforeEach(function () {
+    Role::findOrCreate('administrateur');
+    $this->admin = User::factory()->create();
+    $this->admin->assignRole('administrateur');
+});
+
+it('sert l administration en francais par defaut', function () {
+    $this->actingAs($this->admin)->get('/admin');
+
+    expect(app()->getLocale())->toBe('fr');
+});
+
+it('bascule en anglais et le retient', function () {
+    $this->actingAs($this->admin)->get('/langue/en')->assertRedirect();
+
+    $this->actingAs($this->admin)->get('/admin');
+
+    expect(app()->getLocale())->toBe('en');
+});
+
+it('revient au francais', function () {
+    $this->actingAs($this->admin)->get('/langue/en');
+    $this->actingAs($this->admin)->get('/langue/fr')->assertRedirect();
+
+    $this->actingAs($this->admin)->get('/admin');
+
+    expect(app()->getLocale())->toBe('fr');
+});
+
+it('refuse une langue inconnue et reste en francais', function () {
+    $this->actingAs($this->admin)->get('/langue/de')->assertNotFound();
+
+    $this->actingAs($this->admin)->get('/admin');
+
+    expect(app()->getLocale())->toBe('fr');
+});
+
+it('affiche les libelles en anglais une fois bascule', function () {
+    $this->actingAs($this->admin)->get('/langue/en');
+
+    $this->actingAs($this->admin)->get('/admin')->assertSee('Dashboard');
+});
+
+it('affiche les libelles en francais par defaut', function () {
+    $this->actingAs($this->admin)->get('/admin')->assertSee('Tableau de bord');
+});
+```
+
+- [ ] **Step 2: Lancer le test pour le voir échouer**
+
+```bash
+cd app-laravel && php artisan test --filter=BasculeLangueTest
+```
+
+Attendu : ÉCHEC — la route `/langue/{code}` n'existe pas.
+
+- [ ] **Step 3: Créer le dictionnaire anglais**
+
+Laravel cherche `lang/en.json` quand la locale vaut `en`. Les clés sont les
+textes français eux-mêmes : les vues écrivent `{{ __('Tableau de bord') }}`,
+qui rend « Tableau de bord » en français et « Dashboard » en anglais.
+
+`app-laravel/lang/en.json` :
+
+```json
+{
+    "Tableau de bord": "Dashboard",
+    "Administration SCI4K": "SCI4K administration",
+    "Connecté en tant que :nom.": "Signed in as :nom.",
+    "Articles": "Articles",
+    "Actualités": "News",
+    "Catégories": "Categories",
+    "Utilisateurs": "Users",
+    "Français": "French",
+    "Anglais": "English",
+    "Enregistrer": "Save",
+    "Annuler": "Cancel",
+    "Créer": "Create",
+    "Modifier": "Edit",
+    "Supprimer": "Delete",
+    "Rechercher": "Search",
+    "Rechercher un titre…": "Search a title…",
+    "Toutes les catégories": "All categories",
+    "Tous les statuts": "All statuses",
+    "Titre": "Title",
+    "Résumé": "Summary",
+    "Contenu": "Content",
+    "Catégorie": "Category",
+    "Date": "Date",
+    "Date de publication": "Publication date",
+    "Statut": "Status",
+    "Publié": "Published",
+    "Brouillon": "Draft",
+    "Identifiant d'adresse": "URL slug",
+    "Image de couverture": "Cover image",
+    "Description pour les moteurs (160 signes)": "Meta description (160 characters)",
+    "Choisir…": "Choose…",
+    "Article enregistré.": "Article saved.",
+    "Aucun article pour le moment.": "No articles yet.",
+    "Se déconnecter": "Sign out"
+}
+```
+
+Aucun fichier `lang/fr.json` n'est nécessaire : le français est la langue de
+repli, rendue telle quelle par `__()`.
+
+- [ ] **Step 4: Créer le contrôleur de bascule**
+
+`app-laravel/app/Http/Controllers/LangueController.php` :
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\RedirectResponse;
+
+class LangueController extends Controller
+{
+    /** Les seules langues servies par le site. */
+    public const LANGUES = ['fr', 'en'];
+
+    public function basculer(string $code): RedirectResponse
+    {
+        abort_unless(in_array($code, self::LANGUES, true), 404);
+
+        session(['langue' => $code]);
+
+        return back();
+    }
+}
+```
+
+- [ ] **Step 5: Créer le middleware qui applique la langue**
+
+`app-laravel/app/Http/Middleware/AppliqueLangue.php` :
+
+```php
+<?php
+
+namespace App\Http\Middleware;
+
+use App\Http\Controllers\LangueController;
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class AppliqueLangue
+{
+    /** Applique la langue retenue en session, francais par defaut. */
+    public function handle(Request $request, Closure $suite): Response
+    {
+        $code = session('langue', 'fr');
+
+        if (in_array($code, LangueController::LANGUES, true)) {
+            app()->setLocale($code);
+        }
+
+        return $suite($request);
+    }
+}
+```
+
+- [ ] **Step 6: Enregistrer le middleware**
+
+Dans `app-laravel/bootstrap/app.php`, à l'intérieur de `withMiddleware` :
+
+```php
+$middleware->web(append: [
+    \App\Http\Middleware\AppliqueLangue::class,
+]);
+```
+
+- [ ] **Step 7: Déclarer la route**
+
+Dans `app-laravel/routes/web.php` :
+
+```php
+use App\Http\Controllers\LangueController;
+
+Route::get('/langue/{code}', [LangueController::class, 'basculer'])->name('langue.basculer');
+```
+
+- [ ] **Step 8: Créer le composant de bascule**
+
+`app-laravel/resources/views/components/bascule-langue.blade.php` :
+
+```blade
+@php($courante = app()->getLocale())
+
+<a href="{{ route('langue.basculer', $courante === 'fr' ? 'en' : 'fr') }}"
+   class="inline-flex h-9 min-w-9 items-center justify-center rounded-full border border-zinc-300 px-3 text-xs font-semibold text-zinc-700 hover:bg-zinc-100"
+   aria-label="{{ $courante === 'fr' ? __('Passer en anglais') : __('Passer en français') }}">
+    {{ $courante === 'fr' ? 'EN' : 'FR' }}
+</a>
+```
+
+Le bouton affiche la langue vers laquelle il mène, comme sur le site public.
+
+- [ ] **Step 9: Poser le bouton et traduire le tableau de bord**
+
+`app-laravel/resources/views/admin/tableau-de-bord.blade.php` :
+
+```blade
+<x-layouts.app :title="__('Tableau de bord')">
+    <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-semibold">{{ __('Administration SCI4K') }}</h1>
+        <x-bascule-langue />
+    </div>
+    <p class="mt-2 text-sm text-zinc-500">
+        {{ __('Connecté en tant que :nom.', ['nom' => auth()->user()->name]) }}
+    </p>
+</x-layouts.app>
+```
+
+- [ ] **Step 10: Lancer les tests**
+
+```bash
+cd app-laravel && php artisan test --filter=BasculeLangueTest
+```
+
+Attendu : les 6 tests passent.
+
+- [ ] **Step 11: Vérifier à l'œil**
+
+```bash
+cd app-laravel && php artisan serve
+```
+
+Se connecter, cliquer sur `EN` : les libellés passent en anglais et le bouton
+affiche `FR`. Recliquer : retour au français. Changer de page : la langue tient.
+
+- [ ] **Step 12: Commit**
+
+```bash
+git add -A
+git commit -m "feat(admin): bascule de langue de l'administration"
+```
+
+---
+
+## Conséquences sur les tâches suivantes
+
+Ces points sont à porter dans les tâches concernées au moment de leur dispatch.
+
+**Tâche « Tableau d'administration des articles »** — la liste affiche le titre
+dans la langue courante, pas le titre français en dur :
+
+- `$article->titre(app()->getLocale())` au lieu de `$article->titre_fr`
+- `$categorie->nom(app()->getLocale())` au lieu de `$categorie->nom_fr`
+- la recherche cherche dans les deux langues, ce que le plan prévoit déjà
+- tous les libellés passent par `__()`
+- le composant `<x-bascule-langue />` est posé dans l'en-tête de la page
+
+**Tâche « Formulaire d'édition bilingue »** — attention à ne pas confondre les
+deux mécanismes :
+
+- les onglets FR/EN du formulaire pilotent le **contenu saisi**, ils ne
+  dépendent pas de la langue de l'interface
+- l'onglet ouvert par défaut suit la langue courante : interface en anglais,
+  onglet English ouvert en premier
+- tous les libellés du formulaire passent par `__()`
+
+**Tâche « Vérification de bout en bout »** — deux contrôles s'ajoutent :
+
+- basculer l'administration en anglais, vérifier que menus, colonnes et boutons
+  sont traduits
+- vérifier que la langue tient d'une page à l'autre et après reconnexion
+
+---
+
+### Task 4 : Table des catégories
 
 **Files:**
 - Create: `app-laravel/database/migrations/*_create_categories_table.php`
@@ -443,7 +740,7 @@ git commit -m "feat(categories): table, modele et sept categories du site"
 
 ---
 
-### Task 4 : Table des articles
+### Task 5 : Table des articles
 
 **Files:**
 - Create: `app-laravel/database/migrations/*_create_articles_table.php`
@@ -452,7 +749,7 @@ git commit -m "feat(categories): table, modele et sept categories du site"
 - Create: `app-laravel/tests/Feature/ArticleTest.php`
 
 **Interfaces:**
-- Consumes: `Categorie` de la tâche 3
+- Consumes: `Categorie` de la tâche 4
 - Produces: modèle `Article` avec `Article::publies()` (portée), `titre(string $langue): string`, `resume(string $langue): string`, `contenu(string $langue): string`
 
 - [ ] **Step 1: Écrire le test qui échoue**
@@ -670,14 +967,14 @@ git commit -m "feat(articles): table, modele bilingue et portee des articles pub
 
 ---
 
-### Task 5 : Reprise des douze articles existants
+### Task 6 : Reprise des douze articles existants
 
 **Files:**
 - Create: `app-laravel/database/seeders/ArticleImportSeeder.php`
 - Create: `app-laravel/tests/Feature/ArticleImportTest.php`
 
 **Interfaces:**
-- Consumes: `Article` (tâche 4), `Categorie` (tâche 3)
+- Consumes: `Article` (tâche 5), `Categorie` (tâche 4)
 - Produces: 12 articles en base, repris de `frontoffice/`
 
 - [ ] **Step 1: Écrire le test qui échoue**
@@ -899,7 +1196,7 @@ git commit -m "feat(import): reprend les douze articles du site avec leurs deux 
 
 ---
 
-### Task 6 : Liste publique des actualités
+### Task 7 : Liste publique des actualités
 
 **Files:**
 - Create: `app-laravel/app/Http/Controllers/ActualiteController.php`
@@ -909,7 +1206,7 @@ git commit -m "feat(import): reprend les douze articles du site avec leurs deux 
 - Modify: `app-laravel/routes/web.php`
 
 **Interfaces:**
-- Consumes: `Article::publies()` (tâche 4)
+- Consumes: `Article::publies()` (tâche 5)
 - Produces: route nommée `actualites.index` sur `/actualites`
 
 - [ ] **Step 1: Écrire le test qui échoue**
@@ -1084,7 +1381,7 @@ git commit -m "feat(public): sert la liste des actualites depuis la base"
 
 ---
 
-### Task 7 : Page d'article et anciennes adresses
+### Task 8 : Page d'article et anciennes adresses
 
 **Files:**
 - Create: `app-laravel/resources/views/public/actualites/detail.blade.php`
@@ -1093,7 +1390,7 @@ git commit -m "feat(public): sert la liste des actualites depuis la base"
 - Modify: `app-laravel/tests/Feature/ActualitesPubliquesTest.php`
 
 **Interfaces:**
-- Consumes: `Article` (tâche 4), route `actualites.index` (tâche 6)
+- Consumes: `Article` (tâche 5), route `actualites.index` (tâche 7)
 - Produces: route nommée `actualites.detail` sur `/actualites/{article:slug}`
 
 - [ ] **Step 1: Ajouter les tests qui échouent**
@@ -1239,7 +1536,7 @@ git commit -m "feat(public): page d'article a adresse propre, anciennes adresses
 
 ---
 
-### Task 8 : Tableau d'administration des articles
+### Task 9 : Tableau d'administration des articles
 
 **Files:**
 - Create: `app-laravel/app/Livewire/Admin/ArticleListe.php`
@@ -1248,7 +1545,7 @@ git commit -m "feat(public): page d'article a adresse propre, anciennes adresses
 - Modify: `app-laravel/routes/web.php`
 
 **Interfaces:**
-- Consumes: `Article` (tâche 4), middleware de rôle (tâche 2)
+- Consumes: `Article` (tâche 5), middleware de rôle (tâche 2)
 - Produces: composant `ArticleListe` avec propriétés publiques `$recherche`, `$categorieId`, `$statut`
 
 - [ ] **Step 1: Écrire le test qui échoue**
@@ -1452,7 +1749,7 @@ git commit -m "feat(admin): tableau des articles avec recherche et filtres"
 
 ---
 
-### Task 9 : Formulaire d'édition bilingue
+### Task 10 : Formulaire d'édition bilingue
 
 **Files:**
 - Create: `app-laravel/app/Livewire/Admin/ArticleFormulaire.php`
@@ -1461,7 +1758,7 @@ git commit -m "feat(admin): tableau des articles avec recherche et filtres"
 - Modify: `app-laravel/routes/web.php`
 
 **Interfaces:**
-- Consumes: `Article` (tâche 4), `Categorie` (tâche 3)
+- Consumes: `Article` (tâche 5), `Categorie` (tâche 4)
 - Produces: composant `ArticleFormulaire` avec méthode publique `enregistrer(): void`
 
 - [ ] **Step 1: Écrire le test qui échoue**
@@ -1812,7 +2109,7 @@ git commit -m "feat(admin): formulaire d'article avec onglets francais et anglai
 
 ---
 
-### Task 10 : Couvertures d'article
+### Task 11 : Couvertures d'article
 
 **Files:**
 - Modify: `app-laravel/app/Models/Article.php`
@@ -1821,7 +2118,7 @@ git commit -m "feat(admin): formulaire d'article avec onglets francais et anglai
 - Create: `app-laravel/tests/Feature/ArticleCouvertureTest.php`
 
 **Interfaces:**
-- Consumes: `Article` (tâche 4), `ArticleFormulaire` (tâche 9)
+- Consumes: `Article` (tâche 5), `ArticleFormulaire` (tâche 10)
 - Produces: `Article::urlCouverture(): ?string`
 
 - [ ] **Step 1: Installer la médiathèque**
@@ -1988,14 +2285,14 @@ git commit -m "feat(articles): couverture d'article avec conversion WebP"
 
 ---
 
-### Task 11 : Intégration continue
+### Task 12 : Intégration continue
 
 **Files:**
 - Modify: `.github/workflows/verification.yml`
 - Modify: `tools/verifier-site.py`
 
 **Interfaces:**
-- Consumes: les tests des tâches 2 à 10
+- Consumes: les tests des tâches 2 à 11
 - Produces: une CI qui exécute les tests Laravel en plus des contrôles existants
 
 - [ ] **Step 1: Vérifier que la suite passe en local**
@@ -2090,7 +2387,7 @@ git commit -m "ci: execute les tests Laravel a chaque envoi"
 
 ---
 
-### Task 12 : Vérification de bout en bout
+### Task 13 : Vérification de bout en bout
 
 **Files:**
 - Aucun fichier modifié : contrôle manuel avant clôture du lot
