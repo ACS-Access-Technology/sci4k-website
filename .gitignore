@@ -18,3 +18,10 @@ frontoffice/_git-ancien
 # Non versionne : sa licence n'autorise pas la redistribution, et son seul
 # fichier utile (styles.css) est deja copie dans backoffice/assets/css/.
 demo/
+
+# Application Laravel (backoffice) : dependances et artefacts locaux
+app-laravel/vendor/
+app-laravel/node_modules/
+app-laravel/.env
+app-laravel/public/build/
+app-laravel/storage/*.key
