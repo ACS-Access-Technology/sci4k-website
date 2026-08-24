@@ -168,7 +168,9 @@ lien partagé par WhatsApp ne doit pas casser.
 
 ### Vérifications manuelles
 
-- Rendu des 12 pages portées en Blade, comparé à l'actuel.
+- Rendu des deux pages portées en Blade — liste et détail des actualités —
+  comparé à l'actuel. Les dix autres pages restent statiques jusqu'aux lots
+  suivants.
 - Comportement mobile : cartes, en-tête, grille à deux colonnes.
 - Thèmes clair et sombre.
 - Cycle complet : créer un article, le publier, le voir en ligne dans les deux
