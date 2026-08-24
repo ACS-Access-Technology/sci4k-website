@@ -3,99 +3,124 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-white dark:bg-zinc-800">
-        <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
-            <flux:sidebar.header>
-                <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
-                <flux:sidebar.collapse class="lg:hidden" />
-            </flux:sidebar.header>
+    <body class="min-h-screen bg-white dark:bg-zinc-800" x-data="{ mobileNavOpen: false }">
+        <div class="flex min-h-screen">
+            {{-- Desktop sidebar --}}
+            <aside class="hidden lg:flex lg:w-64 lg:shrink-0 lg:flex-col border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+                <div class="flex items-center justify-between p-4">
+                    <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
+                </div>
 
-            <flux:sidebar.nav>
-                <flux:sidebar.group :heading="__('Platform')" class="grid">
-                    <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                <nav class="flex-1 space-y-1 px-3">
+                    <p class="px-2 pb-1 text-xs text-zinc-400">{{ __('Platform') }}</p>
+
+                    <a
+                        href="{{ route('dashboard') }}"
+                        wire:navigate
+                        @class([
+                            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium',
+                            'bg-zinc-200/70 text-zinc-900 dark:bg-white/10 dark:text-white' => request()->routeIs('dashboard'),
+                            'text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5' => ! request()->routeIs('dashboard'),
+                        ])
+                    >
+                        <x-icons.layout-grid />
                         {{ __('Dashboard') }}
-                    </flux:sidebar.item>
-                </flux:sidebar.group>
-            </flux:sidebar.nav>
+                    </a>
+                </nav>
 
-            <flux:spacer />
+                <nav class="space-y-1 px-3 pb-3">
+                    <a
+                        href="https://github.com/laravel/livewire-starter-kit"
+                        target="_blank"
+                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5"
+                    >
+                        <x-icons.folder-git-2 />
+                        {{ __('Repository') }}
+                    </a>
+                    <a
+                        href="https://laravel.com/docs/starter-kits#livewire"
+                        target="_blank"
+                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5"
+                    >
+                        <x-icons.book-open-text />
+                        {{ __('Documentation') }}
+                    </a>
+                </nav>
 
-            <flux:sidebar.nav>
-                <flux:sidebar.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                    {{ __('Repository') }}
-                </flux:sidebar.item>
+                <div class="border-t border-zinc-200 p-3 dark:border-zinc-700">
+                    <x-desktop-user-menu />
+                </div>
+            </aside>
 
-                <flux:sidebar.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
-                    {{ __('Documentation') }}
-                </flux:sidebar.item>
-            </flux:sidebar.nav>
+            {{-- Mobile off-canvas sidebar --}}
+            <div
+                x-show="mobileNavOpen"
+                x-cloak
+                class="fixed inset-0 z-40 lg:hidden"
+            >
+                <div class="fixed inset-0 bg-black/50" x-on:click="mobileNavOpen = false"></div>
 
-            <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
-        </flux:sidebar>
+                <aside class="relative flex h-full w-64 flex-col border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+                    <div class="flex items-center justify-between p-4">
+                        <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
 
-        <!-- Mobile User Menu -->
-        <flux:header class="lg:hidden">
-            <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
+                        <button type="button" x-on:click="mobileNavOpen = false" class="text-zinc-500 hover:text-zinc-800 dark:hover:text-white">
+                            <x-icons.x-mark />
+                            <span class="sr-only">{{ __('Close menu') }}</span>
+                        </button>
+                    </div>
 
-            <flux:spacer />
+                    <nav class="flex-1 space-y-1 px-3">
+                        <p class="px-2 pb-1 text-xs text-zinc-400">{{ __('Platform') }}</p>
 
-            <flux:dropdown position="top" align="end">
-                <flux:profile
-                    :initials="auth()->user()->initials()"
-                    icon-trailing="chevron-down"
-                />
-
-                <flux:menu>
-                    <flux:menu.radio.group>
-                        <div class="p-0 text-sm font-normal">
-                            <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                                <flux:avatar
-                                    :name="auth()->user()->name"
-                                    :initials="auth()->user()->initials()"
-                                />
-
-                                <div class="grid flex-1 text-start text-sm leading-tight">
-                                    <flux:heading class="truncate">{{ auth()->user()->name }}</flux:heading>
-                                    <flux:text class="truncate">{{ auth()->user()->email }}</flux:text>
-                                </div>
-                            </div>
-                        </div>
-                    </flux:menu.radio.group>
-
-                    <flux:menu.separator />
-
-                    <flux:menu.radio.group>
-                        <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>
-                            {{ __('Settings') }}
-                        </flux:menu.item>
-                    </flux:menu.radio.group>
-
-                    <flux:menu.separator />
-
-                    <form method="POST" action="{{ route('logout') }}" class="w-full">
-                        @csrf
-                        <flux:menu.item
-                            as="button"
-                            type="submit"
-                            icon="arrow-right-start-on-rectangle"
-                            class="w-full cursor-pointer"
-                            data-test="logout-button"
+                        <a
+                            href="{{ route('dashboard') }}"
+                            wire:navigate
+                            @class([
+                                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium',
+                                'bg-zinc-200/70 text-zinc-900 dark:bg-white/10 dark:text-white' => request()->routeIs('dashboard'),
+                                'text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5' => ! request()->routeIs('dashboard'),
+                            ])
                         >
-                            {{ __('Log out') }}
-                        </flux:menu.item>
-                    </form>
-                </flux:menu>
-            </flux:dropdown>
-        </flux:header>
+                            <x-icons.layout-grid />
+                            {{ __('Dashboard') }}
+                        </a>
+                    </nav>
 
-        {{ $slot }}
+                    <nav class="space-y-1 px-3 pb-3">
+                        <a href="https://github.com/laravel/livewire-starter-kit" target="_blank" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5">
+                            <x-icons.folder-git-2 />
+                            {{ __('Repository') }}
+                        </a>
+                        <a href="https://laravel.com/docs/starter-kits#livewire" target="_blank" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5">
+                            <x-icons.book-open-text />
+                            {{ __('Documentation') }}
+                        </a>
+                    </nav>
+                </aside>
+            </div>
+
+            <div class="flex min-h-screen flex-1 flex-col">
+                {{-- Mobile top bar --}}
+                <header class="flex items-center justify-between border-b border-zinc-200 bg-zinc-50 p-3 lg:hidden dark:border-zinc-700 dark:bg-zinc-900">
+                    <button type="button" x-on:click="mobileNavOpen = true" class="text-zinc-600 dark:text-zinc-300">
+                        <x-icons.bars />
+                        <span class="sr-only">{{ __('Open menu') }}</span>
+                    </button>
+
+                    <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
+
+                    <x-desktop-user-menu :show-name="false" />
+                </header>
+
+                {{ $slot }}
+            </div>
+        </div>
 
         @persist('toast')
-            <flux:toast.group>
-                <flux:toast />
-            </flux:toast.group>
+            <x-ui.toast />
         @endpersist
 
-        @fluxScripts
+        @livewireScripts
     </body>
 </html>

@@ -1,6 +1,6 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/livewire-starter-kit",
+    "name": "sci4k/site",
     "type": "project",
     "description": "The official Laravel starter kit for Livewire.",
     "keywords": [
@@ -15,7 +15,6 @@
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
         "livewire/blaze": "^1.0",
-        "livewire/flux": "^2.13.1",
         "livewire/livewire": "^4.1"
     },
     "require-dev": {

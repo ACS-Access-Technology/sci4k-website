@@ -12,4 +12,26 @@
 @fonts
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
-@fluxAppearance
+@livewireStyles
+
+{{--
+    Applies the stored light/dark/system appearance before first paint, so
+    there is no flash of the wrong theme while Alpine boots. First-party
+    replacement for Flux's `@fluxAppearance` directive (removed with the
+    `livewire/flux` package) — only touches localStorage and the <html>
+    class, same behaviour as resources/js/app.js's Alpine store.
+--}}
+<style>
+    :root.dark {
+        color-scheme: dark;
+    }
+</style>
+<script>
+    (function () {
+        var appearance = window.localStorage.getItem('appearance') || 'system';
+        var isDark = appearance === 'dark'
+            || (appearance === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+        document.documentElement.classList.toggle('dark', isDark);
+    })();
+</script>

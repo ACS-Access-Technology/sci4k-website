@@ -49,20 +49,23 @@
                 <div class="space-y-5 text-center">
                     <div x-show="!showRecoveryInput">
                         <div class="flex items-center justify-center my-5" x-ref="otp">
-                            <flux:otp
-                                x-model="code"
-                                length="6"
+                            <input
+                                type="text"
+                                inputmode="numeric"
+                                pattern="[0-9]*"
+                                maxlength="6"
                                 name="code"
-                                label="OTP Code"
-                                label:sr-only
-                                class="mx-auto"
-                             />
+                                x-model="code"
+                                autocomplete="one-time-code"
+                                aria-label="{{ __('OTP Code') }}"
+                                class="w-40 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-center text-lg tracking-[0.5em] text-zinc-900 shadow-xs focus:outline-hidden focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-accent-foreground dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+                            />
                         </div>
                     </div>
 
                     <div x-show="showRecoveryInput">
                         <div class="my-5">
-                            <flux:input
+                            <x-ui.input
                                 type="text"
                                 name="recovery_code"
                                 x-ref="recovery_code"
@@ -73,19 +76,19 @@
                         </div>
 
                         @error('recovery_code')
-                            <flux:text color="red">
+                            <x-ui.text class="text-red-600 dark:text-red-400">
                                 {{ $message }}
-                            </flux:text>
+                            </x-ui.text>
                         @enderror
                     </div>
 
-                    <flux:button
+                    <x-ui.button
                         variant="primary"
                         type="submit"
                         class="w-full"
                     >
                         {{ __('Continue') }}
-                    </flux:button>
+                    </x-ui.button>
                 </div>
 
                 <div class="mt-5 space-x-0.5 text-sm leading-5 text-center">
