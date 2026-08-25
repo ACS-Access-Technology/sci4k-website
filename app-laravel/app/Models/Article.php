@@ -48,6 +48,24 @@ class Article extends Model
         return $this->texteDansLaLangue('contenu', $langue);
     }
 
+    /**
+     * Titre destine aux moteurs, dans la langue demandee.
+     *
+     * Replie sur le titre de l'article quand la meta n'est pas renseignee : le
+     * trait ne replie que d'une langue vers l'autre, pas d'un champ vers un
+     * autre.
+     */
+    public function metaTitre(string $langue = 'fr'): string
+    {
+        return $this->texteDansLaLangue('meta_titre', $langue) ?: $this->titre($langue);
+    }
+
+    /** Description destinee aux moteurs, repliee sur le resume si absente. */
+    public function metaDescription(string $langue = 'fr'): string
+    {
+        return $this->texteDansLaLangue('meta_description', $langue) ?: $this->resume($langue);
+    }
+
     public function categorie()
     {
         return $this->belongsTo(Categorie::class, 'categorie_id');

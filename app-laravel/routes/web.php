@@ -15,6 +15,12 @@ Route::get('/', fn () => response(
 )->header('Content-Type', 'text/html; charset=UTF-8'))->name('home');
 
 Route::get('/actualites', [ActualiteController::class, 'index'])->name('actualites.index');
+Route::get('/actualites/{article:slug}', [ActualiteController::class, 'detail'])->name('actualites.detail');
+
+// Les douze articles partageaient cette adresse unique, distingues par ?id=.
+// Declaree avant que le fichier statique du meme nom ne soit servi — il est
+// d'ailleurs exclu de tools/sync-frontoffice.sh.
+Route::get('/actualite-detail.html', [ActualiteController::class, 'ancienneAdresse']);
 
 // L'ancienne adresse de la liste n'est plus servie : la page statique du meme
 // nom est exclue de la synchronisation, pour qu'il n'existe jamais deux

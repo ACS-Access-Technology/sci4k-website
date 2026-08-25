@@ -53,13 +53,10 @@
 
     <div class="news-grid reveal-stagger" id="newsGrid">
       @foreach ($articles as $article)
-        {{--
-          La carte n'est pas encore un lien : la route de detail n'existe qu'a
-          la tache suivante. Elle l'enveloppera alors dans un <a>.
-        --}}
-        <div class="news-card reveal"
-             data-cat="{{ $article->categorie->nom($langue) }}"
-             data-date="{{ $article->date_publication->format('Y-m-d') }}">
+        <a class="news-card reveal"
+           href="{{ route('actualites.detail', $article) }}"
+           data-cat="{{ $article->categorie->nom($langue) }}"
+           data-date="{{ $article->date_publication->format('Y-m-d') }}">
           @if ($article->image_source)
             <div class="news-card-cover" style="background-image:url('{{ asset($article->image_source) }}')"></div>
           @else
@@ -72,7 +69,7 @@
             <h3>{{ $article->titre($langue) }}</h3>
             <p>{{ $article->resume($langue) }}</p>
           </div>
-        </div>
+        </a>
       @endforeach
 
       <p class="news-empty" id="newsEmpty" hidden>{{ __('Aucune actualité ne correspond à votre recherche.') }}</p>
