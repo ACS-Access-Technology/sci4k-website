@@ -7,6 +7,37 @@ use App\Models\User;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
 
+/**
+ * Implementation minimale de ListeOrdonnable, dediee aux tests.
+ *
+ * Elle existe pour eprouver le contrat de la classe abstraite sans dependre
+ * d'un ecran metier : ServiceListe interdit la suppression, et c'etait la
+ * seule implementation concrete. Sans ce double, le chemin nominal de
+ * supprimer() n'aurait plus ete couvert par aucun test.
+ */
+class CollectionDeTest extends \App\Livewire\Admin\ListeOrdonnable
+{
+    protected function modele(): string
+    {
+        return \App\Models\Service::class;
+    }
+
+    protected function colonnesRecherchees(): array
+    {
+        return ['nom_fr', 'nom_en'];
+    }
+
+    protected function vue(): string
+    {
+        return 'livewire.admin.service-liste';
+    }
+
+    protected function titre(): string
+    {
+        return 'Collection de test';
+    }
+}
+
 beforeEach(function () {
     Role::findOrCreate('editeur');
     Role::findOrCreate('lecteur');
@@ -69,6 +100,30 @@ it('reordonne depuis le navigateur', function () {
         ->call('reordonner', [$b->id, $a->id]);
 
     expect(Service::ordonnees()->pluck('id')->all())->toBe([$b->id, $a->id]);
+});
+
+it('supprime un element quand la collection l autorise', function () {
+    $s = Service::factory()->create(['categorie_id' => $this->categorie->id]);
+
+    Livewire::actingAs($this->editeur)
+        ->test(CollectionDeTest::class)
+        ->call('supprimer', $s->id);
+
+    expect(Service::find($s->id))->toBeNull();
+});
+
+it('refuse la suppression a un lecteur, meme sur une collection ouverte', function () {
+    $lecteur = User::factory()->create();
+    $lecteur->assignRole('lecteur');
+
+    $s = Service::factory()->create(['categorie_id' => $this->categorie->id]);
+
+    Livewire::actingAs($lecteur)
+        ->test(CollectionDeTest::class)
+        ->call('supprimer', $s->id)
+        ->assertForbidden();
+
+    expect(Service::find($s->id))->not->toBeNull();
 });
 
 it('refuse la suppression d un service, meme a un editeur', function () {
