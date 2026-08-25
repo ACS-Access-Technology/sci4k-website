@@ -71,14 +71,27 @@ it('reordonne depuis le navigateur', function () {
     expect(Service::ordonnees()->pluck('id')->all())->toBe([$b->id, $a->id]);
 });
 
-it('supprime un element', function () {
+it('refuse la suppression d un service, meme a un editeur', function () {
     $s = Service::factory()->create(['categorie_id' => $this->categorie->id]);
 
     Livewire::actingAs($this->editeur)
         ->test(ServiceListe::class)
-        ->call('supprimer', $s->id);
+        ->call('supprimer', $s->id)
+        ->assertForbidden();
 
-    expect(Service::find($s->id))->toBeNull();
+    expect(Service::find($s->id))->not->toBeNull();
+});
+
+it('laisse le reordonnancement et la bascule de visibilite ouverts sur les services', function () {
+    // La suppression est fermee, pas l'ecran : verifier qu'on n'a pas verrouille
+    // plus que voulu.
+    $s = Service::factory()->create(['visible' => true, 'categorie_id' => $this->categorie->id]);
+
+    Livewire::actingAs($this->editeur)
+        ->test(ServiceListe::class)
+        ->call('basculerVisibilite', $s->id);
+
+    expect($s->fresh()->visible)->toBeFalse();
 });
 
 it('interdit a un lecteur d ecrire', function () {

@@ -25,4 +25,12 @@ class ServiceListe extends ListeOrdonnable
     {
         return __('Services');
     }
+
+    /** Les six services correspondent aux six metiers et a la navigation du
+     *  site : en retirer un touche la structure des pages publiques, ce qui
+     *  releve d'un developpement, pas d'une saisie. */
+    protected function suppressionPermise(): bool
+    {
+        return false;
+    }
 }

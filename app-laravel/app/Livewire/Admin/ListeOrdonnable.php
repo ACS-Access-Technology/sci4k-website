@@ -41,6 +41,19 @@ abstract class ListeOrdonnable extends Component
         return (bool) auth()->user()?->hasAnyRole(['administrateur', 'editeur']);
     }
 
+    /**
+     * Cette collection accepte-t-elle la suppression d'un element ?
+     *
+     * Livewire expose au navigateur toute methode publique du composant :
+     * retirer le bouton de la vue ne retire pas la capacite d'appeler la
+     * methode. Chaque collection declare donc son intention ici, plutot que
+     * de compter sur l'absence de bouton.
+     */
+    protected function suppressionPermise(): bool
+    {
+        return true;
+    }
+
     public function updating($nom): void
     {
         if (in_array($nom, ['recherche', 'visibilite'], true) && method_exists($this, 'resetPage')) {
@@ -65,6 +78,7 @@ abstract class ListeOrdonnable extends Component
 
     public function supprimer(int $id): void
     {
+        abort_unless($this->suppressionPermise(), 403);
         abort_unless($this->peutEcrire(), 403);
 
         ($this->modele())::findOrFail($id)->delete();
