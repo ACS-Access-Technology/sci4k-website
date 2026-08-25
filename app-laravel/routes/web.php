@@ -38,6 +38,7 @@ Route::middleware(['auth', 'role:administrateur|editeur|lecteur'])
     ->name('admin.')
     ->group(function () {
         Route::get('/', fn () => view('admin.tableau-de-bord'))->name('tableau-de-bord');
+        Route::get('/articles', \App\Livewire\Admin\ArticleListe::class)->name('articles.liste');
     });
 
 require __DIR__.'/settings.php';
