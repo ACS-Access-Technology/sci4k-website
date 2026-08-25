@@ -126,7 +126,12 @@
                 </aside>
             </div>
 
-            <div class="flex min-h-screen flex-1 flex-col">
+            {{-- min-w-0 est indispensable : un element flex ne descend pas
+                 sous la largeur intrinseque de son contenu tant qu'il garde
+                 min-width:auto. Sans cela un tableau large pousse toute la
+                 page, qui defile alors horizontalement, et l'overflow-x-auto
+                 pose sur le tableau lui-meme reste sans effet. --}}
+            <div class="flex min-h-screen min-w-0 flex-1 flex-col">
                 {{-- Mobile top bar --}}
                 <header class="flex items-center justify-between border-b border-zinc-200 bg-zinc-50 p-3 lg:hidden dark:border-zinc-700 dark:bg-zinc-900">
                     <button type="button" x-on:click="mobileNavOpen = true" class="text-zinc-600 dark:text-zinc-300">

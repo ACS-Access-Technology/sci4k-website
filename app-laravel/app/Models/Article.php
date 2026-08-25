@@ -27,9 +27,19 @@ class Article extends Model
         'image_source',
         'meta_titre_fr', 'meta_titre_en',
         'meta_description_fr', 'meta_description_en',
+        'vues',
     ];
 
-    protected $casts = ['date_publication' => 'date'];
+    protected $casts = ['date_publication' => 'date', 'vues' => 'integer'];
+
+    /**
+     * La base pose deja ce defaut, mais pas l'objet : un article tout juste
+     * cree renvoyait null plutot que 0 tant qu'on ne l'avait pas relu.
+     */
+    protected $attributes = ['vues' => 0];
+
+    /** Les trois etats possibles d'un article, dans l'ordre du cycle de vie. */
+    public const STATUTS = ['brouillon', 'publie', 'archive'];
 
     /** Articles visibles du public, du plus recent au plus ancien. */
     public function scopePublies(Builder $requete): Builder

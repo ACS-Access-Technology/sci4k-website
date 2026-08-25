@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use App\Models\Article;
 use App\Models\Categorie;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -34,6 +35,31 @@ class ArticleListe extends Component
         }
     }
 
+    /**
+     * Supprime un article, et avec lui sa couverture televersee.
+     *
+     * Le controle de role est refait ici : la route protege l'ecran, pas
+     * l'action. Un lecteur peut ouvrir la liste, donc atteindre ce composant,
+     * et rien ne l'empecherait d'en appeler la methode sans cette ligne.
+     */
+    public function supprimer(int $id): void
+    {
+        abort_unless(auth()->user()?->hasAnyRole(['administrateur', 'editeur']), 403);
+
+        $article = Article::findOrFail($id);
+
+        // Seuls les fichiers deposes par l'administration sont effaces. Les
+        // couvertures du site statique sont la source du site public.
+        if ($article->couvertureTeleversee()) {
+            Storage::disk('public')->delete(substr($article->image_source, strlen('storage/')));
+        }
+
+        $titre = $article->titre(app()->getLocale());
+        $article->delete();
+
+        session()->flash('message', __('Article supprimé : :titre', ['titre' => $titre]));
+    }
+
     public function render(): View
     {
         $langue = app()->getLocale();
@@ -51,10 +77,24 @@ class ArticleListe extends Component
             ->orderByDesc('date_publication')
             ->paginate(20);
 
+        // Les indicateurs portent sur TOUS les articles, pas sur la page
+        // filtree : une carte qui changerait au gre des filtres ne mesurerait
+        // plus rien.
+        $parStatut = Article::query()
+            ->selectRaw('statut, COUNT(*) as nombre')
+            ->groupBy('statut')
+            ->pluck('nombre', 'statut');
+
         return view('livewire.admin.article-liste', [
             'articles' => $articles,
             'categories' => Categorie::orderBy('ordre')->get(),
             'langue' => $langue,
+            'indicateurs' => [
+                'publies' => (int) ($parStatut['publie'] ?? 0),
+                'brouillons' => (int) ($parStatut['brouillon'] ?? 0),
+                'archives' => (int) ($parStatut['archive'] ?? 0),
+                'vues' => (int) Article::sum('vues'),
+            ],
         ])->title(__('Articles'));
     }
 }

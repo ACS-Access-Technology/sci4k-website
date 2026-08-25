@@ -42,6 +42,14 @@ class ActualiteController extends Controller
         $langue = app()->getLocale();
         $article->load('categorie');
 
+        // Un editeur qui relit son article ne gonfle pas le compteur : le
+        // chiffre mesure l'interet des lecteurs, pas l'activite interne.
+        // incrementQuietly evite de toucher updated_at, qui laisserait croire
+        // que l'article a ete modifie a chaque visite.
+        if (! auth()->check()) {
+            $article->incrementQuietly('vues');
+        }
+
         $noeud = [
             '@type' => 'NewsArticle',
             '@id' => route('actualites.detail', $article).'#article',

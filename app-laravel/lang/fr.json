@@ -122,5 +122,7 @@
     "login using a recovery code": "vous connecter avec un code de secours",
     "login using an authentication code": "vous connecter avec un code d'authentification",
     "or you can": "ou bien",
-    "or, enter the code manually": "ou saisissez la clé manuellement"
+    "or, enter the code manually": "ou saisissez la clé manuellement",
+    ":nombre article publié|:nombre articles publiés": ":nombre article publié|:nombre articles publiés",
+    ":nombre affiché|:nombre affichés": ":nombre affiché|:nombre affichés"
 }

@@ -111,6 +111,41 @@ it('traduit chaque cle employee par les vues', function () {
     expect($orphelines)->toBe([], "Ces cles ne figurent dans aucun des deux dictionnaires :\n".implode("\n", $orphelines));
 });
 
+it('ne sert jamais l anglais a un lecteur francais', function () {
+    /*
+     * Piege decouvert en refondant le tableau d'administration : trans_choice
+     * consulte la langue de repli, la ou __() se contente de rendre la cle.
+     * Une forme plurielle absente de fr.json retombait donc sur en.json, et la
+     * page francaise affichait « 13 published articles » au milieu du reste.
+     *
+     * Le controle precedent ne pouvait pas le voir : la cle etait bien presente
+     * dans un dictionnaire, simplement dans le mauvais.
+     */
+    $anglais = json_decode(file_get_contents(lang_path('en.json')), true) ?? [];
+
+    App::setLocale('fr');
+
+    $fuites = [];
+
+    foreach ($anglais as $cle => $traduction) {
+        // Une cle dont la traduction est identique au francais ne peut pas
+        // fuir : « Documentation » se dit pareil des deux cotes.
+        if ($traduction === $cle) {
+            continue;
+        }
+
+        $rendu = str_contains($cle, '|')
+            ? trans_choice($cle, 2, ['nombre' => 2])
+            : __($cle);
+
+        if ($rendu === $traduction) {
+            $fuites[] = $cle.'  ->  '.$rendu;
+        }
+    }
+
+    expect($fuites)->toBe([], "Ces cles rendent l'anglais alors que la langue est le francais :\n".implode("\n", $fuites));
+});
+
 it('rend les messages de validation en clair, jamais leur cle', function () {
     /*
      * Laravel ne livre ses messages qu'en anglais : en francais, une erreur de
