@@ -86,5 +86,6 @@
     "Article supprimé : :titre": "Article deleted: :titre",
     ":nombre article publié|:nombre articles publiés": ":nombre published article|:nombre published articles",
     ":nombre affiché|:nombre affichés": ":nombre shown|:nombre shown",
-    "Aucun article ne correspond à votre recherche.": "No article matches your search."
+    "Aucun article ne correspond à votre recherche.": "No article matches your search.",
+    "En savoir plus": "Learn more"
 }
