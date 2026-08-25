@@ -51,14 +51,15 @@
                     @endif
                 </td>
 
-                {{-- Le nom n'est pas encore un lien : la route d'edition arrive
-                     a la tache 8, qui enveloppera ce bloc. Le referencer ici
-                     ferait echouer les tests de la tache 6 sur une route
-                     inexistante. --}}
                 <td class="px-4 py-3">
-                    <span class="block font-medium text-zinc-900 dark:text-white">
-                        {{ $element->nom($langue) }}
-                    </span>
+                    @if ($peutEcrire)
+                        <a href="{{ route('admin.services.edition', $element) }}" wire:navigate
+                           class="block font-medium text-zinc-900 hover:underline dark:text-white">
+                            {{ $element->nom($langue) }}
+                        </a>
+                    @else
+                        <span class="block font-medium text-zinc-900 dark:text-white">{{ $element->nom($langue) }}</span>
+                    @endif
                     <span class="block truncate text-xs text-zinc-500 dark:text-zinc-400">
                         {{ $element->accroche($langue) }}
                     </span>
@@ -84,9 +85,18 @@
                     </button>
                 </td>
 
-                {{-- La colonne Actions reste vide jusqu'a la tache 8, pour la
-                     meme raison. --}}
-                <td class="whitespace-nowrap px-4 py-3"></td>
+                <td class="whitespace-nowrap px-4 py-3">
+                    <div class="flex items-center justify-end gap-1">
+                        @if ($peutEcrire)
+                            <a href="{{ route('admin.services.edition', $element) }}" wire:navigate
+                               title="{{ __('Modifier') }}"
+                               aria-label="{{ __('Modifier :nom', ['nom' => $element->nom($langue)]) }}"
+                               class="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white">
+                                <x-admin.icone nom="crayon" />
+                            </a>
+                        @endif
+                    </div>
+                </td>
             </tr>
         @empty
             <tr>

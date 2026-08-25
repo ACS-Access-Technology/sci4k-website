@@ -26,5 +26,11 @@ return [
         'metaDescriptionFr' => 'French meta description',
         'metaDescriptionEn' => 'English meta description',
         'couverture' => 'cover image',
+        'nomFr' => 'French name',
+        'nomEn' => 'English name',
+        'accrocheFr' => 'French tagline',
+        'accrocheEn' => 'English tagline',
+        'descriptionFr' => 'French description',
+        'descriptionEn' => 'English description',
     ],
 ];

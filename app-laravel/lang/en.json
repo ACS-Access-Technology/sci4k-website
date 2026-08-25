@@ -103,5 +103,17 @@
     "Faites glisser une ligne par sa poignée pour changer l'ordre d'affichage sur le site.": "Drag a row by its handle to change the display order on the site.",
     "Aucun service ne correspond à votre recherche.": "No service matches your search.",
     "Élément supprimé.": "Item deleted.",
-    ":nombre service|:nombre services": ":nombre service|:nombre services"
+    ":nombre service|:nombre services": ":nombre service|:nombre services",
+    "Modifier :nom": "Edit :nom",
+    "Modifier le service": "Edit the service",
+    "Service enregistré.": "Service saved.",
+    "Nom": "Name",
+    "Accroche": "Tagline",
+    "Description": "Description",
+    "Atouts": "Highlights",
+    "Atout :rang": "Highlight :rang",
+    "Libellé du bouton": "Button label",
+    "Visible sur le site": "Visible on the site",
+    "Phrase courte affichée sur la tuile.": "Short phrase shown on the tile.",
+    "Trois au maximum, affichés sous le nom du service.": "Three at most, shown below the service name."
 }

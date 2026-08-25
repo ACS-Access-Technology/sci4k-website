@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Livewire\Concerns\RemplitParTraduction;
 use App\Models\Article;
 use App\Models\Categorie;
 use App\Services\Traduction\Traducteur;
@@ -31,6 +32,7 @@ use Livewire\WithFileUploads;
 #[Layout('layouts.app')]
 class ArticleFormulaire extends Component
 {
+    use RemplitParTraduction;
     use WithFileUploads;
 
     public ?Article $article = null;
@@ -192,54 +194,13 @@ class ArticleFormulaire extends Component
     }
 
     /**
-     * Remplit la langue manquante par traduction automatique.
+     * Champs traduisibles de l'article, consommes par RemplitParTraduction.
      *
-     * REGLE UNIQUE, ARBITREE AVEC LE CLIENT : on ne traduit QUE ce qui est
-     * vide. Jamais d'ecrasement. Les douze articles repris du site portent une
-     * traduction anglaise humaine, dont la recuperation a coute une
-     * investigation entiere ; une traduction machine declenchee a chaque
-     * enregistrement l'aurait effacee sans que personne s'en apercoive avant
-     * de relire le site.
-     *
-     * Le sens suit ce qui est rempli : francais vers anglais, ou l'inverse.
-     * Chaque champ est traite separement, un article pouvant etre complet d'un
-     * cote et partiel de l'autre.
+     * @return list<string>
      */
-    protected function remplirParTraductionCeQuiEstVide(): void
+    protected function champsTraduisibles(): array
     {
-        $traducteur = app(Traducteur::class);
-
-        if (! $traducteur->disponible()) {
-            return;
-        }
-
-        foreach (['titre', 'resume', 'contenu', 'metaDescription'] as $champ) {
-            $fr = $champ.'Fr';
-            $en = $champ.'En';
-
-            if (blank($this->$en) && filled($this->$fr)) {
-                $this->$en = $this->traduireTexte($traducteur, $this->$fr, 'en', 'fr') ?? $this->$en;
-            } elseif (blank($this->$fr) && filled($this->$en)) {
-                $this->$fr = $this->traduireTexte($traducteur, $this->$en, 'fr', 'en') ?? $this->$fr;
-            }
-        }
-    }
-
-    /**
-     * Traduit un texte en preservant ses paragraphes.
-     *
-     * Les paragraphes partent comme autant de textes distincts plutot qu'en un
-     * seul bloc : DeepL recolle volontiers les lignes vides, et le contenu
-     * arriverait d'un seul tenant sur la page publique, qui decoupe justement
-     * sur ces lignes vides.
-     */
-    protected function traduireTexte(Traducteur $traducteur, string $texte, string $vers, string $depuis): ?string
-    {
-        $paragraphes = preg_split('/\R{2,}/u', trim($texte)) ?: [];
-
-        $traduits = $traducteur->traduire($paragraphes, $vers, $depuis);
-
-        return $traduits === null ? null : implode("\n\n", $traduits);
+        return ['titre', 'resume', 'contenu', 'metaDescription'];
     }
 
     /**
