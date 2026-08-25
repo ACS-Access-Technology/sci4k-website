@@ -126,5 +126,6 @@
     "Le nom du service sert de titre de groupe sur la page FAQ.": "The service name is used as the group heading on the FAQ page.",
     "Question enregistrée.": "Question saved.",
     "Supprimer définitivement « :question » ? Cette action est irréversible.": "Permanently delete “:question”? This cannot be undone.",
-    "Supprimer :nom": "Delete :nom"
+    "Supprimer :nom": "Delete :nom",
+    ":nombre question|:nombre questions": ":nombre question|:nombre questions"
 }

@@ -87,3 +87,21 @@ it('interdit a un lecteur d ouvrir la creation', function () {
 
     $this->actingAs($lecteur)->get(route('admin.faq.creation'))->assertForbidden();
 });
+
+it('range chaque question creee a la suite de son groupe', function () {
+    foreach (['Première ?', 'Deuxième ?'] as $intitule) {
+        Livewire::actingAs($this->editeur)
+            ->test(FaqFormulaire::class)
+            ->set('serviceId', (string) $this->service->id)
+            ->set('questionFr', $intitule)
+            ->set('questionEn', 'Question?')
+            ->set('reponseFr', 'Réponse.')
+            ->set('reponseEn', 'Answer.')
+            ->call('enregistrer')
+            ->assertHasNoErrors();
+    }
+
+    $rangs = QuestionFaq::where('service_id', $this->service->id)->orderBy('id')->pluck('ordre')->all();
+
+    expect($rangs)->toBe([1, 2]);
+});
