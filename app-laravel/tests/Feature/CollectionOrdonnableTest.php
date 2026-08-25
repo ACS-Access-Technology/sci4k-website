@@ -55,3 +55,14 @@ it('numerote a partir de un, sans trou', function () {
     expect(Service::find($b->id)->ordre)->toBe(1);
     expect(Service::find($a->id)->ordre)->toBe(2);
 });
+
+it('ignore les doublons sans laisser de trou dans la numerotation', function () {
+    $a = Service::factory()->create(['ordre' => 1, 'categorie_id' => $this->categorie->id]);
+    $b = Service::factory()->create(['ordre' => 2, 'categorie_id' => $this->categorie->id]);
+
+    Service::reordonner([$b->id, $b->id, $a->id]);
+
+    expect(Service::find($b->id)->ordre)->toBe(1);
+    expect(Service::find($a->id)->ordre)->toBe(2);
+    expect(Service::ordonnees()->pluck('id')->all())->toBe([$b->id, $a->id]);
+});

@@ -111,6 +111,20 @@ it('numerote a partir de un, sans trou', function () {
     expect(Service::find($b->id)->ordre)->toBe(1);
     expect(Service::find($a->id)->ordre)->toBe(2);
 });
+
+it('ignore les doublons sans laisser de trou dans la numerotation', function () {
+    // Sans dedoublonnage, l'identifiant repete consomme un rang a chaque
+    // occurrence et la numerotation demarre a 2 : l'ordre reste juste, mais
+    // l'invariant annonce par le docblock devient faux en silence.
+    $a = Service::factory()->create(['ordre' => 1, 'categorie_id' => $this->categorie->id]);
+    $b = Service::factory()->create(['ordre' => 2, 'categorie_id' => $this->categorie->id]);
+
+    Service::reordonner([$b->id, $b->id, $a->id]);
+
+    expect(Service::find($b->id)->ordre)->toBe(1);
+    expect(Service::find($a->id)->ordre)->toBe(2);
+    expect(Service::ordonnees()->pluck('id')->all())->toBe([$b->id, $a->id]);
+});
 ```
 
 - [ ] **Step 2 : Lancer les tests pour les voir échouer**
@@ -157,15 +171,21 @@ trait CollectionOrdonnable
     /**
      * Reecrit les rangs dans l'ordre recu, en repartant de 1.
      *
-     * Les identifiants viennent du navigateur : ceux qui ne correspondent a
-     * rien sont ignores plutot que de faire echouer l'operation entiere, et
-     * surtout sans decaler les rangs des elements legitimes.
+     * Les identifiants viennent du navigateur, donc rien n'est suppose d'eux :
+     * ceux qui ne correspondent a rien sont ignores plutot que de faire
+     * echouer l'operation entiere, et les doublons sont ecartes en gardant la
+     * premiere apparition. Sans ce dedoublonnage, un identifiant repete
+     * consommerait un rang a chaque occurrence et la numerotation demarrerait
+     * a 2 — l'ordre resterait juste, mais l'invariant « a partir de 1, sans
+     * trou » deviendrait faux sans que rien ne le signale.
      *
      * Une seule transaction : un reordonnancement interrompu a mi-chemin
      * laisserait des rangs en double.
      */
     public static function reordonner(array $idsDansLOrdre): void
     {
+        $idsDansLOrdre = array_values(array_unique($idsDansLOrdre));
+
         $connus = static::query()
             ->whereIn('id', $idsDansLOrdre)
             ->pluck('id')

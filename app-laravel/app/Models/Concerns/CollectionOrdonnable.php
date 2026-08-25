@@ -31,13 +31,18 @@ trait CollectionOrdonnable
      *
      * Les identifiants viennent du navigateur : ceux qui ne correspondent a
      * rien sont ignores plutot que de faire echouer l'operation entiere, et
-     * surtout sans decaler les rangs des elements legitimes.
+     * surtout sans decaler les rangs des elements legitimes. Un identifiant
+     * repete n'est retenu qu'a sa premiere apparition, sans quoi le rang
+     * qu'il recoit serait ecrase par son propre doublon et la numerotation
+     * sauterait un rang.
      *
      * Une seule transaction : un reordonnancement interrompu a mi-chemin
      * laisserait des rangs en double.
      */
     public static function reordonner(array $idsDansLOrdre): void
     {
+        $idsDansLOrdre = array_values(array_unique($idsDansLOrdre));
+
         $connus = static::query()
             ->whereIn('id', $idsDansLOrdre)
             ->pluck('id')
