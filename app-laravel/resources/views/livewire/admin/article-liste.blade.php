@@ -2,8 +2,28 @@
 
     <div class="flex flex-wrap items-center justify-between gap-3">
         <h1 class="text-2xl font-semibold">{{ __('Articles') }}</h1>
-        <x-bascule-langue />
+        <div class="flex items-center gap-3">
+            {{-- Le projet n'a que des roles, pas de permissions nommees : un
+                 @can('…') serait toujours faux et le bouton ne paraitrait
+                 jamais. Le test le verifie sur les deux roles. --}}
+            @hasanyrole('administrateur|editeur')
+                <a href="{{ route('admin.articles.creation') }}" wire:navigate
+                   class="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-zinc-900">
+                    {{ __('Nouvel article') }}
+                </a>
+            @endhasanyrole
+            <x-bascule-langue />
+        </div>
     </div>
+
+    @if (session('message'))
+        {{-- Sans ce bloc, l'editeur enregistre, se fait rediriger, et rien ne
+             distingue une reussite d'un clic sans effet. --}}
+        <div role="status"
+             class="rounded border border-green-300 bg-green-50 px-4 py-3 text-sm text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-100">
+            {{ session('message') }}
+        </div>
+    @endif
 
     <div class="flex flex-wrap gap-3">
         <label class="sr-only" for="recherche">{{ __('Rechercher') }}</label>
@@ -45,9 +65,15 @@
             <tbody>
                 @forelse ($articles as $article)
                     <tr class="border-t border-zinc-200 dark:border-zinc-700">
-                        {{-- Le titre n'est pas encore un lien : la route
-                             d'edition arrive a la tache suivante. --}}
-                        <td class="py-2 font-medium">{{ $article->titre($langue) }}</td>
+                        <td class="py-2 font-medium">
+                            @hasanyrole('administrateur|editeur')
+                                <a href="{{ route('admin.articles.edition', $article) }}" wire:navigate class="hover:underline">
+                                    {{ $article->titre($langue) }}
+                                </a>
+                            @else
+                                {{ $article->titre($langue) }}
+                            @endhasanyrole
+                        </td>
                         <td>{{ $article->categorie->nom($langue) }}</td>
                         <td>{{ $article->date_publication->format('d/m/Y') }}</td>
                         <td>

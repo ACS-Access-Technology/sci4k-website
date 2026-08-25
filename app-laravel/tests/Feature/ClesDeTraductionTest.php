@@ -19,16 +19,27 @@
 
 use Illuminate\Support\Facades\App;
 
-/** Extrait les cles litterales passees a __() dans toutes les vues Blade. */
+/**
+ * Extrait les cles litterales passees a __() dans les vues Blade et dans le
+ * code de l'application.
+ *
+ * `app/` compte autant que `resources/views/` : les messages de validation et
+ * les notifications y sont ecrits, et echappaient au controle tant qu'il ne
+ * regardait que les vues.
+ */
 function clesDeTraductionDesVues(): array
 {
-    $racine = resource_path('views');
     $cles = [];
 
-    $fichiers = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($racine));
+    $fichiers = new AppendIterator();
+    foreach ([resource_path('views'), app_path()] as $racine) {
+        $fichiers->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($racine)));
+    }
 
     foreach ($fichiers as $fichier) {
-        if (! $fichier->isFile() || ! str_ends_with($fichier->getFilename(), '.blade.php')) {
+        $nom = $fichier->getFilename();
+
+        if (! $fichier->isFile() || ! (str_ends_with($nom, '.blade.php') || str_ends_with($nom, '.php'))) {
             continue;
         }
 

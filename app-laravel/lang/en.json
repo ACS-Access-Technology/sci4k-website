@@ -48,5 +48,13 @@
     "Une question sur l'un de ces sujets ?": "A question on one of these topics?",
     "Nos conseillers répondent à vos questions sur le foncier, l'achat, la location et la gestion de votre patrimoine à Abidjan.": "Our advisers answer your questions on land, buying, renting and managing your property in Abidjan.",
     "Contacter SCI4K": "Contact SCI4K",
-    "Retour aux actualités": "Back to news"
+    "Retour aux actualités": "Back to news",
+    "Nouvel article": "New article",
+    "Apparaîtra dans le lien de l'article.": "Will appear in the article's link.",
+    "Un brouillon n'apparaît pas sur le site public.": "A draft does not appear on the public site.",
+    "Langue du contenu": "Content language",
+    "Affiché sur la carte de l'article.": "Shown on the article card.",
+    "Séparez les paragraphes par une ligne vide.": "Separate paragraphs with a blank line.",
+    "Laissée vide, le résumé est utilisé.": "Left empty, the summary is used.",
+    "L'identifiant d'adresse n'accepte que des minuscules, des chiffres et des traits d'union, par exemple : acd-securiser-terrain.": "The URL slug accepts only lowercase letters, digits and hyphens, for example: acd-securiser-terrain."
 }
