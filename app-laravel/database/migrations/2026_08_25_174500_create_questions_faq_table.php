@@ -14,7 +14,7 @@ return new class extends Migration
             // Le titre de groupe affiche sur faq.html EST le nom du service :
             // la question pointe donc le service, et non une categorie ou un
             // groupe invente pour l'occasion.
-            $table->foreignId('service_id')->constrained('services')->cascadeOnDelete();
+            $table->foreignId('service_id')->constrained('services');
 
             $table->unsignedInteger('ordre')->default(0);
             $table->boolean('visible')->default(true);

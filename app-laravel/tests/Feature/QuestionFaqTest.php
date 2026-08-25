@@ -53,3 +53,14 @@ it('replie sur le francais quand l anglais manque', function () {
 
     expect($q->reponse('en'))->toBe('Réponse française.');
 });
+
+it('refuse de supprimer un service qui porte des questions', function () {
+    QuestionFaq::factory()->create(['service_id' => $this->service->id]);
+
+    // RESTRICT plutot que CASCADE : perdre du contenu editorial parce qu'on a
+    // supprime son service doit etre un refus explicite, pas un effet de bord.
+    expect(fn () => $this->service->delete())
+        ->toThrow(Illuminate\Database\QueryException::class);
+
+    expect(QuestionFaq::count())->toBe(1);
+});
