@@ -15,7 +15,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            \App\Services\Traduction\Traducteur::class,
+            fn () => new \App\Services\Traduction\TraducteurDeepL(config('services.deepl.key')),
+        );
     }
 
     /**

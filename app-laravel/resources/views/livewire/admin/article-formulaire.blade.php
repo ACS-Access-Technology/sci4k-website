@@ -56,6 +56,12 @@
       langue, comme sur le bouton FR/EN du site public, sans quoi on ne saurait
       plus quelle version de l'article on est en train de rediger.
     --}}
+    @if ($traductionActive)
+        <p class="rounded border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 dark:border-sky-800 dark:bg-sky-950 dark:text-sky-100">
+            {{ __("Vous pouvez ne remplir qu'une langue : l'autre sera traduite à l'enregistrement. Un texte déjà saisi n'est jamais remplacé.") }}
+        </p>
+    @endif
+
     <div class="border-b border-zinc-200 dark:border-zinc-700">
         <nav class="flex gap-4" aria-label="{{ __('Langue du contenu') }}">
             @foreach (['fr' => 'Français', 'en' => 'English'] as $code => $intitule)

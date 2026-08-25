@@ -62,5 +62,6 @@
     "L'image sera retirée à l'enregistrement.": "The image will be removed when you save.",
     "Aucune image.": "No image.",
     "JPEG, PNG ou WebP, 4 Mo au maximum.": "JPEG, PNG or WebP, 4 MB maximum.",
-    "Envoi en cours…": "Uploading…"
+    "Envoi en cours…": "Uploading…",
+    "Vous pouvez ne remplir qu'une langue : l'autre sera traduite à l'enregistrement. Un texte déjà saisi n'est jamais remplacé.": "You may fill in one language only: the other is translated when you save. Text you have already written is never replaced."
 }

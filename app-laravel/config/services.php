@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    /*
+     * Traduction automatique des articles. Sans cle, la fonction se tait :
+     * l'editeur saisit les deux langues a la main, comme avant. Le point
+     * d'acces gratuit ou payant est deduit du suffixe de la cle.
+     */
+    'deepl' => [
+        'key' => env('DEEPL_API_KEY'),
+    ],
+
 ];

@@ -111,6 +111,53 @@ it('traduit chaque cle employee par les vues', function () {
     expect($orphelines)->toBe([], "Ces cles ne figurent dans aucun des deux dictionnaires :\n".implode("\n", $orphelines));
 });
 
+it('rend les messages de validation en clair, jamais leur cle', function () {
+    /*
+     * Laravel ne livre ses messages qu'en anglais : en francais, une erreur de
+     * saisie s'affichait « validation.required » — la cle brute. Aucune
+     * exception, aucune trace dans les journaux ; le defaut ne se voyait qu'en
+     * soumettant un formulaire incomplet.
+     */
+    $regles = ['required', 'string', 'date', 'image', 'unique', 'exists', 'in', 'regex', 'email', 'confirmed'];
+
+    $brutes = [];
+
+    foreach (['fr', 'en'] as $langue) {
+        App::setLocale($langue);
+
+        foreach ($regles as $regle) {
+            $message = trans('validation.'.$regle, ['attribute' => 'champ']);
+
+            if (! is_string($message) || str_starts_with($message, 'validation.')) {
+                $brutes[] = $regle.' ['.$langue.']';
+            }
+        }
+
+        foreach (['auth.failed', 'passwords.sent', 'passwords.token'] as $cle) {
+            if (str_starts_with((string) trans($cle), explode('.', $cle)[0].'.')) {
+                $brutes[] = $cle.' ['.$langue.']';
+            }
+        }
+    }
+
+    App::setLocale('fr');
+
+    expect($brutes)->toBe([], "Ces messages sortent en cle brute :\n".implode("\n", $brutes));
+});
+
+it('nomme les champs du formulaire en clair dans les erreurs', function () {
+    foreach (['fr', 'en'] as $langue) {
+        App::setLocale($langue);
+
+        foreach (['titreEn', 'contenuFr', 'couverture', 'slug'] as $champ) {
+            expect(trans('validation.attributes.'.$champ))
+                ->not->toBe('validation.attributes.'.$champ, "Le champ {$champ} n'a pas de nom lisible en {$langue}.");
+        }
+    }
+
+    App::setLocale('fr');
+});
+
 it('refuse les quatre noms reserves par le framework, quelle que soit la casse', function () {
     $reserves = ['auth', 'pagination', 'passwords', 'validation'];
 
