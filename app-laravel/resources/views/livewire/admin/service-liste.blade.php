@@ -32,9 +32,10 @@
         </x-admin.champ-filtre>
     </x-admin.barre-filtres>
 
-    {{-- L'ordre se regle en deplaçant les lignes. wire:sortable est fourni par
-         le petit script du pied de vue : aucune dependance ajoutee. --}}
-    <x-admin.tableau :colonnes="['', __('Service'), __('Visuel'), __('Catégorie'), __('Statut'), __('Actions')]">
+    {{-- L'ordre se regle en deplaçant les lignes par leur poignee : glisser-
+         depose ecrit a la main (resources/js/ordre.js), aucune dependance
+         ajoutee. --}}
+    <x-admin.tableau :colonnes="['', __('Service'), __('Visuel'), __('Catégorie'), __('Statut'), __('Actions')]" :ordonnable="$peutEcrire">
         <x-slot:pied>
             <p class="text-sm text-zinc-600 dark:text-zinc-400">
                 {{ __("Faites glisser une ligne par sa poignée pour changer l'ordre d'affichage sur le site.") }}

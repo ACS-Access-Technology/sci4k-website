@@ -1,3 +1,5 @@
+import './ordre';
+
 // Light / dark / system appearance switcher.
 //
 // This replaces Flux's built-in `$flux.appearance` store (removed along
