@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActualiteController;
 use App\Http\Controllers\LangueController;
+use App\Http\Controllers\PagePubliqueController;
 use Illuminate\Support\Facades\Route;
 
 // La racine sert la page d'accueil du site, restee statique. Les dix pages non
@@ -26,6 +27,14 @@ Route::get('/actualite-detail.html', [ActualiteController::class, 'ancienneAdres
 // nom est exclue de la synchronisation, pour qu'il n'existe jamais deux
 // adresses rendant deux versions divergentes des memes actualites.
 Route::permanentRedirect('/actualites.html', '/actualites');
+
+Route::get('/services', [PagePubliqueController::class, 'services'])->name('services.index');
+Route::get('/faq', [PagePubliqueController::class, 'faq'])->name('faq.index');
+
+// Memes raisons que pour /actualites.html ci-dessus : les pages statiques du
+// meme nom sont exclues de tools/sync-frontoffice.sh.
+Route::permanentRedirect('/services.html', '/services');
+Route::permanentRedirect('/faq.html', '/faq');
 
 Route::get('/langue/{code}', [LangueController::class, 'basculer'])->name('langue.basculer');
 

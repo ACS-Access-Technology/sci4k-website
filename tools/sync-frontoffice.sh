@@ -19,10 +19,10 @@
 #
 # PAGES VOLONTAIREMENT EXCLUES
 # ----------------------------
-# actualites.html et actualite-detail.html ne sont pas copiees : Laravel sert
-# desormais ces deux pages depuis la base. Les copier ferait coexister deux
-# adresses rendant deux versions divergentes du meme contenu — celle de la base
-# et celle, figee, du fichier statique.
+# actualites.html, actualite-detail.html, services.html et faq.html ne sont pas
+# copiees : Laravel sert desormais ces quatre pages depuis la base. Les copier
+# ferait coexister deux adresses rendant deux versions divergentes du meme
+# contenu — celle de la base et celle, figee, du fichier statique.
 
 set -euo pipefail
 
@@ -37,7 +37,7 @@ fi
 source_fo="$racine/frontoffice"
 cible="$racine/app-laravel/public"
 
-exclues=("actualites.html" "actualite-detail.html")
+exclues=("actualites.html" "actualite-detail.html" "services.html" "faq.html")
 
 echo "Synchronisation depuis $source_fo"
 
