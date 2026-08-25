@@ -40,6 +40,7 @@ Route::middleware(['auth', 'role:administrateur|editeur|lecteur'])
         Route::get('/', fn () => view('admin.tableau-de-bord'))->name('tableau-de-bord');
         Route::get('/articles', \App\Livewire\Admin\ArticleListe::class)->name('articles.liste');
         Route::get('/services', \App\Livewire\Admin\ServiceListe::class)->name('services.liste');
+        Route::get('/faq', \App\Livewire\Admin\FaqListe::class)->name('faq.liste');
 
         // Un lecteur consulte la liste mais n'ecrit pas : la restriction est
         // posee ici, et non sur le groupe entier.
@@ -47,6 +48,11 @@ Route::middleware(['auth', 'role:administrateur|editeur|lecteur'])
             Route::get('/articles/creation', \App\Livewire\Admin\ArticleFormulaire::class)->name('articles.creation');
             Route::get('/articles/{article}/edition', \App\Livewire\Admin\ArticleFormulaire::class)->name('articles.edition');
             Route::get('/services/{service}/edition', \App\Livewire\Admin\ServiceFormulaire::class)->name('services.edition');
+
+            // /faq/creation doit precede /faq/{question}/edition : sinon
+            // « creation » serait capture comme identifiant de question.
+            Route::get('/faq/creation', \App\Livewire\Admin\FaqFormulaire::class)->name('faq.creation');
+            Route::get('/faq/{question}/edition', \App\Livewire\Admin\FaqFormulaire::class)->name('faq.edition');
         });
     });
 
