@@ -37,3 +37,82 @@ jobs:
             echo "Relancez : cd backoffice && python3 _build/build.py"
             exit 1
           }
+
+  tests-laravel:
+    name: Tests Laravel
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: sci4k_test
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping" --health-interval=10s
+          --health-timeout=5s --health-retries=5
+
+    defaults:
+      run:
+        working-directory: app-laravel
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo_mysql, pdo_sqlite, gd, intl
+
+      - name: Installer Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: app-laravel/package-lock.json
+
+      # Sans cette etape, tout test rendant une page d'administration echoue
+      # sur « Vite manifest not found » : les vues appellent @vite et
+      # public/build n'est pas versionne. L'echec accuserait les tests plutot
+      # que la CI, ce qui coute une heure a comprendre.
+      - name: Assembler les ressources
+        run: |
+          npm ci
+          npm run build
+
+      - name: Preparer l'environnement
+        run: cp .env.example .env
+
+      - name: Installer les dependances PHP
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Generer la cle d'application
+        run: php artisan key:generate
+
+      # Depose dans public/ les ressources et les pages statiques. La route « / »
+      # sert public/index.html : sans cette etape le fichier n'existe pas sur un
+      # depot fraichement clone, et quatre tests tombent sur une page d'accueil
+      # introuvable. Oubli revele par la premiere execution reelle de cette CI.
+      - name: Deposer les ressources du site statique
+        working-directory: .
+        run: ./tools/sync-frontoffice.sh
+
+      # Deux passes, et c'est deliberé. phpunit.xml impose SQLite en memoire :
+      # rapide, mais ce n'est pas le moteur servi en production. Une variable
+      # d'environnement reelle prime sur phpunit.xml — verifie — ce qui permet
+      # de rejouer la meme suite contre MySQL et d'y attraper les ecarts de
+      # dialecte, l'enum de statut au premier chef.
+      - name: Tests sur SQLite
+        run: php artisan test
+
+      - name: Tests sur MySQL, le moteur de production
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: '3306'
+          DB_DATABASE: sci4k_test
+          DB_USERNAME: root
+          DB_PASSWORD: root
+        run: php artisan test

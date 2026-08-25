@@ -143,6 +143,31 @@ def controle_couleurs_inline():
                                  % (os.path.basename(page), m.group(1)))
 
 
+def controle_selecteurs_sombres_morts():
+    """Aucun selecteur de theme sombre ne doit exiger l'attribut plusieurs fois.
+
+    Seul <html> porte data-theme. Un selecteur comme
+
+        [data-theme="dark"] [data-theme="dark"] .news-card
+
+    reclame donc un ancetre portant l'attribut A L'INTERIEUR d'un autre : il ne
+    matche jamais. La regle est morte, et la seule chose qui la trahit est
+    l'ecran — le titre d'une carte passe en clair par une regle voisine tandis
+    que son fond reste clair, ce qui donne un contraste de 1,1.
+
+    Ce defaut a vecu en ligne : introduit en cherchant a gagner en specificite,
+    il n'a ete vu qu'en mesurant le contraste a l'ecran. Le controle des
+    attributs style ne pouvait pas le voir, ne regardant que le HTML.
+    """
+    repete = re.compile(r'\[data-theme=(["\'])dark\1\]\s+[^{,]*\[data-theme=')
+    for feuille in sorted(glob(os.path.join(FRONT, 'assets', '*.css'))):
+        s = lire(feuille)
+        for regle in re.findall(r'[^{}]+(?=\{)', s):
+            if repete.search(regle):
+                anomalies.append('selecteur de theme sombre mort dans %s : %s'
+                                 % (os.path.basename(feuille), regle.strip()[:90]))
+
+
 CONTROLES = [
     ('references internes', controle_references),
     ('donnees structurees', controle_donnees_structurees),
@@ -151,6 +176,7 @@ CONTROLES = [
     ('plan de site', controle_plan_de_site),
     ('chargement du script', controle_chargement_script),
     ('couleurs et theme sombre', controle_couleurs_inline),
+    ('selecteurs de theme sombre', controle_selecteurs_sombres_morts),
 ]
 
 if __name__ == '__main__':
