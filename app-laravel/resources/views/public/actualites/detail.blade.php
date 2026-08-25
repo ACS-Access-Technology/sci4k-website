@@ -25,8 +25,8 @@
   <div class="wrap">
 
     <article class="article reveal" id="{{ $article->slug }}">
-      @if ($article->image_source)
-        <div class="article-cover" style="background-image:url('{{ asset($article->image_source) }}');"></div>
+      @if ($url = $article->urlCouverture())
+        <div class="article-cover" style="background-image:url('{{ $url }}');"></div>
       @endif
       <div class="article-body">
         <div class="article-meta">

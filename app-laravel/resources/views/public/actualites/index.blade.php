@@ -57,8 +57,8 @@
            href="{{ route('actualites.detail', $article) }}"
            data-cat="{{ $article->categorie->nom($langue) }}"
            data-date="{{ $article->date_publication->format('Y-m-d') }}">
-          @if ($article->image_source)
-            <div class="news-card-cover" style="background-image:url('{{ asset($article->image_source) }}')"></div>
+          @if ($url = $article->urlCouverture())
+            <div class="news-card-cover" style="background-image:url('{{ $url }}')"></div>
           @else
             <div class="news-card-cover"></div>
           @endif

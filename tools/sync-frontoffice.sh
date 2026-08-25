@@ -66,4 +66,14 @@ for page in "$source_fo"/*.html; do
 done
 echo "  pages statiques : $copiees copiees"
 
+# Lien vers storage/app/public, ou vivent les couvertures televersees depuis
+# l'administration. Sans lui elles repondent 404, sans erreur cote serveur :
+# le defaut ne se voit qu'a l'image cassee sur le site public.
+if [ ! -e "$cible/storage" ]; then
+    (cd "$racine/app-laravel" && php artisan storage:link >/dev/null)
+    echo "  storage/ : lien cree"
+else
+    echo "  storage/ : lien deja present"
+fi
+
 echo "Termine. Ces copies ne sont pas versionnees."

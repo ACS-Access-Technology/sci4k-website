@@ -112,6 +112,34 @@
         </div>
     @endforeach
 
+    <div class="space-y-3 rounded border border-zinc-200 p-4 dark:border-zinc-700">
+        <span class="block text-sm font-medium">{{ __('Image de couverture') }}</span>
+
+        {{-- L'apercu n'est demande que si le fichier est valide : temporaryUrl()
+             leve une exception sur un type non previsualisable, et la page
+             tomberait au lieu d'afficher le message d'erreur. --}}
+        @if ($couverture && ! $errors->has('couverture'))
+            <img src="{{ $couverture->temporaryUrl() }}" alt="" class="h-40 rounded object-cover">
+            <p class="text-xs text-zinc-500">{{ __("Nouvelle image, enregistrée à la validation du formulaire.") }}</p>
+        @elseif ($couvertureActuelle && ! $couvertureARetirer)
+            <img src="{{ asset($couvertureActuelle) }}" alt="" class="h-40 rounded object-cover">
+            <button type="button" wire:click="supprimerCouverture" class="text-sm text-red-600 hover:underline">
+                {{ __("Retirer l'image") }}
+            </button>
+        @elseif ($couvertureARetirer)
+            <p class="text-sm text-amber-700 dark:text-amber-300">
+                {{ __("L'image sera retirée à l'enregistrement.") }}
+            </p>
+        @else
+            <p class="text-sm text-zinc-500">{{ __('Aucune image.') }}</p>
+        @endif
+
+        <input type="file" wire:model="couverture" accept="image/*" class="block w-full text-sm">
+        <span class="block text-xs text-zinc-500">{{ __('JPEG, PNG ou WebP, 4 Mo au maximum.') }}</span>
+        <div wire:loading wire:target="couverture" class="text-xs text-zinc-500">{{ __('Envoi en cours…') }}</div>
+        @error('couverture') <span class="block text-sm text-red-600">{{ $message }}</span> @enderror
+    </div>
+
     <div class="flex items-center gap-3">
         <button type="submit" class="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-zinc-900">
             {{ __('Enregistrer') }}

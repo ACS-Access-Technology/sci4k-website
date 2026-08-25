@@ -12,6 +12,14 @@ class Article extends Model
     use HasFactory;
     use TraduitParColonnes;
 
+    /**
+     * Prefixe des couvertures televersees, tel qu'il figure dans
+     * `image_source`. Il distingue un fichier depose par l'administration,
+     * qu'on peut effacer, d'une couverture du site statique, qu'on ne doit
+     * jamais toucher.
+     */
+    public const DOSSIER_COUVERTURES = 'storage/actualites';
+
     protected $fillable = [
         'slug', 'categorie_id', 'date_publication', 'statut',
         'titre_fr', 'titre_en', 'resume_fr', 'resume_en',
@@ -64,6 +72,35 @@ class Article extends Model
     public function metaDescription(string $langue = 'fr'): string
     {
         return $this->texteDansLaLangue('meta_description', $langue) ?: $this->resume($langue);
+    }
+
+    /**
+     * Adresse de la couverture, ou null si l'article n'en a pas.
+     *
+     * Deux origines cohabitent dans `image_source`, et c'est voulu :
+     *
+     *   - `images/actualites/article-1.jpg` pour les douze articles repris du
+     *     site, dont les fichiers vivent dans frontoffice/ et sont deposes
+     *     dans public/ par tools/sync-frontoffice.sh ;
+     *   - `storage/actualites/…` pour les couvertures televersees depuis
+     *     l'administration.
+     *
+     * Les vues n'ont ainsi qu'un seul point d'appel, et le repli est teste une
+     * fois pour toutes plutot que reecrit dans chaque gabarit.
+     */
+    public function urlCouverture(): ?string
+    {
+        if (! $this->image_source) {
+            return null;
+        }
+
+        return asset($this->image_source);
+    }
+
+    /** Le fichier de couverture a-t-il ete televerse depuis l'administration ? */
+    public function couvertureTeleversee(): bool
+    {
+        return str_starts_with((string) $this->image_source, self::DOSSIER_COUVERTURES.'/');
     }
 
     public function categorie()

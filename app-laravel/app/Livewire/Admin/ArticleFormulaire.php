@@ -5,9 +5,11 @@ namespace App\Livewire\Admin;
 use App\Models\Article;
 use App\Models\Categorie;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 /*
  * Formulaire de creation et d'edition d'un article.
@@ -28,7 +30,18 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class ArticleFormulaire extends Component
 {
+    use WithFileUploads;
+
     public ?Article $article = null;
+
+    /** Fichier choisi dans le navigateur, pas encore enregistre. */
+    public $couverture = null;
+
+    /** Chemin de la couverture actuelle, tel qu'il sera ecrit en base. */
+    public ?string $couvertureActuelle = null;
+
+    /** L'editeur a demande le retrait de la couverture existante. */
+    public bool $couvertureARetirer = false;
 
     public string $slug = '';
 
@@ -72,6 +85,7 @@ class ArticleFormulaire extends Component
         }
 
         $this->article = $article;
+        $this->couvertureActuelle = $article->image_source;
         $this->slug = $article->slug;
         $this->categorieId = (string) $article->categorie_id;
         $this->datePublication = $article->date_publication->format('Y-m-d');
@@ -109,7 +123,24 @@ class ArticleFormulaire extends Component
             'contenuEn' => ['required', 'string'],
             'metaDescriptionFr' => ['nullable', 'string', 'max:160'],
             'metaDescriptionEn' => ['nullable', 'string', 'max:160'],
+            'couverture' => ['nullable', 'image', 'max:4096'],
         ];
+    }
+
+    /** Valide le fichier des son choix, sans attendre l'enregistrement. */
+    public function updatedCouverture(): void
+    {
+        $this->validateOnly('couverture');
+    }
+
+    /**
+     * Retire la couverture. Le fichier n'est efface qu'a l'enregistrement :
+     * tant que l'editeur n'a pas valide, il peut encore changer d'avis.
+     */
+    public function supprimerCouverture(): void
+    {
+        $this->couverture = null;
+        $this->couvertureARetirer = true;
     }
 
     protected function messages(): array
@@ -123,7 +154,10 @@ class ArticleFormulaire extends Component
     {
         $this->validate();
 
+        $couverture = $this->resoudreCouverture();
+
         $donnees = [
+            'image_source' => $couverture,
             'slug' => $this->slug,
             'categorie_id' => $this->categorieId,
             'date_publication' => $this->datePublication,
@@ -148,6 +182,45 @@ class ArticleFormulaire extends Component
 
         session()->flash('message', __('Article enregistré.'));
         $this->redirectRoute('admin.articles.liste');
+    }
+
+    /**
+     * Determine le chemin de couverture a enregistrer, et fait le menage.
+     *
+     * L'ancien fichier n'est efface que s'il vient de l'administration. Les
+     * douze couvertures reprises du site vivent dans public/images/, deposees
+     * par tools/sync-frontoffice.sh depuis frontoffice/ : les effacer
+     * detruirait la source du site public, et le prochain lancement du script
+     * les remettrait, ce qui rendrait le defaut incomprehensible.
+     */
+    protected function resoudreCouverture(): ?string
+    {
+        $ancienne = $this->couvertureActuelle;
+
+        if ($this->couverture) {
+            $chemin = $this->couverture->store('actualites', 'public');
+            $this->effacerSiTeleversee($ancienne);
+            $this->couvertureActuelle = 'storage/'.$chemin;
+
+            return $this->couvertureActuelle;
+        }
+
+        if ($this->couvertureARetirer) {
+            $this->effacerSiTeleversee($ancienne);
+            $this->couvertureActuelle = null;
+            $this->couvertureARetirer = false;
+
+            return null;
+        }
+
+        return $ancienne;
+    }
+
+    protected function effacerSiTeleversee(?string $chemin): void
+    {
+        if ($chemin && str_starts_with($chemin, Article::DOSSIER_COUVERTURES.'/')) {
+            Storage::disk('public')->delete(substr($chemin, strlen('storage/')));
+        }
     }
 
     public function render(): View

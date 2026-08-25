@@ -56,8 +56,8 @@ class ActualiteController extends Controller
             'author' => ['@id' => rtrim(url('/'), '/').'/#organisation'],
         ];
 
-        if ($article->image_source) {
-            $noeud['image'] = asset($article->image_source);
+        if ($url = $article->urlCouverture()) {
+            $noeud['image'] = $url;
         }
 
         return view('public.actualites.detail', [

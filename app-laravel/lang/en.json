@@ -56,5 +56,11 @@
     "Affiché sur la carte de l'article.": "Shown on the article card.",
     "Séparez les paragraphes par une ligne vide.": "Separate paragraphs with a blank line.",
     "Laissée vide, le résumé est utilisé.": "Left empty, the summary is used.",
-    "L'identifiant d'adresse n'accepte que des minuscules, des chiffres et des traits d'union, par exemple : acd-securiser-terrain.": "The URL slug accepts only lowercase letters, digits and hyphens, for example: acd-securiser-terrain."
+    "L'identifiant d'adresse n'accepte que des minuscules, des chiffres et des traits d'union, par exemple : acd-securiser-terrain.": "The URL slug accepts only lowercase letters, digits and hyphens, for example: acd-securiser-terrain.",
+    "Nouvelle image, enregistrée à la validation du formulaire.": "New image, saved when you submit the form.",
+    "Retirer l'image": "Remove image",
+    "L'image sera retirée à l'enregistrement.": "The image will be removed when you save.",
+    "Aucune image.": "No image.",
+    "JPEG, PNG ou WebP, 4 Mo au maximum.": "JPEG, PNG or WebP, 4 MB maximum.",
+    "Envoi en cours…": "Uploading…"
 }
