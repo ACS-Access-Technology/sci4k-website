@@ -36,9 +36,13 @@ function clesDeTraductionDesVues(): array
 
         // __('…') et __("…"), en ignorant les appels dont l'argument est une
         // variable ou une concatenation : seules les cles litterales comptent.
-        preg_match_all('/__\(\s*([\'"])((?:(?!\1).)*)\1/s', $contenu, $trouvees);
+        // `\\.` avant l'alternative laisse passer les quotes echappees, sans
+        // quoi __('Don\'t have an account?') serait tronque a « Don\ ».
+        preg_match_all('/__\(\s*([\'"])((?:\\\\.|(?!\1).)*)\1/s', $contenu, $trouvees);
 
-        foreach ($trouvees[2] as $cle) {
+        foreach ($trouvees[2] as $i => $cle) {
+            $delimiteur = $trouvees[1][$i];
+            $cle = str_replace(['\\'.$delimiteur, '\\\\'], [$delimiteur, '\\'], $cle);
             $cles[$cle] = $fichier->getPathname();
         }
     }
@@ -66,6 +70,34 @@ it('ne rend jamais un tableau la ou une chaine est attendue', function () {
     App::setLocale('fr');
 
     expect($fautives)->toBe([], "Ces cles se resolvent contre un fichier de langue du framework au lieu du dictionnaire :\n".implode("\n", $fautives));
+});
+
+it('traduit chaque cle employee par les vues', function () {
+    /*
+     * Le projet porte deux dictionnaires de sens inverse : en.json traduit les
+     * cles francaises des vues du projet, fr.json les cles anglaises heritees
+     * du starter kit. Une cle absente des deux n'est donc traduite dans aucune
+     * direction — elle s'affichera dans sa langue d'origine au milieu de
+     * l'autre, ce qui est exactement le defaut qui avait laisse « Dashboard »
+     * et « Log out » dans une interface annoncee comme entierement francaise.
+     *
+     * Laravel ne fait pas jouer la langue de repli pour les cles JSON : une
+     * cle absente ressort telle quelle, sans erreur ni trace. Rien ne signale
+     * l'oubli, d'ou ce controle.
+     */
+    $dictionnaires = collect(['en', 'fr'])
+        ->flatMap(fn ($langue) => array_keys(
+            json_decode(file_get_contents(lang_path($langue.'.json')), true) ?? []
+        ))
+        ->flip();
+
+    $orphelines = collect(clesDeTraductionDesVues())
+        ->reject(fn ($fichier, $cle) => $dictionnaires->has($cle))
+        ->map(fn ($fichier, $cle) => $cle.'  ('.str_replace(resource_path('views').'/', '', $fichier).')')
+        ->values()
+        ->all();
+
+    expect($orphelines)->toBe([], "Ces cles ne figurent dans aucun des deux dictionnaires :\n".implode("\n", $orphelines));
 });
 
 it('refuse les quatre noms reserves par le framework, quelle que soit la casse', function () {

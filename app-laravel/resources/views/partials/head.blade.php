@@ -2,7 +2,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <title>
-    {{ filled($title ?? null) ? $title.' - '.config('app.name', 'Laravel') : config('app.name', 'Laravel') }}
+    {{-- Le titre passe par __() : les composants Volt le posent via l'attribut
+         PHP #[Title('…')], qui n'accepte qu'une expression constante et ne peut
+         donc pas appeler __() lui-meme. Le traduire ici laisse l'onglet suivre
+         la langue. L'appel est sans effet sur un titre deja traduit, la cle
+         etant alors absente du dictionnaire et rendue telle quelle. --}}
+    {{ filled($title ?? null) ? __($title).' - '.config('app.name', 'Laravel') : config('app.name', 'Laravel') }}
 </title>
 
 <link rel="icon" href="/favicon.ico" sizes="any">
