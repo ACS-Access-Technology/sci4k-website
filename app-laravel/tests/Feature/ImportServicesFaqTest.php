@@ -22,8 +22,12 @@ it('importe les douze questions, deux par service', function () {
 });
 
 it('n importe aucun texte vide', function () {
+    // accroche et atout1 sont attendus sur les six services du site (voir le
+    // garde-fou de tools/extraction-services-faq.py) : les couvrir ici
+    // detecterait une regression meme si l'import n'echouait pas.
     foreach (Service::all() as $s) {
-        foreach (['nom_fr', 'nom_en', 'accroche_fr', 'accroche_en', 'description_fr', 'description_en'] as $c) {
+        foreach (['nom_fr', 'nom_en', 'accroche_fr', 'accroche_en', 'description_fr', 'description_en',
+            'atout1_fr', 'atout1_en'] as $c) {
             expect($s->$c)->not->toBe('', "{$s->slug}.{$c} est vide");
         }
     }
@@ -44,6 +48,16 @@ it('n importe aucun texte corrompu', function () {
         foreach (['nom_fr', 'nom_en', 'description_fr', 'description_en'] as $c) {
             if (str_contains($s->$c, 'Ã') || str_contains($s->$c, 'â€')) {
                 $suspects[] = $s->slug.'.'.$c;
+            }
+        }
+    }
+
+    // Les douze questions (48 champs de question et de reponse) sont
+    // exposees au meme risque : elles passent elles aussi par denoter().
+    foreach (QuestionFaq::all() as $q) {
+        foreach (['question_fr', 'question_en', 'reponse_fr', 'reponse_en'] as $c) {
+            if (str_contains($q->$c, 'Ã') || str_contains($q->$c, 'â€')) {
+                $suspects[] = "question {$q->id}.{$c}";
             }
         }
     }
