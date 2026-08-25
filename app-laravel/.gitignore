@@ -1,5 +1,13 @@
 /.phpunit.cache
 /node_modules
+
+# Copies deposees par tools/sync-frontoffice.sh. frontoffice/ est la seule
+# source de verite : versionner ces copies creerait un second exemplaire des
+# memes fichiers, qui divergerait a la premiere retouche.
+/public/assets
+/public/images
+/public/*.html
+
 /public/build
 /public/fonts-manifest.dev.json
 /public/hot
