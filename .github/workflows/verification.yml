@@ -91,6 +91,14 @@ jobs:
       - name: Generer la cle d'application
         run: php artisan key:generate
 
+      # Depose dans public/ les ressources et les pages statiques. La route « / »
+      # sert public/index.html : sans cette etape le fichier n'existe pas sur un
+      # depot fraichement clone, et quatre tests tombent sur une page d'accueil
+      # introuvable. Oubli revele par la premiere execution reelle de cette CI.
+      - name: Deposer les ressources du site statique
+        working-directory: .
+        run: ./tools/sync-frontoffice.sh
+
       # Deux passes, et c'est deliberé. phpunit.xml impose SQLite en memoire :
       # rapide, mais ce n'est pas le moteur servi en production. Une variable
       # d'environnement reelle prime sur phpunit.xml — verifie — ce qui permet
