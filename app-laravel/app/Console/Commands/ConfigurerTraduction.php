@@ -18,13 +18,22 @@ use Illuminate\Console\Command;
  */
 class ConfigurerTraduction extends Command
 {
-    protected $signature = 'traduction:configurer {--retirer : efface la cle enregistree}';
+    protected $signature = 'traduction:configurer
+                            {--verifier : controle la cle deja enregistree, sans rien demander}
+                            {--retirer : efface la cle enregistree}';
 
     protected $description = 'Enregistre la cle DeepL et verifie qu elle repond';
 
     public function handle(): int
     {
         $fichier = base_path('.env');
+
+        // Chemin non interactif : rien n'est saisi, la cle deja posee dans .env
+        // est simplement mise a l'epreuve. Utile quand le terminal ne permet pas
+        // de repondre a une invite.
+        if ($this->option('verifier')) {
+            return $this->verifierLaCleEnregistree();
+        }
 
         if (! is_writable($fichier)) {
             $this->error("Le fichier .env n'est pas accessible en écriture : {$fichier}");
@@ -77,6 +86,50 @@ class ConfigurerTraduction extends Command
         $this->line('  Point d\'accès : '.(str_ends_with($cle, ':fx') ? 'offre gratuite' : 'offre payante'));
         $this->newLine();
         $this->line('Les articles se traduiront désormais tout seuls, dans la langue laissée vide.');
+
+        return self::SUCCESS;
+    }
+
+    /**
+     * Met a l'epreuve la cle presente dans .env.
+     *
+     * La cle n'est jamais affichee : seuls sa longueur et ses quatre derniers
+     * caracteres le sont, de quoi reconnaitre une cle tronquee a la copie sans
+     * l'exposer a l'ecran ni dans une capture.
+     */
+    protected function verifierLaCleEnregistree(): int
+    {
+        $cle = (string) config('services.deepl.key');
+
+        if ($cle === '') {
+            $this->error('Aucune clé enregistrée dans .env.');
+            $this->line('Ligne à renseigner : DEEPL_API_KEY=');
+
+            return self::FAILURE;
+        }
+
+        $this->line('Clé trouvée : '.strlen($cle).' caractères, se terminant par « '.substr($cle, -4).' »');
+
+        if (! str_ends_with($cle, ':fx') && ! preg_match('/^[0-9a-f-]{20,}$/i', $cle)) {
+            $this->warn('Le format surprend. Vérifiez qu\'elle a été collée en entier, sans espace ni retour à la ligne.');
+        }
+
+        $this->line('Vérification auprès de DeepL…');
+
+        $essai = (new TraducteurDeepL($cle))->traduire(['Bonjour, ceci est un essai.'], 'en', 'fr');
+
+        if ($essai === null) {
+            $this->newLine();
+            $this->error('DeepL n\'a pas accepté cette clé.');
+            $this->line('Causes fréquentes : clé incomplète, espace en trop, ou compte pas encore activé.');
+
+            return self::FAILURE;
+        }
+
+        $this->newLine();
+        $this->info('La traduction automatique est opérationnelle.');
+        $this->line('  « Bonjour, ceci est un essai. » → « '.$essai[0].' »');
+        $this->line('  Point d\'accès : '.(str_ends_with($cle, ':fx') ? 'offre gratuite' : 'offre payante'));
 
         return self::SUCCESS;
     }

@@ -19,6 +19,13 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <!-- La suite ne doit jamais appeler DeepL : sans cette ligne, une cle
+             posee dans .env est utilisee par les tests, qui consomment alors le
+             quota du client et dependent du reseau. Le defaut s'est manifeste
+             a l'envers — un test cense echouer faute de titre anglais a reussi,
+             le champ ayant ete rempli par une vraie traduction. Les tests qui
+             exercent le mecanisme fournissent leur propre traducteur. -->
+        <env name="DEEPL_API_KEY" value=""/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
