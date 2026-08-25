@@ -39,6 +39,19 @@
                         <x-icons.layout-grid />
                         {{ __('Articles') }}
                     </a>
+
+                    <a
+                        href="{{ route('admin.services.liste') }}"
+                        wire:navigate
+                        @class([
+                            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium',
+                            'bg-zinc-200/70 text-zinc-900 dark:bg-white/10 dark:text-white' => request()->routeIs('admin.services.*'),
+                            'text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5' => ! request()->routeIs('admin.services.*'),
+                        ])
+                    >
+                        <x-icons.layout-grid />
+                        {{ __('Services') }}
+                    </a>
                 </nav>
 
                 <nav class="space-y-1 px-3 pb-3">
@@ -110,6 +123,19 @@
                         >
                             <x-icons.layout-grid />
                             {{ __('Articles') }}
+                        </a>
+
+                        <a
+                            href="{{ route('admin.services.liste') }}"
+                            wire:navigate
+                            @class([
+                                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium',
+                                'bg-zinc-200/70 text-zinc-900 dark:bg-white/10 dark:text-white' => request()->routeIs('admin.services.*'),
+                                'text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5' => ! request()->routeIs('admin.services.*'),
+                            ])
+                        >
+                            <x-icons.layout-grid />
+                            {{ __('Services') }}
                         </a>
                     </nav>
 

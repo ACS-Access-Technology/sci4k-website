@@ -124,5 +124,6 @@
     "or you can": "ou bien",
     "or, enter the code manually": "ou saisissez la clé manuellement",
     ":nombre article publié|:nombre articles publiés": ":nombre article publié|:nombre articles publiés",
-    ":nombre affiché|:nombre affichés": ":nombre affiché|:nombre affichés"
+    ":nombre affiché|:nombre affichés": ":nombre affiché|:nombre affichés",
+    ":nombre service|:nombre services": ":nombre service|:nombre services"
 }

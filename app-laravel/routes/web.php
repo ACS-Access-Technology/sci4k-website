@@ -39,6 +39,7 @@ Route::middleware(['auth', 'role:administrateur|editeur|lecteur'])
     ->group(function () {
         Route::get('/', fn () => view('admin.tableau-de-bord'))->name('tableau-de-bord');
         Route::get('/articles', \App\Livewire\Admin\ArticleListe::class)->name('articles.liste');
+        Route::get('/services', \App\Livewire\Admin\ServiceListe::class)->name('services.liste');
 
         // Un lecteur consulte la liste mais n'ecrit pas : la restriction est
         // posee ici, et non sur le groupe entier.

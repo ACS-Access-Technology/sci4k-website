@@ -87,5 +87,21 @@
     ":nombre article publié|:nombre articles publiés": ":nombre published article|:nombre published articles",
     ":nombre affiché|:nombre affichés": ":nombre shown|:nombre shown",
     "Aucun article ne correspond à votre recherche.": "No article matches your search.",
-    "En savoir plus": "Learn more"
+    "En savoir plus": "Learn more",
+    "Services": "Services",
+    "Service": "Service",
+    "Nom du service…": "Service name…",
+    "Visibilité": "Visibility",
+    "Visibles": "Visible",
+    "Masqués": "Hidden",
+    "Visible": "Visible",
+    "Masqué": "Hidden",
+    "Tous": "All",
+    "Visuel": "Image",
+    "Aucun": "None",
+    "Déplacer cet élément": "Move this item",
+    "Faites glisser une ligne par sa poignée pour changer l'ordre d'affichage sur le site.": "Drag a row by its handle to change the display order on the site.",
+    "Aucun service ne correspond à votre recherche.": "No service matches your search.",
+    "Élément supprimé.": "Item deleted.",
+    ":nombre service|:nombre services": ":nombre service|:nombre services"
 }
