@@ -60,8 +60,20 @@ it('liste les elements dans leur ordre', function () {
 });
 
 it('cherche dans les deux langues', function () {
-    Service::factory()->create(['nom_fr' => 'Foncier', 'nom_en' => 'Land title', 'categorie_id' => $this->categorie->id]);
-    Service::factory()->create(['nom_fr' => 'Construction', 'nom_en' => 'Building', 'categorie_id' => $this->categorie->id]);
+    // Les accroches sont fixees et non laissees a Faker : la recherche porte
+    // aussi sur elles, et un mot latin comme « blanditiis » contient « land ».
+    // Un test qui ne maitrise pas toutes les colonnes qu'il interroge est
+    // instable par construction — mesure a une execution sur 45 environ.
+    Service::factory()->create([
+        'nom_fr' => 'Foncier', 'nom_en' => 'Land title',
+        'accroche_fr' => 'Sécuriser vos terrains', 'accroche_en' => 'Secure your plots',
+        'categorie_id' => $this->categorie->id,
+    ]);
+    Service::factory()->create([
+        'nom_fr' => 'Construction', 'nom_en' => 'Building',
+        'accroche_fr' => 'Bâtir avec méthode', 'accroche_en' => 'Build with method',
+        'categorie_id' => $this->categorie->id,
+    ]);
 
     Livewire::actingAs($this->editeur)
         ->test(ServiceListe::class)
