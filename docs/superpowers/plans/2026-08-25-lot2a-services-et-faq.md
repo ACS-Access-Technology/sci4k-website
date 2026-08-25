@@ -581,6 +581,17 @@ it('replie sur le francais quand l anglais manque', function () {
 
     expect($q->reponse('en'))->toBe('Réponse française.');
 });
+
+it('refuse de supprimer un service qui porte des questions', function () {
+    QuestionFaq::factory()->create(['service_id' => $this->service->id]);
+
+    // RESTRICT plutot que CASCADE : perdre du contenu editorial parce qu'on a
+    // supprime son service doit etre un refus explicite, pas un effet de bord.
+    expect(fn () => $this->service->delete())
+        ->toThrow(Illuminate\Database\QueryException::class);
+
+    expect(QuestionFaq::count())->toBe(1);
+});
 ```
 
 - [ ] **Step 2 : Lancer le test pour le voir échouer**
@@ -610,7 +621,13 @@ return new class extends Migration
             // Le titre de groupe affiche sur faq.html EST le nom du service :
             // la question pointe donc le service, et non une categorie ou un
             // groupe invente pour l'occasion.
-            $table->foreignId('service_id')->constrained('services')->cascadeOnDelete();
+            //
+            // RESTRICT, comme partout ailleurs dans le projet — articles et
+            // services declarent leur categorie de la meme facon. Un CASCADE
+            // effacerait les questions d'un service supprime sans un mot :
+            // aucun ecran ne permet aujourd'hui de supprimer un service, mais
+            // la contrainte est ce qui reste quand l'ecran change.
+            $table->foreignId('service_id')->constrained('services');
 
             $table->unsignedInteger('ordre')->default(0);
             $table->boolean('visible')->default(true);
