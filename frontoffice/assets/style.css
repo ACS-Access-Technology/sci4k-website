@@ -1650,8 +1650,13 @@ body.page-biens .results-count{color:var(--navy-700);}
 [data-theme="dark"] .news-section,[data-theme="dark"] .news-detail{background:var(--dark-bg);}
 [data-theme="dark"] .news-toolbar{background:var(--dark-surface);border-color:var(--dark-border);box-shadow:none;}
 [data-theme="dark"] .nt-field label{color:var(--dark-text-muted);}
-[data-theme="dark"] .nt-field input{background:var(--dark-surface-2);border-color:var(--dark-border);color:var(--dark-text);}
-[data-theme="dark"] [data-theme="dark"] [data-theme="dark"] [data-theme="dark"] .news-card{background:var(--dark-surface);border-color:var(--dark-border);}
+[data-theme="dark"] .nt-field input,
+[data-theme="dark"] .nt-field select{background-color:var(--dark-surface-2);border-color:var(--dark-border);color:var(--dark-text);}
+/* Le chevron du selecteur est une image de fond : il faut le redessiner clair,
+   sans quoi il disparait sur le fond sombre. La couleur ne peut pas venir d'une
+   variable, une URI de donnees n'en interpretant pas. */
+[data-theme="dark"] .nt-field select{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23AEBECB' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");}
+[data-theme="dark"] .news-card{background:var(--dark-surface);border-color:var(--dark-border);}
 [data-theme="dark"] .news-card h3{color:var(--dark-text);}
 [data-theme="dark"] .news-card p{color:var(--dark-text-muted);}
 [data-theme="dark"] .news-date{color:var(--dark-text-muted);}
