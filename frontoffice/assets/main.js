@@ -662,6 +662,13 @@ window.SCI4K_PROPERTIES = [
 
   function setLang(lang) {
     try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+    /* Prevenir le serveur, qui retient la langue en session et rend les pages
+       Blade (services, FAQ, actualites) dans cette langue. Sans cet appel, un
+       visiteur choisissant l'anglais depuis une page statique retomberait en
+       francais des le premier lien vers une page rendue par le serveur.
+       En echec — page ouverte hors serveur, route absente — on ne fait rien :
+       la bascule cote client a deja eu lieu. */
+    try { fetch('/langue/' + lang, { credentials: 'same-origin' }).catch(function () {}); } catch (e) {}
     applyLang(lang);
   }
 
