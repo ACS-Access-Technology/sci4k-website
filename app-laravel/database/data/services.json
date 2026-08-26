@@ -16,7 +16,8 @@
     "atout2_en": "Boundary survey & utilities",
     "atout3_fr": "Audit juridique complet",
     "atout3_en": "Full legal audit",
-    "icone_svg": "<svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><path d=\"M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12Z\"/><circle cx=\"12\" cy=\"9\" r=\"2.5\"/></svg>"
+    "icone_svg": "<svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><path d=\"M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12Z\"/><circle cx=\"12\" cy=\"9\" r=\"2.5\"/></svg>",
+    "image_source": "images/services/foncier.jpg"
   },
   {
     "slug": "construction",
@@ -35,7 +36,8 @@
     "atout2_en": "Budget control",
     "atout3_fr": "Contrôle qualité permanent",
     "atout3_en": "Continuous quality control",
-    "icone_svg": "<svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/></svg>"
+    "icone_svg": "<svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/></svg>",
+    "image_source": "images/services/construction.jpg"
   },
   {
     "slug": "gestion",
@@ -54,7 +56,8 @@
     "atout2_en": "Receipt management",
     "atout3_fr": "Entretien courant",
     "atout3_en": "Routine upkeep",
-    "icone_svg": "<svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><path d=\"M12 3v18M3 12h18\"/><circle cx=\"12\" cy=\"12\" r=\"9\"/></svg>"
+    "icone_svg": "<svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><path d=\"M12 3v18M3 12h18\"/><circle cx=\"12\" cy=\"12\" r=\"9\"/></svg>",
+    "image_source": "images/services/gestion-location.jpg"
   },
   {
     "slug": "achat",
@@ -73,7 +76,8 @@
     "atout2_en": "Notarised negotiation",
     "atout3_fr": "Recherche personnalisée",
     "atout3_en": "Personalised search",
-    "icone_svg": "<svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><path d=\"M3 11.5 12 4l9 7.5\"/><path d=\"M5 10v9h14v-9\"/></svg>"
+    "icone_svg": "<svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><path d=\"M3 11.5 12 4l9 7.5\"/><path d=\"M5 10v9h14v-9\"/></svg>",
+    "image_source": "images/services/achat.jpg"
   },
   {
     "slug": "vente",
@@ -92,7 +96,8 @@
     "atout2_en": "Buyer screening",
     "atout3_fr": "Diffusion de prestige",
     "atout3_en": "Premium listing exposure",
-    "icone_svg": "<svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><path d=\"M4 4h16v16H4z\"/><path d=\"M4 9h16M9 4v16\"/></svg>"
+    "icone_svg": "<svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><path d=\"M4 4h16v16H4z\"/><path d=\"M4 9h16M9 4v16\"/></svg>",
+    "image_source": "images/services/vente.jpg"
   },
   {
     "slug": "administration",
@@ -111,6 +116,7 @@
     "atout2_en": "Technical maintenance",
     "atout3_fr": "Suivi administratif complet",
     "atout3_en": "Full administrative follow-up",
-    "icone_svg": "<svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><rect x=\"6\" y=\"3\" width=\"12\" height=\"18\" rx=\"2\"/><path d=\"M9 3v2h6V3\"/><path d=\"M9 10h6M9 14h6M9 18h3\"/></svg>"
+    "icone_svg": "<svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><rect x=\"6\" y=\"3\" width=\"12\" height=\"18\" rx=\"2\"/><path d=\"M9 3v2h6V3\"/><path d=\"M9 10h6M9 14h6M9 18h3\"/></svg>",
+    "image_source": "images/services/administration.jpg"
   }
 ]

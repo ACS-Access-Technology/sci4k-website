@@ -145,3 +145,47 @@ it('retombe sur la classe CSS de la tuile quand rien n a ete televerse', functio
     $reponse->assertSee('service-bg-foncier', false);
     $reponse->assertDontSee('background-image', false);
 });
+
+it('distingue une image televersee d une image du site statique', function () {
+    $statique = Service::factory()->create([
+        'categorie_id' => $this->categorie->id,
+        'image_source' => 'images/services/foncier.jpg',
+    ]);
+    $televersee = Service::factory()->create([
+        'categorie_id' => $this->categorie->id,
+        'image_source' => 'storage/services/photo.jpg',
+    ]);
+
+    expect($statique->imageTeleversee())->toBeFalse();
+    expect($televersee->imageTeleversee())->toBeTrue();
+});
+
+it('ne pose aucun style en ligne pour une image du site statique', function () {
+    // La regle CSS sert deja cette image, et fournit en prime une variante
+    // allegee sous 800 pixels. Un style en ligne l'ecraserait sans rien
+    // apporter — la page perdrait sa version mobile.
+    // Le service de beforeEach porte deja le slug « foncier » ; on le rend
+    // simplement visible et on lui donne une image du site statique.
+    $this->service->update([
+        'visible' => true, 'ordre' => 1,
+        'image_source' => 'images/services/foncier.jpg',
+    ]);
+
+    $corps = $this->get('/services')->assertOk()->getContent();
+
+    expect($corps)->toContain('service-bg-foncier');
+    expect(substr_count($corps, 'background-image:url'))->toBe(0);
+});
+
+it('renseigne l image des six services repris du site', function () {
+    // Sans ce champ, l'ecran d'administration annoncerait « aucune image »
+    // pour les six services alors que le site en affiche six.
+    Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorieSeeder', '--force' => true]);
+    Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ServiceFaqSeeder', '--force' => true]);
+
+    $sansImage = Service::whereNull('image_source')->orWhere('image_source', '')->pluck('slug')->all();
+
+    expect($sansImage)->toBe([]);
+    expect(Service::where('slug', 'gestion')->value('image_source'))
+        ->toBe('images/services/gestion-location.jpg');
+});

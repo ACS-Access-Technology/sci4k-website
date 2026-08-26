@@ -31,15 +31,18 @@
   <div class="wrap services-grid">
     @foreach ($services as $service)
       {{--
-        La classe service-bg-{slug} reste toujours posee : c'est le repli
-        quand rien n'a ete televerse. L'image televersee (image_source) est
-        prioritaire, posee en style en ligne comme pour les couvertures
-        d'actualites (public/actualites/index.blade.php) — sa specificite
-        l'emporte sur la classe sans qu'il faille y toucher.
+        La classe service-bg-{slug} reste toujours posee, et reste seule tant
+        que l'image vient du site statique : la feuille de style sert alors une
+        variante WebP allegee sous 800 pixels, qu'un style en ligne ecraserait.
+
+        Un style en ligne n'est pose QUE pour une image televersee depuis
+        l'administration, cas ou aucune regle CSS ne connait le fichier. Sa
+        specificite l'emporte alors sur la classe, comme pour les couvertures
+        d'actualites.
       --}}
       <button type="button" class="service-tile reveal service-bg-{{ $service->slug }}"
               id="{{ $service->slug }}" data-svc="{{ $service->slug }}"
-              @if ($url = $service->urlImage()) style="background-image:url('{{ $url }}')" @endif
+              @if ($service->imageTeleversee()) style="background-image:url('{{ $service->urlImage() }}')" @endif
               aria-haspopup="dialog" aria-controls="svcModal">
         <span class="service-tile-veil"></span>
         <span class="service-tile-inner">

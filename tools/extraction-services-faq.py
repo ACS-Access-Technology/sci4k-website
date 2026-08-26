@@ -21,6 +21,7 @@ import re
 svc_html = io.open('frontoffice/services.html', encoding='utf-8').read()
 faq_html = io.open('frontoffice/faq.html', encoding='utf-8').read()
 js = io.open('frontoffice/assets/main.js', encoding='utf-8').read()
+css = io.open('frontoffice/assets/images.css', encoding='utf-8').read()
 
 
 def denoter(s):
@@ -92,6 +93,21 @@ for rang, slug in enumerate(slugs, start=1):
     bloc = re.search(r'data-svc="%s".*?</button>' % re.escape(slug), svc_html, re.S)
     icone = re.search(r'<svg .*?</svg>', bloc.group(0), re.S) if bloc else None
     entree['icone_svg'] = icone.group(0) if icone else None
+
+    # Chemin de l'image de fond, resolu depuis images.css.
+    #
+    # Le nom du fichier ne se deduit PAS du slug : le service « gestion »
+    # s'appuie sur gestion-location.jpg. Lire la feuille de style plutot que
+    # de composer le nom garde une source de verite unique et survit a un
+    # renommage.
+    #
+    # Sans ce champ, l'ecran d'administration afficherait « aucune image »
+    # pour les six services alors que le site en montre six : image_source
+    # serait vide, et l'ecran mentirait sur l'etat reel du site.
+    m = re.search(r'--img-service-%s:\s*url\([\'"]?\.\./([^\'")]+)' % re.escape(slug), css)
+    if not m:
+        raise SystemExit('image introuvable dans images.css pour le service ' + slug)
+    entree['image_source'] = 'images/' + m.group(1).split('images/', 1)[1]
 
     services.append(entree)
 

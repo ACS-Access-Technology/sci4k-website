@@ -90,6 +90,20 @@ class Service extends Model
      * La vue publique n'a ainsi qu'un seul point d'appel, et le repli sur la
      * classe CSS service-bg-{slug} n'intervient que si ceci renvoie null.
      */
+    /**
+     * Adresse de l'image du service, ou null s'il n'en a pas.
+     *
+     * Deux origines cohabitent dans `image_source`, et c'est voulu :
+     *
+     *   - `images/services/foncier.jpg` pour les six services repris du site,
+     *     resolu depuis images.css par le script d'extraction ;
+     *   - `storage/services/…` pour une image televersee depuis
+     *     l'administration.
+     *
+     * L'ecran d'administration doit montrer l'image REELLEMENT servie, d'ou
+     * qu'elle vienne : sans le premier cas, il annoncerait « aucune image »
+     * pour les six services alors que le site en affiche six.
+     */
     public function urlImage(): ?string
     {
         if (! $this->image_source) {
@@ -97,6 +111,19 @@ class Service extends Model
         }
 
         return asset($this->image_source);
+    }
+
+    /**
+     * L'image vient-elle d'un televersement, ou du site statique ?
+     *
+     * La distinction commande deux choses : seul un fichier televerse peut
+     * etre efface, et seul lui merite un style en ligne sur la page publique —
+     * une image du site statique est deja servie par sa regle CSS, laquelle
+     * fournit en prime une variante allegee sur mobile.
+     */
+    public function imageTeleversee(): bool
+    {
+        return str_starts_with((string) $this->image_source, self::DOSSIER_COUVERTURES.'/');
     }
 
     public function categorie(): BelongsTo
