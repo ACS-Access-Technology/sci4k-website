@@ -56,6 +56,7 @@ Route::middleware(['auth', 'role:administrateur|editeur|lecteur'])
         Route::middleware('role:administrateur|editeur')->group(function () {
             Route::get('/articles/creation', \App\Livewire\Admin\ArticleFormulaire::class)->name('articles.creation');
             Route::get('/articles/{article}/edition', \App\Livewire\Admin\ArticleFormulaire::class)->name('articles.edition');
+            Route::get('/services/creation', \App\Livewire\Admin\ServiceFormulaire::class)->name('services.creation');
             Route::get('/services/{service}/edition', \App\Livewire\Admin\ServiceFormulaire::class)->name('services.edition');
 
             // /faq/creation doit precede /faq/{question}/edition : sinon

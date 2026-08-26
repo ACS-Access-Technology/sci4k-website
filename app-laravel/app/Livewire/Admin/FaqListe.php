@@ -7,9 +7,9 @@ use App\Models\QuestionFaq;
 /*
  * Ecran de liste de la FAQ.
  *
- * Contrairement aux services, la FAQ accepte la creation et la suppression :
- * ajouter ou retirer une question ne touche aucune structure des pages
- * publiques. Ce composant ne surcharge donc pas suppressionPermise().
+ * Retirer une question ne touche rien d'autre qu'elle-meme : ce composant se
+ * contente donc du supprimer() de l'abstrait, la ou ServiceListe doit le
+ * surcharger pour proteger les questions rattachees et le fichier d'image.
  */
 class FaqListe extends ListeOrdonnable
 {

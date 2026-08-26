@@ -3,8 +3,8 @@
 <form wire:submit="enregistrer" class="max-w-3xl space-y-6">
 
     <x-admin.entete-page
-        :titre="__('Modifier le service')"
-        :fil="[__('Accueil') => route('dashboard'), __('Services') => route('admin.services.liste'), $service->nom($langue) => null]">
+        :titre="$estCreation ? __('Nouveau service') : __('Modifier le service')"
+        :fil="[__('Accueil') => route('dashboard'), __('Services') => route('admin.services.liste'), ($estCreation ? __('Nouveau service') : $service->nom($langue)) => null]">
         <x-slot:actions>
             <x-bascule-langue />
         </x-slot:actions>
@@ -16,7 +16,26 @@
         </p>
     @endif
 
+    {{-- Le slug ne se saisit qu'a la creation. Ensuite il n'est plus qu'affiche :
+         il porte l'ancre du pied de page, l'identifiant de la tuile et la classe
+         CSS du fond, que le modifier casserait toutes les trois. --}}
     <div class="grid gap-4 sm:grid-cols-2">
+        <label class="block">
+            <span class="text-sm font-medium">{{ __("Identifiant d'adresse") }}</span>
+            @if ($estCreation)
+                <input type="text" wire:model="slug" class="{{ $champ }}" placeholder="gestion-location">
+                <span class="mt-1 block text-xs text-zinc-500 dark:text-zinc-400">
+                    {{ __("Minuscules, chiffres et traits d'union. Définitif : il sert d'adresse au service sur le site.") }}
+                </span>
+            @else
+                <p class="{{ $champ }} bg-zinc-50 text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400">{{ $service->slug }}</p>
+                <span class="mt-1 block text-xs text-zinc-500 dark:text-zinc-400">
+                    {{ __("L'identifiant d'adresse ne se modifie pas : il sert de lien depuis le pied de page du site.") }}
+                </span>
+            @endif
+            @error('slug') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+        </label>
+
         <label class="block">
             <span class="text-sm font-medium">{{ __('Catégorie') }}</span>
             <select wire:model="categorieId" class="{{ $champ }}">

@@ -20,8 +20,11 @@ use Livewire\WithFileUploads;
  * point de rencontre est l'etat initial. C'est le motif retenu au lot 1 pour
  * ArticleFormulaire.
  *
- * Les six services correspondent aux six metiers du site : ce formulaire ne
- * fait que modifier, jamais creer ni supprimer (cf. ServiceListe).
+ * Le formulaire cree et modifie. Le slug, lui, ne se saisit qu'a la creation :
+ * il porte a la fois l'ancre du pied de page (#foncier), l'identifiant de la
+ * tuile et la classe CSS du fond (service-bg-foncier). Le changer apres coup
+ * casserait les trois d'un coup, sans que rien ne le signale avant qu'un
+ * visiteur ne tombe sur une tuile sans image ou un lien mort.
  */
 #[Layout('layouts.app')]
 class ServiceFormulaire extends Component
@@ -29,7 +32,10 @@ class ServiceFormulaire extends Component
     use RemplitParTraduction;
     use WithFileUploads;
 
-    public Service $service;
+    public ?Service $service = null;
+
+    /** Identifiant d'adresse, fige des la creation. */
+    public string $slug = '';
 
     /** Fichier choisi dans le navigateur, pas encore enregistre. */
     public $image = null;
@@ -75,11 +81,20 @@ class ServiceFormulaire extends Component
     /** Langue du contenu saisi — sans rapport avec celle de l'interface. */
     public string $langueActive = 'fr';
 
-    public function mount(Service $service): void
+    public function mount(?Service $service = null): void
     {
-        $this->service = $service;
         $this->langueActive = app()->getLocale();
+
+        // Creation : rien a precharger, les valeurs par defaut des proprietes
+        // suffisent. Le test `->exists` distingue le modele vide que Laravel
+        // injecte quand la route n'a pas de parametre.
+        if (! $service?->exists) {
+            return;
+        }
+
+        $this->service = $service;
         $this->imageActuelle = $service->image_source;
+        $this->slug = $service->slug;
 
         $this->nomFr = $service->nom_fr;
         $this->nomEn = $service->nom_en;
@@ -99,9 +114,23 @@ class ServiceFormulaire extends Component
         $this->visible = (bool) $service->visible;
     }
 
+    /** Le service est-il en cours de creation ? */
+    public function estCreation(): bool
+    {
+        return ! $this->service?->exists;
+    }
+
     protected function rules(): array
     {
         return [
+            // Le slug n'est valide qu'a la creation : ensuite il est fige, et
+            // `enregistrer()` ne l'ecrit plus. Le format est impose parce que
+            // le slug devient une ancre publique et un nom de classe CSS : une
+            // majuscule, un espace ou un accent y produirait un lien mort et
+            // un fond absent, que rien ne signalerait avant le premier clic.
+            'slug' => $this->estCreation()
+                ? ['required', 'string', 'max:190', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', 'unique:services,slug']
+                : ['nullable'],
             'nomFr' => ['required', 'string', 'max:190'],
             'nomEn' => ['required', 'string', 'max:190'],
             'accrocheFr' => ['required', 'string', 'max:255'],
@@ -118,6 +147,14 @@ class ServiceFormulaire extends Component
             'libelleBoutonEn' => ['nullable', 'string', 'max:120'],
             'categorieId' => ['required', 'exists:categories,id'],
             'image' => ['nullable', 'image', 'max:4096'],
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return [
+            'slug.regex' => __("L'identifiant d'adresse n'accepte que des minuscules, des chiffres et des traits d'union, par exemple : gestion-location."),
+            'slug.unique' => __('Un service utilise déjà cet identifiant d’adresse.'),
         ];
     }
 
@@ -157,7 +194,7 @@ class ServiceFormulaire extends Component
 
         $image = $this->resoudreImage();
 
-        $this->service->update([
+        $donnees = [
             'nom_fr' => $this->nomFr, 'nom_en' => $this->nomEn,
             'accroche_fr' => $this->accrocheFr, 'accroche_en' => $this->accrocheEn,
             'description_fr' => $this->descriptionFr, 'description_en' => $this->descriptionEn,
@@ -169,7 +206,18 @@ class ServiceFormulaire extends Component
             'categorie_id' => $this->categorieId,
             'visible' => $this->visible,
             'image_source' => $image,
-        ]);
+        ];
+
+        if ($this->estCreation()) {
+            // Le slug n'est ecrit qu'ici, et le rang place le service en fin
+            // de liste plutot qu'en tete (cf. CollectionOrdonnable).
+            $this->service = Service::create($donnees + [
+                'slug' => $this->slug,
+                'ordre' => Service::rangSuivant(),
+            ]);
+        } else {
+            $this->service->update($donnees);
+        }
 
         session()->flash('message', __('Service enregistré.'));
         $this->redirectRoute('admin.services.liste');
@@ -220,6 +268,7 @@ class ServiceFormulaire extends Component
             'categories' => Categorie::orderBy('ordre')->get(),
             'langue' => app()->getLocale(),
             'traductionActive' => app(Traducteur::class)->disponible(),
-        ])->title(__('Modifier le service'));
+            'estCreation' => $this->estCreation(),
+        ])->title($this->estCreation() ? __('Nouveau service') : __('Modifier le service'));
     }
 }

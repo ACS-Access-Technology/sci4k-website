@@ -8,12 +8,27 @@
         :resume="trans_choice(':nombre service|:nombre services', $elements->count(), ['nombre' => $elements->count()])">
         <x-slot:actions>
             <x-bascule-langue />
+            @hasanyrole('administrateur|editeur')
+                <a href="{{ route('admin.services.creation') }}" wire:navigate
+                   class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                    <x-admin.icone nom="plus" />
+                    {{ __('Nouveau service') }}
+                </a>
+            @endhasanyrole
         </x-slot:actions>
     </x-admin.entete-page>
 
     @if (session('message'))
         <div role="status" class="rounded-lg border border-green-300 bg-green-50 px-4 py-3 text-sm text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-100">
             {{ session('message') }}
+        </div>
+    @endif
+
+    {{-- Une suppression refusee doit se lire, sinon le clic semble n'avoir eu
+         aucun effet et l'editeur recommence. --}}
+    @if (session('erreur'))
+        <div role="alert" class="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-100">
+            {{ session('erreur') }}
         </div>
     @endif
 
@@ -94,6 +109,21 @@
                                class="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white">
                                 <x-admin.icone nom="crayon" />
                             </a>
+
+                            {{-- Confirmation obligatoire : la suppression est
+                                 definitive, le service n'ayant pas de corbeille.
+                                 Un service portant des questions de FAQ est
+                                 refuse par le composant, pas ici : le bouton
+                                 reste actif et explique pourquoi il n'a rien
+                                 fait, plutot que d'etre grise sans raison. --}}
+                            <button type="button"
+                                    wire:click="supprimer({{ $element->id }})"
+                                    wire:confirm="{{ __('Supprimer définitivement « :nom » ? Cette action est irréversible.', ['nom' => $element->nom($langue)]) }}"
+                                    title="{{ __('Supprimer') }}"
+                                    aria-label="{{ __('Supprimer :nom', ['nom' => $element->nom($langue)]) }}"
+                                    class="rounded-md p-2 text-zinc-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400">
+                                <x-admin.icone nom="corbeille" />
+                            </button>
                         @endif
                     </div>
                 </td>

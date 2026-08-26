@@ -60,4 +60,17 @@ trait CollectionOrdonnable
             }
         });
     }
+
+    /**
+     * Rang a donner a un element qu'on ajoute, pour qu'il arrive en dernier.
+     *
+     * La colonne `ordre` vaut 0 par defaut : sans ce calcul, tout element
+     * nouveau passerait devant les existants, scopeOrdonnees triant d'abord
+     * sur `ordre`. Le client verrait son ajout s'installer en tete de page
+     * sans l'avoir demande.
+     */
+    public static function rangSuivant(): int
+    {
+        return ((int) static::query()->max('ordre')) + 1;
+    }
 }

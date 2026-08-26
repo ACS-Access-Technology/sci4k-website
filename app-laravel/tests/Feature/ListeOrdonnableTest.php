@@ -138,20 +138,9 @@ it('refuse la suppression a un lecteur, meme sur une collection ouverte', functi
     expect(Service::find($s->id))->not->toBeNull();
 });
 
-it('refuse la suppression d un service, meme a un editeur', function () {
-    $s = Service::factory()->create(['categorie_id' => $this->categorie->id]);
-
-    Livewire::actingAs($this->editeur)
-        ->test(ServiceListe::class)
-        ->call('supprimer', $s->id)
-        ->assertForbidden();
-
-    expect(Service::find($s->id))->not->toBeNull();
-});
-
 it('laisse le reordonnancement et la bascule de visibilite ouverts sur les services', function () {
-    // La suppression est fermee, pas l'ecran : verifier qu'on n'a pas verrouille
-    // plus que voulu.
+    // ServiceListe surcharge supprimer() : verifier que cette surcharge n'a
+    // pas emporte les autres actions de l'abstrait au passage.
     $s = Service::factory()->create(['visible' => true, 'categorie_id' => $this->categorie->id]);
 
     Livewire::actingAs($this->editeur)

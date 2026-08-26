@@ -18,12 +18,23 @@
     </div>
     <div>
       <h5 data-i18n="footer.servicesTitle">Nos Services</h5>
-      <a href="/services.html#foncier" data-i18n="svc.foncier.name">Foncier</a>
-      <a href="/services.html#construction" data-i18n="svc.construction.name">Construction</a>
-      <a href="/services.html#gestion" data-i18n="svc.gestion.name">Gestion / Location</a>
-      <a href="/services.html#achat" data-i18n="svc.achat.name">Achat</a>
-      <a href="/services.html#vente" data-i18n="svc.vente.name">Vente</a>
-      <a href="/services.html#administration" data-i18n="svc.administration.name">Administration de biens</a>
+      {{--
+        Liste tiree de la base, et non plus des six liens ecrits en dur :
+        depuis que l'administration cree et supprime des services, une liste
+        figee annoncerait des services disparus et tairait les nouveaux.
+
+        L'ancre pointe vers /services (la route Blade) et non /services.html,
+        qui ne fait plus que rediriger : un lien du pied de page ne devrait
+        pas couter une redirection a chaque clic.
+
+        Pas d'attribut data-i18n ici : la cle svc.*.name n'existe que pour les
+        six services d'origine, et le dictionnaire de main.js ecraserait le
+        nom d'un service cree par l'administration. Le nom vient donc de la
+        base, dans la langue rendue par le serveur.
+      --}}
+      @foreach ($servicesDuPied as $serviceDuPied)
+        <a href="{{ route('services.index') }}#{{ $serviceDuPied->slug }}">{{ $serviceDuPied->nom(app()->getLocale()) }}</a>
+      @endforeach
     </div>
     <div>
       <h5 data-i18n="footer.contactTitle">Nous contacter</h5>
