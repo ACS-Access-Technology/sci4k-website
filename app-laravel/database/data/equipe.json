@@ -1,0 +1,42 @@
+[
+  {
+    "ordre": 1,
+    "nom": "M. Jean-Philippe Yao",
+    "etiquette_fr": "Direction",
+    "etiquette_en": "Management",
+    "fonction_fr": "Directeur Général & Fondateur",
+    "fonction_en": "CEO & Founder",
+    "biographie_fr": "Spécialiste de la structuration foncière et des investissements immobiliers majeurs en Côte d'Ivoire depuis plus de 12 ans.",
+    "biographie_en": "Specialist in land structuring and major real estate investments in Côte d'Ivoire for over 12 years."
+  },
+  {
+    "ordre": 2,
+    "nom": "Mme Sarah Koné",
+    "etiquette_fr": "Ventes",
+    "etiquette_en": "Sales",
+    "fonction_fr": "Responsable Transactions & Ventes",
+    "fonction_en": "Head of Transactions & Sales",
+    "biographie_fr": "Experte dans la négociation notariée et l'accompagnement personnalisé pour l'acquisition de villas et appartements de standing.",
+    "biographie_en": "Expert in notarised negotiation and personalised support for acquiring high-end villas and apartments."
+  },
+  {
+    "ordre": 3,
+    "nom": "M. Marc Kouassi",
+    "etiquette_fr": "Foncier",
+    "etiquette_en": "Land",
+    "fonction_fr": "Expert Foncier & Juridique ACD",
+    "fonction_en": "Land & ACD Legal Expert",
+    "biographie_fr": "Spécialiste du contentieux foncier, de l'obtention des ACD et de la viabilisation des parcelles sur le grand Abidjan.",
+    "biographie_en": "Specialist in land disputes, obtaining ACD certificates and servicing plots across greater Abidjan."
+  },
+  {
+    "ordre": 4,
+    "nom": "Mme Aminata Diop",
+    "etiquette_fr": "Gestion",
+    "etiquette_en": "Management",
+    "fonction_fr": "Responsable Gestion Locative & Administration",
+    "fonction_en": "Head of Rental & Property Administration",
+    "biographie_fr": "Supervise la gestion locative des immeubles, les baux commerciaux et la comptabilité transparente des copropriétés.",
+    "biographie_en": "Oversees rental management of buildings, commercial leases and transparent co-ownership accounting."
+  }
+]

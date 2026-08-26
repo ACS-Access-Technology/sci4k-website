@@ -1,0 +1,20 @@
+[
+  {
+    "ordre": 1,
+    "valeur": 120,
+    "intitule_fr": "Biens commercialisés",
+    "intitule_en": "Properties handled"
+  },
+  {
+    "ordre": 2,
+    "valeur": 8,
+    "intitule_fr": "Années d'expérience",
+    "intitule_en": "Years of experience"
+  },
+  {
+    "ordre": 3,
+    "valeur": 96,
+    "intitule_fr": "% clients satisfaits",
+    "intitule_en": "% satisfied clients"
+  }
+]

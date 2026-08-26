@@ -1,0 +1,32 @@
+[
+  {
+    "ordre": 1,
+    "auteur": "Mireille K.",
+    "initiales": "MK",
+    "note": 5,
+    "citation_fr": "« SCI4K a sécurisé l'achat de mon terrain à Bingerville de bout en bout. L'équipe a vérifié l'ACD et le bornage avant même que je signe quoi que ce soit. Un vrai sérieux. »",
+    "citation_en": "\"SCI4K secured the purchase of my land in Bingerville from start to finish. The team checked the ACD and boundary survey before I even signed anything. Truly professional.\"",
+    "role_fr": "Acheteuse à Bingerville",
+    "role_en": "Buyer in Bingerville"
+  },
+  {
+    "ordre": 2,
+    "auteur": "Serge D.",
+    "initiales": "SD",
+    "note": 5,
+    "citation_fr": "« Je confie la gestion locative de mes trois appartements à SCI4K depuis deux ans. Les loyers arrivent toujours à date et le suivi est transparent. »",
+    "citation_en": "\"I've entrusted the rental management of my three apartments to SCI4K for two years. Rent always arrives on time and the reporting is transparent.\"",
+    "role_fr": "Propriétaire à Cocody",
+    "role_en": "Landlord in Cocody"
+  },
+  {
+    "ordre": 3,
+    "auteur": "Aïcha Y.",
+    "initiales": "AY",
+    "note": 5,
+    "citation_fr": "« Vente de notre villa conclue en six semaines, à un prix conforme à l'estimation. L'équipe a su filtrer les acquéreurs sérieux et nous faire gagner du temps. »",
+    "citation_en": "\"Our villa sale closed in six weeks, at a price matching the valuation. The team filtered out serious buyers and saved us a lot of time.\"",
+    "role_fr": "Vendeuse, Riviera",
+    "role_en": "Seller, Riviera"
+  }
+]

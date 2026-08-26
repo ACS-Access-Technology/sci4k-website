@@ -1,0 +1,30 @@
+[
+  {
+    "ordre": 1,
+    "titre_fr": "Rigueur & Sécurité",
+    "titre_en": "Rigour & Security",
+    "texte_fr": "Toutes nos transactions et projets de construction respectent les exigences juridiques, foncières (ACD) et réglementaires en vigueur en Côte d'Ivoire.",
+    "texte_en": "All our transactions and construction projects comply with the legal, land-title (ACD) and regulatory requirements in force in Côte d'Ivoire."
+  },
+  {
+    "ordre": 2,
+    "titre_fr": "Transparence Totale",
+    "titre_en": "Total Transparency",
+    "texte_fr": "Pas de coûts cachés ni de promesses irréalistes. Nous fournissons des bilans clairs, des estimations précises et un suivi continu à nos partenaires.",
+    "texte_en": "No hidden costs, no unrealistic promises. We provide clear statements, accurate valuations and continuous follow-up to our partners."
+  },
+  {
+    "ordre": 3,
+    "titre_fr": "Ancrage Abidjanais",
+    "titre_en": "Rooted in Abidjan",
+    "texte_fr": "Une connaissance fine et approfondie des quartiers d'Abidjan, des tendances du marché foncier et des opportunités d'investissement à fort potentiel.",
+    "texte_en": "A deep, detailed knowledge of Abidjan's districts, land market trends and high-potential investment opportunities."
+  },
+  {
+    "ordre": 4,
+    "titre_fr": "Service Client VIP",
+    "titre_en": "VIP Customer Service",
+    "texte_fr": "Un accompagnement sur-mesure et personnalisé, du premier échange jusqu'à la remise des clés et la gestion à long terme de votre bien.",
+    "texte_en": "Tailored, personal support from the very first contact through to key handover and the long-term management of your property."
+  }
+]
