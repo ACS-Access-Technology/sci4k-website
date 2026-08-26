@@ -43,9 +43,20 @@
         {{-- L'apercu montre ce que le visiteur verra, avec les valeurs en cours
              de saisie : c'est le seul endroit ou l'on voit qu'un suffixe manque
              ou qu'un libelle deborde. --}}
+        {{-- La classe de grille est ECRITE EN TOUTES LETTRES, pas construite.
+             Tailwind ne compile que les classes qu'il trouve dans les sources :
+             « sm:grid-cols-{{ $n }} » n'existe dans aucune feuille produite, et
+             les cartes retombaient donc les unes sous les autres. --}}
+        @php($colonnesApercu = match (min(max(count($lignes), 1), 4)) {
+            1 => 'sm:grid-cols-1',
+            2 => 'sm:grid-cols-2',
+            3 => 'sm:grid-cols-3',
+            default => 'sm:grid-cols-2 lg:grid-cols-4',
+        })
+
         <div class="rounded-xl border border-zinc-200 p-5 dark:border-zinc-700">
             <p class="text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">{{ __('Aperçu sur le site') }}</p>
-            <div class="mt-4 grid gap-4 sm:grid-cols-{{ min(max(count($lignes), 1), 4) }}">
+            <div class="mt-4 grid gap-4 {{ $colonnesApercu }}">
                 {!! $apercu !!}
             </div>
         </div>

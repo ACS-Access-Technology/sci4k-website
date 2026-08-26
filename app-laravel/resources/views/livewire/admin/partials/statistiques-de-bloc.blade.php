@@ -8,7 +8,17 @@
   masques du site, par exemple. Un chiffre qui ne demande rien reste neutre :
   tout colorer revient a ne rien signaler.
 --}}
-<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-{{ min(count($statistiques), 4) }}">
+{{-- Classe ecrite en toutes lettres, jamais construite : Tailwind ne compile
+     que ce qu'il trouve dans les sources, et « lg:grid-cols-{{ $n }} »
+     n'existerait dans aucune feuille produite. --}}
+@php($colonnes = match (min(count($statistiques), 4)) {
+    1 => 'lg:grid-cols-1',
+    2 => 'lg:grid-cols-2',
+    3 => 'lg:grid-cols-3',
+    default => 'lg:grid-cols-4',
+})
+
+<div class="grid gap-4 sm:grid-cols-2 {{ $colonnes }}">
     @foreach ($statistiques as $statistique)
         <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
             <p class="text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
