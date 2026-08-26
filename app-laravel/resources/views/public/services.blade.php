@@ -62,41 +62,41 @@
 </section>
 
 {{--
-  Section « processus » : balisage et textes copies tels quels de
-  frontoffice/services.html, section .process-section. Ses quatre etapes ne
-  viennent pas de la base a ce lot ; elles y passeront au plan 2b.
+  Section « processus » : meme balisage que frontoffice/services.html, mais les
+  etapes et l'en-tete viennent de la base depuis le lot 2b.
+
+  La numerotation suit le RANG d'affichage et non l'identifiant : reordonner
+  les etapes doit renumeroter la frise, sinon le site afficherait « 01, 03, 02 »
+  apres un glisser-deposer.
+
+  La mise en page est une option du bloc — frise horizontale par defaut, liste
+  verticale au choix de l'editeur. La section entiere disparait s'il ne reste
+  aucune etape visible : un titre suivi de rien vaut moins qu'un blanc.
 --}}
-<section class="process-section">
-  <div class="wrap">
-    <div class="section-head reveal" style="max-width:640px;">
-      <div class="tag" style="color:var(--gold-300); border-color:rgba(211,182,172,0.5);">{{ __('Notre Méthode') }}</div>
-      <h2 style="color:#fff;">{{ __('Comment nous travaillons avec vous') }}</h2>
-      <p style="color:rgba(255,255,255,0.75);">{{ __('Une démarche claire en 4 étapes pour la concrétisation en toute sérénité de vos projets.') }}</p>
-    </div>
-    <div class="process-grid reveal-stagger">
-      <div class="process-card reveal" style="--i:0">
-        <div class="process-num">01</div>
-        <h4>{{ __('Écoute & Analyse') }}</h4>
-        <p>{{ __('Prise de contact approfondie pour comprendre vos objectifs, vos critères et votre budget.') }}</p>
+@if ($etapes->isNotEmpty())
+  <section class="process-section {{ $miseEnPageProcessus === 'liste' ? 'process-liste' : '' }}">
+    <div class="wrap">
+      <div class="section-head reveal" style="max-width:640px;">
+        @if ($enteteProcessus?->etiquette($langue))
+          <div class="tag" style="color:var(--gold-300); border-color:rgba(211,182,172,0.5);">{{ $enteteProcessus->etiquette($langue) }}</div>
+        @endif
+        <h2 style="color:#fff;">{{ $enteteProcessus?->titre($langue) ?: __('Comment nous travaillons avec vous') }}</h2>
+        @if ($enteteProcessus?->chapo($langue))
+          <p style="color:rgba(255,255,255,0.75);">{{ $enteteProcessus->chapo($langue) }}</p>
+        @endif
       </div>
-      <div class="process-card reveal" style="--i:1">
-        <div class="process-num">02</div>
-        <h4>{{ __('Sélection & Audit') }}</h4>
-        <p>{{ __('Propositions ciblées et vérification complète des volets juridiques, techniques et fonciers.') }}</p>
-      </div>
-      <div class="process-card reveal" style="--i:2">
-        <div class="process-num">03</div>
-        <h4>{{ __('Négociation & Acte') }}</h4>
-        <p>{{ __('Sécurisation des transactions avec notre réseau de notaires et partenaires agréés.') }}</p>
-      </div>
-      <div class="process-card reveal" style="--i:3">
-        <div class="process-num">04</div>
-        <h4>{{ __('Suivi Continu') }}</h4>
-        <p>{{ __('Un accompagnement permanent même après la signature ou la livraison du bien.') }}</p>
+      <div class="process-grid reveal-stagger">
+        @foreach ($etapes as $etape)
+          <div class="process-card reveal" style="--i:{{ $loop->index }}">
+            <div class="process-num">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</div>
+            <h4>{{ $etape->titre($langue) }}</h4>
+            <p>{{ $etape->texte($langue) }}</p>
+          </div>
+        @endforeach
       </div>
     </div>
-  </div>
-</section>
+  </section>
+@endif
 
 {{--
   Modale de detail : meme structure que l'original (#svcModal vide, rempli au

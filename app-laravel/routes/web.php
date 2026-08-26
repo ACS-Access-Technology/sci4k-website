@@ -30,11 +30,13 @@ Route::permanentRedirect('/actualites.html', '/actualites');
 
 Route::get('/services', [PagePubliqueController::class, 'services'])->name('services.index');
 Route::get('/faq', [PagePubliqueController::class, 'faq'])->name('faq.index');
+Route::get('/presentation', [PagePubliqueController::class, 'presentation'])->name('presentation.index');
 
 // Memes raisons que pour /actualites.html ci-dessus : les pages statiques du
 // meme nom sont exclues de tools/sync-frontoffice.sh.
 Route::permanentRedirect('/services.html', '/services');
 Route::permanentRedirect('/faq.html', '/faq');
+Route::permanentRedirect('/presentation.html', '/presentation');
 
 Route::get('/langue/{code}', [LangueController::class, 'basculer'])->name('langue.basculer');
 

@@ -91,6 +91,18 @@ for slug in SECTIONS:
     titre = texte(slug + '.title', obligatoire=False)
     chapo = texte(slug + '.lede', obligatoire=False)
 
+    # Deux sections de la page de presentation portent leur prose dans .p1,
+    # .p2 et .p3 plutot que dans un .lede unique. Les replier dans le chapo les
+    # rend editables d'un seul champ, les paragraphes etant separes par une
+    # ligne vide — meme convention que le contenu d'un article.
+    if not any(chapo):
+        paragraphes = [texte('%s.p%d' % (slug, n), obligatoire=False) for n in (1, 2, 3)]
+        paragraphes = [couple for couple in paragraphes if any(couple)]
+
+        if paragraphes:
+            chapo = ('\n\n'.join(c[0] for c in paragraphes if c[0]),
+                     '\n\n'.join(c[1] for c in paragraphes if c[1]))
+
     if not any(v for couple in (etiquette, titre, chapo) for v in couple):
         manques.append('section entierement vide : ' + slug)
         continue
@@ -255,9 +267,19 @@ cartes_processus = re.findall(
     r"<p>\{\{ __\('([^']+)'\) \}\}</p>",
     vue_services)
 
-if len(cartes_processus) != 4:
-    manques.append('etapes du processus : %d trouvees dans la vue, 4 attendues'
-                   % len(cartes_processus))
+# La vue lit desormais ces etapes en base : elles n'y sont plus ecrites en dur,
+# et il n'y a donc plus rien a en extraire. L'extraction n'a lieu qu'une fois ;
+# passe ce point le fichier deja produit fait foi, et le reecrire depuis une vue
+# devenue dynamique le viderait.
+dejaExtrait = os.path.join(SORTIE, 'etapes-processus.json')
+
+if not cartes_processus and os.path.exists(dejaExtrait):
+    etapes = json.load(io.open(dejaExtrait, encoding='utf-8'))
+    print('etapes du processus : reprises du fichier deja extrait '
+          '(la vue les lit maintenant en base)')
+elif len(cartes_processus) != 4:
+    manques.append('etapes du processus : %d trouvees dans la vue, 4 attendues, '
+                   'et aucun fichier deja extrait' % len(cartes_processus))
 
 for numero, titre_fr, texte_fr in cartes_processus:
     for cle in (titre_fr, texte_fr):
