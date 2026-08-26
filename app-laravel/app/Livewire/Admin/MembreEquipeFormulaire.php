@@ -87,4 +87,13 @@ class MembreEquipeFormulaire extends FormulaireDeBloc
     {
         $this->preparer($element);
     }
+
+    protected function descriptionDuFichier(): array
+    {
+        return [
+            'intitule' => __('Photo du membre'),
+            'aide' => __('Portrait carré de préférence : il est affiché en rond sur le site.'),
+            'forme' => 'rond',
+        ];
+    }
 }

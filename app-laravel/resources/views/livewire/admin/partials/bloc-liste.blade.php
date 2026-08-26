@@ -42,6 +42,10 @@
         </div>
     @endif
 
+    @isset($statistiques)
+        @include('livewire.admin.partials.statistiques-de-bloc', ['statistiques' => $statistiques])
+    @endisset
+
     <x-admin.barre-filtres>
         <x-admin.champ-filtre :intitule="__('Rechercher')" pour="recherche">
             <input type="search" id="recherche" wire:model.live.debounce.300ms="recherche"
@@ -78,12 +82,16 @@
                     @endif
                 </td>
 
+                {{-- Chaque cellule echappe elle-meme ses donnees avec e(), et
+                     rend parfois du balisage — une vignette, des etoiles. Les
+                     deux branches sortent donc du HTML : escaper la premiere
+                     colonne seulement aurait affiche ses balises en clair. --}}
                 @foreach ($colonnes as $cle => $intitule)
                     <td class="px-4 py-3 text-zinc-700 dark:text-zinc-200">
                         @if ($loop->first && $peutEcrire)
                             <a href="{{ route($routeEdition, $element) }}" wire:navigate
                                class="font-medium text-zinc-900 hover:underline dark:text-white">
-                                {{ $cellule($element, $cle) }}
+                                {!! $cellule($element, $cle) !!}
                             </a>
                         @else
                             {!! $cellule($element, $cle) !!}
@@ -135,4 +143,22 @@
             </tr>
         @endforelse
     </x-admin.tableau>
+
+    @isset($recommandations)
+        {{-- Les consignes de format vivent sous la liste plutot que dans le
+             formulaire : c'est en regardant l'ensemble qu'on remarque une
+             image trop lourde ou mal cadrée, pas en en éditant une seule. --}}
+        <div class="rounded-xl border border-zinc-200 p-5 dark:border-zinc-700">
+            <h2 class="text-sm font-semibold text-zinc-900 dark:text-white">{{ __('Recommandations') }}</h2>
+
+            <div class="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                @foreach ($recommandations as $recommandation)
+                    <div>
+                        <p class="text-sm font-medium text-zinc-800 dark:text-zinc-100">{{ $recommandation['titre'] }}</p>
+                        <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{{ $recommandation['texte'] }}</p>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endisset
 </div>

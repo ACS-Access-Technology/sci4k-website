@@ -72,4 +72,13 @@ class ImageDeFondFormulaire extends FormulaireDeBloc
     {
         $this->preparer($element);
     }
+
+    protected function descriptionDuFichier(): array
+    {
+        return [
+            'intitule' => __('Fichier de fond'),
+            'aide' => __('1920 × 800 px minimum. Un voile sombre est appliqué automatiquement.'),
+            'forme' => 'rectangle',
+        ];
+    }
 }

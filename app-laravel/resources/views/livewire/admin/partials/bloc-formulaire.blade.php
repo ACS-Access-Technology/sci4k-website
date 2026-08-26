@@ -58,17 +58,34 @@
 
     @if ($fichierGere)
         <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
-            <span class="text-sm font-medium">{{ __('Fichier') }}</span>
+            <span class="text-sm font-medium">{{ $descriptionFichier['intitule'] }}</span>
 
-            @if ($fichierActuel)
-                <div class="mt-2 flex items-center gap-3">
-                    <img src="{{ asset($fichierActuel) }}" alt="" class="h-14 w-20 rounded object-contain">
+            {{-- L'apercu prend la forme de ce qu'il montre : un portrait rond
+                 pour une personne, un cadre pour un logo. Une vignette carree
+                 pour tout laissait deviner. --}}
+            <div class="mt-2 flex items-center gap-3">
+                @if ($fichierActuel)
+                    <img src="{{ asset($fichierActuel) }}" alt=""
+                         class="{{ $descriptionFichier['forme'] === 'rond'
+                             ? 'size-16 rounded-full object-cover'
+                             : 'h-14 w-20 rounded object-contain' }}">
                     <button type="button" wire:click="retirerFichier"
                             class="text-sm text-red-600 hover:underline">{{ __('Retirer') }}</button>
-                </div>
-            @endif
+                @else
+                    <span class="{{ $descriptionFichier['forme'] === 'rond'
+                        ? 'flex size-16 items-center justify-center rounded-full border border-dashed border-zinc-300 dark:border-zinc-600'
+                        : 'flex h-14 w-20 items-center justify-center rounded border border-dashed border-zinc-300 dark:border-zinc-600' }}">
+                        <span class="text-xs text-zinc-400">{{ __('Aucune') }}</span>
+                    </span>
+                @endif
+            </div>
 
             <input type="file" wire:model="fichier" accept="image/*" class="{{ $classeChamp }}">
+
+            @if ($descriptionFichier['aide'])
+                <span class="mt-1 block text-xs text-zinc-500 dark:text-zinc-400">{{ $descriptionFichier['aide'] }}</span>
+            @endif
+
             <div wire:loading wire:target="fichier" class="mt-1 text-xs text-zinc-500">{{ __('Envoi en cours…') }}</div>
             @error('fichier') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
         </div>

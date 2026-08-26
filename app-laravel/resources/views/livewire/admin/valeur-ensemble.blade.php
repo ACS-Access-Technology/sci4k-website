@@ -1,10 +1,19 @@
-@include('livewire.admin.partials.ensemble-fige', [
-    'titre' => __('Valeurs'),
+@include('livewire.admin.partials.edition-groupee', [
+    'titre' => __('Valeurs et engagements'),
+    'sousTitre' => __('Bloc « Les engagements de SCI4K » de la page Présentation'),
     'fil' => [
         __('Accueil') => route('dashboard'),
-        __('Contenu') => null,
+        __('Blocs du site') => null,
         __('Valeurs') => null,
     ],
     'champs' => ['titre' => __('Titre'), 'texte' => __('Description')],
+    'champsSimples' => [
+        'icone_svg' => [
+            'intitule' => __('Icône (tracé SVG)'),
+            'aide' => __('Facultatif. Laissez vide pour une valeur sans pictogramme.'),
+        ],
+    ],
+    'colonnes' => 2,
     'intituleRang' => __('Valeur'),
+    'libelleAjout' => __('Ajouter une valeur'),
 ])

@@ -5,12 +5,13 @@ namespace App\Livewire\Admin;
 use App\Models\EtapeProcessus;
 
 /*
- * Les quatre etapes de la methode, affichees sur /services.
+ * Les etapes de la methode, affichees sur /services.
  *
- * Elles etaient ecrites en dur dans la vue depuis le lot 2a : cet ecran les
- * rend editables sans qu'il faille reporter la page.
+ * Elles etaient ecrites en dur dans la vue jusqu'au lot 2b. Le panneau de
+ * reglages edite l'en-tete de la section « services.process » et sa mise en
+ * page — la maquette propose la frise horizontale ou la liste verticale.
  */
-class EtapeProcessusEnsemble extends EnsembleFige
+class EtapeProcessusEnsemble extends EditionGroupee
 {
     protected function modele(): string
     {
@@ -22,6 +23,16 @@ class EtapeProcessusEnsemble extends EnsembleFige
         return ['titre', 'texte'];
     }
 
+    protected function sectionReglee(): ?string
+    {
+        return 'services.process';
+    }
+
+    protected function optionsDuBloc(): array
+    {
+        return ['mise_en_page' => 'frise'];
+    }
+
     protected function vue(): string
     {
         return 'livewire.admin.etape-processus-ensemble';
@@ -29,6 +40,6 @@ class EtapeProcessusEnsemble extends EnsembleFige
 
     protected function titre(): string
     {
-        return __('Étapes du processus');
+        return __("Processus d'accompagnement");
     }
 }

@@ -19,11 +19,11 @@ class EtapeProcessus extends Model
 
     protected $table = 'etapes_processus';
 
-    protected $fillable = ['ordre', 'titre_fr', 'titre_en', 'texte_fr', 'texte_en'];
+    protected $fillable = ['ordre', 'visible', 'titre_fr', 'titre_en', 'texte_fr', 'texte_en'];
 
-    protected $casts = ['ordre' => 'integer'];
+    protected $casts = ['ordre' => 'integer', 'visible' => 'boolean'];
 
-    protected $attributes = ['ordre' => 0];
+    protected $attributes = ['ordre' => 0, 'visible' => true];
 
     /** Titre de l'etape. */
     public function titre(string $langue = 'fr'): string

@@ -24,9 +24,9 @@ class ReglageDeSection extends Model
 
     protected $table = 'reglages_de_section';
 
-    protected $fillable = ['slug', 'etiquette_fr', 'etiquette_en', 'titre_fr', 'titre_en', 'chapo_fr', 'chapo_en'];
+    protected $fillable = ['slug', 'etiquette_fr', 'etiquette_en', 'titre_fr', 'titre_en', 'chapo_fr', 'chapo_en', 'options'];
 
-    protected $casts = [];
+    protected $casts = ['options' => 'array'];
 
     protected $attributes = [];
 
@@ -46,5 +46,31 @@ class ReglageDeSection extends Model
     public function chapo(string $langue = 'fr'): string
     {
         return $this->texteDansLaLangue('chapo', $langue);
+    }
+
+    /**
+     * Une option du bloc, ou sa valeur par defaut.
+     *
+     * Les options vivent en JSON plutot qu'en colonnes : une colonne par
+     * reglage aurait fait une migration a chaque nouveau, pour des donnees que
+     * seul l'affichage consulte et qui different d'un bloc a l'autre — la
+     * duree d'une animation n'a de sens que pour les chiffres, la mise en page
+     * en frise que pour le processus.
+     */
+    public function option(string $nom, mixed $defaut = null): mixed
+    {
+        return data_get($this->options, $nom, $defaut);
+    }
+
+    /** Pose des options sans effacer celles qu'on ne touche pas. */
+    public function poserOptions(array $valeurs): void
+    {
+        $this->options = array_merge($this->options ?? [], $valeurs);
+    }
+
+    /** L'en-tete d'une section, cree au besoin. */
+    public static function pour(string $slug): self
+    {
+        return static::firstOrCreate(['slug' => $slug]);
     }
 }

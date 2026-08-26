@@ -65,4 +65,13 @@ class PartenaireFormulaire extends FormulaireDeBloc
     {
         $this->preparer($element);
     }
+
+    protected function descriptionDuFichier(): array
+    {
+        return [
+            'intitule' => __('Logo du partenaire'),
+            'aide' => __('Fond transparent de préférence, le logo étant posé sur la couleur de la page.'),
+            'forme' => 'rectangle',
+        ];
+    }
 }

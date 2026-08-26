@@ -95,4 +95,13 @@ class EncartFormulaire extends FormulaireDeBloc
     {
         $this->preparer($element);
     }
+
+    protected function descriptionDuFichier(): array
+    {
+        return [
+            'intitule' => __("Image de l'encart"),
+            'aide' => __('Format large : elle occupe toute la largeur de la banderole.'),
+            'forme' => 'rectangle',
+        ];
+    }
 }

@@ -18,13 +18,19 @@ class ChiffreCle extends Model
 
     protected $table = 'chiffres_cles';
 
-    protected $fillable = ['ordre', 'valeur', 'intitule_fr', 'intitule_en'];
+    protected $fillable = ['ordre', 'visible', 'valeur', 'suffixe', 'intitule_fr', 'intitule_en', 'note_interne'];
 
-    protected $casts = ['ordre' => 'integer', 'valeur' => 'integer'];
+    protected $casts = ['ordre' => 'integer', 'visible' => 'boolean', 'valeur' => 'integer'];
 
-    protected $attributes = ['ordre' => 0, 'valeur' => 0];
+    protected $attributes = ['ordre' => 0, 'visible' => true, 'valeur' => 0, 'suffixe' => ''];
 
     /** Libelle affiche sous le nombre. */
+    /** Le nombre tel que le site l'affiche, suffixe compris. */
+    public function affichage(): string
+    {
+        return $this->valeur.$this->suffixe;
+    }
+
     public function intitule(string $langue = 'fr'): string
     {
         return $this->texteDansLaLangue('intitule', $langue);

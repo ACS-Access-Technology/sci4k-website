@@ -45,7 +45,9 @@ Route::get('/langue/{code}', [LangueController::class, 'basculer'])->name('langu
 Route::get('/sitemap.xml', \App\Http\Controllers\PlanDuSiteController::class)->name('plan-du-site');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
+    // Le tableau de bord etait une vue statique aux quatre rectangles haches
+    // du starter kit. Il compte desormais le contenu, d'ou un composant.
+    Route::get('dashboard', \App\Livewire\Admin\TableauDeBord::class)->name('dashboard');
 });
 
 Route::middleware(['auth', 'role:administrateur|editeur|lecteur'])

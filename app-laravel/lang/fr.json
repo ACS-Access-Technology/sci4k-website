@@ -132,5 +132,7 @@
     ":nombre rubrique|:nombre rubriques": ":nombre rubrique|:nombre rubriques",
     "Cette rubrique porte :nombre question. Déplacez-la dans une autre rubrique avant de supprimer celle-ci.|Cette rubrique porte :nombre questions. Déplacez-les dans une autre rubrique avant de supprimer celle-ci.": "Cette rubrique porte :nombre question. Déplacez-la dans une autre rubrique avant de supprimer celle-ci.|Cette rubrique porte :nombre questions. Déplacez-les dans une autre rubrique avant de supprimer celle-ci.",
     ":nombre section|:nombre sections": ":nombre section|:nombre sections",
-    ":nombre élément|:nombre éléments": ":nombre élément|:nombre éléments"
+    ":nombre élément|:nombre éléments": ":nombre élément|:nombre éléments",
+    ":nombre masqué|:nombre masqués": ":nombre masqué|:nombre masqués",
+    ":nombre note à 5 étoiles|:nombre notes à 5 étoiles": ":nombre note à 5 étoiles|:nombre notes à 5 étoiles"
 }

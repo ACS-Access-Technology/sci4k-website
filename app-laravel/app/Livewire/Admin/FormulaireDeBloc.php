@@ -101,6 +101,24 @@ abstract class FormulaireDeBloc extends Component
     }
 
     /**
+     * Comment nommer le fichier a l'ecran.
+     *
+     * « Fichier » est exact et sans utilite : sur une fiche d'employe, le
+     * client a cherche un televersement de photo sans le voir, l'intitule ne
+     * disant pas ce qu'on attend. Chaque formulaire nomme donc le sien.
+     *
+     * @return array{intitule: string, aide: string, forme: string}
+     */
+    protected function descriptionDuFichier(): array
+    {
+        return [
+            'intitule' => __('Fichier'),
+            'aide' => '',
+            'forme' => 'rectangle',
+        ];
+    }
+
+    /**
      * Ce bloc peut-il etre masque du site ?
      *
      * Faux pour les en-tetes de section, qui n'ont pas de colonne `visible` :
@@ -355,6 +373,7 @@ abstract class FormulaireDeBloc extends Component
             'langue' => app()->getLocale(),
             'traductionActive' => app(Traducteur::class)->disponible(),
             'fichierGere' => $this->fichierGere() !== null,
+            'descriptionFichier' => $this->descriptionDuFichier(),
             'gereLaVisibilite' => $this->gereLaVisibilite(),
         ])->title($this->estCreation()
             ? __('Nouveau : :intitule', ['intitule' => $this->intitule()])

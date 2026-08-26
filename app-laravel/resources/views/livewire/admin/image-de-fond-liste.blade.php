@@ -23,4 +23,18 @@
     'routeEdition' => 'admin.images-de-fond.edition',
     'placeholder' => __('Un emplacement…'),
     'messageVide' => __('Aucune image ne correspond à votre recherche.'),
+    'recommandations' => [
+        [
+            'titre' => __('Bannières de page'),
+            'texte' => __("1920 × 800 px minimum, cadrage large. Un voile sombre est appliqué automatiquement : privilégiez des images lisibles une fois assombries."),
+        ],
+        [
+            'titre' => __('Cartes services'),
+            'texte' => __("800 × 1000 px, format portrait. Le sujet doit rester lisible dans un cadre étroit."),
+        ],
+        [
+            'titre' => __('Poids des fichiers'),
+            'texte' => __("Visez moins de 300 Ko par image. Au-delà, la page devient lente sur les connexions mobiles."),
+        ],
+    ],
 ])
