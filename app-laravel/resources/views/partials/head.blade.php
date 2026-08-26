@@ -33,10 +33,17 @@
 </style>
 <script>
     (function () {
-        var appearance = window.localStorage.getItem('appearance') || 'system';
-        var isDark = appearance === 'dark'
-            || (appearance === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        // Meme cle que le site public : la preference d'apparence est celle du
+        // produit entier. « appearance » est l'ancienne cle du backoffice, lue
+        // une derniere fois pour ne pas perdre un reglage deja fait.
+        var garde = window.localStorage.getItem('sci4k-theme')
+            || window.localStorage.getItem('appearance')
+            || 'system';
+
+        var isDark = garde === 'dark'
+            || (garde === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
         document.documentElement.classList.toggle('dark', isDark);
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
     })();
 </script>

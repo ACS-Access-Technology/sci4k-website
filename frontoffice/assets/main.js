@@ -624,10 +624,36 @@ window.SCI4K_PROPERTIES = [
   var THEME_KEY = 'sci4k-theme';
   var LANG_KEY = 'sci4k-lang';
 
-  function getTheme() { return localStorage.getItem(THEME_KEY) || 'light'; }
+  /* La preference d'apparence est celle du PRODUIT ENTIER, site public et
+     backoffice compris. Les deux surfaces ont longtemps eu chacune la sienne —
+     « sci4k-theme » ici, « appearance » la-bas — si bien que choisir le sombre
+     d'un cote ne disait rien a l'autre.
+
+     Elles partagent desormais cette cle. Elles l'appliquent differemment, et
+     c'est normal : le site public pose un attribut data-theme lu par sa
+     feuille de style, le backoffice une classe « dark » lue par Tailwind.
+     C'est la PREFERENCE qui est commune, pas son rendu.
+
+     Trois valeurs, celles du backoffice : « system » suit le reglage du poste,
+     et le supprimer ici aurait force un choix a qui n'en avait pas fait. */
+  function themeDuSysteme() {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function getTheme() {
+    var garde = localStorage.getItem(THEME_KEY);
+    if (garde !== 'light' && garde !== 'dark' && garde !== 'system') return 'light';
+    return garde;
+  }
+
+  function themeEffectif() {
+    var t = getTheme();
+    return t === 'system' ? themeDuSysteme() : t;
+  }
+
   function setTheme(t) {
     try { localStorage.setItem(THEME_KEY, t); } catch (e) {}
-    document.documentElement.setAttribute('data-theme', t);
+    document.documentElement.setAttribute('data-theme', themeEffectif());
   }
 
   function getLang() { return localStorage.getItem(LANG_KEY) || 'fr'; }
@@ -699,9 +725,20 @@ window.SCI4K_PROPERTIES = [
 
     document.querySelectorAll('.theme-toggle').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        setTheme(getTheme() === 'dark' ? 'light' : 'dark');
+        /* La bascule du site public n'a que deux etats : elle part de ce qui
+           est AFFICHE, pas de la preference. Un visiteur en « systeme » sombre
+           qui clique attend le clair, pas un second passage au sombre. */
+        setTheme(themeEffectif() === 'dark' ? 'light' : 'dark');
       });
     });
+
+    /* Le poste change d'avis — reglage nocturne automatique, par exemple.
+       Seul le mode « systeme » suit, les deux autres etant un choix explicite. */
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+        if (getTheme() === 'system') setTheme('system');
+      });
+    }
     document.querySelectorAll('.lang-toggle').forEach(function (btn) {
       /* Sur une page rendue par le serveur, la bascule est une ancre vers
          /langue/{code} : le serveur retient la langue et rend toute la page.

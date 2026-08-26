@@ -21,7 +21,13 @@
 <meta name="twitter:card" content="summary">
 <link rel="canonical" href="{{ url()->current() }}">
 {{-- Applique le theme sombre avant le premier rendu, pour eviter le flash clair. --}}
-<script>(function(){try{var t=localStorage.getItem('sci4k-theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+{{-- Apparence posee avant le premier rendu, pour eviter le clignotement.
+     Trois valeurs possibles depuis que le backoffice et le site partagent la
+     meme preference : « system » suit le reglage du poste, et l'ignorer ici
+     aurait affiche le clair a un visiteur dont le poste est en sombre. --}}
+<script>(function(){try{var t=localStorage.getItem('sci4k-theme')||'light';
+var sombre=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+document.documentElement.setAttribute('data-theme',sombre?'dark':'light');}catch(e){}})();</script>
 {{-- La langue servie fait foi : sans cet alignement, main.js rappliquerait au
      chargement celle qu'il a gardee en memoire et re-basculerait les pages
      statiques dans l'autre sens a la premiere visite suivante. --}}

@@ -1,4 +1,11 @@
-<div class="space-y-6">
+@php($tons = [
+    'primaire' => 'bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300',
+    'succes' => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
+    'info' => 'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300',
+    'alerte' => 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
+])
+
+<div class="space-y-4">
 
     <x-admin.entete-page
         :titre="__('Tableau de bord')"
@@ -12,30 +19,118 @@
         </x-slot:actions>
     </x-admin.entete-page>
 
-    {{-- Le compte des elements masques est le plus utile des trois : c'est le
-         seul qui signale un oubli, un bloc retire « le temps de » et jamais
-         remis. Il n'apparait donc que lorsqu'il n'est pas nul, pour se voir. --}}
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        @foreach ($familles as $famille)
-            <a href="{{ route($famille['route']) }}" wire:navigate
-               class="block rounded-xl border border-zinc-200 p-5 hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:border-zinc-600 dark:hover:bg-zinc-800/50">
-                <p class="text-sm text-zinc-600 dark:text-zinc-400">{{ $famille['intitule'] }}</p>
-                <p class="mt-1 text-3xl font-semibold text-zinc-900 dark:text-white">{{ $famille['total'] }}</p>
+    {{-- Quatre tuiles, comme la maquette. La variation en pourcentage qu'elle
+         affiche demanderait un historique que personne ne conserve : chaque
+         tuile annonce a la place ce qui a ete ajouté ce mois-ci, qui se mesure
+         vraiment. --}}
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        @foreach ($tuiles as $tuile)
+            @php($contenu = '
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <p class="text-3xl font-semibold text-zinc-900 dark:text-white">'.e($tuile['valeur']).'</p>
+                        <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">'.e($tuile['intitule']).'</p>
+                    </div>
+                </div>')
 
-                @if ($famille['masques'] > 0)
-                    <p class="mt-2 inline-flex items-center rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-950 dark:text-amber-200">
-                        {{ $famille['masques'] }} {{ $famille['motMasque'] }}
+            <div @class([
+                'rounded-xl border border-zinc-200 p-5 dark:border-zinc-700',
+                'hover:border-zinc-300 dark:hover:border-zinc-600' => $tuile['route'],
+            ])>
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <p class="text-3xl font-semibold text-zinc-900 dark:text-white">{{ $tuile['valeur'] }}</p>
+                        <p class="mt-1 truncate text-sm text-zinc-600 dark:text-zinc-400">
+                            @if ($tuile['route'])
+                                <a href="{{ route($tuile['route']) }}" wire:navigate class="hover:underline">{{ $tuile['intitule'] }}</a>
+                            @else
+                                {{ $tuile['intitule'] }}
+                            @endif
+                        </p>
+                    </div>
+
+                    <span class="flex size-10 shrink-0 items-center justify-center rounded-lg {{ $tons[$tuile['ton']] }}">
+                        <x-admin.icone nom="plus" />
+                    </span>
+                </div>
+
+                @if ($tuile['ajoutes'] > 0)
+                    <p class="mt-3 text-xs text-emerald-700 dark:text-emerald-400">
+                        {{ trans_choice('+:nombre ce mois-ci|+:nombre ce mois-ci', $tuile['ajoutes'], ['nombre' => $tuile['ajoutes']]) }}
                     </p>
+                @elseif ($tuile['ton'] === 'alerte' && $tuile['valeur'] === 0)
+                    <p class="mt-3 text-xs text-zinc-500 dark:text-zinc-400">{{ __('Tout est en ligne') }}</p>
                 @else
-                    <p class="mt-2 text-xs text-zinc-500 dark:text-zinc-400">{{ __('Tout est en ligne') }}</p>
+                    <p class="mt-3 text-xs text-zinc-400 dark:text-zinc-500">&nbsp;</p>
                 @endif
-            </a>
+            </div>
         @endforeach
+    </div>
+
+    <div class="grid gap-4 lg:grid-cols-3">
+        {{-- La maquette montre ici la « répartition des biens ». Le catalogue
+             est au lot 3 : l'emplacement sert la répartition du contenu qui
+             existe, plutôt qu'un graphique sans données derrière. --}}
+        <div class="rounded-xl border border-zinc-200 lg:col-span-2 dark:border-zinc-700">
+            <div class="border-b border-zinc-200 px-5 py-4 dark:border-zinc-700">
+                <h2 class="text-sm font-semibold text-zinc-900 dark:text-white">{{ __('Répartition du contenu') }}</h2>
+            </div>
+
+            <div class="space-y-3 p-5">
+                @foreach ($repartition as $ligne)
+                    <div>
+                        <div class="flex items-baseline justify-between gap-3 text-sm">
+                            @if ($ligne['route'])
+                                <a href="{{ route($ligne['route']) }}" wire:navigate
+                                   class="truncate text-zinc-700 hover:underline dark:text-zinc-300">{{ $ligne['intitule'] }}</a>
+                            @else
+                                <span class="truncate text-zinc-700 dark:text-zinc-300">{{ $ligne['intitule'] }}</span>
+                            @endif
+                            <span class="shrink-0 font-medium text-zinc-900 dark:text-white">{{ $ligne['total'] }}</span>
+                        </div>
+
+                        {{-- Les barres se lisent les unes par rapport aux autres :
+                             le maximum donne l'échelle. --}}
+                        <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+                            <div class="h-full rounded-full bg-zinc-400 dark:bg-zinc-500"
+                                 style="width: {{ max($ligne['part'], 2) }}%"></div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Les « tâches prioritaires » de la maquette, mais DÉDUITES de l'état
+             réel plutôt que saisies : une liste qu'il faut penser à cocher se
+             désynchronise du site en une semaine. --}}
+        <div class="rounded-xl border border-zinc-200 dark:border-zinc-700">
+            <div class="border-b border-zinc-200 px-5 py-4 dark:border-zinc-700">
+                <h2 class="text-sm font-semibold text-zinc-900 dark:text-white">{{ __('À traiter') }}</h2>
+            </div>
+
+            <ul class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                @forelse ($aTraiter as $tache)
+                    <li class="px-5 py-3">
+                        @if ($tache['route'])
+                            <a href="{{ route($tache['route']) }}" wire:navigate
+                               class="text-sm font-medium text-zinc-900 hover:underline dark:text-white">{{ $tache['texte'] }}</a>
+                        @else
+                            <span class="text-sm font-medium text-zinc-900 dark:text-white">{{ $tache['texte'] }}</span>
+                        @endif
+                        <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{{ $tache['detail'] }}</p>
+                    </li>
+                @empty
+                    <li class="px-5 py-10 text-center text-sm text-zinc-600 dark:text-zinc-400">
+                        {{ __('Rien ne demande votre attention.') }}
+                    </li>
+                @endforelse
+            </ul>
+        </div>
     </div>
 
     <div class="rounded-xl border border-zinc-200 dark:border-zinc-700">
         <div class="border-b border-zinc-200 px-5 py-4 dark:border-zinc-700">
-            <h2 class="text-sm font-semibold text-zinc-900 dark:text-white">{{ __('Dernières modifications') }}</h2>
+            <h2 class="text-sm font-semibold text-zinc-900 dark:text-white">{{ __('Activité récente') }}</h2>
         </div>
 
         <ul class="divide-y divide-zinc-200 dark:divide-zinc-700">
@@ -61,4 +156,11 @@
             @endforelse
         </ul>
     </div>
+
+    {{-- Ce que la maquette annonce et que le site ne mesure pas encore. Le dire
+         vaut mieux que de laisser croire à un oubli — ou pire, d'afficher un
+         graphique sans données derrière. --}}
+    <p class="text-xs text-zinc-500 dark:text-zinc-400">
+        {{ __("Les compteurs de visiteurs et la répartition des biens immobiliers arriveront avec le suivi de fréquentation et le catalogue des biens.") }}
+    </p>
 </div>

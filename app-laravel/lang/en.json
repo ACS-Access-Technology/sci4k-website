@@ -367,5 +367,21 @@
     "Poids des fichiers": "File sizes",
     "Visez moins de 300 Ko par image. Au-delà, la page devient lente sur les connexions mobiles.": "Aim for under 300 KB per image. Beyond that, the page becomes slow on mobile connections.",
     ":nombre masqué|:nombre masqués": ":nombre hidden|:nombre hidden",
-    ":nombre note à 5 étoiles|:nombre notes à 5 étoiles": ":nombre five-star rating|:nombre five-star ratings"
+    ":nombre note à 5 étoiles|:nombre notes à 5 étoiles": ":nombre five-star rating|:nombre five-star ratings",
+    "Répartition du contenu": "Content breakdown",
+    "À traiter": "To handle",
+    "Rien ne demande votre attention.": "Nothing needs your attention.",
+    "Activité récente": "Recent activity",
+    "Services en ligne": "Services online",
+    "Éléments masqués": "Hidden items",
+    "Invisible sur le site tant qu’il n’est pas publié.": "Not visible on the site until it is published.",
+    "Retirés du site sans être supprimés.": "Removed from the site without being deleted.",
+    "La version anglaise du site affichera le français.": "The English version of the site will show the French text.",
+    "Leur vignette affiche une initiale.": "Their thumbnail shows an initial.",
+    "Les compteurs de visiteurs et la répartition des biens immobiliers arriveront avec le suivi de fréquentation et le catalogue des biens.": "Visitor counters and the property breakdown will arrive with visit tracking and the property catalogue.",
+    "+:nombre ce mois-ci|+:nombre ce mois-ci": "+:nombre this month|+:nombre this month",
+    ":nombre article en brouillon|:nombre articles en brouillon": ":nombre draft article|:nombre draft articles",
+    ":nombre élément masqué|:nombre éléments masqués": ":nombre hidden item|:nombre hidden items",
+    ":nombre texte sans version anglaise|:nombre textes sans version anglaise": ":nombre text without an English version|:nombre texts without an English version",
+    ":nombre membre sans photo|:nombre membres sans photo": ":nombre member without a photo|:nombre members without a photo"
 }
