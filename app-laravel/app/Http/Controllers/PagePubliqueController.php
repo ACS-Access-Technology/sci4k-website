@@ -2,16 +2,64 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
+use App\Models\ChiffreCle;
+use App\Models\Encart;
 use App\Models\EtapeProcessus;
 use App\Models\MembreEquipe;
 use App\Models\QuestionFaq;
 use App\Models\ReglageDeSection;
+use App\Models\Partenaire;
 use App\Models\Service;
+use App\Models\Temoignage;
 use App\Models\Valeur;
 use Illuminate\Contracts\View\View;
 
 class PagePubliqueController extends Controller
 {
+    /**
+     * Page d'accueil.
+     *
+     * Sept sections, sept origines : en-tetes par ReglageDeSection, chiffres,
+     * services, articles, temoignages, partenaires et banderole par leurs
+     * tables. Les en-tetes sont charges d'une seule requete plutot que d'une
+     * par section.
+     */
+    public function accueil(): View
+    {
+        $langue = app()->getLocale();
+
+        $enTetes = ReglageDeSection::whereIn('slug', [
+            'home.hero', 'home.services', 'home.articles',
+            'home.testimonials', 'home.partners', 'ad.house',
+        ])->get()->keyBy('slug');
+
+        return view('public.accueil', [
+            'hero' => $enTetes->get('home.hero'),
+            'enteteServices' => $enTetes->get('home.services'),
+            'enteteArticles' => $enTetes->get('home.articles'),
+            'enteteTemoignages' => $enTetes->get('home.testimonials'),
+            'entetePartenaires' => $enTetes->get('home.partners'),
+            'annonce' => $enTetes->get('ad.house'),
+            'banderole' => Encart::visibles()->ordonnees()->first(),
+            'chiffres' => ChiffreCle::where('visible', true)->orderBy('ordre')->orderBy('id')->get(),
+            'services' => Service::visibles()->ordonnees()->get(),
+            // Les trois derniers articles publies, les plus recents d'abord.
+            'articles' => Article::publies()->with('categorie')->latest('date_publication')->limit(3)->get(),
+            'temoignages' => Temoignage::visibles()->ordonnees()->get(),
+            'partenaires' => Partenaire::visibles()->ordonnees()->get(),
+            'langue' => $langue,
+            'noeudPage' => [
+                '@type' => 'WebPage',
+                '@id' => rtrim(url('/'), '/').'/#page',
+                'url' => rtrim(url('/'), '/').'/',
+                'name' => 'SCI4K',
+                'inLanguage' => $langue,
+                'isPartOf' => ['@id' => rtrim(url('/'), '/').'/#site'],
+            ],
+        ]);
+    }
+
     public function services(): View
     {
         $langue = app()->getLocale();

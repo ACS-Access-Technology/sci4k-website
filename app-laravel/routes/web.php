@@ -5,15 +5,15 @@ use App\Http\Controllers\LangueController;
 use App\Http\Controllers\PagePubliqueController;
 use Illuminate\Support\Facades\Route;
 
-// La racine sert la page d'accueil du site, restee statique. Les dix pages non
-// encore portees vivent dans public/, deposees par tools/sync-frontoffice.sh ;
-// le serveur les sert directement, sans passer par une route.
-// Le contenu est lu et renvoye plutot que servi par response()->file() : cette
-// derniere produit une reponse binaire dont le corps reste vide en test, ce qui
-// rendrait la page non verifiable.
-Route::get('/', fn () => response(
-    file_get_contents(public_path('index.html'))
-)->header('Content-Type', 'text/html; charset=UTF-8'))->name('home');
+// La racine est servie depuis la base depuis le lot 2b. Les pages non encore
+// portees — biens, contact, mentions legales, politique de confidentialite —
+// vivent dans public/, deposees par tools/sync-frontoffice.sh, et le serveur
+// les sert directement sans passer par une route.
+Route::get('/', [PagePubliqueController::class, 'accueil'])->name('home');
+
+// L'ancienne adresse de l'accueil, que le site s'ecrivait a lui-meme dans ses
+// propres liens. La page statique du meme nom est exclue de la synchronisation.
+Route::permanentRedirect('/index.html', '/');
 
 Route::get('/actualites', [ActualiteController::class, 'index'])->name('actualites.index');
 Route::get('/actualites/{article:slug}', [ActualiteController::class, 'detail'])->name('actualites.detail');

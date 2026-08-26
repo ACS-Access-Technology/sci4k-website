@@ -89,6 +89,15 @@ for slug in SECTIONS:
     # n'a pas d'etiquette n'est pas une anomalie, c'est un choix de maquette.
     etiquette = texte(slug + '.tag', obligatoire=False)
     titre = texte(slug + '.title', obligatoire=False)
+
+    # Le titre du bandeau d'accueil porte du balisage — un <br> et un <em> sur
+    # la seconde ligne. Le garder tel quel obligerait la vue a le rendre sans
+    # echappement, donc a faire confiance a un champ que l'administration
+    # ecrit. Le <br> devient un saut de ligne et le <em> disparait : la vue
+    # met en valeur les lignes suivantes, ce qui rend la meme typographie sans
+    # laisser passer de balisage.
+    titre = tuple(t.replace('<br>', '\n').replace('<em>', '').replace('</em>', '')
+                  for t in titre)
     chapo = texte(slug + '.lede', obligatoire=False)
 
     # Deux sections de la page de presentation portent leur prose dans .p1,

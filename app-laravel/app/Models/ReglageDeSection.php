@@ -49,6 +49,29 @@ class ReglageDeSection extends Model
     }
 
     /**
+     * Le titre decoupe en lignes, debarrasse de tout balisage.
+     *
+     * Le titre du bandeau d'accueil s'affiche sur deux lignes, la seconde mise
+     * en valeur. La coupure vit en base sous forme de saut de ligne et non de
+     * <br> : un champ que l'administration ecrit ne doit pas pouvoir injecter
+     * du balisage dans la page.
+     *
+     * Les <br> heritees sont converties et le reste des balises retire — un
+     * import ancien, ou un copier-coller depuis une page, ne doit pas afficher
+     * « &lt;em&gt; » en clair au visiteur.
+     *
+     * @return list<string>
+     */
+    public function titreEnLignes(string $langue = 'fr'): array
+    {
+        $titre = preg_replace('/<br\s*\/?>/i', "\n", $this->titre($langue));
+
+        $lignes = preg_split('/\R/u', trim(strip_tags((string) $titre))) ?: [];
+
+        return array_values(array_filter(array_map('trim', $lignes), 'strlen'));
+    }
+
+    /**
      * Une option du bloc, ou sa valeur par defaut.
      *
      * Les options vivent en JSON plutot qu'en colonnes : une colonne par
