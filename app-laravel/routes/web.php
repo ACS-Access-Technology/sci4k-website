@@ -58,6 +58,23 @@ Route::middleware(['auth', 'role:administrateur|editeur|lecteur'])
         Route::get('/faq', \App\Livewire\Admin\FaqListe::class)->name('faq.liste');
         Route::get('/rubriques-faq', \App\Livewire\Admin\RubriqueFaqListe::class)->name('rubriques-faq.liste');
 
+        // Petits ensembles edites d'un bloc : un seul ecran chacun, ni liste ni
+        // formulaire separes. Un lecteur peut les consulter, le composant
+        // refusant l'enregistrement.
+        // Les six collections de blocs. Trois d'entre elles n'ont pas de route
+        // de creation : leur slug designe un emplacement du site, si bien
+        // qu'un element cree ne s'afficherait nulle part.
+        Route::get('/temoignages', \App\Livewire\Admin\TemoignageListe::class)->name('temoignages.liste');
+        Route::get('/partenaires', \App\Livewire\Admin\PartenaireListe::class)->name('partenaires.liste');
+        Route::get('/equipe', \App\Livewire\Admin\MembreEquipeListe::class)->name('equipe.liste');
+        Route::get('/encarts', \App\Livewire\Admin\EncartListe::class)->name('encarts.liste');
+        Route::get('/images-de-fond', \App\Livewire\Admin\ImageDeFondListe::class)->name('images-de-fond.liste');
+        Route::get('/reglages-de-section', \App\Livewire\Admin\ReglageDeSectionListe::class)->name('reglages-de-section.liste');
+
+        Route::get('/valeurs', \App\Livewire\Admin\ValeurEnsemble::class)->name('valeurs');
+        Route::get('/chiffres-cles', \App\Livewire\Admin\ChiffreCleEnsemble::class)->name('chiffres-cles');
+        Route::get('/etapes-processus', \App\Livewire\Admin\EtapeProcessusEnsemble::class)->name('etapes-processus');
+
         // Un lecteur consulte la liste mais n'ecrit pas : la restriction est
         // posee ici, et non sur le groupe entier.
         Route::middleware('role:administrateur|editeur')->group(function () {
@@ -73,6 +90,22 @@ Route::middleware(['auth', 'role:administrateur|editeur|lecteur'])
 
             Route::get('/rubriques-faq/creation', \App\Livewire\Admin\RubriqueFaqFormulaire::class)->name('rubriques-faq.creation');
             Route::get('/rubriques-faq/{rubrique}/edition', \App\Livewire\Admin\RubriqueFaqFormulaire::class)->name('rubriques-faq.edition');
+
+            // Formulaires des blocs. Les trois collections a slug fige n'ont
+            // pas de route de creation : leur formulaire la refuse aussi, la
+            // route absente ne suffisant pas — Livewire monte le composant.
+            Route::get('/temoignages/creation', \App\Livewire\Admin\TemoignageFormulaire::class)->name('temoignages.creation');
+            Route::get('/temoignages/{element}/edition', \App\Livewire\Admin\TemoignageFormulaire::class)->name('temoignages.edition');
+
+            Route::get('/partenaires/creation', \App\Livewire\Admin\PartenaireFormulaire::class)->name('partenaires.creation');
+            Route::get('/partenaires/{element}/edition', \App\Livewire\Admin\PartenaireFormulaire::class)->name('partenaires.edition');
+
+            Route::get('/equipe/creation', \App\Livewire\Admin\MembreEquipeFormulaire::class)->name('equipe.creation');
+            Route::get('/equipe/{element}/edition', \App\Livewire\Admin\MembreEquipeFormulaire::class)->name('equipe.edition');
+
+            Route::get('/encarts/{element}/edition', \App\Livewire\Admin\EncartFormulaire::class)->name('encarts.edition');
+            Route::get('/images-de-fond/{element}/edition', \App\Livewire\Admin\ImageDeFondFormulaire::class)->name('images-de-fond.edition');
+            Route::get('/reglages-de-section/{element}/edition', \App\Livewire\Admin\ReglageDeSectionFormulaire::class)->name('reglages-de-section.edition');
         });
     });
 

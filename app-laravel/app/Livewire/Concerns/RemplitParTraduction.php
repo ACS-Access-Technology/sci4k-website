@@ -61,6 +61,37 @@ trait RemplitParTraduction
     }
 
     /**
+     * Complete le membre vide d'un couple francais / anglais.
+     *
+     * Meme regle que remplirParTraductionCeQuiEstVide(), mais sur un couple
+     * passe en argument plutot que sur deux proprietes nommees : les ecrans
+     * qui editent plusieurs elements d'un bloc tiennent leurs textes dans un
+     * tableau, ou aucune propriete {prefixe}Fr n'existe. Ecrire la regle deux
+     * fois aurait donne deux endroits ou la corriger.
+     *
+     * @return array{0: string, 1: string} le couple complete
+     */
+    protected function completerCouple(?string $fr, ?string $en): array
+    {
+        $fr = (string) $fr;
+        $en = (string) $en;
+
+        $traducteur = app(Traducteur::class);
+
+        if (! $traducteur->disponible()) {
+            return [$fr, $en];
+        }
+
+        if (blank($en) && filled($fr)) {
+            $en = $this->traduireTexte($traducteur, $fr, 'en', 'fr') ?? $en;
+        } elseif (blank($fr) && filled($en)) {
+            $fr = $this->traduireTexte($traducteur, $en, 'fr', 'en') ?? $fr;
+        }
+
+        return [$fr, $en];
+    }
+
+    /**
      * Traduit un texte en preservant ses paragraphes.
      *
      * Les paragraphes partent comme autant de textes distincts plutot qu'en un

@@ -14,57 +14,21 @@
                 <nav class="flex-1 space-y-1 px-3">
                     <p class="px-2 pb-1 text-xs text-zinc-400">{{ __('Platform') }}</p>
 
-                    <a
-                        href="{{ route('dashboard') }}"
-                        wire:navigate
-                        @class([
-                            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium',
-                            'bg-zinc-200/70 text-zinc-900 dark:bg-white/10 dark:text-white' => request()->routeIs('dashboard'),
-                            'text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5' => ! request()->routeIs('dashboard'),
-                        ])
-                    >
-                        <x-icons.layout-grid />
-                        {{ __('Dashboard') }}
-                    </a>
 
-                    <a
-                        href="{{ route('admin.articles.liste') }}"
-                        wire:navigate
-                        @class([
-                            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium',
-                            'bg-zinc-200/70 text-zinc-900 dark:bg-white/10 dark:text-white' => request()->routeIs('admin.articles.*'),
-                            'text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5' => ! request()->routeIs('admin.articles.*'),
-                        ])
-                    >
-                        <x-icons.layout-grid />
-                        {{ __('Articles') }}
-                    </a>
-
-                    <a
-                        href="{{ route('admin.services.liste') }}"
-                        wire:navigate
-                        @class([
-                            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium',
-                            'bg-zinc-200/70 text-zinc-900 dark:bg-white/10 dark:text-white' => request()->routeIs('admin.services.*'),
-                            'text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5' => ! request()->routeIs('admin.services.*'),
-                        ])
-                    >
-                        <x-icons.layout-grid />
-                        {{ __('Services') }}
-                    </a>
-
-                    <a
-                        href="{{ route('admin.faq.liste') }}"
-                        wire:navigate
-                        @class([
-                            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium',
-                            'bg-zinc-200/70 text-zinc-900 dark:bg-white/10 dark:text-white' => request()->routeIs('admin.faq.*'),
-                            'text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5' => ! request()->routeIs('admin.faq.*'),
-                        ])
-                    >
-                        <x-icons.layout-grid />
-                        {{ __('FAQ') }}
-                    </a>
+                    <x-admin.lien-lateral route="dashboard" :intitule="__('Tableau de bord')" />
+                    <x-admin.lien-lateral route="admin.articles.liste" motif="admin.articles.*" :intitule="__('Articles')" />
+                    <x-admin.lien-lateral route="admin.services.liste" motif="admin.services.*" :intitule="__('Services')" />
+                    <x-admin.lien-lateral route="admin.faq.liste" motif="admin.faq.*" :intitule="__('FAQ')" />
+                    <x-admin.lien-lateral route="admin.rubriques-faq.liste" motif="admin.rubriques-faq.*" :intitule="__('Rubriques de la FAQ')" />
+                    <x-admin.lien-lateral route="admin.temoignages.liste" motif="admin.temoignages.*" :intitule="__('Témoignages')" />
+                    <x-admin.lien-lateral route="admin.partenaires.liste" motif="admin.partenaires.*" :intitule="__('Partenaires')" />
+                    <x-admin.lien-lateral route="admin.equipe.liste" motif="admin.equipe.*" :intitule="__('Équipe')" />
+                    <x-admin.lien-lateral route="admin.valeurs" :intitule="__('Valeurs')" />
+                    <x-admin.lien-lateral route="admin.chiffres-cles" :intitule="__('Chiffres clés')" />
+                    <x-admin.lien-lateral route="admin.etapes-processus" :intitule="__('Étapes du processus')" />
+                    <x-admin.lien-lateral route="admin.encarts.liste" motif="admin.encarts.*" :intitule="__('Encarts')" />
+                    <x-admin.lien-lateral route="admin.images-de-fond.liste" motif="admin.images-de-fond.*" :intitule="__('Images de fond')" />
+                    <x-admin.lien-lateral route="admin.reglages-de-section.liste" motif="admin.reglages-de-section.*" :intitule="__('En-têtes de section')" />
                 </nav>
 
                 <nav class="space-y-1 px-3 pb-3">
@@ -112,57 +76,21 @@
                     <nav class="flex-1 space-y-1 px-3">
                         <p class="px-2 pb-1 text-xs text-zinc-400">{{ __('Platform') }}</p>
 
-                        <a
-                            href="{{ route('dashboard') }}"
-                            wire:navigate
-                            @class([
-                                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium',
-                                'bg-zinc-200/70 text-zinc-900 dark:bg-white/10 dark:text-white' => request()->routeIs('dashboard'),
-                                'text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5' => ! request()->routeIs('dashboard'),
-                            ])
-                        >
-                            <x-icons.layout-grid />
-                            {{ __('Dashboard') }}
-                        </a>
 
-                        <a
-                            href="{{ route('admin.articles.liste') }}"
-                            wire:navigate
-                            @class([
-                                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium',
-                                'bg-zinc-200/70 text-zinc-900 dark:bg-white/10 dark:text-white' => request()->routeIs('admin.articles.*'),
-                                'text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5' => ! request()->routeIs('admin.articles.*'),
-                            ])
-                        >
-                            <x-icons.layout-grid />
-                            {{ __('Articles') }}
-                        </a>
-
-                        <a
-                            href="{{ route('admin.services.liste') }}"
-                            wire:navigate
-                            @class([
-                                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium',
-                                'bg-zinc-200/70 text-zinc-900 dark:bg-white/10 dark:text-white' => request()->routeIs('admin.services.*'),
-                                'text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5' => ! request()->routeIs('admin.services.*'),
-                            ])
-                        >
-                            <x-icons.layout-grid />
-                            {{ __('Services') }}
-                        </a>
-
-                        <a
-                            href="{{ route('admin.faq.liste') }}"
-                            wire:navigate
-                            @class([
-                                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium',
-                                'bg-zinc-200/70 text-zinc-900 dark:bg-white/10 dark:text-white' => request()->routeIs('admin.faq.*'),
-                                'text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5' => ! request()->routeIs('admin.faq.*'),
-                            ])
-                        >
-                            <x-icons.layout-grid />
-                            {{ __('FAQ') }}
-                        </a>
+                        <x-admin.lien-lateral route="dashboard" :intitule="__('Tableau de bord')" />
+                        <x-admin.lien-lateral route="admin.articles.liste" motif="admin.articles.*" :intitule="__('Articles')" />
+                        <x-admin.lien-lateral route="admin.services.liste" motif="admin.services.*" :intitule="__('Services')" />
+                        <x-admin.lien-lateral route="admin.faq.liste" motif="admin.faq.*" :intitule="__('FAQ')" />
+                        <x-admin.lien-lateral route="admin.rubriques-faq.liste" motif="admin.rubriques-faq.*" :intitule="__('Rubriques de la FAQ')" />
+                        <x-admin.lien-lateral route="admin.temoignages.liste" motif="admin.temoignages.*" :intitule="__('Témoignages')" />
+                        <x-admin.lien-lateral route="admin.partenaires.liste" motif="admin.partenaires.*" :intitule="__('Partenaires')" />
+                        <x-admin.lien-lateral route="admin.equipe.liste" motif="admin.equipe.*" :intitule="__('Équipe')" />
+                        <x-admin.lien-lateral route="admin.valeurs" :intitule="__('Valeurs')" />
+                        <x-admin.lien-lateral route="admin.chiffres-cles" :intitule="__('Chiffres clés')" />
+                        <x-admin.lien-lateral route="admin.etapes-processus" :intitule="__('Étapes du processus')" />
+                        <x-admin.lien-lateral route="admin.encarts.liste" motif="admin.encarts.*" :intitule="__('Encarts')" />
+                        <x-admin.lien-lateral route="admin.images-de-fond.liste" motif="admin.images-de-fond.*" :intitule="__('Images de fond')" />
+                        <x-admin.lien-lateral route="admin.reglages-de-section.liste" motif="admin.reglages-de-section.*" :intitule="__('En-têtes de section')" />
                     </nav>
 
                     <nav class="space-y-1 px-3 pb-3">

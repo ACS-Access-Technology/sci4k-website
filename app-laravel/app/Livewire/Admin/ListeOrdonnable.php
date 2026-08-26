@@ -85,14 +85,34 @@ abstract class ListeOrdonnable extends Component
     }
 
     /**
+     * Cette collection accepte-t-elle la suppression ?
+     *
+     * Le point d'extension avait ete retire au lot 2a, son unique utilisateur
+     * ayant disparu : une garde toujours vraie, dont la branche fausse n'etait
+     * couverte par aucun test, ne donnait plus d'assurance. Il revient parce
+     * que trois collections du lot 2b en ont un vrai besoin — reglages de
+     * section, encarts et images de fond, dont le slug designe un emplacement
+     * du site. En supprimer un ne retire rien : la page cherche toujours ce
+     * nom, et ne trouve plus rien a afficher.
+     *
+     * Il est declare ici plutot que par trois surcharges identiques de
+     * supprimer(), et sa branche fausse est desormais eprouvee.
+     */
+    protected function suppressionPermise(): bool
+    {
+        return true;
+    }
+
+    /**
      * Suppression simple. Une collection dont le retrait touche autre chose
      * qu'elle-meme surcharge cette methode plutot que de retirer le bouton :
      * Livewire expose au navigateur toute methode publique du composant, si
      * bien qu'une vue sans bouton reste appelable. Voir ServiceListe, qui
-     * refuse un service portant des questions de FAQ.
+     * efface le fichier d'image avec le service.
      */
     public function supprimer(int $id): void
     {
+        abort_unless($this->suppressionPermise(), 403);
         abort_unless($this->peutEcrire(), 403);
 
         ($this->modele())::findOrFail($id)->delete();
