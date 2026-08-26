@@ -122,6 +122,15 @@
                  pose sur le tableau lui-meme reste sans effet. --}}
             <div class="flex min-h-screen min-w-0 flex-1 flex-col">
                 {{-- Mobile top bar --}}
+                {{-- Barre du haut : elle porte la recherche transverse, que la
+                     maquette place sur chaque ecran. Chaque liste a deja sa
+                     propre recherche, mais elle suppose de savoir OU se trouve
+                     ce qu'on cherche — or on se souvient d'un titre, pas de la
+                     famille a laquelle il appartient. --}}
+                <header class="hidden items-center gap-4 border-b border-zinc-200 bg-zinc-50 px-6 py-3 lg:flex dark:border-zinc-700 dark:bg-zinc-900">
+                    <livewire:admin.recherche-globale />
+                </header>
+
                 <header class="flex items-center justify-between border-b border-zinc-200 bg-zinc-50 p-3 lg:hidden dark:border-zinc-700 dark:bg-zinc-900">
                     <button type="button" x-on:click="mobileNavOpen = true" class="text-zinc-600 dark:text-zinc-300">
                         <x-icons.bars />
@@ -133,7 +142,24 @@
                     <x-desktop-user-menu :show-name="false" />
                 </header>
 
-                {{ $slot }}
+                {{-- min-w-0 sur le conteneur du contenu pour la meme raison que
+                     plus haut : un tableau large ne doit pas pousser la page. --}}
+                <div class="min-w-0 flex-1">
+                    {{ $slot }}
+                </div>
+
+                {{-- Pied du panneau, comme la maquette. L'annee suit l'horloge
+                     plutot que d'etre figee : la page se serait trompee dans
+                     quatre mois. --}}
+                <footer class="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 px-6 py-4 text-xs text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+                    <span>{{ __('© :annee SCI4K — Panneau d’administration.', ['annee' => now()->year]) }}</span>
+
+                    <nav class="flex items-center gap-4">
+                        <a href="{{ route('home') }}" target="_blank" class="hover:underline">{{ __('Accueil') }}</a>
+                        <a href="{{ route('faq.index') }}" target="_blank" class="hover:underline">{{ __('FAQ') }}</a>
+                        <a href="{{ route('appearance.edit') }}" wire:navigate class="hover:underline">{{ __('Réglages') }}</a>
+                    </nav>
+                </footer>
             </div>
         </div>
 

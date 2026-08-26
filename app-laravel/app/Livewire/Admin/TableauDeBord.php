@@ -11,6 +11,7 @@ use App\Models\MembreEquipe;
 use App\Models\Partenaire;
 use App\Models\QuestionFaq;
 use App\Models\Service;
+use App\Models\Tache;
 use App\Models\Temoignage;
 use App\Models\Valeur;
 use Illuminate\Contracts\View\View;
@@ -21,26 +22,29 @@ use Livewire\Component;
  * Tableau de bord de l'administration.
  *
  * Reprend la disposition de backoffice/dashboard.html : quatre tuiles, deux
- * panneaux cote a cote, puis l'activite recente.
+ * panneaux, puis activite recente, taches et ce qui demande une action.
  *
- * Deux ecarts assumes avec la maquette, et ils tiennent au meme motif — ne
- * jamais afficher un chiffre qu'on ne mesure pas :
- *
- *   - la maquette compte des « biens en ligne » et une « repartition des
- *     biens ». Le catalogue est au lot 3. Ces deux emplacements servent donc
- *     ce qui existe : le contenu editorial et sa repartition ;
- *   - elle affiche des « visiteurs aujourd'hui » et une frequentation sur
- *     douze mois. Rien ne compte les visites. Plutot qu'un graphique invente,
- *     l'emplacement porte ce qui demande une action — un panneau qui sert a
- *     quelque chose vaut mieux qu'une courbe decorative.
- *
- * Les variations en pourcentage de la maquette demanderaient un historique que
- * personne ne conserve. Chaque tuile annonce a la place ce qui a ete AJOUTE ce
- * mois-ci, qui se mesure vraiment.
+ * Trois panneaux de la maquette attendent leur lot — frequentation,
+ * repartition des biens, messages de contact. Ils gardent leur place et
+ * annoncent ce qu'ils porteront : un emplacement vide laisse croire a un
+ * oubli, un graphique invente serait pire.
  */
 #[Layout('layouts.app')]
 class TableauDeBord extends Component
 {
+    /** Texte de la tache en cours de saisie. */
+    public string $nouvelleTache = '';
+
+    /** Echeance facultative de la tache en cours de saisie. */
+    public string $nouvelleEcheance = '';
+
+    protected function peutEcrire(): bool
+    {
+        return (bool) auth()->user()?->hasAnyRole(['administrateur', 'editeur']);
+    }
+
+    /* ------------------------------------------------------------ tuiles */
+
     /**
      * Les quatre tuiles de tete.
      *
@@ -48,37 +52,71 @@ class TableauDeBord extends Component
      */
     protected function tuiles(): array
     {
-        $debutDuMois = now()->startOfMonth();
-
         return [
             [
                 'intitule' => __('Articles publiés'),
                 'valeur' => Article::where('statut', 'publie')->count(),
-                'ajoutes' => Article::where('created_at', '>=', $debutDuMois)->count(),
+                'variation' => $this->variationMensuelle(Article::class),
+                'icone' => 'document',
                 'ton' => 'primaire',
                 'route' => 'admin.articles.liste',
             ],
             [
                 'intitule' => __('Services en ligne'),
                 'valeur' => Service::where('visible', true)->count(),
-                'ajoutes' => Service::where('created_at', '>=', $debutDuMois)->count(),
+                'variation' => $this->variationMensuelle(Service::class),
+                'icone' => 'grille',
                 'ton' => 'succes',
                 'route' => 'admin.services.liste',
             ],
             [
                 'intitule' => __('Questions de FAQ'),
                 'valeur' => QuestionFaq::where('visible', true)->count(),
-                'ajoutes' => QuestionFaq::where('created_at', '>=', $debutDuMois)->count(),
+                'variation' => $this->variationMensuelle(QuestionFaq::class),
+                'icone' => 'question',
                 'ton' => 'info',
                 'route' => 'admin.faq.liste',
             ],
             [
                 'intitule' => __('Éléments masqués'),
                 'valeur' => $this->totalMasque(),
-                'ajoutes' => 0,
+                'variation' => null,
+                'icone' => 'oeil-barre',
                 'ton' => 'alerte',
                 'route' => null,
             ],
+        ];
+    }
+
+    /**
+     * La variation du mois en cours par rapport au precedent, en pourcentage.
+     *
+     * La maquette affiche « ↑ 12 % » sans dire de quoi. Ici c'est le nombre
+     * d'elements CREES qu'on compare, la seule chose que les dates en base
+     * permettent de mesurer — aucun historique des totaux n'est conserve.
+     *
+     * Renvoie null quand la comparaison n'aurait pas de sens : sans creation le
+     * mois dernier, toute croissance vaudrait « +∞ % ».
+     *
+     * @return array{sens: string, pourcentage: int}|null
+     */
+    protected function variationMensuelle(string $modele): ?array
+    {
+        $debutMois = now()->startOfMonth();
+        $debutMoisPrecedent = now()->subMonthNoOverflow()->startOfMonth();
+
+        $ceMois = $modele::where('created_at', '>=', $debutMois)->count();
+        $moisDernier = $modele::whereBetween('created_at', [$debutMoisPrecedent, $debutMois])->count();
+
+        if ($moisDernier === 0) {
+            return null;
+        }
+
+        $variation = (int) round(($ceMois - $moisDernier) / $moisDernier * 100);
+
+        return [
+            'sens' => $variation >= 0 ? 'hausse' : 'baisse',
+            'pourcentage' => abs($variation),
         ];
     }
 
@@ -93,12 +131,10 @@ class TableauDeBord extends Component
             + MembreEquipe::where('visible', false)->count();
     }
 
+    /* ------------------------------------------------------- repartition */
+
     /**
      * La repartition du contenu, famille par famille.
-     *
-     * Remplace la « repartition des biens » de la maquette, le catalogue
-     * n'existant pas encore. Les barres se lisent les unes par rapport aux
-     * autres : le maximum donne l'echelle.
      *
      * @return list<array<string, mixed>>
      */
@@ -132,13 +168,68 @@ class TableauDeBord extends Component
             ->all();
     }
 
+    /* ------------------------------------------------------------ taches */
+
+    /** Les taches de l'utilisateur, les non terminees d'abord. */
+    protected function taches()
+    {
+        return Tache::where('user_id', auth()->id())
+            ->orderBy('terminee')
+            ->orderByRaw('echeance is null')
+            ->orderBy('echeance')
+            ->orderBy('id')
+            ->get();
+    }
+
+    public function ajouterTache(): void
+    {
+        abort_unless($this->peutEcrire(), 403);
+
+        $this->validate([
+            'nouvelleTache' => ['required', 'string', 'max:255'],
+            'nouvelleEcheance' => ['nullable', 'date'],
+        ], attributes: [
+            'nouvelleTache' => __('la tâche'),
+            'nouvelleEcheance' => __("l'échéance"),
+        ]);
+
+        Tache::create([
+            'user_id' => auth()->id(),
+            'texte' => $this->nouvelleTache,
+            'echeance' => $this->nouvelleEcheance ?: null,
+            'ordre' => Tache::where('user_id', auth()->id())->max('ordre') + 1,
+        ]);
+
+        $this->nouvelleTache = '';
+        $this->nouvelleEcheance = '';
+    }
+
+    public function basculerTache(int $id): void
+    {
+        abort_unless($this->peutEcrire(), 403);
+
+        // Restreint a l'utilisateur : l'identifiant vient du navigateur, et
+        // rien n'empeche d'y mettre celui de la tache d'un collegue.
+        $tache = Tache::where('user_id', auth()->id())->findOrFail($id);
+
+        $tache->update(['terminee' => ! $tache->terminee]);
+    }
+
+    public function supprimerTache(int $id): void
+    {
+        abort_unless($this->peutEcrire(), 403);
+
+        Tache::where('user_id', auth()->id())->findOrFail($id)->delete();
+    }
+
+    /* -------------------------------------------------------- a traiter */
+
     /**
-     * Ce qui demande une action, et pourquoi.
+     * Ce qui demande une action, DEDUIT de l'etat reel.
      *
-     * Occupe l'emplacement des « taches prioritaires » de la maquette, mais
-     * les taches y sont DEDUITES de l'etat reel plutot que saisies a la main :
-     * une liste de taches qu'il faut penser a cocher se desynchronise du site
-     * en une semaine.
+     * Complete les taches saisies plutot que de s'y substituer : « 3 articles
+     * en brouillon » se deduit et se perime tout seul, « rappeler le notaire
+     * jeudi » se saisit et ne se devine pas.
      *
      * @return list<array<string, mixed>>
      */
@@ -193,6 +284,8 @@ class TableauDeBord extends Component
         return $aFaire;
     }
 
+    /* ------------------------------------------------------- activite */
+
     /**
      * Les derniers contenus touches, toutes familles confondues.
      *
@@ -205,18 +298,19 @@ class TableauDeBord extends Component
         $recents = collect();
 
         $sources = [
-            [Article::class, 'titre_fr', __('Article'), 'admin.articles.edition'],
-            [Service::class, 'nom_fr', __('Service'), 'admin.services.edition'],
-            [QuestionFaq::class, 'question_fr', __('Question'), 'admin.faq.edition'],
-            [Temoignage::class, 'auteur', __('Témoignage'), 'admin.temoignages.edition'],
-            [MembreEquipe::class, 'nom', __('Membre'), 'admin.equipe.edition'],
-            [Partenaire::class, 'nom', __('Partenaire'), 'admin.partenaires.edition'],
+            [Article::class, 'titre_fr', __('Article'), 'admin.articles.edition', 'document'],
+            [Service::class, 'nom_fr', __('Service'), 'admin.services.edition', 'grille'],
+            [QuestionFaq::class, 'question_fr', __('Question'), 'admin.faq.edition', 'question'],
+            [Temoignage::class, 'auteur', __('Témoignage'), 'admin.temoignages.edition', 'guillemets'],
+            [MembreEquipe::class, 'nom', __('Membre'), 'admin.equipe.edition', 'personne'],
+            [Partenaire::class, 'nom', __('Partenaire'), 'admin.partenaires.edition', 'grille'],
         ];
 
-        foreach ($sources as [$modele, $colonne, $famille, $route]) {
+        foreach ($sources as [$modele, $colonne, $famille, $route, $icone]) {
             foreach ($modele::query()->latest('updated_at')->limit(5)->get() as $element) {
                 $recents->push([
                     'famille' => $famille,
+                    'icone' => $icone,
                     'intitule' => (string) $element->$colonne,
                     'quand' => $element->updated_at,
                     'route' => $route,
@@ -225,7 +319,30 @@ class TableauDeBord extends Component
             }
         }
 
-        return $recents->sortByDesc('quand')->take(8)->values();
+        return $recents->sortByDesc('quand')->take(6)->values();
+    }
+
+    /**
+     * Les panneaux de la maquette qui attendent leur lot.
+     *
+     * @return list<array<string, string>>
+     */
+    protected function aVenir(): array
+    {
+        return [
+            [
+                'titre' => __('Fréquentation'),
+                'texte' => __("Visiteurs et demandes sur douze mois. Demande un suivi de fréquentation, qui n'est pas encore posé."),
+            ],
+            [
+                'titre' => __('Répartition des biens'),
+                'texte' => __('Maisons, appartements, terrains, bureaux. Arrive avec le catalogue des biens immobiliers.'),
+            ],
+            [
+                'titre' => __('Messages'),
+                'texte' => __("Demandes de visite et formulaires de contact. Arrive avec la réception des messages du site."),
+            ],
+        ];
     }
 
     public function render(): View
@@ -233,8 +350,11 @@ class TableauDeBord extends Component
         return view('livewire.admin.tableau-de-bord', [
             'tuiles' => $this->tuiles(),
             'repartition' => $this->repartition(),
+            'taches' => $this->taches(),
             'aTraiter' => $this->aTraiter(),
             'recents' => $this->activiteRecente(),
+            'aVenir' => $this->aVenir(),
+            'peutEcrire' => $this->peutEcrire(),
             'langue' => app()->getLocale(),
         ])->title(__('Tableau de bord'));
     }

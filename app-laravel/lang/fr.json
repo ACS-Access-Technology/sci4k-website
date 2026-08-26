@@ -139,5 +139,6 @@
     ":nombre article en brouillon|:nombre articles en brouillon": ":nombre article en brouillon|:nombre articles en brouillon",
     ":nombre élément masqué|:nombre éléments masqués": ":nombre élément masqué|:nombre éléments masqués",
     ":nombre texte sans version anglaise|:nombre textes sans version anglaise": ":nombre texte sans version anglaise|:nombre textes sans version anglaise",
-    ":nombre membre sans photo|:nombre membres sans photo": ":nombre membre sans photo|:nombre membres sans photo"
+    ":nombre membre sans photo|:nombre membres sans photo": ":nombre membre sans photo|:nombre membres sans photo",
+    ":nombre jour|:nombre jours": ":nombre jour|:nombre jours"
 }
