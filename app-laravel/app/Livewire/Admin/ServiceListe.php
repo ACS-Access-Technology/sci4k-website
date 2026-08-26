@@ -27,6 +27,12 @@ class ServiceListe extends ListeOrdonnable
         return __('Services');
     }
 
+    /** La colonne « Catégorie » declencherait sinon une requete par ligne. */
+    protected function relationsAPrecharger(): array
+    {
+        return ['categorie'];
+    }
+
     /**
      * Retire le service, et le fichier de son image avec lui.
      *

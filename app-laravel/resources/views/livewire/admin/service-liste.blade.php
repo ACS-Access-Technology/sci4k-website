@@ -24,13 +24,9 @@
         </div>
     @endif
 
-    {{-- Une suppression refusee doit se lire, sinon le clic semble n'avoir eu
-         aucun effet et l'editeur recommence. --}}
-    @if (session('erreur'))
-        <div role="alert" class="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-100">
-            {{ session('erreur') }}
-        </div>
-    @endif
+    {{-- Pas de zone d'erreur ici : plus rien ne refuse une suppression de
+         service depuis que la FAQ a ses propres rubriques. Le bloc qui
+         occupait cette place decrivait un comportement disparu. --}}
 
     <x-admin.barre-filtres>
         <x-admin.champ-filtre :intitule="__('Rechercher')" pour="recherche">

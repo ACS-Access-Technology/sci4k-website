@@ -101,9 +101,21 @@ abstract class ListeOrdonnable extends Component
     }
 
     /** Les elements de l'ecran, filtres et ordonnes. */
+    /**
+     * Relations a precharger, pour que la vue n'emette pas une requete par
+     * ligne. Chaque collection declare les siennes ; par defaut, aucune.
+     *
+     * @return list<string>
+     */
+    protected function relationsAPrecharger(): array
+    {
+        return [];
+    }
+
     protected function elements(): Collection
     {
         return ($this->modele())::query()
+            ->with($this->relationsAPrecharger())
             ->when($this->recherche !== '', function ($r) {
                 $r->where(function ($q) {
                     foreach ($this->colonnesRecherchees() as $colonne) {

@@ -94,16 +94,24 @@ def controle_javascript():
 
 # ---------------------------------------------------------------- plan de site
 def controle_plan_de_site():
-    chemin = os.path.join(FRONT, 'sitemap.xml')
-    if not os.path.exists(chemin):
-        anomalies.append('sitemap.xml absent')
-        return
-    for url in re.findall(r'<loc>([^<]+)</loc>', lire(chemin)):
-        fichier = url.rstrip('/').split('/')[-1] or 'index.html'
-        if not fichier.endswith('.html'):
-            fichier = 'index.html'
-        if not os.path.exists(os.path.join(FRONT, fichier)):
-            anomalies.append('plan de site : %s ne correspond a aucune page' % url)
+    """Le plan du site ne doit plus exister sous forme de fichier.
+
+    Il est rendu par Laravel depuis la base (PlanDuSiteController). Le fichier
+    fige annonçait des adresses qui ne repondent plus que par une redirection,
+    et ne connaissait aucun article — un plan de site fige ne peut pas suivre
+    un contenu editable.
+
+    Le controle precedent validait ces adresses contre l'existence de FICHIERS
+    sources : il restait vert alors meme que /services.html avait cesse d'etre
+    servi. Un controle qui porte a cote du point sensible donne exactement la
+    meme assurance qu'un vrai. Le contenu du plan est desormais eprouve par
+    tests/Feature/PlanDuSiteTest.php, qui appelle la route.
+    """
+    fige = os.path.join(FRONT, 'sitemap.xml')
+    if os.path.exists(fige):
+        anomalies.append(
+            'plan de site : %s subsiste alors que la route /sitemap.xml fait foi'
+            % os.path.relpath(fige, RACINE))
 
 
 # ------------------------------------------------------- chargement du script

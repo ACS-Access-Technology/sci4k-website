@@ -34,6 +34,11 @@ class FaqListe extends ListeOrdonnable
         return __('FAQ');
     }
 
+    protected function relationsAPrecharger(): array
+    {
+        return ['rubrique'];
+    }
+
     /**
      * Les questions dans l'ordre ou le site les montre.
      *
@@ -45,13 +50,12 @@ class FaqListe extends ListeOrdonnable
      * et le pied du tableau promettait un glisser-deposer « pour changer
      * l'ordre d'affichage sur le site » que l'ecran ne refletait pas.
      *
-     * La rubrique est prechargee : sans cela, la colonne du meme nom declenche
-     * une requete par ligne.
+     * La rubrique est prechargee par relationsAPrecharger() : sans cela, la
+     * colonne du meme nom declenche une requete par ligne.
      */
     protected function elements(): Collection
     {
         return parent::elements()
-            ->load('rubrique')
             ->sortBy(fn ($q) => [$q->rubrique->ordre, $q->ordre, $q->id])
             ->values();
     }

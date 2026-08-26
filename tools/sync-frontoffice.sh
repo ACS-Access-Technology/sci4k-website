@@ -23,6 +23,11 @@
 # copiees : Laravel sert desormais ces quatre pages depuis la base. Les copier
 # ferait coexister deux adresses rendant deux versions divergentes du meme
 # contenu — celle de la base et celle, figee, du fichier statique.
+#
+# sitemap.xml suit la meme regle. Le serveur sert un fichier de public/ avant
+# d'entrer dans PHP : le copier masquerait la route qui rend le plan du site
+# depuis la base, et le site continuerait d'annoncer des adresses redirigees
+# sans connaitre aucun article.
 
 set -euo pipefail
 
@@ -65,6 +70,14 @@ for page in "$source_fo"/*.html; do
     copiees=$((copiees + 1))
 done
 echo "  pages statiques : $copiees copiees"
+
+# Le plan du site est rendu par Laravel depuis la base. Une copie laissee dans
+# public/ par une synchronisation anterieure masquerait la route, le serveur
+# servant un fichier avant d'entrer dans PHP.
+if [ -e "$cible/sitemap.xml" ]; then
+    rm -f "$cible/sitemap.xml"
+    echo "  sitemap.xml : copie retiree, servi par Laravel"
+fi
 
 # Lien vers storage/app/public, ou vivent les couvertures televersees depuis
 # l'administration. Sans lui elles repondent 404, sans erreur cote serveur :

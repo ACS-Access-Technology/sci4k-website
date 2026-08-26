@@ -76,21 +76,6 @@ class Service extends Model
     }
 
     /**
-     * Adresse du visuel de la tuile, ou null si le service n'en a pas.
-     *
-     * Deux origines cohabitent dans `image_source`, sur le modele
-     * d'Article::urlCouverture() :
-     *
-     *   - `images/services/foncier.jpg` pour les visuels repris du site, dont
-     *     les fichiers vivent dans frontoffice/ et sont deposes dans public/
-     *     par tools/sync-frontoffice.sh ;
-     *   - `storage/services/…` pour les visuels televerses depuis
-     *     l'administration.
-     *
-     * La vue publique n'a ainsi qu'un seul point d'appel, et le repli sur la
-     * classe CSS service-bg-{slug} n'intervient que si ceci renvoie null.
-     */
-    /**
      * Adresse de l'image du service, ou null s'il n'en a pas.
      *
      * Deux origines cohabitent dans `image_source`, et c'est voulu :

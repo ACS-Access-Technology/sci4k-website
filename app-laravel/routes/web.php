@@ -38,6 +38,12 @@ Route::permanentRedirect('/faq.html', '/faq');
 
 Route::get('/langue/{code}', [LangueController::class, 'basculer'])->name('langue.basculer');
 
+// Plan du site rendu depuis la base : le fichier fige de frontoffice/ annonçait
+// des adresses qui ne repondent plus que par une redirection, et ne connaissait
+// aucun article. Il est exclu de la synchronisation, sans quoi il masquerait
+// cette route — le serveur sert un fichier de public/ avant d'entrer dans PHP.
+Route::get('/sitemap.xml', \App\Http\Controllers\PlanDuSiteController::class)->name('plan-du-site');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
 });
