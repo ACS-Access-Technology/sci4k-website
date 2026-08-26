@@ -236,6 +236,41 @@ if len(equipe) != 4:
     manques.append('equipe : %d membres trouves, 4 attendus' % len(equipe))
 
 
+# --------------------------------------------------- etapes du processus (4)
+#
+# Seule famille dont l'anglais ne vient PAS de main.js : les quatre etapes ont
+# ete portees en __() au lot 2a, avec la page /services. Leur traduction vit
+# donc dans lang/en.json, et la vue Blade fait foi pour le francais.
+etapes = []
+
+vue_services = io.open(
+    os.path.join(RACINE, 'app-laravel', 'resources', 'views', 'public', 'services.blade.php'),
+    encoding='utf-8').read()
+
+dictionnaire_en = json.load(io.open(
+    os.path.join(RACINE, 'app-laravel', 'lang', 'en.json'), encoding='utf-8'))
+
+cartes_processus = re.findall(
+    r"<div class=\"process-num\">(\d+)</div>\s*<h4>\{\{ __\('([^']+)'\) \}\}</h4>\s*"
+    r"<p>\{\{ __\('([^']+)'\) \}\}</p>",
+    vue_services)
+
+if len(cartes_processus) != 4:
+    manques.append('etapes du processus : %d trouvees dans la vue, 4 attendues'
+                   % len(cartes_processus))
+
+for numero, titre_fr, texte_fr in cartes_processus:
+    for cle in (titre_fr, texte_fr):
+        if cle not in dictionnaire_en:
+            manques.append('etape : « %s » absente de lang/en.json' % cle[:50])
+
+    etapes.append({
+        'ordre': int(numero),
+        'titre_fr': titre_fr, 'titre_en': dictionnaire_en.get(titre_fr, ''),
+        'texte_fr': texte_fr, 'texte_en': dictionnaire_en.get(texte_fr, ''),
+    })
+
+
 # ---------------------------------------------------------------- encart (1)
 titre_cta = texte('home.cta.title')
 texte_cta = texte('home.cta.text')
@@ -280,6 +315,7 @@ familles = {
     'equipe.json': equipe,
     'encarts.json': encarts,
     'images-de-fond.json': images,
+    'etapes-processus.json': etapes,
 }
 
 if manques:
