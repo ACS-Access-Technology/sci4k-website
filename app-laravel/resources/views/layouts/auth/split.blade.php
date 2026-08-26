@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+{{-- Pas de class="dark" ici : le script de partials/head.blade.php la pose
+     avant le premier rendu, selon le choix garde en memoire ou le reglage du
+     poste. L'ecrire en dur faisait annoncer « sombre » a chaque page servie,
+     y compris a un visiteur ayant choisi le clair. --}}
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         @include('partials.head')
     </head>

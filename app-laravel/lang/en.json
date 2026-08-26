@@ -298,5 +298,9 @@
     ":intitule enregistré.": ":intitule saved.",
     "Modifications enregistrées.": "Changes saved.",
     ":champ (français) — élément :rang": ":champ (French) — item :rang",
-    ":champ (anglais) — élément :rang": ":champ (English) — item :rang"
+    ":champ (anglais) — élément :rang": ":champ (English) — item :rang",
+    "Clair": "Light",
+    "Sombre": "Dark",
+    "Système": "System",
+    "Apparence": "Appearance"
 }
