@@ -2,6 +2,7 @@
 
 use App\Models\Categorie;
 use App\Models\QuestionFaq;
+use App\Models\RubriqueFaq;
 use App\Models\Service;
 
 beforeEach(function () {
@@ -41,9 +42,11 @@ it('sert les services en anglais', function () {
     $this->get('/services')->assertOk()->assertSee('Land &amp; Title', false)->assertSee('Secure your land');
 });
 
-it('affiche la FAQ groupee par service', function () {
+it('affiche la FAQ groupee par rubrique', function () {
+    $rubrique = RubriqueFaq::factory()->create(['slug' => 'foncier', 'nom_fr' => 'Foncier', 'ordre' => 1]);
+
     QuestionFaq::factory()->create([
-        'service_id' => $this->service->id, 'ordre' => 1, 'visible' => true,
+        'rubrique_id' => $rubrique->id, 'ordre' => 1, 'visible' => true,
         'question_fr' => "Qu'est-ce qu'un ACD ?", 'reponse_fr' => 'Un arrêté officiel.',
     ]);
 
@@ -55,10 +58,27 @@ it('affiche la FAQ groupee par service', function () {
 
 it('ne montre pas une question masquee', function () {
     QuestionFaq::factory()->create([
-        'service_id' => $this->service->id, 'visible' => false, 'question_fr' => 'Question cachée ?',
+        'visible' => false, 'question_fr' => 'Question cachée ?',
     ]);
 
     $this->get('/faq')->assertOk()->assertDontSee('Question cachée ?', false);
+});
+
+it('retire de la page les questions d une rubrique masquee', function () {
+    // Masquer une rubrique doit emporter ses questions : sans ce filtre, la
+    // page gardait un groupe entier, titre compris, que l'editeur croyait
+    // avoir retire du site.
+    $rubrique = RubriqueFaq::factory()->create(['nom_fr' => 'Rubrique masquée', 'visible' => false]);
+
+    QuestionFaq::factory()->create([
+        'rubrique_id' => $rubrique->id, 'visible' => true,
+        'question_fr' => 'Question dans une rubrique masquée ?',
+    ]);
+
+    $reponse = $this->get('/faq')->assertOk();
+
+    $reponse->assertDontSee('Rubrique masquée', false);
+    $reponse->assertDontSee('Question dans une rubrique masquée ?', false);
 });
 
 it('redirige les anciennes adresses', function () {

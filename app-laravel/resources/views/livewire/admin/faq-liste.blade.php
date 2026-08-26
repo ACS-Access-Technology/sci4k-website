@@ -8,6 +8,10 @@
         :resume="trans_choice(':nombre question|:nombre questions', $elements->count(), ['nombre' => $elements->count()])">
         <x-slot:actions>
             <x-bascule-langue />
+            <a href="{{ route('admin.rubriques-faq.liste') }}" wire:navigate
+               class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800">
+                {{ __('Rubriques') }}
+            </a>
             @hasanyrole('administrateur|editeur')
                 <a href="{{ route('admin.faq.creation') }}" wire:navigate
                    class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
@@ -42,7 +46,7 @@
     {{-- L'ordre se regle en deplaçant les lignes par leur poignee : glisser-
          depose ecrit a la main (resources/js/ordre.js), aucune dependance
          ajoutee. --}}
-    <x-admin.tableau :colonnes="['', __('Question'), __('Service'), __('Statut'), __('Actions')]" :ordonnable="$peutEcrire">
+    <x-admin.tableau :colonnes="['', __('Question'), __('Rubrique'), __('Statut'), __('Actions')]" :ordonnable="$peutEcrire">
         <x-slot:pied>
             <p class="text-sm text-zinc-600 dark:text-zinc-400">
                 {{ __("Faites glisser une ligne par sa poignée pour changer l'ordre d'affichage sur le site.") }}
@@ -73,7 +77,7 @@
                 </td>
 
                 <td class="whitespace-nowrap px-4 py-3 text-zinc-600 dark:text-zinc-300">
-                    {{ $element->service->nom($langue) }}
+                    {{ $element->rubrique->nom($langue) }}
                 </td>
 
                 <td class="whitespace-nowrap px-4 py-3">

@@ -3,16 +3,16 @@
 <div class="space-y-6">
 
     <x-admin.entete-page
-        :titre="__('Services')"
-        :fil="[__('Accueil') => route('dashboard'), __('Contenu') => null, __('Services') => null]"
-        :resume="trans_choice(':nombre service|:nombre services', $elements->count(), ['nombre' => $elements->count()])">
+        :titre="__('Rubriques de la FAQ')"
+        :fil="[__('Accueil') => route('dashboard'), __('FAQ') => route('admin.faq.liste'), __('Rubriques') => null]"
+        :resume="trans_choice(':nombre rubrique|:nombre rubriques', $elements->count(), ['nombre' => $elements->count()])">
         <x-slot:actions>
             <x-bascule-langue />
             @hasanyrole('administrateur|editeur')
-                <a href="{{ route('admin.services.creation') }}" wire:navigate
+                <a href="{{ route('admin.rubriques-faq.creation') }}" wire:navigate
                    class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
                     <x-admin.icone nom="plus" />
-                    {{ __('Nouveau service') }}
+                    {{ __('Nouvelle rubrique') }}
                 </a>
             @endhasanyrole
         </x-slot:actions>
@@ -24,8 +24,8 @@
         </div>
     @endif
 
-    {{-- Une suppression refusee doit se lire, sinon le clic semble n'avoir eu
-         aucun effet et l'editeur recommence. --}}
+    {{-- Une suppression refusée doit se lire, sinon le clic semble n'avoir eu
+         aucun effet et l'éditeur recommence. --}}
     @if (session('erreur'))
         <div role="alert" class="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-100">
             {{ session('erreur') }}
@@ -35,7 +35,7 @@
     <x-admin.barre-filtres>
         <x-admin.champ-filtre :intitule="__('Rechercher')" pour="recherche">
             <input type="search" id="recherche" wire:model.live.debounce.300ms="recherche"
-                   placeholder="{{ __('Nom du service…') }}" class="{{ $champ }}">
+                   placeholder="{{ __('Nom de la rubrique…') }}" class="{{ $champ }}">
         </x-admin.champ-filtre>
 
         <x-admin.champ-filtre :intitule="__('Visibilité')" pour="visibilite">
@@ -47,49 +47,43 @@
         </x-admin.champ-filtre>
     </x-admin.barre-filtres>
 
-    {{-- L'ordre se regle en deplaçant les lignes par leur poignee : glisser-
-         depose ecrit a la main (resources/js/ordre.js), aucune dependance
-         ajoutee. --}}
-    <x-admin.tableau :colonnes="['', __('Service'), __('Visuel'), __('Catégorie'), __('Statut'), __('Actions')]" :ordonnable="$peutEcrire">
+    {{-- La poignée disparaît dès qu'un filtre est actif : le glisser-déposer
+         n'envoie que les lignes affichées, et les renuméroter « à partir de 1 »
+         écraserait les rangs des lignes cachées. --}}
+    <x-admin.tableau :colonnes="['', __('Rubrique'), __('Questions'), __('Statut'), __('Actions')]"
+                     :ordonnable="$peutEcrire && $recherche === '' && $visibilite === ''">
         <x-slot:pied>
             <p class="text-sm text-zinc-600 dark:text-zinc-400">
-                {{ __("Faites glisser une ligne par sa poignée pour changer l'ordre d'affichage sur le site.") }}
+                @if ($recherche === '' && $visibilite === '')
+                    {{ __("Faites glisser une ligne par sa poignée pour changer l'ordre des groupes sur la page FAQ.") }}
+                @else
+                    {{ __("Retirez les filtres pour pouvoir réordonner : le glisser-déposer a besoin de la liste entière.") }}
+                @endif
             </p>
         </x-slot:pied>
 
         @forelse ($elements as $element)
-            <tr wire:key="service-{{ $element->id }}" data-id="{{ $element->id }}"
+            <tr wire:key="rubrique-{{ $element->id }}" data-id="{{ $element->id }}"
                 class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
                 <td class="w-10 px-2 py-3">
-                    @if ($peutEcrire)
+                    @if ($peutEcrire && $recherche === '' && $visibilite === '')
                         <x-admin.poignee-ordre class="poignee" />
                     @endif
                 </td>
 
                 <td class="px-4 py-3">
                     @if ($peutEcrire)
-                        <a href="{{ route('admin.services.edition', $element) }}" wire:navigate
+                        <a href="{{ route('admin.rubriques-faq.edition', $element) }}" wire:navigate
                            class="block font-medium text-zinc-900 hover:underline dark:text-white">
                             {{ $element->nom($langue) }}
                         </a>
                     @else
                         <span class="block font-medium text-zinc-900 dark:text-white">{{ $element->nom($langue) }}</span>
                     @endif
-                    <span class="block truncate text-xs text-zinc-500 dark:text-zinc-400">
-                        {{ $element->accroche($langue) }}
-                    </span>
-                </td>
-
-                <td class="px-4 py-3">
-                    @if ($element->image_source)
-                        <img src="{{ asset($element->image_source) }}" alt="" loading="lazy" class="h-11 w-16 rounded object-cover">
-                    @else
-                        <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ __('Aucun') }}</span>
-                    @endif
                 </td>
 
                 <td class="whitespace-nowrap px-4 py-3 text-zinc-600 dark:text-zinc-300">
-                    {{ $element->categorie->nom($langue) }}
+                    {{ trans_choice(':nombre question|:nombre questions', $element->questions_count, ['nombre' => $element->questions_count]) }}
                 </td>
 
                 <td class="whitespace-nowrap px-4 py-3">
@@ -103,21 +97,20 @@
                 <td class="whitespace-nowrap px-4 py-3">
                     <div class="flex items-center justify-end gap-1">
                         @if ($peutEcrire)
-                            <a href="{{ route('admin.services.edition', $element) }}" wire:navigate
+                            <a href="{{ route('admin.rubriques-faq.edition', $element) }}" wire:navigate
                                title="{{ __('Modifier') }}"
                                aria-label="{{ __('Modifier :nom', ['nom' => $element->nom($langue)]) }}"
                                class="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white">
                                 <x-admin.icone nom="crayon" />
                             </a>
 
-                            {{-- Confirmation obligatoire : la suppression est
-                                 definitive, le service n'ayant pas de corbeille.
-                                 Depuis que la FAQ a ses propres rubriques, un
-                                 service ne porte plus de questions : la boite
-                                 n'a plus rien d'autre a annoncer. --}}
+                            {{-- Une rubrique portant des questions est refusée par
+                                 le composant, pas ici : le bouton reste actif et
+                                 explique pourquoi il n'a rien fait, plutôt que
+                                 d'être grisé sans raison. --}}
                             <button type="button"
                                     wire:click="supprimer({{ $element->id }})"
-                                    wire:confirm="{{ __('Supprimer définitivement « :nom » ? Cette action est irréversible.', ['nom' => $element->nom($langue)]) }}"
+                                    wire:confirm="{{ __('Supprimer définitivement la rubrique « :nom » ? Cette action est irréversible.', ['nom' => $element->nom($langue)]) }}"
                                     title="{{ __('Supprimer') }}"
                                     aria-label="{{ __('Supprimer :nom', ['nom' => $element->nom($langue)]) }}"
                                     class="rounded-md p-2 text-zinc-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400">
@@ -129,8 +122,8 @@
             </tr>
         @empty
             <tr>
-                <td colspan="6" class="px-4 py-12 text-center text-zinc-600 dark:text-zinc-400">
-                    {{ __('Aucun service ne correspond à votre recherche.') }}
+                <td colspan="5" class="px-4 py-12 text-center text-zinc-600 dark:text-zinc-400">
+                    {{ __('Aucune rubrique ne correspond à votre recherche.') }}
                 </td>
             </tr>
         @endforelse

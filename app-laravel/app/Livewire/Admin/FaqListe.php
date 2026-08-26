@@ -3,13 +3,14 @@
 namespace App\Livewire\Admin;
 
 use App\Models\QuestionFaq;
+use Illuminate\Database\Eloquent\Collection;
 
 /*
  * Ecran de liste de la FAQ.
  *
  * Retirer une question ne touche rien d'autre qu'elle-meme : ce composant se
  * contente donc du supprimer() de l'abstrait, la ou ServiceListe doit le
- * surcharger pour proteger les questions rattachees et le fichier d'image.
+ * surcharger pour effacer le fichier d'image du service.
  */
 class FaqListe extends ListeOrdonnable
 {
@@ -31,5 +32,27 @@ class FaqListe extends ListeOrdonnable
     protected function titre(): string
     {
         return __('FAQ');
+    }
+
+    /**
+     * Les questions dans l'ordre ou le site les montre.
+     *
+     * Le rang d'une question est relatif a sa rubrique : deux questions de
+     * rubriques differentes portent couramment le rang 1. Le tri a plat de
+     * l'abstrait entrelacait donc les rubriques — premiere question de chaque
+     * rubrique, puis toutes les deuxiemes — alors que la page publique groupe
+     * d'abord. L'ecran annoncait ainsi un ordre qui n'etait celui de personne,
+     * et le pied du tableau promettait un glisser-deposer « pour changer
+     * l'ordre d'affichage sur le site » que l'ecran ne refletait pas.
+     *
+     * La rubrique est prechargee : sans cela, la colonne du meme nom declenche
+     * une requete par ligne.
+     */
+    protected function elements(): Collection
+    {
+        return parent::elements()
+            ->load('rubrique')
+            ->sortBy(fn ($q) => [$q->rubrique->ordre, $q->ordre, $q->id])
+            ->values();
     }
 }

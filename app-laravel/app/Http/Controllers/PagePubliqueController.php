@@ -30,23 +30,31 @@ class PagePubliqueController extends Controller
     {
         $langue = app()->getLocale();
 
-        // Groupees par service, dans l'ordre des services puis des questions :
-        // sur le site, le titre de chaque groupe EST le nom du service.
-        $groupes = QuestionFaq::visibles()
-            ->with('service')
+        // Groupees par rubrique, dans l'ordre des rubriques puis des questions :
+        // sur le site, le titre de chaque groupe EST le nom de la rubrique.
+        //
+        // La visibilite de la rubrique compte autant que celle de la question :
+        // masquer une rubrique sans ce filtre laisserait sur la page un groupe
+        // entier, titre compris, que l'editeur croyait avoir retire.
+        $questions = QuestionFaq::visibles()
+            ->whereHas('rubrique', fn ($r) => $r->where('visible', true))
+            ->with('rubrique')
             ->get()
-            ->sortBy(fn ($q) => [$q->service->ordre, $q->ordre])
-            ->groupBy(fn ($q) => $q->service->id);
+            ->sortBy(fn ($q) => [$q->rubrique->ordre, $q->ordre])
+            ->values();
 
         return view('public.faq', [
-            'groupes' => $groupes,
+            'groupes' => $questions->groupBy(fn ($q) => $q->rubrique->id),
             'langue' => $langue,
             'noeudPage' => [
                 '@type' => 'FAQPage',
                 '@id' => route('faq.index').'#page',
                 'url' => route('faq.index'),
                 'inLanguage' => $langue,
-                'mainEntity' => QuestionFaq::visibles()->get()->map(fn ($q) => [
+                // La meme collection que la page, et non une seconde requete :
+                // les donnees structurees annonçaient sinon un ordre et un
+                // contenu qui pouvaient differer de ce que le visiteur lit.
+                'mainEntity' => $questions->map(fn ($q) => [
                     '@type' => 'Question',
                     'name' => $q->question($langue),
                     'acceptedAnswer' => ['@type' => 'Answer', 'text' => $q->reponse($langue)],

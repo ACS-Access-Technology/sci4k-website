@@ -131,11 +131,6 @@ class Service extends Model
         return $this->belongsTo(Categorie::class, 'categorie_id');
     }
 
-    public function questionsFaq()
-    {
-        return $this->hasMany(QuestionFaq::class, 'service_id');
-    }
-
     public function getRouteKeyName(): string
     {
         return 'slug';

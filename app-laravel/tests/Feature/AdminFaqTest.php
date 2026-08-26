@@ -2,9 +2,8 @@
 
 use App\Livewire\Admin\FaqFormulaire;
 use App\Livewire\Admin\FaqListe;
-use App\Models\Categorie;
 use App\Models\QuestionFaq;
-use App\Models\Service;
+use App\Models\RubriqueFaq;
 use App\Models\User;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
@@ -13,19 +12,16 @@ beforeEach(function () {
     Role::findOrCreate('editeur');
     Role::findOrCreate('lecteur');
 
-    $categorie = Categorie::create([
+    $this->rubrique = RubriqueFaq::factory()->create([
         'slug' => 'foncier', 'nom_fr' => 'Foncier', 'nom_en' => 'Land & Title', 'ordre' => 1,
-    ]);
-    $this->service = Service::factory()->create([
-        'categorie_id' => $categorie->id, 'slug' => 'foncier', 'nom_fr' => 'Foncier',
     ]);
 
     $this->editeur = User::factory()->create();
     $this->editeur->assignRole('editeur');
 });
 
-it('liste les questions groupees par service', function () {
-    QuestionFaq::factory()->create(['service_id' => $this->service->id, 'question_fr' => 'Une question ?']);
+it('liste les questions avec leur rubrique', function () {
+    QuestionFaq::factory()->create(['rubrique_id' => $this->rubrique->id, 'question_fr' => 'Une question ?']);
 
     Livewire::actingAs($this->editeur)
         ->test(FaqListe::class)
@@ -36,7 +32,7 @@ it('liste les questions groupees par service', function () {
 it('cree une question', function () {
     Livewire::actingAs($this->editeur)
         ->test(FaqFormulaire::class)
-        ->set('serviceId', (string) $this->service->id)
+        ->set('rubriqueId', (string) $this->rubrique->id)
         ->set('questionFr', 'Nouvelle question ?')
         ->set('questionEn', 'New question?')
         ->set('reponseFr', 'La réponse.')
@@ -47,19 +43,19 @@ it('cree une question', function () {
     expect(QuestionFaq::where('question_fr', 'Nouvelle question ?')->exists())->toBeTrue();
 });
 
-it('exige un service', function () {
+it('exige une rubrique', function () {
     Livewire::actingAs($this->editeur)
         ->test(FaqFormulaire::class)
-        ->set('questionFr', 'Sans service ?')
-        ->set('questionEn', 'Without service?')
+        ->set('questionFr', 'Sans rubrique ?')
+        ->set('questionEn', 'Without rubric?')
         ->set('reponseFr', 'Réponse.')
         ->set('reponseEn', 'Answer.')
         ->call('enregistrer')
-        ->assertHasErrors(['serviceId']);
+        ->assertHasErrors(['rubriqueId']);
 });
 
 it('modifie une question existante sans en creer une seconde', function () {
-    $q = QuestionFaq::factory()->create(['service_id' => $this->service->id, 'question_fr' => 'Ancienne ?']);
+    $q = QuestionFaq::factory()->create(['rubrique_id' => $this->rubrique->id, 'question_fr' => 'Ancienne ?']);
 
     Livewire::actingAs($this->editeur)
         ->test(FaqFormulaire::class, ['question' => $q])
@@ -72,7 +68,7 @@ it('modifie une question existante sans en creer une seconde', function () {
 });
 
 it('supprime une question', function () {
-    $q = QuestionFaq::factory()->create(['service_id' => $this->service->id]);
+    $q = QuestionFaq::factory()->create(['rubrique_id' => $this->rubrique->id]);
 
     Livewire::actingAs($this->editeur)
         ->test(FaqListe::class)
@@ -92,7 +88,7 @@ it('range chaque question creee a la suite de son groupe', function () {
     foreach (['Première ?', 'Deuxième ?'] as $intitule) {
         Livewire::actingAs($this->editeur)
             ->test(FaqFormulaire::class)
-            ->set('serviceId', (string) $this->service->id)
+            ->set('rubriqueId', (string) $this->rubrique->id)
             ->set('questionFr', $intitule)
             ->set('questionEn', 'Question?')
             ->set('reponseFr', 'Réponse.')
@@ -101,7 +97,7 @@ it('range chaque question creee a la suite de son groupe', function () {
             ->assertHasNoErrors();
     }
 
-    $rangs = QuestionFaq::where('service_id', $this->service->id)->orderBy('id')->pluck('ordre')->all();
+    $rangs = QuestionFaq::where('rubrique_id', $this->rubrique->id)->orderBy('id')->pluck('ordre')->all();
 
     expect($rangs)->toBe([1, 2]);
 });

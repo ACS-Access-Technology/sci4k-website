@@ -17,7 +17,7 @@ class QuestionFaq extends Model
     protected $table = 'questions_faq';
 
     protected $fillable = [
-        'service_id', 'ordre', 'visible',
+        'rubrique_id', 'ordre', 'visible',
         'question_fr', 'question_en', 'reponse_fr', 'reponse_en',
     ];
 
@@ -35,8 +35,8 @@ class QuestionFaq extends Model
         return $this->texteDansLaLangue('reponse', $langue);
     }
 
-    public function service(): BelongsTo
+    public function rubrique(): BelongsTo
     {
-        return $this->belongsTo(Service::class, 'service_id');
+        return $this->belongsTo(RubriqueFaq::class, 'rubrique_id');
     }
 }

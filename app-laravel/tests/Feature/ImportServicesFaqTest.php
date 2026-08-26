@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\QuestionFaq;
+use App\Models\RubriqueFaq;
 use App\Models\Service;
 use Illuminate\Support\Facades\Artisan;
 
@@ -13,12 +14,20 @@ it('importe les six services', function () {
     expect(Service::count())->toBe(6);
 });
 
-it('importe les douze questions, deux par service', function () {
+it('importe les douze questions, deux par rubrique', function () {
     expect(QuestionFaq::count())->toBe(12);
+    expect(RubriqueFaq::count())->toBe(6);
 
-    Service::all()->each(function ($s) {
-        expect($s->questionsFaq()->count())->toBe(2);
+    RubriqueFaq::all()->each(function ($r) {
+        expect($r->questions()->count())->toBe(2);
     });
+});
+
+it('calque les six rubriques sur les six services', function () {
+    // Les groupes de la page FAQ ne changent pas d'aspect : ce sont les memes
+    // noms et le meme ordre qu'avant que la FAQ ne se detache des services.
+    expect(RubriqueFaq::ordonnees()->pluck('slug')->all())
+        ->toBe(Service::ordonnees()->pluck('slug')->all());
 });
 
 it('n importe aucun texte vide', function () {

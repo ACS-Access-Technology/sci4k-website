@@ -18,18 +18,48 @@
 
     <div class="grid gap-4 sm:grid-cols-2">
         <label class="block">
-            <span class="text-sm font-medium">{{ __('Service') }}</span>
-            <select wire:model="serviceId" class="{{ $champ }}">
+            <span class="text-sm font-medium">{{ __('Rubrique') }}</span>
+            {{-- wire:model.live et non wire:model : le choix de « créer une
+                 rubrique » doit faire apparaitre les deux champs de nom sans
+                 attendre l'enregistrement. --}}
+            <select wire:model.live="rubriqueId" class="{{ $champ }}">
                 <option value="">{{ __('Choisir…') }}</option>
-                @foreach ($services as $s)
-                    <option value="{{ $s->id }}">{{ $s->nom($langue) }}</option>
+                @foreach ($rubriques as $r)
+                    <option value="{{ $r->id }}">{{ $r->nom($langue) }}</option>
                 @endforeach
+                <option value="{{ \App\Livewire\Admin\FaqFormulaire::NOUVELLE_RUBRIQUE }}">
+                    {{ __('+ Créer une rubrique…') }}
+                </option>
             </select>
             <span class="mt-1 block text-xs text-zinc-600 dark:text-zinc-400">
-                {{ __('Le nom du service sert de titre de groupe sur la page FAQ.') }}
+                {{ __('Le nom de la rubrique sert de titre de groupe sur la page FAQ.') }}
             </span>
-            @error('serviceId') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+            @error('rubriqueId') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
         </label>
+
+        @if ($creeUneRubrique)
+            {{-- Les deux langues sont demandees comme partout ailleurs. Si la
+                 traduction automatique est active, remplir une seule suffit :
+                 l'autre est completee a l'enregistrement. --}}
+            <div class="sm:col-span-2 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-900">
+                <p class="mb-3 text-sm font-medium">{{ __('Nouvelle rubrique') }}</p>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <label class="block">
+                        <span class="text-sm">{{ __('Nom (français)') }}</span>
+                        <input type="text" wire:model="nouvelleRubriqueFr" class="{{ $champ }}" placeholder="{{ __('Paiements') }}">
+                        @error('nouvelleRubriqueFr') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+                    </label>
+                    <label class="block">
+                        <span class="text-sm">{{ __('Nom (anglais)') }}</span>
+                        <input type="text" wire:model="nouvelleRubriqueEn" class="{{ $champ }}" placeholder="{{ __('Payments') }}">
+                        @error('nouvelleRubriqueEn') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+                    </label>
+                </div>
+                <p class="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
+                    {{ __('La rubrique sera créée et placée en fin de liste. Vous pourrez la renommer ou la déplacer depuis l’écran des rubriques.') }}
+                </p>
+            </div>
+        @endif
 
         <label class="flex items-center gap-2 self-end pb-2">
             <input type="checkbox" wire:model="visible" class="rounded border-zinc-300">

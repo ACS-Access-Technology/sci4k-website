@@ -1,98 +1,98 @@
 [
   {
-    "service_slug": "foncier",
     "ordre": 1,
     "question_fr": "Qu'est-ce qu'un ACD et pourquoi est-il important ?",
     "question_en": "What is an ACD and why does it matter?",
     "reponse_fr": "L'Arrêté de Concession Définitive (ACD) est le document officiel qui atteste qu'un terrain vous appartient de façon définitive et sécurisée en Côte d'Ivoire. Sans ACD, un terrain reste juridiquement vulnérable. SCI4K vérifie systématiquement ce document avant toute transaction.",
-    "reponse_en": "The Definitive Concession Order (ACD) is the official document confirming that a plot of land belongs to you definitively and securely in Côte d'Ivoire. Without an ACD, a plot remains legally vulnerable. SCI4K systematically verifies this document before any transaction."
+    "reponse_en": "The Definitive Concession Order (ACD) is the official document confirming that a plot of land belongs to you definitively and securely in Côte d'Ivoire. Without an ACD, a plot remains legally vulnerable. SCI4K systematically verifies this document before any transaction.",
+    "rubrique_slug": "foncier"
   },
   {
-    "service_slug": "foncier",
     "ordre": 2,
     "question_fr": "Comment SCI4K vérifie-t-elle la situation juridique d'un terrain ?",
     "question_en": "How does SCI4K verify a plot's legal status?",
     "reponse_fr": "Nous auditons le titre foncier, le bornage, l'historique des mutations et la conformité avec les documents d'urbanisme, en lien avec notre réseau de notaires agréés, avant de proposer un terrain à nos clients.",
-    "reponse_en": "We audit the land title, boundary survey, transfer history and compliance with zoning documents, working with our network of licensed notaries, before offering any plot to our clients."
+    "reponse_en": "We audit the land title, boundary survey, transfer history and compliance with zoning documents, working with our network of licensed notaries, before offering any plot to our clients.",
+    "rubrique_slug": "foncier"
   },
   {
-    "service_slug": "construction",
     "ordre": 1,
     "question_fr": "SCI4K construit-elle elle-même les bâtiments ou coordonne-t-elle des entreprises partenaires ?",
     "question_en": "Does SCI4K build directly, or coordinate partner companies?",
     "reponse_fr": "SCI4K assure la maîtrise d'ouvrage : nous coordonnons un réseau d'entreprises et d'artisans qualifiés, supervisons chaque étape du chantier et garantissons le respect des plans, des délais et des normes de sécurité.",
-    "reponse_en": "SCI4K acts as project owner's representative: we coordinate a network of qualified companies and craftsmen, oversee every stage of the site, and guarantee compliance with plans, schedules and safety standards."
+    "reponse_en": "SCI4K acts as project owner's representative: we coordinate a network of qualified companies and craftsmen, oversee every stage of the site, and guarantee compliance with plans, schedules and safety standards.",
+    "rubrique_slug": "construction"
   },
   {
-    "service_slug": "construction",
     "ordre": 2,
     "question_fr": "Quels sont les délais moyens pour un projet de construction ?",
     "question_en": "What is the average timeline for a construction project?",
     "reponse_fr": "Selon l'ampleur du projet, comptez généralement entre 6 et 14 mois entre la validation des plans et la livraison des clés. Un calendrier détaillé vous est communiqué dès la signature du contrat.",
-    "reponse_en": "Depending on the size of the project, expect generally between 6 and 14 months between plan approval and key handover. A detailed schedule is provided as soon as the contract is signed."
+    "reponse_en": "Depending on the size of the project, expect generally between 6 and 14 months between plan approval and key handover. A detailed schedule is provided as soon as the contract is signed.",
+    "rubrique_slug": "construction"
   },
   {
-    "service_slug": "gestion",
     "ordre": 1,
     "question_fr": "Comment fonctionne la gestion locative avec SCI4K ?",
     "question_en": "How does rental management work with SCI4K?",
     "reponse_fr": "Nous recherchons et sélectionnons des locataires solvables, rédigeons le bail, réalisons l'état des lieux, encaissons les loyers et vous reversons les sommes dues chaque mois, avec un reporting transparent.",
-    "reponse_en": "We find and screen reliable tenants, draft the lease, carry out the move-in inspection, collect rent and pay out what's owed to you every month, with transparent reporting."
+    "reponse_en": "We find and screen reliable tenants, draft the lease, carry out the move-in inspection, collect rent and pay out what's owed to you every month, with transparent reporting.",
+    "rubrique_slug": "gestion"
   },
   {
-    "service_slug": "gestion",
     "ordre": 2,
     "question_fr": "Que se passe-t-il en cas de loyer impayé ?",
     "question_en": "What happens if a tenant doesn't pay rent?",
     "reponse_fr": "Nous relançons immédiatement le locataire et engageons les démarches amiables puis, si nécessaire, juridiques prévues par le bail, en vous tenant informé à chaque étape.",
-    "reponse_en": "We follow up with the tenant immediately and initiate amicable steps, then legal steps provided for in the lease if necessary, keeping you informed at every stage."
+    "reponse_en": "We follow up with the tenant immediately and initiate amicable steps, then legal steps provided for in the lease if necessary, keeping you informed at every stage.",
+    "rubrique_slug": "gestion"
   },
   {
-    "service_slug": "achat",
     "ordre": 1,
     "question_fr": "Quelles garanties ai-je lors de l'achat d'un bien via SCI4K ?",
     "question_en": "What guarantees do I have when buying through SCI4K?",
     "reponse_fr": "Chaque bien proposé fait l'objet d'une vérification juridique et foncière complète avant commercialisation. La transaction est ensuite sécurisée par un acte notarié, en présence de nos conseillers.",
-    "reponse_en": "Every property we list undergoes a full legal and land-title check before being marketed. The transaction is then secured with a notarised deed, with our advisors present."
+    "reponse_en": "Every property we list undergoes a full legal and land-title check before being marketed. The transaction is then secured with a notarised deed, with our advisors present.",
+    "rubrique_slug": "achat"
   },
   {
-    "service_slug": "achat",
     "ordre": 2,
     "question_fr": "Puis-je visiter un bien avant de m'engager ?",
     "question_en": "Can I visit a property before committing?",
     "reponse_fr": "Oui, toute visite se fait sur rendez-vous avec l'un de nos conseillers, qui vous accompagne également dans l'analyse technique et juridique du bien avant votre décision.",
-    "reponse_en": "Yes, every visit is arranged by appointment with one of our advisors, who also guides you through the technical and legal review of the property before you decide."
+    "reponse_en": "Yes, every visit is arranged by appointment with one of our advisors, who also guides you through the technical and legal review of the property before you decide.",
+    "rubrique_slug": "achat"
   },
   {
-    "service_slug": "vente",
     "ordre": 1,
     "question_fr": "Comment SCI4K estime-t-elle la valeur de mon bien ?",
     "question_en": "How does SCI4K value my property?",
     "reponse_fr": "Notre estimation s'appuie sur les prix réels constatés sur le marché d'Abidjan, l'état du bien, son emplacement et sa situation juridique. Cette estimation est gratuite et sans engagement.",
-    "reponse_en": "Our valuation is based on actual prices observed on the Abidjan market, the property's condition, location and legal status. This valuation is free and comes with no obligation."
+    "reponse_en": "Our valuation is based on actual prices observed on the Abidjan market, the property's condition, location and legal status. This valuation is free and comes with no obligation.",
+    "rubrique_slug": "vente"
   },
   {
-    "service_slug": "vente",
     "ordre": 2,
     "question_fr": "Combien de temps faut-il en moyenne pour vendre un bien ?",
     "question_en": "How long does it typically take to sell a property?",
     "reponse_fr": "Cela varie selon le type de bien et le marché, mais notre plan marketing ciblé et notre réseau d'acquéreurs qualifiés permettent généralement de conclure une vente en quelques semaines à quelques mois.",
-    "reponse_en": "It varies by property type and market conditions, but our targeted marketing plan and network of qualified buyers usually allow us to close a sale within a few weeks to a few months."
+    "reponse_en": "It varies by property type and market conditions, but our targeted marketing plan and network of qualified buyers usually allow us to close a sale within a few weeks to a few months.",
+    "rubrique_slug": "vente"
   },
   {
-    "service_slug": "administration",
     "ordre": 1,
     "question_fr": "En quoi consiste l'administration de biens proposée par SCI4K ?",
     "question_en": "What does SCI4K's property administration service include?",
     "reponse_fr": "Nous prenons en charge la comptabilité, la maintenance technique, le suivi administratif et la valorisation de vos immeubles et copropriétés, pour préserver la valeur de votre patrimoine dans la durée.",
-    "reponse_en": "We handle accounting, technical maintenance, administrative follow-up and the enhancement of your buildings and co-ownerships, to preserve the value of your assets over time."
+    "reponse_en": "We handle accounting, technical maintenance, administrative follow-up and the enhancement of your buildings and co-ownerships, to preserve the value of your assets over time.",
+    "rubrique_slug": "administration"
   },
   {
-    "service_slug": "administration",
     "ordre": 2,
     "question_fr": "SCI4K gère-t-elle les copropriétés (syndic) ?",
     "question_en": "Does SCI4K manage co-ownerships (as a syndic)?",
     "reponse_fr": "Oui, l'administration de biens de SCI4K inclut la gestion des copropriétés : organisation des assemblées, comptabilité claire et maintenance des parties communes.",
-    "reponse_en": "Yes, SCI4K's property administration includes co-ownership management: organising general meetings, transparent accounting and maintenance of common areas."
+    "reponse_en": "Yes, SCI4K's property administration includes co-ownership management: organising general meetings, transparent accounting and maintenance of common areas.",
+    "rubrique_slug": "administration"
   }
 ]

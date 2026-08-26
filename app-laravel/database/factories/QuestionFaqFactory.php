@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Service;
+use App\Models\RubriqueFaq;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class QuestionFaqFactory extends Factory
@@ -10,7 +10,7 @@ class QuestionFaqFactory extends Factory
     public function definition(): array
     {
         return [
-            'service_id' => Service::factory(),
+            'rubrique_id' => RubriqueFaq::factory(),
             'ordre' => 0,
             'visible' => true,
             'question_fr' => fake()->sentence().' ?',

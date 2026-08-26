@@ -127,7 +127,10 @@ for morceau in re.split(r'faq-group-title', faq_html)[1:]:
         if not qf or not rf:
             raise SystemExit('question ou reponse manquante : ' + cle)
         questions.append({
-            'service_slug': slug, 'ordre': rang,
+            # Le groupe de la FAQ est une rubrique, pas un service : les six
+            # groupes du site portent les memes slugs que les six services,
+            # mais la FAQ peut en ouvrir d'autres depuis l'administration.
+            'rubrique_slug': slug, 'ordre': rang,
             'question_fr': qf, 'question_en': qe,
             'reponse_fr': rf, 'reponse_en': re_,
         })

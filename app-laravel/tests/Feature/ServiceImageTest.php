@@ -180,6 +180,14 @@ it('ne pose aucun style en ligne pour une image du site statique', function () {
 it('renseigne l image des six services repris du site', function () {
     // Sans ce champ, l'ecran d'administration annoncerait « aucune image »
     // pour les six services alors que le site en affiche six.
+    //
+    // Le service pose par beforeEach porte deja le slug « foncier » et n'a pas
+    // d'image : il faut le retirer avant de semer. Le seeder ne reecrit plus
+    // `image_source` sur un service existant — c'est voulu, sans quoi un
+    // `db:seed` de routine remplacerait une image televersee par le chemin
+    // statique et laisserait le fichier orphelin sur le disque.
+    $this->service->delete();
+
     Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorieSeeder', '--force' => true]);
     Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ServiceFaqSeeder', '--force' => true]);
 

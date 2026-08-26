@@ -21,20 +21,20 @@
 
 {{--
   Groupes de questions : meme structure que l'original (.faq-groups > un div
-  par service > .faq-group-title + .faq-list). Le conteneur .faq-groups est
+  par rubrique > .faq-group-title + .faq-list). Le conteneur .faq-groups est
   indispensable : c'est lui qui porte l'espacement entre groupes en CSS
   (display:flex, gap:56px), pas .wrap.
 
-  Le titre de groupe EST le nom du service (voir le controleur) : aucun texte
+  Le titre de groupe EST le nom de la rubrique (voir le controleur) : aucun texte
   de groupe n'est donc fixe ni traduit par __() ici.
 --}}
 <section class="faq-section">
   <div class="wrap">
     <div class="faq-groups">
       @foreach ($groupes as $questions)
-        @php($service = $questions->first()->service)
+        @php($rubrique = $questions->first()->rubrique)
         <div>
-          <div class="faq-group-title">{{ $service->nom($langue) }}</div>
+          <div class="faq-group-title">{{ $rubrique->nom($langue) }}</div>
           <div class="faq-list">
             @foreach ($questions as $question)
               <details class="faq-item reveal" @if ($loop->parent->first && $loop->first) open @endif>

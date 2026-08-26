@@ -155,60 +155,20 @@ it('supprime un service', function () {
     expect(Service::find($service->id))->toBeNull();
 });
 
-it('emporte les questions de FAQ rattachees au service supprime', function () {
-    // La cle etrangere est en RESTRICT : les questions doivent partir AVANT
-    // le service, sans quoi l'appel leverait une QueryException et l'editeur
-    // verrait une page 500.
+it('ne porte plus de question de FAQ, qui a desormais ses propres rubriques', function () {
+    // Les quatre tests de cascade qui occupaient cette place ont disparu avec
+    // le lien service -> question : la FAQ se groupe maintenant par rubrique.
+    // Ce controle garde la separation, dont depend la simplicite retrouvee de
+    // supprimer() — un service ne peut plus emporter de contenu redige.
     $service = Service::factory()->create(['categorie_id' => $this->categorie->id, 'slug' => 'expertise']);
-    $questions = QuestionFaq::factory()->count(2)->create(['service_id' => $service->id]);
+    $question = QuestionFaq::factory()->create();
 
     Livewire::actingAs($this->editeur)
         ->test(ServiceListe::class)
         ->call('supprimer', $service->id);
 
     expect(Service::find($service->id))->toBeNull();
-    expect(QuestionFaq::whereIn('id', $questions->pluck('id'))->count())->toBe(0);
-});
-
-it('ne touche pas aux questions des autres services', function () {
-    $supprime = Service::factory()->create(['categorie_id' => $this->categorie->id, 'slug' => 'expertise']);
-    $garde = Service::factory()->create(['categorie_id' => $this->categorie->id, 'slug' => 'foncier']);
-
-    QuestionFaq::factory()->create(['service_id' => $supprime->id]);
-    $epargnee = QuestionFaq::factory()->create(['service_id' => $garde->id]);
-
-    Livewire::actingAs($this->editeur)
-        ->test(ServiceListe::class)
-        ->call('supprimer', $supprime->id);
-
-    expect(QuestionFaq::find($epargnee->id))->not->toBeNull();
-    expect(QuestionFaq::count())->toBe(1);
-});
-
-it('annonce dans la confirmation le nombre de questions emportees', function () {
-    // Sans ce chiffre, l'editeur ne peut pas savoir qu'il detruit aussi du
-    // contenu de FAQ : la boite de confirmation est le seul moment ou il peut
-    // encore reculer.
-    $service = Service::factory()->create([
-        'categorie_id' => $this->categorie->id, 'slug' => 'expertise',
-        'nom_fr' => 'Expertise', 'nom_en' => 'Appraisal',
-    ]);
-    QuestionFaq::factory()->count(2)->create(['service_id' => $service->id]);
-
-    Livewire::actingAs($this->editeur)
-        ->test(ServiceListe::class)
-        ->assertSee('2 questions de FAQ', false);
-});
-
-it('ne parle pas de FAQ dans la confirmation d un service sans question', function () {
-    Service::factory()->create([
-        'categorie_id' => $this->categorie->id, 'slug' => 'expertise',
-        'nom_fr' => 'Expertise', 'nom_en' => 'Appraisal',
-    ]);
-
-    Livewire::actingAs($this->editeur)
-        ->test(ServiceListe::class)
-        ->assertDontSee('questions de FAQ', false);
+    expect(QuestionFaq::find($question->id))->not->toBeNull();
 });
 
 it('efface le fichier d une image televersee avec le service', function () {
