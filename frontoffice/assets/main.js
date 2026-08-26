@@ -703,6 +703,14 @@ window.SCI4K_PROPERTIES = [
       });
     });
     document.querySelectorAll('.lang-toggle').forEach(function (btn) {
+      /* Sur une page rendue par le serveur, la bascule est une ancre vers
+         /langue/{code} : le serveur retient la langue et rend toute la page.
+         Y attacher aussi ce gestionnaire ferait partir la bascule en double —
+         un fetch et une navigation vers la meme route, en concurrence —, et si
+         le fetch arrivait le premier la navigation recevrait une redirection
+         vers elle-meme. On laisse donc l'ancre faire son travail seule. */
+      if (btn.tagName === 'A') return;
+
       btn.addEventListener('click', function () {
         setLang(getLang() === 'fr' ? 'en' : 'fr');
       });

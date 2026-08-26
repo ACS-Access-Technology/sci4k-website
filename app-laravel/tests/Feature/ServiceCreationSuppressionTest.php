@@ -137,6 +137,49 @@ it('publie le service cree sur la page publique', function () {
     $this->get('/services')->assertOk()->assertSee('Expertise');
 });
 
+it('permet de choisir le pictogramme d un service cree', function () {
+    // Sans ce champ, un service cree sortait sans icone : la colonne existe et
+    // la vue publique la rend, mais rien ne l'ecrivait. Sa tuile paraissait
+    // degradee face aux six autres.
+    $modele = Service::factory()->create([
+        'categorie_id' => $this->categorie->id, 'slug' => 'modele',
+        'icone_svg' => '<svg data-essai="1"></svg>',
+    ]);
+
+    $composant = Livewire::actingAs($this->editeur)->test(ServiceFormulaire::class);
+    foreach (champsDeService() as $champ => $valeur) {
+        $composant->set($champ, $valeur);
+    }
+
+    $composant->set('categorieId', (string) $this->categorie->id)
+        ->set('iconeSvg', $modele->icone_svg)
+        ->call('enregistrer')
+        ->assertHasNoErrors();
+
+    expect(Service::where('slug', 'expertise')->value('icone_svg'))->toBe('<svg data-essai="1"></svg>');
+});
+
+it('refuse un pictogramme qui ne vient pas de la liste', function () {
+    // La vue publique rend ce trace sans echappement : une saisie libre y
+    // ferait entrer n'importe quel balisage.
+    Service::factory()->create([
+        'categorie_id' => $this->categorie->id, 'slug' => 'modele',
+        'icone_svg' => '<svg data-essai="1"></svg>',
+    ]);
+
+    $composant = Livewire::actingAs($this->editeur)->test(ServiceFormulaire::class);
+    foreach (champsDeService() as $champ => $valeur) {
+        $composant->set($champ, $valeur);
+    }
+
+    $composant->set('categorieId', (string) $this->categorie->id)
+        ->set('iconeSvg', '<script>alert(1)</script>')
+        ->call('enregistrer')
+        ->assertHasErrors(['iconeSvg']);
+
+    expect(Service::where('slug', 'expertise')->exists())->toBeFalse();
+});
+
 it('interdit la creation a un lecteur', function () {
     $this->actingAs($this->lecteur)
         ->get(route('admin.services.creation'))
@@ -186,6 +229,11 @@ it('efface le fichier d une image televersee avec le service', function () {
 });
 
 it('ne touche jamais au fichier d une image du site statique', function () {
+    // Assertion posee sur le disque REELLEMENT utilise : la version
+    // precedente regardait public_path(), que Storage::fake() rend
+    // inatteignable, et ne pouvait donc pas echouer.
+    Storage::disk('public')->put('images/services/foncier.jpg', 'visuel du site');
+
     $service = Service::factory()->create([
         'categorie_id' => $this->categorie->id, 'slug' => 'foncier',
         'image_source' => 'images/services/foncier.jpg',
@@ -195,7 +243,24 @@ it('ne touche jamais au fichier d une image du site statique', function () {
         ->test(ServiceListe::class)
         ->call('supprimer', $service->id);
 
-    expect(file_exists(public_path('images/services/foncier.jpg')))->toBeTrue();
+    Storage::disk('public')->assertExists('images/services/foncier.jpg');
+});
+
+it('ne remonte pas hors du dossier des services en supprimant', function () {
+    // Second point d'effacement, alimente par la valeur enregistree en base :
+    // une valeur forgee y arrive aussi bien qu'au formulaire.
+    Storage::disk('public')->put('couvertures/article.jpg', 'couverture');
+
+    $service = Service::factory()->create([
+        'categorie_id' => $this->categorie->id, 'slug' => 'expertise',
+        'image_source' => 'storage/services/../couvertures/article.jpg',
+    ]);
+
+    Livewire::actingAs($this->editeur)
+        ->test(ServiceListe::class)
+        ->call('supprimer', $service->id);
+
+    Storage::disk('public')->assertExists('couvertures/article.jpg');
 });
 
 it('interdit la suppression a un lecteur', function () {

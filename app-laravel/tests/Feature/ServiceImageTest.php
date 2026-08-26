@@ -93,13 +93,54 @@ it('supprime l image a la demande', function () {
         ->call('supprimerImage')
         ->call('enregistrer');
 
-    expect($this->service->fresh()->image_source)->toBeNull();
+    // Le fichier televerse part, et `image_source` retombe sur le visuel que le
+    // site sert pour ce slug — pas sur null, qui ferait annoncer « aucune
+    // image » a l'ecran alors que la page publique montre toujours la photo.
     Storage::disk('public')->assertMissing(str_replace('storage/', '', $chemin));
+    expect($this->service->fresh()->image_source)->toBe('images/services/foncier.jpg');
+});
+
+it('retombe a rien quand le service n a aucun visuel sur le site', function () {
+    // Un service cree depuis l'administration n'a pas de regle CSS : retirer
+    // son image doit bien vider le champ, faute de repli.
+    $cree = Service::factory()->create([
+        'categorie_id' => $this->categorie->id, 'slug' => 'service-cree-ici',
+    ]);
+
+    Livewire::actingAs($this->editeur)
+        ->test(ServiceFormulaire::class, ['service' => $cree])
+        ->set('image', UploadedFile::fake()->image('photo.jpg'))
+        ->call('enregistrer');
+
+    Livewire::actingAs($this->editeur)
+        ->test(ServiceFormulaire::class, ['service' => $cree->fresh()])
+        ->call('supprimerImage')
+        ->call('enregistrer');
+
+    expect($cree->fresh()->image_source)->toBeNull();
+});
+
+it('resout le visuel du site depuis la feuille de style, pas depuis le slug', function () {
+    // Le nom du fichier ne se deduit pas du slug : « gestion » s'appuie sur
+    // gestion-location.jpg. C'est images.css qui fait foi.
+    $gestion = Service::factory()->create([
+        'categorie_id' => $this->categorie->id, 'slug' => 'gestion',
+    ]);
+
+    expect($gestion->imageDuSiteStatique())->toBe('images/services/gestion-location.jpg');
 });
 
 it('ne supprime jamais un fichier du site statique', function () {
-    // Le visuel de foncier.jpg vit dans frontoffice/, hors du disque public :
-    // l'effacer detruirait la source du site.
+    // Ce test verifiait auparavant `file_exists(public_path(...))`. Il ne
+    // pouvait PAS echouer : Storage::fake('public') redirige le disque vers
+    // storage/framework/testing, si bien que delete() n'atteint public/ dans
+    // aucun scenario. Retirer entierement la garde l'aurait laisse vert — il
+    // prouvait que le depot contient un fichier, pas que le code l'epargne.
+    //
+    // On pose donc le fichier sur le disque REELLEMENT utilise, et on verifie
+    // qu'il y survit.
+    Storage::disk('public')->put('images/services/foncier.jpg', 'visuel du site');
+
     $this->service->update(['image_source' => 'images/services/foncier.jpg']);
 
     Livewire::actingAs($this->editeur)
@@ -107,8 +148,26 @@ it('ne supprime jamais un fichier du site statique', function () {
         ->call('supprimerImage')
         ->call('enregistrer');
 
-    expect($this->service->fresh()->image_source)->toBeNull();
-    expect(file_exists(public_path('images/services/foncier.jpg')))->toBeTrue();
+    // Le champ retombe sur le visuel du site, et le FICHIER n'a pas bouge :
+    // c'est lui que la garde protege.
+    expect($this->service->fresh()->image_source)->toBe('images/services/foncier.jpg');
+    Storage::disk('public')->assertExists('images/services/foncier.jpg');
+});
+
+it('refuse un chemin qui remonte hors du dossier des services', function () {
+    // Sans normalisation, `storage/services/../couvertures/x.jpg` commence bien
+    // par le prefixe attendu et passerait la garde : un editeur pourrait
+    // detruire la couverture d'un article depuis le formulaire d'un service.
+    Storage::disk('public')->put('couvertures/article.jpg', 'couverture');
+
+    $this->service->update(['image_source' => 'storage/services/../couvertures/article.jpg']);
+
+    Livewire::actingAs($this->editeur)
+        ->test(ServiceFormulaire::class, ['service' => $this->service])
+        ->call('supprimerImage')
+        ->call('enregistrer');
+
+    Storage::disk('public')->assertExists('couvertures/article.jpg');
 });
 
 it('refuse un fichier qui n est pas une image', function () {

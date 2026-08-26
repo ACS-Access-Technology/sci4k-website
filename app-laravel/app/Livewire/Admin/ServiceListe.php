@@ -45,12 +45,12 @@ class ServiceListe extends ListeOrdonnable
         abort_unless($this->peutEcrire(), 403);
 
         $service = Service::findOrFail($id);
-        $image = $service->imageTeleversee() ? $service->image_source : null;
+        $image = $service->cheminEffaçable();
 
         $service->delete();
 
         if ($image) {
-            Storage::disk('public')->delete(substr($image, strlen('storage/')));
+            Storage::disk('public')->delete($image);
         }
 
         session()->flash('message', __('Service supprimé.'));

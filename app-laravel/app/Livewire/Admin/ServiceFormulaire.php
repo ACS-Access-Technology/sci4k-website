@@ -8,7 +8,9 @@ use App\Models\Service;
 use App\Services\Traduction\Traducteur;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -40,7 +42,15 @@ class ServiceFormulaire extends Component
     /** Fichier choisi dans le navigateur, pas encore enregistre. */
     public $image = null;
 
-    /** Chemin de l'image actuelle, tel qu'il sera ecrit en base. */
+    /**
+     * Chemin de l'image actuelle, tel qu'il sera ecrit en base.
+     *
+     * Verrouille : Livewire expose au navigateur toute propriete publique, et
+     * celle-ci sert a la fois de valeur enregistree et de chemin d'effacement.
+     * Sans ce verrou, un editeur pouvait la reecrire et faire effacer un
+     * fichier qui n'est pas le sien.
+     */
+    #[Locked]
     public ?string $imageActuelle = null;
 
     /** L'editeur a demande le retrait de l'image existante. */
@@ -76,6 +86,17 @@ class ServiceFormulaire extends Component
 
     public string $categorieId = '';
 
+    /**
+     * Pictogramme de la tuile, choisi parmi ceux deja presents en base.
+     *
+     * Un service cree sortait sans icone : la colonne existe, la vue publique
+     * la rend, mais aucun champ ne l'ecrivait — sa tuile paraissait degradee
+     * face aux six autres. Le choix se fait dans une liste fermee plutot que
+     * par saisie libre : la vue publique rend ce tracé sans echappement, et
+     * une saisie libre y ferait entrer n'importe quel balisage.
+     */
+    public string $iconeSvg = '';
+
     public bool $visible = true;
 
     /** Langue du contenu saisi — sans rapport avec celle de l'interface. */
@@ -110,6 +131,7 @@ class ServiceFormulaire extends Component
         $this->atout3En = $service->atout3_en ?? '';
         $this->libelleBoutonFr = $service->libelle_bouton_fr ?? '';
         $this->libelleBoutonEn = $service->libelle_bouton_en ?? '';
+        $this->iconeSvg = $service->icone_svg ?? '';
         $this->categorieId = (string) $service->categorie_id;
         $this->visible = (bool) $service->visible;
     }
@@ -146,6 +168,9 @@ class ServiceFormulaire extends Component
             'libelleBoutonFr' => ['nullable', 'string', 'max:120'],
             'libelleBoutonEn' => ['nullable', 'string', 'max:120'],
             'categorieId' => ['required', 'exists:categories,id'],
+            // Liste fermee : la valeur doit etre l'un des pictogrammes deja en
+            // base, jamais un balisage arbitraire.
+            'iconeSvg' => ['nullable', 'string', Rule::in(self::iconesDisponibles())],
             'image' => ['nullable', 'image', 'max:4096'],
         ];
     }
@@ -186,6 +211,13 @@ class ServiceFormulaire extends Component
 
     public function enregistrer(): void
     {
+        // La route protege l'ecran, pas l'action : Livewire ne rejoue pas le
+        // middleware de role sur /livewire/update — sa liste de middlewares
+        // persistants ne contient que ceux d'authentification du framework.
+        // Une page laissee ouverte par un editeur retrograde en lecteur
+        // continuerait sinon d'enregistrer.
+        abort_unless((bool) auth()->user()?->hasAnyRole(['administrateur', 'editeur']), 403);
+
         // Avant la validation : les champs remplis par traduction doivent
         // satisfaire les regles « required » comme s'ils avaient ete saisis.
         $this->remplirParTraductionCeQuiEstVide();
@@ -204,6 +236,7 @@ class ServiceFormulaire extends Component
             'libelle_bouton_fr' => $this->libelleBoutonFr ?: null,
             'libelle_bouton_en' => $this->libelleBoutonEn ?: null,
             'categorie_id' => $this->categorieId,
+            'icone_svg' => $this->iconeSvg ?: null,
             'visible' => $this->visible,
             'image_source' => $image,
         ];
@@ -246,20 +279,50 @@ class ServiceFormulaire extends Component
 
         if ($this->imageARetirer) {
             $this->effacerSiTeleversee($ancienne);
-            $this->imageActuelle = null;
+
+            // Repli sur le visuel du site quand il en existe un : retomber a
+            // null ferait annoncer « aucune image » a l'ecran d'administration
+            // pendant que la page publique continuerait d'afficher la photo par
+            // sa classe CSS. L'ecran doit montrer ce qui est REELLEMENT servi.
+            $this->imageActuelle = $this->service?->imageDuSiteStatique();
             $this->imageARetirer = false;
 
-            return null;
+            return $this->imageActuelle;
         }
 
         return $ancienne;
     }
 
+    /**
+     * Efface un fichier televerse, jamais autre chose.
+     *
+     * La resolution du chemin passe par Service::cheminEffaçable(), qui refuse
+     * les segments de remontee : le seul prefixe « storage/services/ » laissait
+     * passer « storage/services/../couvertures/x.jpg », que Flysystem resout
+     * en un fichier bien reel hors du dossier des services.
+     */
     protected function effacerSiTeleversee(?string $chemin): void
     {
-        if ($chemin && str_starts_with($chemin, Service::DOSSIER_COUVERTURES.'/')) {
-            Storage::disk('public')->delete(substr($chemin, strlen('storage/')));
+        $effaçable = (new Service(['image_source' => $chemin]))->cheminEffaçable();
+
+        if ($effaçable) {
+            Storage::disk('public')->delete($effaçable);
         }
+    }
+
+    /**
+     * Les pictogrammes deja employes par les services, sans doublon.
+     *
+     * @return list<string>
+     */
+    public static function iconesDisponibles(): array
+    {
+        return Service::query()
+            ->whereNotNull('icone_svg')
+            ->pluck('icone_svg')
+            ->unique()
+            ->values()
+            ->all();
     }
 
     public function render(): View
@@ -269,6 +332,7 @@ class ServiceFormulaire extends Component
             'langue' => app()->getLocale(),
             'traductionActive' => app(Traducteur::class)->disponible(),
             'estCreation' => $this->estCreation(),
+            'icones' => self::iconesDisponibles(),
         ])->title($this->estCreation() ? __('Nouveau service') : __('Modifier le service'));
     }
 }

@@ -213,5 +213,7 @@
     "Supprimer définitivement la rubrique « :nom » ? Cette action est irréversible.": "Permanently delete the topic “:nom”? This action cannot be undone.",
     "Aucune rubrique ne correspond à votre recherche.": "No topic matches your search.",
     ":nombre rubrique|:nombre rubriques": ":nombre topic|:nombre topics",
-    "Cette rubrique porte :nombre question. Déplacez-la dans une autre rubrique avant de supprimer celle-ci.|Cette rubrique porte :nombre questions. Déplacez-les dans une autre rubrique avant de supprimer celle-ci.": "This topic has :nombre question. Move it to another topic before deleting this one.|This topic has :nombre questions. Move them to another topic before deleting this one."
+    "Cette rubrique porte :nombre question. Déplacez-la dans une autre rubrique avant de supprimer celle-ci.|Cette rubrique porte :nombre questions. Déplacez-les dans une autre rubrique avant de supprimer celle-ci.": "This topic has :nombre question. Move it to another topic before deleting this one.|This topic has :nombre questions. Move them to another topic before deleting this one.",
+    "Pictogramme de la tuile": "Tile icon",
+    "Pictogramme :numero": "Icon :numero"
 }

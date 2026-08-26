@@ -48,9 +48,30 @@ abstract class ListeOrdonnable extends Component
         }
     }
 
+    /**
+     * Reecrit l'ordre d'affichage a partir de la liste reçue du navigateur.
+     *
+     * Le reordonnancement n'est accepte que s'il porte sur la collection
+     * ENTIERE. reordonner() renumerote « en repartant de 1 » : applique a un
+     * sous-ensemble — ce que produit un glisser-deposer pendant qu'un filtre
+     * est actif —, il donnerait aux lignes affichees des rangs deja tenus par
+     * les lignes cachees. L'ordre public deviendrait alors celui que le tri
+     * produit sur des rangs en doublon, jamais celui que l'editeur a choisi,
+     * et sans le moindre signal.
+     *
+     * La vue retire deja la poignee des qu'un filtre est pose ; ce controle
+     * est la garde de derniere ligne, Livewire exposant la methode au
+     * navigateur quoi qu'affiche la vue.
+     */
     public function reordonner(array $ids): void
     {
         abort_unless($this->peutEcrire(), 403);
+
+        $recus = count(array_unique($ids));
+
+        if ($recus !== ($this->modele())::query()->count()) {
+            return;
+        }
 
         ($this->modele())::reordonner($ids);
     }

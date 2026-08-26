@@ -123,7 +123,67 @@ class Service extends Model
      */
     public function imageTeleversee(): bool
     {
-        return str_starts_with((string) $this->image_source, self::DOSSIER_COUVERTURES.'/');
+        return $this->cheminEffaçable() !== null;
+    }
+
+    /**
+     * Chemin du fichier a effacer sur le disque public, ou null.
+     *
+     * Le seul controle du prefixe ne suffit pas : « storage/services/../
+     * couvertures/article.jpg » commence bien par le prefixe attendu, et
+     * Flysystem le resout sans broncher en « couvertures/article.jpg », qui
+     * est dans la racine du disque. Un editeur pouvait donc detruire la
+     * couverture d'un article depuis le formulaire d'un service — verifie par
+     * un test, qui echouait avant cette garde.
+     *
+     * On refuse donc tout segment de remontee, et on exige que ce qui reste
+     * tienne dans le dossier des services. Le prefixe est une intention, le
+     * chemin resolu est le fait.
+     */
+    public function cheminEffaçable(): ?string
+    {
+        $source = (string) $this->image_source;
+
+        if (! str_starts_with($source, self::DOSSIER_COUVERTURES.'/')) {
+            return null;
+        }
+
+        $relatif = substr($source, strlen('storage/'));
+
+        if (in_array('..', explode('/', $relatif), true)) {
+            return null;
+        }
+
+        return $relatif;
+    }
+
+    /**
+     * Le visuel que le site statique sert pour ce service, ou null.
+     *
+     * Resolu depuis images.css, comme le fait le script d'extraction : le nom
+     * du fichier ne se deduit PAS du slug — le service « gestion » s'appuie sur
+     * gestion-location.jpg. La feuille de style reste la source unique.
+     *
+     * Sert de repli quand l'editeur retire une image televersee. Sans lui,
+     * `image_source` retombait a null et l'ecran d'administration annonçait
+     * « aucune image » pendant que la page publique continuait d'afficher le
+     * visuel par la classe CSS service-bg-{slug} — l'ecran se remettait a
+     * mentir sur l'etat du site, ce que le Ruling L declarait pire qu'une
+     * fonction manquante.
+     */
+    public function imageDuSiteStatique(): ?string
+    {
+        $feuille = public_path('assets/images.css');
+
+        if (! is_file($feuille)) {
+            return null;
+        }
+
+        $motif = '/--img-service-'.preg_quote($this->slug, '/').':\s*url\([\'"]?[^\'")]*?(images\/[^\'")]+)/';
+
+        return preg_match($motif, file_get_contents($feuille), $trouve)
+            ? $trouve[1]
+            : null;
     }
 
     public function categorie(): BelongsTo

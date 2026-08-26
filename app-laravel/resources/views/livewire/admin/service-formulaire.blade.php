@@ -52,6 +52,33 @@
         </label>
     </div>
 
+    {{-- Choix ferme plutot que saisie libre : la vue publique rend ce tracé
+         sans échappement, et un champ libre y ferait entrer n'importe quel
+         balisage. Les pictogrammes proposés sont ceux déjà en base. --}}
+    @if (count($icones))
+        <fieldset>
+            <legend class="text-sm font-medium">{{ __('Pictogramme de la tuile') }}</legend>
+            <div class="mt-2 flex flex-wrap gap-2">
+                <label class="cursor-pointer">
+                    <input type="radio" wire:model="iconeSvg" value="" class="peer sr-only">
+                    <span class="flex h-14 w-14 items-center justify-center rounded-lg border border-zinc-300 text-xs text-zinc-500 peer-checked:border-zinc-900 peer-checked:ring-2 peer-checked:ring-zinc-900 dark:border-zinc-700 dark:peer-checked:border-white dark:peer-checked:ring-white">
+                        {{ __('Aucun') }}
+                    </span>
+                </label>
+                @foreach ($icones as $indice => $icone)
+                    <label class="cursor-pointer">
+                        <input type="radio" wire:model="iconeSvg" value="{{ $icone }}" class="peer sr-only">
+                        <span class="flex h-14 w-14 items-center justify-center rounded-lg border border-zinc-300 text-zinc-700 peer-checked:border-zinc-900 peer-checked:ring-2 peer-checked:ring-zinc-900 dark:border-zinc-700 dark:text-zinc-200 dark:peer-checked:border-white dark:peer-checked:ring-white"
+                              aria-label="{{ __('Pictogramme :numero', ['numero' => $indice + 1]) }}">
+                            {!! $icone !!}
+                        </span>
+                    </label>
+                @endforeach
+            </div>
+            @error('iconeSvg') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+        </fieldset>
+    @endif
+
     {{-- Onglets de la langue du CONTENU. « Français » et « English » restent
          ecrits dans leur propre langue : ce sont des endonymes qui designent la
          version que l'on redige, pas la langue de l'interface. --}}

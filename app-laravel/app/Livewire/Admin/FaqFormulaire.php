@@ -106,6 +106,11 @@ class FaqFormulaire extends Component
 
     public function enregistrer(): void
     {
+        // La route protege l'ecran, pas l'action : Livewire ne rejoue pas le
+        // middleware de role sur /livewire/update. Une page laissee ouverte
+        // par un editeur retrograde en lecteur continuerait sinon d'ecrire.
+        abort_unless((bool) auth()->user()?->hasAnyRole(['administrateur', 'editeur']), 403);
+
         // Avant la validation : les champs remplis par traduction doivent
         // satisfaire les regles « required » comme s'ils avaient ete saisis.
         $this->remplirParTraductionCeQuiEstVide();

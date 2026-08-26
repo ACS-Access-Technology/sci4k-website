@@ -10,6 +10,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -41,6 +42,11 @@ class ArticleFormulaire extends Component
     public $couverture = null;
 
     /** Chemin de la couverture actuelle, tel qu'il sera ecrit en base. */
+    /**
+     * Verrouille pour la meme raison qu'ServiceFormulaire::$imageActuelle :
+     * propriete d'etat, jamais saisie, mais utilisee comme chemin d'effacement.
+     */
+    #[Locked]
     public ?string $couvertureActuelle = null;
 
     /** L'editeur a demande le retrait de la couverture existante. */
@@ -155,6 +161,13 @@ class ArticleFormulaire extends Component
 
     public function enregistrer(): void
     {
+        // La route protege l'ecran, pas l'action : Livewire ne rejoue pas le
+        // middleware de role sur /livewire/update — sa liste de middlewares
+        // persistants ne contient que ceux d'authentification du framework.
+        // Une page laissee ouverte par un editeur retrograde en lecteur
+        // continuerait sinon d'enregistrer.
+        abort_unless((bool) auth()->user()?->hasAnyRole(['administrateur', 'editeur']), 403);
+
         // Avant la validation, et non apres : les champs remplis par traduction
         // doivent satisfaire les regles « required » comme s'ils avaient ete
         // saisis. Si la traduction echoue, la validation reprend la main et

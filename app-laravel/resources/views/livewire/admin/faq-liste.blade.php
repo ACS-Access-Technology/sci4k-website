@@ -45,11 +45,19 @@
 
     {{-- L'ordre se regle en deplaçant les lignes par leur poignee : glisser-
          depose ecrit a la main (resources/js/ordre.js), aucune dependance
-         ajoutee. --}}
-    <x-admin.tableau :colonnes="['', __('Question'), __('Rubrique'), __('Statut'), __('Actions')]" :ordonnable="$peutEcrire">
+         ajoutee.
+
+         La poignee disparait des qu'un filtre est actif : le glisser-deposer
+         n'envoie que les lignes affichees, et les renumeroter « a partir de 1 »
+         ecraserait les rangs des lignes cachees. --}}
+    <x-admin.tableau :colonnes="['', __('Question'), __('Rubrique'), __('Statut'), __('Actions')]" :ordonnable="$peutEcrire && $recherche === '' && $visibilite === ''">
         <x-slot:pied>
             <p class="text-sm text-zinc-600 dark:text-zinc-400">
-                {{ __("Faites glisser une ligne par sa poignée pour changer l'ordre d'affichage sur le site.") }}
+                @if ($recherche === '' && $visibilite === '')
+                    {{ __("Faites glisser une ligne par sa poignée pour changer l'ordre d'affichage sur le site.") }}
+                @else
+                    {{ __("Retirez les filtres pour pouvoir réordonner : le glisser-déposer a besoin de la liste entière.") }}
+                @endif
             </p>
         </x-slot:pied>
 
@@ -57,7 +65,7 @@
             <tr wire:key="question-{{ $element->id }}" data-id="{{ $element->id }}"
                 class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
                 <td class="w-10 px-2 py-3">
-                    @if ($peutEcrire)
+                    @if ($peutEcrire && $recherche === '' && $visibilite === '')
                         <x-admin.poignee-ordre class="poignee" />
                     @endif
                 </td>
