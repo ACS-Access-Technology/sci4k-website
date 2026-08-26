@@ -14,6 +14,14 @@ class Service extends Model
     use HasFactory;
     use TraduitParColonnes;
 
+    /**
+     * Prefixe des visuels televerses, tel qu'il figure dans `image_source`.
+     * Meme role que Article::DOSSIER_COUVERTURES : il distingue un fichier
+     * depose par l'administration, qu'on peut effacer, d'un visuel du site
+     * statique, qu'on ne doit jamais toucher.
+     */
+    public const DOSSIER_COUVERTURES = 'storage/services';
+
     protected $fillable = [
         'slug', 'categorie_id', 'ordre', 'visible',
         'nom_fr', 'nom_en', 'accroche_fr', 'accroche_en',
@@ -65,6 +73,30 @@ class Service extends Model
             $this->texteDansLaLangue('atout2', $langue),
             $this->texteDansLaLangue('atout3', $langue),
         ], fn ($a) => $a !== ''));
+    }
+
+    /**
+     * Adresse du visuel de la tuile, ou null si le service n'en a pas.
+     *
+     * Deux origines cohabitent dans `image_source`, sur le modele
+     * d'Article::urlCouverture() :
+     *
+     *   - `images/services/foncier.jpg` pour les visuels repris du site, dont
+     *     les fichiers vivent dans frontoffice/ et sont deposes dans public/
+     *     par tools/sync-frontoffice.sh ;
+     *   - `storage/services/…` pour les visuels televerses depuis
+     *     l'administration.
+     *
+     * La vue publique n'a ainsi qu'un seul point d'appel, et le repli sur la
+     * classe CSS service-bg-{slug} n'intervient que si ceci renvoie null.
+     */
+    public function urlImage(): ?string
+    {
+        if (! $this->image_source) {
+            return null;
+        }
+
+        return asset($this->image_source);
     }
 
     public function categorie(): BelongsTo

@@ -24,11 +24,11 @@
 
   /* --- Cartes services --- */
   --img-service-foncier:         url('../images/services/foncier.jpg');   /* Carte service — Foncier */
-  --img-service-construction:    url('../images/images (1).jpg');   /* Carte service — Construction */
+  --img-service-construction:    url('../images/services/construction.jpg');   /* Carte service — Construction */
   --img-service-gestion:         url('../images/services/gestion-location.jpg');   /* Carte service — Gestion / Location */
-  --img-service-achat:           url('../images/images (2).jpg');   /* Carte service — Achat */
+  --img-service-achat:           url('../images/services/achat.jpg');   /* Carte service — Achat */
   --img-service-vente:           url('../images/services/vente.jpg');   /* Carte service — Vente */
-  --img-service-administration:  url('../images/images (3).jpg');   /* Carte service — Administration */
+  --img-service-administration:  url('../images/services/administration.jpg');   /* Carte service — Administration */
 
   /* --- Divers --- */
   --img-info-box:                url('../images/sections/info-box.jpg');   /* Encadré d'information */

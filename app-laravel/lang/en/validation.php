@@ -40,6 +40,7 @@ return [
         'atout3En' => 'English third highlight',
         'libelleBoutonFr' => 'French button label',
         'libelleBoutonEn' => 'English button label',
+        'image' => 'service image',
         'serviceId' => 'service',
         'questionFr' => 'French question',
         'questionEn' => 'English question',

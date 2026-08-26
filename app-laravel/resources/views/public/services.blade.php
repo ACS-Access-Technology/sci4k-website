@@ -30,8 +30,16 @@
 <section class="services-detail">
   <div class="wrap services-grid">
     @foreach ($services as $service)
+      {{--
+        La classe service-bg-{slug} reste toujours posee : c'est le repli
+        quand rien n'a ete televerse. L'image televersee (image_source) est
+        prioritaire, posee en style en ligne comme pour les couvertures
+        d'actualites (public/actualites/index.blade.php) — sa specificite
+        l'emporte sur la classe sans qu'il faille y toucher.
+      --}}
       <button type="button" class="service-tile reveal service-bg-{{ $service->slug }}"
               id="{{ $service->slug }}" data-svc="{{ $service->slug }}"
+              @if ($url = $service->urlImage()) style="background-image:url('{{ $url }}')" @endif
               aria-haspopup="dialog" aria-controls="svcModal">
         <span class="service-tile-veil"></span>
         <span class="service-tile-inner">

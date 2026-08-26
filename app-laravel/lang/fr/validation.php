@@ -84,6 +84,7 @@ return [
         'atout3En' => 'troisième atout en anglais',
         'libelleBoutonFr' => 'libellé du bouton en français',
         'libelleBoutonEn' => 'libellé du bouton en anglais',
+        'image' => 'image du service',
         'serviceId' => 'service',
         'questionFr' => 'question en français',
         'questionEn' => 'question en anglais',

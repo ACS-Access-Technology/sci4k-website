@@ -7,8 +7,10 @@ use App\Models\Categorie;
 use App\Models\Service;
 use App\Services\Traduction\Traducteur;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 /*
  * Edition d'un service.
@@ -25,8 +27,18 @@ use Livewire\Component;
 class ServiceFormulaire extends Component
 {
     use RemplitParTraduction;
+    use WithFileUploads;
 
     public Service $service;
+
+    /** Fichier choisi dans le navigateur, pas encore enregistre. */
+    public $image = null;
+
+    /** Chemin de l'image actuelle, tel qu'il sera ecrit en base. */
+    public ?string $imageActuelle = null;
+
+    /** L'editeur a demande le retrait de l'image existante. */
+    public bool $imageARetirer = false;
 
     public string $nomFr = '';
 
@@ -67,6 +79,7 @@ class ServiceFormulaire extends Component
     {
         $this->service = $service;
         $this->langueActive = app()->getLocale();
+        $this->imageActuelle = $service->image_source;
 
         $this->nomFr = $service->nom_fr;
         $this->nomEn = $service->nom_en;
@@ -104,7 +117,24 @@ class ServiceFormulaire extends Component
             'libelleBoutonFr' => ['nullable', 'string', 'max:120'],
             'libelleBoutonEn' => ['nullable', 'string', 'max:120'],
             'categorieId' => ['required', 'exists:categories,id'],
+            'image' => ['nullable', 'image', 'max:4096'],
         ];
+    }
+
+    /** Valide le fichier des son choix, sans attendre l'enregistrement. */
+    public function updatedImage(): void
+    {
+        $this->validateOnly('image');
+    }
+
+    /**
+     * Retire l'image. Le fichier n'est efface qu'a l'enregistrement : tant
+     * que l'editeur n'a pas valide, il peut encore changer d'avis.
+     */
+    public function supprimerImage(): void
+    {
+        $this->image = null;
+        $this->imageARetirer = true;
     }
 
     /**
@@ -125,6 +155,8 @@ class ServiceFormulaire extends Component
 
         $this->validate();
 
+        $image = $this->resoudreImage();
+
         $this->service->update([
             'nom_fr' => $this->nomFr, 'nom_en' => $this->nomEn,
             'accroche_fr' => $this->accrocheFr, 'accroche_en' => $this->accrocheEn,
@@ -136,10 +168,50 @@ class ServiceFormulaire extends Component
             'libelle_bouton_en' => $this->libelleBoutonEn ?: null,
             'categorie_id' => $this->categorieId,
             'visible' => $this->visible,
+            'image_source' => $image,
         ]);
 
         session()->flash('message', __('Service enregistré.'));
         $this->redirectRoute('admin.services.liste');
+    }
+
+    /**
+     * Determine le chemin d'image a enregistrer, et fait le menage.
+     *
+     * Meme logique que ArticleFormulaire::resoudreCouverture() : l'ancien
+     * fichier n'est efface que s'il vient de l'administration. Les visuels
+     * repris du site statique vivent dans public/images/, deposes par
+     * tools/sync-frontoffice.sh depuis frontoffice/ : les effacer detruirait
+     * la source du site public.
+     */
+    protected function resoudreImage(): ?string
+    {
+        $ancienne = $this->imageActuelle;
+
+        if ($this->image) {
+            $chemin = $this->image->store('services', 'public');
+            $this->effacerSiTeleversee($ancienne);
+            $this->imageActuelle = 'storage/'.$chemin;
+
+            return $this->imageActuelle;
+        }
+
+        if ($this->imageARetirer) {
+            $this->effacerSiTeleversee($ancienne);
+            $this->imageActuelle = null;
+            $this->imageARetirer = false;
+
+            return null;
+        }
+
+        return $ancienne;
+    }
+
+    protected function effacerSiTeleversee(?string $chemin): void
+    {
+        if ($chemin && str_starts_with($chemin, Service::DOSSIER_COUVERTURES.'/')) {
+            Storage::disk('public')->delete(substr($chemin, strlen('storage/')));
+        }
     }
 
     public function render(): View
