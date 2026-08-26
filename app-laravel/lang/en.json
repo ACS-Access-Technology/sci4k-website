@@ -163,7 +163,8 @@
     "Minuscules, chiffres et traits d'union. Définitif : il sert d'adresse au service sur le site.": "Lowercase letters, digits and hyphens. Permanent: it is the service's address on the site.",
     "L'identifiant d'adresse ne se modifie pas : il sert de lien depuis le pied de page du site.": "The URL slug cannot be changed: the site footer links to it.",
     "Supprimer définitivement « :nom » ? Cette action est irréversible.": "Permanently delete “:nom”? This action cannot be undone.",
-    "Ce service porte des questions de FAQ. Retirez-les ou rattachez-les à un autre service avant de le supprimer.": "This service has FAQ questions attached. Remove them or move them to another service before deleting it.",
     "L'identifiant d'adresse n'accepte que des minuscules, des chiffres et des traits d'union, par exemple : gestion-location.": "The URL slug accepts only lowercase letters, digits and hyphens, for example: gestion-location.",
-    "Un service utilise déjà cet identifiant d’adresse.": "Another service already uses this URL slug."
+    "Un service utilise déjà cet identifiant d’adresse.": "Another service already uses this URL slug.",
+    "Supprimer définitivement « :nom » ? Sa :nombre question de FAQ sera supprimée avec lui. Cette action est irréversible.|Supprimer définitivement « :nom » ? Ses :nombre questions de FAQ seront supprimées avec lui. Cette action est irréversible.": "Permanently delete “:nom”? Its :nombre FAQ question will be deleted with it. This action cannot be undone.|Permanently delete “:nom”? Its :nombre FAQ questions will be deleted with it. This action cannot be undone.",
+    "Service supprimé, avec :nombre question de FAQ.|Service supprimé, avec ses :nombre questions de FAQ.": "Service deleted, along with :nombre FAQ question.|Service deleted, along with its :nombre FAQ questions."
 }

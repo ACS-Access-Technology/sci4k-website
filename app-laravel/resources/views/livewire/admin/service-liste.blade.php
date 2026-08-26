@@ -112,13 +112,17 @@
 
                             {{-- Confirmation obligatoire : la suppression est
                                  definitive, le service n'ayant pas de corbeille.
-                                 Un service portant des questions de FAQ est
-                                 refuse par le composant, pas ici : le bouton
-                                 reste actif et explique pourquoi il n'a rien
-                                 fait, plutot que d'etre grise sans raison. --}}
+                                 Les questions de FAQ rattachees partent avec
+                                 lui, et la boite l'annonce en les comptant :
+                                 c'est le dernier moment ou l'editeur peut
+                                 encore reculer, et rien d'autre ne lui dirait
+                                 qu'il detruit aussi du contenu de FAQ. --}}
+                            @php($questions = $element->questions_faq_count)
                             <button type="button"
                                     wire:click="supprimer({{ $element->id }})"
-                                    wire:confirm="{{ __('Supprimer définitivement « :nom » ? Cette action est irréversible.', ['nom' => $element->nom($langue)]) }}"
+                                    wire:confirm="{{ $questions === 0
+                                        ? __('Supprimer définitivement « :nom » ? Cette action est irréversible.', ['nom' => $element->nom($langue)])
+                                        : trans_choice('Supprimer définitivement « :nom » ? Sa :nombre question de FAQ sera supprimée avec lui. Cette action est irréversible.|Supprimer définitivement « :nom » ? Ses :nombre questions de FAQ seront supprimées avec lui. Cette action est irréversible.', $questions, ['nom' => $element->nom($langue), 'nombre' => $questions]) }}"
                                     title="{{ __('Supprimer') }}"
                                     aria-label="{{ __('Supprimer :nom', ['nom' => $element->nom($langue)]) }}"
                                     class="rounded-md p-2 text-zinc-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400">
