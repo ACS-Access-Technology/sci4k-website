@@ -203,3 +203,66 @@ it('propose le journal dans la barre laterale', function () {
     expect($this->actingAs($this->editeur)->get('/dashboard')->getContent())
         ->toContain('/admin/journal');
 });
+
+/*
+ * La hierarchie de lecture.
+ *
+ * Le premier jet mettait le CONTENU en avant et le compte en petit : on lisait
+ * « Mireille K. » — l'auteur d'un temoignage, donc du contenu — comme si
+ * c'etait elle qui avait agi. Signale par le client. Un journal d'activites se
+ * lit par QUI agit.
+ */
+it('met le compte qui agit avant le contenu touche', function () {
+    $this->actingAs($this->editeur);
+    Temoignage::factory()->create(['auteur' => 'Mireille K.']);
+
+    $corps = $this->actingAs($this->editeur)->get('/dashboard')->getContent();
+
+    $panneau = mb_substr($corps, mb_strpos($corps, __('Activité récente')));
+    $panneau = mb_substr($panneau, 0, mb_strpos($panneau, __('Tout afficher')));
+
+    // Mesure au point sensible : la POSITION relative des deux noms dans le
+    // panneau, et non leur simple presence.
+    expect(mb_strpos($panneau, 'Emma Diarra'))->toBeLessThan(mb_strpos($panneau, 'Mireille K.'));
+});
+
+it('enonce l action en une phrase du point de vue du compte', function () {
+    $this->actingAs($this->editeur);
+    Temoignage::factory()->create(['auteur' => 'Mireille K.']);
+
+    $ligne = ActiviteJournalisee::recentes()->first();
+
+    expect($ligne->nomDeLAuteur())->toBe('Emma Diarra')
+        ->and($ligne->initialesDeLAuteur())->toBe('ED')
+        // L'article est porte par la famille : « a créé LE témoignage », et non
+        // « a créé témoignage », qui ne se dit pas.
+        ->and($ligne->phrase())->toBe(__('a créé :famille', ['famille' => __('le témoignage')]));
+});
+
+it('nomme clairement une action faite hors session', function () {
+    // Sans compte connecte, la ligne ne doit pas paraitre anonyme ni vide :
+    // elle dit que la machine a agi.
+    Temoignage::factory()->create();
+
+    $ligne = ActiviteJournalisee::recentes()->first();
+
+    expect($ligne->nomDeLAuteur())->toBe(__('Import ou tâche automatique'))
+        ->and($ligne->initialesDeLAuteur())->toBe('⚙');
+});
+
+it('garde le nom de l auteur apres la suppression de son compte', function () {
+    $partant = User::factory()->create(['name' => 'Marc Touré', 'statut' => User::ACTIF]);
+    $partant->assignRole('editeur');
+
+    $this->actingAs($partant);
+    Temoignage::factory()->create(['auteur' => 'Nadia Bamba']);
+
+    $partant->delete();
+
+    // La contrainte met `user_id` a nul, mais le nom recopie reste : la ligne
+    // continue de dire qui avait agi. C'est pour cela qu'il est recopie.
+    $ligne = ActiviteJournalisee::recentes()->first();
+
+    expect($ligne->fresh()->user_id)->toBeNull()
+        ->and($ligne->fresh()->nomDeLAuteur())->toBe('Marc Touré');
+});

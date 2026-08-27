@@ -36,6 +36,90 @@ class ActiviteJournalisee extends Model
         return $requete->latest('created_at')->latest('id');
     }
 
+    /**
+     * Le compte qui a agi.
+     *
+     * Ce journal parle des COMPTES du backoffice, et c'est son sujet principal.
+     * Le premier jet mettait en avant le contenu touche : on lisait le nom de
+     * l'auteur d'un temoignage — donc du contenu — comme si c'etait lui qui
+     * avait agi. Signale par le client.
+     *
+     * Le nom est RECOPIE, donc il survit a la suppression du compte : la
+     * contrainte met alors `user_id` a nul, mais la ligne continue de dire qui
+     * avait agi. Un nom absent ne peut donc signifier qu'une chose — l'action
+     * n'a pas ete faite depuis une session.
+     */
+    public function nomDeLAuteur(): string
+    {
+        return $this->auteur_nom ?: __('Import ou tâche automatique');
+    }
+
+    /** Initiales du compte, pour la vignette. */
+    public function initialesDeLAuteur(): string
+    {
+        if (! $this->auteur_nom) {
+            // Ni un nom ni une personne : une action de la machine.
+            return '⚙';
+        }
+
+        return collect(preg_split('/\s+/u', trim($this->auteur_nom)))
+            ->filter()
+            ->take(2)
+            ->map(fn ($mot) => mb_strtoupper(mb_substr($mot, 0, 1)))
+            ->implode('');
+    }
+
+    /**
+     * Ce que la personne a fait, en une phrase.
+     *
+     * L'intitule du contenu la complete a l'ecran : « a modifié le témoignage »
+     * suivi du nom du temoignage.
+     */
+    public function phrase(): string
+    {
+        $famille = $this->familleAvecArticle();
+
+        return match ($this->action) {
+            self::CREATION => __('a créé :famille', ['famille' => $famille]),
+            self::PUBLICATION => __('a publié :famille', ['famille' => $famille]),
+            self::SUPPRESSION => __('a supprimé :famille', ['famille' => $famille]),
+            default => __('a modifié :famille', ['famille' => $famille]),
+        };
+    }
+
+    /**
+     * La famille precedee de son article defini.
+     *
+     * L'article est porte ici et non colle a la volee : en francais il depend
+     * du genre du mot — « LE temoignage », « LA question », « L'article ». Le
+     * deduire d'une regle aurait donne « a modifie temoignage », qui ne se dit
+     * pas. La traduction anglaise n'a pas ce probleme et rend simplement le
+     * nom, l'article vivant dans la phrase.
+     */
+    public function familleAvecArticle(): string
+    {
+        return match ($this->sujet_type) {
+            Article::class => __("l'article"),
+            Service::class => __('le service'),
+            QuestionFaq::class => __('la question'),
+            RubriqueFaq::class => __('la rubrique de FAQ'),
+            Temoignage::class => __('le témoignage'),
+            MembreEquipe::class => __("le membre de l'équipe"),
+            Partenaire::class => __('le partenaire'),
+            Valeur::class => __('la valeur'),
+            ChiffreCle::class => __('le chiffre clé'),
+            EtapeProcessus::class => __("l'étape"),
+            Encart::class => __("l'encart"),
+            ImageDeFond::class => __("l'image de fond"),
+            CommuneDuBandeau::class => __('la commune'),
+            ReglageDeSection::class => __("l'en-tête de section"),
+            Referentiel::class => __('le référentiel'),
+            EntreeDeMenu::class => __("l'entrée de menu"),
+            User::class => __('le compte'),
+            default => __('le contenu'),
+        };
+    }
+
     /** Verbe affiche, au feminin ou masculin selon la famille. */
     public function verbe(): string
     {

@@ -193,31 +193,30 @@
                     @php($lien = $recent->lienDEdition())
 
                     <li class="flex items-center gap-3 px-5 py-3">
-                        <span @class([
-                            'flex size-9 shrink-0 items-center justify-center rounded-lg',
-                            'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' => $recent->action === \App\Models\ActiviteJournalisee::PUBLICATION,
-                            'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300' => $recent->action === \App\Models\ActiviteJournalisee::SUPPRESSION,
-                            'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400' => ! in_array($recent->action, [\App\Models\ActiviteJournalisee::PUBLICATION, \App\Models\ActiviteJournalisee::SUPPRESSION], true),
-                        ])>
-                            <x-admin.icone :nom="$recent->icone()" />
+                        {{-- La vignette porte les initiales du COMPTE qui a agi,
+                             et non l'icone de la famille touchee. Le premier jet
+                             mettait le contenu en avant et l'auteur en petit :
+                             on lisait « Mireille K. » — l'auteur d'un temoignage,
+                             donc du contenu — comme si c'etait elle qui avait
+                             agi. Un journal d'activites se lit par QUI agit. --}}
+                        <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-xs font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-200">
+                            {{ $recent->initialesDeLAuteur() }}
                         </span>
 
                         <div class="min-w-0 flex-1">
-                            @if ($lien)
-                                <a href="{{ $lien }}" wire:navigate
-                                   class="block truncate text-sm font-medium text-zinc-900 hover:underline dark:text-white">
-                                    {{ $recent->sujet_intitule }}
-                                </a>
-                            @else
-                                {{-- Pas de lien vers ce qui n'existe plus : un clic
-                                     rendrait une page d'erreur. --}}
-                                <span class="block truncate text-sm font-medium text-zinc-500 line-through dark:text-zinc-400">
-                                    {{ $recent->sujet_intitule }}
-                                </span>
-                            @endif
+                            <span class="block truncate text-sm font-medium text-zinc-900 dark:text-white">
+                                {{ $recent->nomDeLAuteur() }}
+                            </span>
 
-                            <span class="text-xs text-zinc-500 dark:text-zinc-400">
-                                {{ $recent->famille() }} {{ $recent->verbe() }}@if ($recent->auteur_nom) · {{ $recent->auteur_nom }}@endif
+                            <span class="block truncate text-xs text-zinc-500 dark:text-zinc-400">
+                                {{ $recent->phrase() }}
+                                @if ($lien)
+                                    <a href="{{ $lien }}" wire:navigate class="hover:underline">{{ $recent->sujet_intitule }}</a>
+                                @else
+                                    {{-- Pas de lien vers ce qui n'existe plus : un
+                                         clic rendrait une page d'erreur. --}}
+                                    <span class="line-through">{{ $recent->sujet_intitule }}</span>
+                                @endif
                             </span>
                         </div>
 

@@ -35,9 +35,11 @@
         <table class="w-full text-left text-sm">
             <thead class="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
                 <tr>
-                    <th class="px-4 py-3">{{ __('Contenu') }}</th>
-                    <th class="px-4 py-3">{{ __('Action') }}</th>
+                    {{-- L'auteur vient EN PREMIER : c'est de lui que ce journal
+                         parle. Le contenu touche n'est que le complement. --}}
                     <th class="px-4 py-3">{{ __('Auteur') }}</th>
+                    <th class="px-4 py-3">{{ __('Action') }}</th>
+                    <th class="px-4 py-3">{{ __('Contenu') }}</th>
                     <th class="px-4 py-3">{{ __('Quand') }}</th>
                 </tr>
             </thead>
@@ -47,14 +49,12 @@
 
                     <tr class="border-b border-zinc-100 last:border-0 dark:border-zinc-800">
                         <td class="px-4 py-3">
-                            @if ($lien)
-                                <a href="{{ $lien }}" wire:navigate class="font-medium text-zinc-900 hover:underline dark:text-white">
-                                    {{ $ligne->sujet_intitule }}
-                                </a>
-                            @else
-                                <span class="font-medium text-zinc-500 line-through dark:text-zinc-400">{{ $ligne->sujet_intitule }}</span>
-                            @endif
-                            <span class="block text-xs text-zinc-500 dark:text-zinc-400">{{ $ligne->famille() }}</span>
+                            <span class="flex items-center gap-2">
+                                <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-xs font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-200">
+                                    {{ $ligne->initialesDeLAuteur() }}
+                                </span>
+                                <span class="font-medium text-zinc-900 dark:text-white">{{ $ligne->nomDeLAuteur() }}</span>
+                            </span>
                         </td>
 
                         <td class="px-4 py-3">
@@ -70,9 +70,15 @@
                             ])>{{ ucfirst($ligne->verbe()) }}</span>
                         </td>
 
-                        <td class="px-4 py-3 text-zinc-600 dark:text-zinc-300">
-                            {{-- Le nom recopie survit a la suppression du compte. --}}
-                            {{ $ligne->auteur_nom ?: __('Hors session') }}
+                        <td class="px-4 py-3">
+                            @if ($lien)
+                                <a href="{{ $lien }}" wire:navigate class="text-zinc-900 hover:underline dark:text-white">
+                                    {{ $ligne->sujet_intitule }}
+                                </a>
+                            @else
+                                <span class="text-zinc-500 line-through dark:text-zinc-400">{{ $ligne->sujet_intitule }}</span>
+                            @endif
+                            <span class="block text-xs text-zinc-500 dark:text-zinc-400">{{ $ligne->famille() }}</span>
                         </td>
 
                         <td class="px-4 py-3 text-zinc-600 dark:text-zinc-300">
