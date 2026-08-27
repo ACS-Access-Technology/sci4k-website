@@ -1,39 +1,59 @@
+{{--
+  En-tete des pages publiques.
+
+  Tout le texte passe par __(), sans aucun attribut data-i18n. Ce partiel
+  echangeait auparavant son texte cote client, par le dictionnaire de main.js,
+  pendant que le corps des pages etait rendu par le serveur selon la session :
+  les deux mecanismes ne se parlaient pas, et un visiteur choisissant l'anglais
+  obtenait un en-tete anglais sur une page francaise.
+
+  La bascule de langue est donc devenue un lien vers la route serveur. main.js
+  garde sa propre bascule pour les pages restees statiques, qui n'ont pas de
+  serveur pour les rendre ; son gestionnaire de clic s'execute encore ici et
+  aligne localStorage avant que la navigation ne parte, ce qui laisse les deux
+  familles de pages d'accord sur la langue choisie.
+--}}
+@php($langue = app()->getLocale())
+@php($autreLangue = $langue === 'fr' ? 'en' : 'fr')
+
 <header id="siteHeader">
   <div class="wrap nav">
-    <a href="/index.html" class="logo"><span class="mark"><img src="/images/image (3).png" alt="Logo SCI4K"></span> SCI4K</a>
+    <a href="/index.html" class="logo"><span class="mark"><img src="/images/image (3).png" alt="{{ __('Logo SCI4K') }}"></span> SCI4K</a>
     <nav class="links">
-      <a href="/index.html" data-i18n="nav.home">Accueil</a>
-      <a href="/presentation.html" data-i18n="nav.about">Présentation</a>
-      <a href="/biens.html" data-i18n="nav.properties">Biens Immobiliers</a>
-      <a href="/services.html" data-i18n="nav.services">Nos Services</a>
-      <a href="{{ route('actualites.index') }}" class="active" data-i18n="nav.actualites">Actualités</a>
-      <a href="/faq.html" data-i18n="nav.faq">FAQ</a>
-      <a href="/contact.html" data-i18n="nav.contact">Contact</a>
+      <a href="/index.html">{{ __('Accueil') }}</a>
+      <a href="/presentation.html">{{ __('Présentation') }}</a>
+      <a href="/biens.html">{{ __('Biens Immobiliers') }}</a>
+      <a href="{{ route('services.index') }}">{{ __('Nos Services') }}</a>
+      <a href="{{ route('actualites.index') }}" class="active">{{ __('Actualités') }}</a>
+      <a href="{{ route('faq.index') }}">{{ __('FAQ') }}</a>
+      <a href="/contact.html">{{ __('Contact') }}</a>
     </nav>
     <div class="util-switches">
-      <button class="theme-toggle" aria-label="Basculer mode sombre / clair" title="Mode sombre / clair">
+      <button class="theme-toggle" aria-label="{{ __('Basculer mode sombre / clair') }}" title="{{ __('Mode sombre / clair') }}">
         <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
         <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
       </button>
-      <button class="lang-toggle" aria-label="Changer de langue" title="Français / English">EN</button>
+      <a class="lang-toggle" href="{{ route('langue.basculer', $autreLangue) }}"
+         aria-label="{{ __('Changer de langue') }}" title="Français / English">{{ strtoupper($autreLangue) }}</a>
     </div>
-    <a href="/contact.html" class="cta-btn" data-i18n="nav.cta">Nous contacter</a>
-    <button class="burger" id="burgerBtn" aria-label="Menu Mobile">☰</button>
+    <a href="/contact.html" class="cta-btn">{{ __('Nous contacter') }}</a>
+    <button class="burger" id="burgerBtn" aria-label="{{ __('Menu Mobile') }}">☰</button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
-    <a href="/index.html" data-i18n="nav.home">Accueil</a>
-    <a href="/presentation.html" data-i18n="nav.about">Présentation</a>
-    <a href="/biens.html" data-i18n="nav.properties">Biens Immobiliers</a>
-    <a href="/services.html" data-i18n="nav.services">Nos Services</a>
-    <a href="{{ route('actualites.index') }}" data-i18n="nav.actualites">Actualités</a>
-    <a href="/faq.html" data-i18n="nav.faq">FAQ</a>
-    <a href="/contact.html" data-i18n="nav.contact">Contact</a>
+    <a href="/index.html">{{ __('Accueil') }}</a>
+    <a href="/presentation.html">{{ __('Présentation') }}</a>
+    <a href="/biens.html">{{ __('Biens Immobiliers') }}</a>
+    <a href="{{ route('services.index') }}">{{ __('Nos Services') }}</a>
+    <a href="{{ route('actualites.index') }}">{{ __('Actualités') }}</a>
+    <a href="{{ route('faq.index') }}">{{ __('FAQ') }}</a>
+    <a href="/contact.html">{{ __('Contact') }}</a>
     <div class="util-switches">
-      <button class="theme-toggle" aria-label="Basculer mode sombre / clair" title="Mode sombre / clair">
+      <button class="theme-toggle" aria-label="{{ __('Basculer mode sombre / clair') }}" title="{{ __('Mode sombre / clair') }}">
         <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
         <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
       </button>
-      <button class="lang-toggle" aria-label="Changer de langue" title="Français / English">EN</button>
+      <a class="lang-toggle" href="{{ route('langue.basculer', $autreLangue) }}"
+         aria-label="{{ __('Changer de langue') }}" title="Français / English">{{ strtoupper($autreLangue) }}</a>
     </div>
   </div>
 </header>

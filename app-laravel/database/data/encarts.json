@@ -1,0 +1,13 @@
+[
+  {
+    "slug": "accueil",
+    "ordre": 1,
+    "titre_fr": "Prêt à concrétiser votre projet immobilier ?",
+    "titre_en": "Ready to bring your real estate project to life?",
+    "texte_fr": "Découvrez notre catalogue complet d'appartements, villas et terrains disponibles à l'achat et à la location sur notre page dédiée.",
+    "texte_en": "Discover our full catalogue of apartments, villas and plots available for sale and rent on our dedicated page.",
+    "libelle_bouton_fr": "Consulter les biens",
+    "libelle_bouton_en": "Browse properties",
+    "cible_bouton": "/contact.html"
+  }
+]

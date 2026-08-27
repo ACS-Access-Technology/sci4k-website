@@ -1791,6 +1791,13 @@ a.partner-logo-card:hover .p-name{color:var(--gold-600);}
 .service-tile{position:relative;aspect-ratio:1/1;width:100%;border:none;padding:0;cursor:pointer;
   border-radius:24px;overflow:hidden;text-align:left;font-family:inherit;color:#fff;
   background-size:cover;background-position:center;
+  /* Fond de repli d'un service sans visuel : les services crees depuis
+     l'administration ont un slug que .service-bg-* ne connait pas, et une
+     tuile sans image laisserait voir la page au travers du voile. On ne pose
+     qu'une COULEUR : images.css se charge avant cette feuille, donc un
+     background-image ici l'emporterait sur les .service-bg-* et effacerait
+     les visuels des six services d'origine. */
+  background-color:var(--navy-800);
   box-shadow:0 12px 32px rgba(0,0,0,.10);
   transition:transform .3s ease-in-out,box-shadow .3s ease-in-out;}
 .service-tile:hover{transform:translateY(-4px);box-shadow:0 20px 44px rgba(31,51,70,.28);}

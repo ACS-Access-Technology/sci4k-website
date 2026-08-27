@@ -1,0 +1,30 @@
+[
+  {
+    "ordre": 1,
+    "titre_fr": "Écoute & Analyse",
+    "titre_en": "Listening & Analysis",
+    "texte_fr": "Prise de contact approfondie pour comprendre vos objectifs, vos critères et votre budget.",
+    "texte_en": "An in-depth first contact to understand your goals, criteria and budget."
+  },
+  {
+    "ordre": 2,
+    "titre_fr": "Sélection & Audit",
+    "titre_en": "Selection & Audit",
+    "texte_fr": "Propositions ciblées et vérification complète des volets juridiques, techniques et fonciers.",
+    "texte_en": "Targeted proposals and a full review of the legal, technical and land aspects."
+  },
+  {
+    "ordre": 3,
+    "titre_fr": "Négociation & Acte",
+    "titre_en": "Negotiation & Deed",
+    "texte_fr": "Sécurisation des transactions avec notre réseau de notaires et partenaires agréés.",
+    "texte_en": "Secure transactions with our network of notaries and approved partners."
+  },
+  {
+    "ordre": 4,
+    "titre_fr": "Suivi Continu",
+    "titre_en": "Ongoing Support",
+    "texte_fr": "Un accompagnement permanent même après la signature ou la livraison du bien.",
+    "texte_en": "Ongoing support even after signing or delivery of the property."
+  }
+]

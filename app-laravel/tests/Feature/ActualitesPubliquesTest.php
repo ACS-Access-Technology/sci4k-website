@@ -97,17 +97,13 @@ it('rend la page entiere dans la langue choisie, pas seulement les articles', fu
         ->assertSee('Search');                   // un libelle d'interface
 });
 
-it('sert la page d accueil du site a la racine', function () {
-    $accueil = public_path('index.html');
-
-    $this->assertFileExists(
-        $accueil,
-        'app-laravel/public/index.html est absent : lancer tools/sync-frontoffice.sh depuis la racine du worktree.'
-    );
-
-    $this->get('/')
-        ->assertOk()
-        ->assertSee('page-home', false);
+it('sert la page d accueil a la racine', function () {
+    // L'accueil etait servi depuis public/index.html jusqu'au lot 2b ; il est
+    // desormais rendu par Laravel, et le fichier statique est exclu de la
+    // synchronisation. Le controle porte donc sur la reponse, pas sur un
+    // fichier — c'est la leçon du plan de site, vert pour la mauvaise raison
+    // parce qu'il validait des fichiers plutot que ce que le serveur rend.
+    $this->get('/')->assertOk()->assertSee('page-accueil', false);
 });
 
 it('redirige l ancienne adresse de la liste vers la nouvelle', function () {

@@ -70,6 +70,15 @@
         $graphe[] = $noeudPage;
     }
 @endphp
+{{--
+    @@context ci-dessous : Blade compile @context (sans double @) comme la
+    directive du Context facade et non comme le litteral JSON-LD attendu par
+    schema.org. Sans cet echappement, la cle sort sous la forme du fragment
+    PHP non evalue de la directive, et les moteurs de recherche, qui exigent
+    "@context" pour reconnaitre le bloc, ignorent silencieusement tout le
+    graphe — bug decouvert en verifiant le rendu de ce partial sur une page
+    servie.
+--}}
 <script type="application/ld+json">
-{!! json_encode(['@context' => 'https://schema.org', '@graph' => $graphe], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+{!! json_encode(['@@context' => 'https://schema.org', '@graph' => $graphe], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
 </script>

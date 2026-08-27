@@ -22,6 +22,19 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
+        // Seuls les referentiels sont semes ici : roles et categories, qui ne
+        // portent aucun texte editorial.
+        //
+        // Les seeders d'IMPORT en sont volontairement absents —
+        // ArticleImportSeeder depuis le lot 1, ServiceFaqSeeder et
+        // BlocsDeContenuSeeder depuis le lot 2. Ils reecrivent le contenu du
+        // site depuis les fichiers de database/data/, ce qui est le comportement
+        // voulu quand on les lance expressement, et destructeur quand un
+        // `db:seed` de routine les emporte : les corrections faites depuis
+        // l'administration seraient defaites sans que personne ne le demande.
+        //
+        //   php artisan db:seed --class=ServiceFaqSeeder
+        //   php artisan db:seed --class=BlocsDeContenuSeeder
         $this->call([
             RoleSeeder::class,
             CategorieSeeder::class,

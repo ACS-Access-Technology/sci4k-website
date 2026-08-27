@@ -20,12 +20,17 @@
 use Illuminate\Support\Facades\App;
 
 /**
- * Extrait les cles litterales passees a __() dans les vues Blade et dans le
- * code de l'application.
+ * Extrait les cles litterales passees a __() et a trans_choice() dans les
+ * vues Blade et dans le code de l'application.
  *
  * `app/` compte autant que `resources/views/` : les messages de validation et
  * les notifications y sont ecrits, et echappaient au controle tant qu'il ne
  * regardait que les vues.
+ *
+ * trans_choice() est traite comme __() depuis la ronde de correction 1 : une
+ * forme plurielle absente d'un dictionnaire y echappait entierement, le
+ * controle « toute cle employee figure dans un dictionnaire » ne regardant
+ * jusque-la que les appels a __().
  */
 function clesDeTraductionDesVues(): array
 {
@@ -45,11 +50,12 @@ function clesDeTraductionDesVues(): array
 
         $contenu = file_get_contents($fichier->getPathname());
 
-        // __('…') et __("…"), en ignorant les appels dont l'argument est une
-        // variable ou une concatenation : seules les cles litterales comptent.
-        // `\\.` avant l'alternative laisse passer les quotes echappees, sans
-        // quoi __('Don\'t have an account?') serait tronque a « Don\ ».
-        preg_match_all('/__\(\s*([\'"])((?:\\\\.|(?!\1).)*)\1/s', $contenu, $trouvees);
+        // __('…'), __("…") et trans_choice('…', …), en ignorant les appels
+        // dont l'argument est une variable ou une concatenation : seules les
+        // cles litterales comptent. `\\.` avant l'alternative laisse passer
+        // les quotes echappees, sans quoi __('Don\'t have an account?')
+        // serait tronque a « Don\ ».
+        preg_match_all('/(?:__|trans_choice)\(\s*([\'"])((?:\\\\.|(?!\1).)*)\1/s', $contenu, $trouvees);
 
         foreach ($trouvees[2] as $i => $cle) {
             $delimiteur = $trouvees[1][$i];
@@ -202,4 +208,35 @@ it('refuse les quatre noms reserves par le framework, quelle que soit la casse',
     );
 
     expect(array_values($collisions))->toBe([]);
+});
+
+it('declare les formes plurielles dans les deux dictionnaires', function () {
+    /*
+     * Une forme plurielle absente de fr.json retombe sur la langue de repli et
+     * rend l'anglais au milieu du francais ; absente de en.json, elle rend le
+     * francais au milieu de l'anglais. Les deux sont donc obligatoires.
+     *
+     * Les controles voisins ne voyaient pas ce cas : l'un se contente d'un
+     * dictionnaire sur deux, l'autre ne parcourt que les cles de en.json.
+     */
+    $anglais = json_decode(file_get_contents(lang_path('en.json')), true) ?? [];
+    $francais = json_decode(file_get_contents(lang_path('fr.json')), true) ?? [];
+
+    $manquantes = [];
+
+    foreach (array_keys(clesDeTraductionDesVues()) as $cle) {
+        if (! str_contains($cle, '|')) {
+            continue;
+        }
+
+        if (! array_key_exists($cle, $anglais)) {
+            $manquantes[] = $cle.' — absente de en.json';
+        }
+
+        if (! array_key_exists($cle, $francais)) {
+            $manquantes[] = $cle.' — absente de fr.json';
+        }
+    }
+
+    expect($manquantes)->toBe([], "Formes plurielles incompletes :\n".implode("\n", $manquantes));
 });

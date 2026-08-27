@@ -1,4 +1,4 @@
-@props(['colonnes' => [], 'vide' => null])
+@props(['colonnes' => [], 'vide' => null, 'ordonnable' => false])
 
 {{--
     Tableau d'administration, commun a tous les ecrans de liste.
@@ -22,7 +22,7 @@
                     @endforeach
                 </tr>
             </thead>
-            <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
+            <tbody @if ($ordonnable) data-ordonnable @endif class="divide-y divide-zinc-100 dark:divide-zinc-800">
                 {{ $slot }}
             </tbody>
         </table>

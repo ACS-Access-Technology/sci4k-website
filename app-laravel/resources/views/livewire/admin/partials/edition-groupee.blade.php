@@ -1,0 +1,183 @@
+{{--
+  Corps commun aux trois ecrans d'edition groupee.
+
+  Tous les elements cote a cote, un seul bouton d'enregistrement, et — quand
+  l'ecran le permet — l'ajout et le retrait. Le panneau « Reglages du bloc »
+  n'apparait que pour les ensembles qui reglent l'en-tete d'une section.
+
+  Attend : $titre, $fil, $sousTitre, $champs, $intituleRang, et
+           $champsSimples / $options / $apercu, facultatifs.
+--}}
+@php($champ = 'mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950')
+@php($champsSimples = $champsSimples ?? [])
+@php($sousTitre = $sousTitre ?? null)
+
+<form wire:submit="enregistrer" class="space-y-6">
+
+    <x-admin.entete-page :titre="$titre" :fil="$fil" :resume="$sousTitre">
+        <x-slot:actions>
+            <x-bascule-langue />
+            @if ($peutEcrire && $ajoutPermis)
+                <button type="button" wire:click="ajouter"
+                        class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800">
+                    <x-admin.icone nom="plus" />
+                    {{ $libelleAjout ?? __('Ajouter') }}
+                </button>
+            @endif
+            @if ($peutEcrire)
+                <button type="submit"
+                        class="inline-flex items-center rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                    {{ __('Enregistrer') }}
+                </button>
+            @endif
+        </x-slot:actions>
+    </x-admin.entete-page>
+
+    @if (session('message'))
+        <div role="status" class="rounded-lg border border-green-300 bg-green-50 px-4 py-3 text-sm text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-100">
+            {{ session('message') }}
+        </div>
+    @endif
+
+    @isset($apercu)
+        {{-- L'apercu montre ce que le visiteur verra, avec les valeurs en cours
+             de saisie : c'est le seul endroit ou l'on voit qu'un suffixe manque
+             ou qu'un libelle deborde. --}}
+        {{-- La classe de grille est ECRITE EN TOUTES LETTRES, pas construite.
+             Tailwind ne compile que les classes qu'il trouve dans les sources :
+             « sm:grid-cols-{{ $n }} » n'existe dans aucune feuille produite, et
+             les cartes retombaient donc les unes sous les autres. --}}
+        @php($colonnesApercu = match (min(max(count($lignes), 1), 4)) {
+            1 => 'sm:grid-cols-1',
+            2 => 'sm:grid-cols-2',
+            3 => 'sm:grid-cols-3',
+            default => 'sm:grid-cols-2 lg:grid-cols-4',
+        })
+
+        <div class="rounded-xl border border-zinc-200 p-5 dark:border-zinc-700">
+            <p class="text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">{{ __('Aperçu sur le site') }}</p>
+            <div class="mt-4 grid gap-4 {{ $colonnesApercu }}">
+                {!! $apercu !!}
+            </div>
+        </div>
+    @endisset
+
+    @if ($traductionActive)
+        <p class="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 dark:border-sky-800 dark:bg-sky-950 dark:text-sky-100">
+            {{ __("Vous pouvez ne remplir qu'une langue : l'autre sera traduite à l'enregistrement. Un texte déjà saisi n'est jamais remplacé.") }}
+        </p>
+    @endif
+
+    {{-- Onglets de la langue du CONTENU. « Français » et « English » restent
+         ecrits dans leur propre langue : ce sont des endonymes. --}}
+    <div class="border-b border-zinc-200 dark:border-zinc-700">
+        <nav class="flex gap-4" aria-label="{{ __('Langue du contenu') }}">
+            @foreach (['fr' => 'Français', 'en' => 'English'] as $code => $intitule)
+                <button type="button" wire:click="$set('langueActive', '{{ $code }}')"
+                        @class([
+                            'border-b-2 px-1 py-2 text-sm',
+                            'border-zinc-900 font-medium dark:border-white' => $langueActive === $code,
+                            'border-transparent text-zinc-600 dark:text-zinc-400' => $langueActive !== $code,
+                        ])>{{ $intitule }}</button>
+            @endforeach
+        </nav>
+    </div>
+
+    <div class="grid gap-6 {{ $sectionReglee ? 'lg:grid-cols-3' : '' }}">
+        <div class="{{ $sectionReglee ? 'lg:col-span-2' : '' }} grid gap-4 {{ ($colonnes ?? 1) > 1 ? 'sm:grid-cols-2' : '' }}">
+            @forelse ($lignes as $cle => $ligne)
+                <fieldset wire:key="ligne-{{ $cle }}"
+                          class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
+                    <div class="flex items-start justify-between gap-3">
+                        <legend class="sr-only">{{ $intituleRang }} {{ $loop->iteration }}</legend>
+
+                        <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-700 dark:bg-zinc-700 dark:text-zinc-200">
+                            {{ $loop->iteration }}
+                        </span>
+
+                        <label class="ms-auto flex items-center gap-2">
+                            <input type="checkbox" wire:model="lignes.{{ $cle }}.visible"
+                                   @disabled(! $peutEcrire) class="rounded border-zinc-300">
+                            <span class="text-xs text-zinc-600 dark:text-zinc-400">{{ __('Visible') }}</span>
+                        </label>
+
+                        @if ($peutEcrire && $ajoutPermis)
+                            <button type="button" wire:click="retirer('{{ $cle }}')"
+                                    wire:confirm="{{ __('Retirer cet élément ? Il sera supprimé à l’enregistrement.') }}"
+                                    title="{{ __('Retirer') }}"
+                                    class="rounded-md p-1.5 text-zinc-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400">
+                                <x-admin.icone nom="corbeille" />
+                            </button>
+                        @endif
+                    </div>
+
+                    <div class="mt-3 grid gap-4">
+                        @foreach ($champsSimples as $nom => $description)
+                            <label class="block">
+                                <span class="text-sm font-medium">{{ $description['intitule'] }}</span>
+                                <input type="{{ $description['type'] ?? 'text' }}"
+                                       wire:model="lignes.{{ $cle }}.{{ $nom }}"
+                                       @disabled(! $peutEcrire) class="{{ $champ }}">
+                                @isset($description['aide'])
+                                    <span class="mt-1 block text-xs text-zinc-500 dark:text-zinc-400">{{ $description['aide'] }}</span>
+                                @endisset
+                                @error('lignes.'.$cle.'.'.$nom) <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+                            </label>
+                        @endforeach
+
+                        @foreach ($champs as $prefixe => $intitule)
+                            {{-- Les deux langues sont rendues, celle qui n'est
+                                 pas active etant masquee : la basculer ne doit
+                                 pas coûter un aller-retour au serveur ni perdre
+                                 une saisie en cours. --}}
+                            @foreach (['fr', 'en'] as $code)
+                                <label class="block {{ $langueActive === $code ? '' : 'hidden' }}">
+                                    <span class="text-sm font-medium">
+                                        {{ $intitule }} ({{ $code === 'fr' ? __('français') : __('anglais') }})
+                                    </span>
+                                    <textarea wire:model="lignes.{{ $cle }}.{{ $prefixe }}_{{ $code }}"
+                                              rows="2" @disabled(! $peutEcrire)
+                                              class="{{ $champ }}"></textarea>
+                                    @error('lignes.'.$cle.'.'.$prefixe.'_'.$code)
+                                        <span class="text-sm text-red-600">{{ $message }}</span>
+                                    @enderror
+                                </label>
+                            @endforeach
+                        @endforeach
+                    </div>
+                </fieldset>
+            @empty
+                <p class="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-600 dark:border-zinc-600 dark:text-zinc-400">
+                    {{ __('Aucun élément. Utilisez le bouton d’ajout pour en créer un.') }}
+                </p>
+            @endforelse
+        </div>
+
+        @if ($sectionReglee)
+            <aside class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
+                <h2 class="text-sm font-semibold text-zinc-900 dark:text-white">{{ __('Réglages du bloc') }}</h2>
+                <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                    {{ __("En-tête de la section sur le site.") }}
+                </p>
+
+                <div class="mt-4 space-y-4">
+                    @foreach (['titre' => __('Titre de la section'), 'chapo' => __('Chapô')] as $nom => $intitule)
+                        @foreach (['fr', 'en'] as $code)
+                            <label class="block {{ $langueActive === $code ? '' : 'hidden' }}">
+                                <span class="text-sm font-medium">
+                                    {{ $intitule }} ({{ $code === 'fr' ? __('français') : __('anglais') }})
+                                </span>
+                                <textarea wire:model="reglages.{{ $nom }}_{{ $code }}" rows="{{ $nom === 'chapo' ? 3 : 2 }}"
+                                          @disabled(! $peutEcrire) class="{{ $champ }}"></textarea>
+                            </label>
+                        @endforeach
+                    @endforeach
+
+                    @isset($reglagesSupplementaires)
+                        {!! $reglagesSupplementaires !!}
+                    @endisset
+                </div>
+            </aside>
+        @endif
+    </div>
+</form>

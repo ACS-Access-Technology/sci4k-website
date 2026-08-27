@@ -15,6 +15,30 @@ class LangueController extends Controller
 
         session(['langue' => $code]);
 
-        return back();
+        return redirect($this->pageDeRetour());
+    }
+
+    /**
+     * La page vers laquelle renvoyer, jamais une adresse de bascule.
+     *
+     * `back()` seul ne suffit pas : la session enregistre /langue/* comme URL
+     * precedente — requete GET, route existante, pas d'en-tete AJAX. Deux
+     * bascules consecutives se renvoyaient donc l'une a l'autre.
+     *
+     * La boucle n'etait pas seulement inesthetique : main.js appelle cette
+     * route par `fetch`, qui suit les redirections, et CHAQUE saut reecrit la
+     * langue en session. Un visiteur basculant deux fois depuis une page
+     * statique terminait sur la langue opposee a celle qu'il avait demandee,
+     * apres une vingtaine de requetes, sans qu'aucun signal ne parte.
+     */
+    protected function pageDeRetour(): string
+    {
+        $precedente = url()->previous();
+
+        if (str_contains(parse_url($precedente, PHP_URL_PATH) ?? '', '/langue/')) {
+            return url('/');
+        }
+
+        return $precedente;
     }
 }

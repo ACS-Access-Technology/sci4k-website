@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use App\Models\Concerns\TraduitParColonnes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Categorie extends Model
 {
+    use HasFactory;
     use TraduitParColonnes;
 
     protected $fillable = ['slug', 'nom_fr', 'nom_en', 'ordre'];

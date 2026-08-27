@@ -1,0 +1,102 @@
+[
+  {
+    "ordre": 1,
+    "slug": "banniere-biens",
+    "fichier": "images/hero/biens.jpg"
+  },
+  {
+    "ordre": 2,
+    "slug": "banniere-presentation",
+    "fichier": "images/hero/presentation.jpg"
+  },
+  {
+    "ordre": 3,
+    "slug": "banniere-services",
+    "fichier": "images/hero/services.jpg"
+  },
+  {
+    "ordre": 4,
+    "slug": "banniere-actualites",
+    "fichier": "images/hero/actualites.jpg"
+  },
+  {
+    "ordre": 5,
+    "slug": "banniere-faq",
+    "fichier": "images/hero/faq.jpg"
+  },
+  {
+    "ordre": 6,
+    "slug": "banniere-contact",
+    "fichier": "images/hero/contact.jpg"
+  },
+  {
+    "ordre": 7,
+    "slug": "accueil-hero",
+    "fichier": "images/WhatsApp Image 2026-08-12 at 12.58.56 PM.jpeg"
+  },
+  {
+    "ordre": 8,
+    "slug": "cta",
+    "fichier": "images/sections/lagune.jpg"
+  },
+  {
+    "ordre": 9,
+    "slug": "temoignages",
+    "fichier": "images/sections/lagune.jpg"
+  },
+  {
+    "ordre": 10,
+    "slug": "valeurs",
+    "fichier": "images/sections/lagune.jpg"
+  },
+  {
+    "ordre": 11,
+    "slug": "processus",
+    "fichier": "images/sections/lagune.jpg"
+  },
+  {
+    "ordre": 12,
+    "slug": "service-foncier",
+    "fichier": "images/services/foncier.jpg"
+  },
+  {
+    "ordre": 13,
+    "slug": "service-construction",
+    "fichier": "images/services/construction.jpg"
+  },
+  {
+    "ordre": 14,
+    "slug": "service-gestion",
+    "fichier": "images/services/gestion-location.jpg"
+  },
+  {
+    "ordre": 15,
+    "slug": "service-achat",
+    "fichier": "images/services/achat.jpg"
+  },
+  {
+    "ordre": 16,
+    "slug": "service-vente",
+    "fichier": "images/services/vente.jpg"
+  },
+  {
+    "ordre": 17,
+    "slug": "service-administration",
+    "fichier": "images/services/administration.jpg"
+  },
+  {
+    "ordre": 18,
+    "slug": "info-box",
+    "fichier": "images/sections/info-box.jpg"
+  },
+  {
+    "ordre": 19,
+    "slug": "footer",
+    "fichier": "images/sections/footer.jpg"
+  },
+  {
+    "ordre": 20,
+    "slug": "erreur",
+    "fichier": "images/404error.jpg"
+  }
+]

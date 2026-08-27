@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Livewire\Concerns\RemplitParTraduction;
 use App\Models\Article;
 use App\Models\Categorie;
 use App\Services\Traduction\Traducteur;
@@ -9,6 +10,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -31,6 +33,7 @@ use Livewire\WithFileUploads;
 #[Layout('layouts.app')]
 class ArticleFormulaire extends Component
 {
+    use RemplitParTraduction;
     use WithFileUploads;
 
     public ?Article $article = null;
@@ -39,6 +42,11 @@ class ArticleFormulaire extends Component
     public $couverture = null;
 
     /** Chemin de la couverture actuelle, tel qu'il sera ecrit en base. */
+    /**
+     * Verrouille pour la meme raison qu'ServiceFormulaire::$imageActuelle :
+     * propriete d'etat, jamais saisie, mais utilisee comme chemin d'effacement.
+     */
+    #[Locked]
     public ?string $couvertureActuelle = null;
 
     /** L'editeur a demande le retrait de la couverture existante. */
@@ -153,6 +161,13 @@ class ArticleFormulaire extends Component
 
     public function enregistrer(): void
     {
+        // La route protege l'ecran, pas l'action : Livewire ne rejoue pas le
+        // middleware de role sur /livewire/update — sa liste de middlewares
+        // persistants ne contient que ceux d'authentification du framework.
+        // Une page laissee ouverte par un editeur retrograde en lecteur
+        // continuerait sinon d'enregistrer.
+        abort_unless((bool) auth()->user()?->hasAnyRole(['administrateur', 'editeur']), 403);
+
         // Avant la validation, et non apres : les champs remplis par traduction
         // doivent satisfaire les regles « required » comme s'ils avaient ete
         // saisis. Si la traduction echoue, la validation reprend la main et
@@ -192,54 +207,13 @@ class ArticleFormulaire extends Component
     }
 
     /**
-     * Remplit la langue manquante par traduction automatique.
+     * Champs traduisibles de l'article, consommes par RemplitParTraduction.
      *
-     * REGLE UNIQUE, ARBITREE AVEC LE CLIENT : on ne traduit QUE ce qui est
-     * vide. Jamais d'ecrasement. Les douze articles repris du site portent une
-     * traduction anglaise humaine, dont la recuperation a coute une
-     * investigation entiere ; une traduction machine declenchee a chaque
-     * enregistrement l'aurait effacee sans que personne s'en apercoive avant
-     * de relire le site.
-     *
-     * Le sens suit ce qui est rempli : francais vers anglais, ou l'inverse.
-     * Chaque champ est traite separement, un article pouvant etre complet d'un
-     * cote et partiel de l'autre.
+     * @return list<string>
      */
-    protected function remplirParTraductionCeQuiEstVide(): void
+    protected function champsTraduisibles(): array
     {
-        $traducteur = app(Traducteur::class);
-
-        if (! $traducteur->disponible()) {
-            return;
-        }
-
-        foreach (['titre', 'resume', 'contenu', 'metaDescription'] as $champ) {
-            $fr = $champ.'Fr';
-            $en = $champ.'En';
-
-            if (blank($this->$en) && filled($this->$fr)) {
-                $this->$en = $this->traduireTexte($traducteur, $this->$fr, 'en', 'fr') ?? $this->$en;
-            } elseif (blank($this->$fr) && filled($this->$en)) {
-                $this->$fr = $this->traduireTexte($traducteur, $this->$en, 'fr', 'en') ?? $this->$fr;
-            }
-        }
-    }
-
-    /**
-     * Traduit un texte en preservant ses paragraphes.
-     *
-     * Les paragraphes partent comme autant de textes distincts plutot qu'en un
-     * seul bloc : DeepL recolle volontiers les lignes vides, et le contenu
-     * arriverait d'un seul tenant sur la page publique, qui decoupe justement
-     * sur ces lignes vides.
-     */
-    protected function traduireTexte(Traducteur $traducteur, string $texte, string $vers, string $depuis): ?string
-    {
-        $paragraphes = preg_split('/\R{2,}/u', trim($texte)) ?: [];
-
-        $traduits = $traducteur->traduire($paragraphes, $vers, $depuis);
-
-        return $traduits === null ? null : implode("\n\n", $traduits);
+        return ['titre', 'resume', 'contenu', 'metaDescription'];
     }
 
     /**

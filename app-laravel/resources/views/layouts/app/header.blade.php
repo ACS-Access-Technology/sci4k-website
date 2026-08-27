@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+{{-- Voir sidebar.blade.php : la classe « dark » est posee avant le premier
+     rendu par le script de partials/head.blade.php, selon le choix garde en
+     memoire ou le reglage du poste. --}}
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         @include('partials.head')
     </head>
