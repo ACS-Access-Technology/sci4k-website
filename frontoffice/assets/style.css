@@ -1571,6 +1571,12 @@ body.page-biens .results-count{color:var(--navy-700);}
 [data-theme="dark"] body.page-biens .prop-badge{background:var(--dark-surface-2); color:var(--gold-300);}
 [data-theme="dark"] body.page-biens .prop-btn{background:var(--cream-2); color:var(--navy-950);}
 [data-theme="dark"] body.page-biens .pill{border-color:var(--dark-border); color:var(--dark-text-muted);}
+/* La pastille ACTIVE garde le texte sombre sur son fond dore. La regle
+   ci-dessus est plus specifique que « .pill.active » et lui prenait sa
+   couleur : le libelle s'affichait alors en gris clair sur dore, presque
+   illisible. Defaut present des la page statique. */
+[data-theme="dark"] body.page-biens .pill.active,
+[data-theme="dark"] body.page-biens .pill:hover{color:var(--navy-950); border-color:var(--gold-500);}
 [data-theme="dark"] body.page-biens .results-count{color:var(--dark-text-muted);}
 
 /* ==========================================================================

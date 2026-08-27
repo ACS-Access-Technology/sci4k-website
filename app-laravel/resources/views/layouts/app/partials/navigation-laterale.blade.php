@@ -17,6 +17,7 @@
 <x-admin.lien-lateral route="admin.journal" :intitule="__('Journal des activités')" />
 
 <p class="px-2 pb-1 pt-4 text-xs font-medium uppercase tracking-wide text-zinc-400">{{ __('Contenu') }}</p>
+<x-admin.lien-lateral route="admin.biens.liste" motif="admin.biens.*" :intitule="__('Biens immobiliers')" />
 <x-admin.lien-lateral route="admin.articles.liste" motif="admin.articles.*" :intitule="__('Articles')" />
 <x-admin.lien-lateral route="admin.services.liste" motif="admin.services.*" :intitule="__('Services')" />
 <x-admin.lien-lateral route="admin.faq.liste" motif="admin.faq.*" :intitule="__('FAQ')" />
@@ -36,6 +37,7 @@
 
 <p class="px-2 pb-1 pt-4 text-xs font-medium uppercase tracking-wide text-zinc-400">{{ __('Demandes') }}</p>
 <x-admin.lien-lateral route="admin.messages" :intitule="__('Messages de contact')" />
+<x-admin.lien-lateral route="admin.visites" :intitule="__('Demandes de visite')" />
 <x-admin.lien-lateral route="admin.newsletter" :intitule="__('Abonnés newsletter')" />
 
 {{-- Les trois ecrans de reglages sont reserves aux administrateurs. Leur

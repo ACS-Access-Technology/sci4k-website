@@ -3,6 +3,7 @@
 use App\Livewire\Admin\Referentiels;
 use App\Models\Referentiel;
 use App\Models\User;
+use Database\Seeders\ReferentielsSeeder;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
 
@@ -39,13 +40,16 @@ it('ouvre l ecran a un administrateur', function () {
 });
 
 it('charge chaque famille dans son propre bloc', function () {
-    Referentiel::factory()->create(['famille' => 'zones', 'valeur' => 'cocody', 'libelle_fr' => 'Cocody', 'ordre' => 1]);
-    Referentiel::factory()->create(['famille' => 'types_de_bien', 'valeur' => 'villa', 'libelle_fr' => 'Villa', 'ordre' => 1]);
+    $zone = Referentiel::factory()->create(['famille' => 'zones', 'valeur' => 'cocody', 'libelle_fr' => 'Cocody', 'ordre' => 1]);
+    $type = Referentiel::factory()->create(['famille' => 'types_de_bien', 'valeur' => 'villa', 'libelle_fr' => 'Villa', 'ordre' => 1]);
 
+    // Les identifiants REELS, et non « 1 » et « 2 » ecrits en dur : SQLite
+    // repart de 1 a chaque test, MySQL non. Le premier jet ne tombait donc en
+    // rouge que sur le moteur de production.
     Livewire::actingAs($this->admin)
         ->test(Referentiels::class)
-        ->assertSet('lignes.zones.1.libelle_fr', 'Cocody')
-        ->assertSet('lignes.types_de_bien.2.libelle_fr', 'Villa');
+        ->assertSet("lignes.zones.{$zone->id}.libelle_fr", 'Cocody')
+        ->assertSet("lignes.types_de_bien.{$type->id}.libelle_fr", 'Villa');
 });
 
 it('ajoute une valeur a la famille demandee', function () {
@@ -210,4 +214,39 @@ it('rappelle les referentiels geres ailleurs sans les rendre modifiables', funct
     // mais sans champ de saisie qui en ferait une seconde source.
     expect($corps)->toContain(__('Référentiels gérés ailleurs'))
         ->and($corps)->not->toContain('wire:model="categories');
+});
+
+/*
+ * Le vocabulaire du backoffice et celui du site doivent etre LE MEME.
+ *
+ * Les valeurs techniques avaient d'abord ete derivees des libelles des filtres
+ * — « Villa & Duplex » donnait « villa-duplex » — alors que le site emploie
+ * l'attribut `value` de ses listes deroulantes. Onze sur seize ne
+ * correspondaient pas. Ce test lit le HTML du site plutot que de recopier une
+ * liste : recopier, c'est exactement ce qui avait produit l'ecart.
+ */
+it('emploie les memes valeurs techniques que les filtres du site', function () {
+    $this->seed(ReferentielsSeeder::class);
+
+    $html = file_get_contents(base_path('../frontoffice/biens.html'));
+
+    $familles = [
+        'selectType' => 'types_de_bien',
+        'selectLoc' => 'zones',
+        'selectRooms' => 'tranches_pieces',
+        'selectSurface' => 'tranches_surface',
+    ];
+
+    foreach ($familles as $champ => $famille) {
+        preg_match('#<select[^>]*id="'.$champ.'"[^>]*>(.*?)</select>#s', $html, $bloc);
+        expect($bloc)->not->toBeEmpty("liste « $champ » introuvable dans biens.html");
+
+        preg_match_all('#<option[^>]*value="([^"]*)"#', $bloc[1], $options);
+
+        // « all » est le choix « tous », qui n'est pas une valeur du referentiel.
+        $duSite = array_values(array_diff($options[1], ['all']));
+        $enBase = Referentiel::deLaFamille($famille)->ordonnees()->pluck('valeur')->all();
+
+        expect($enBase)->toBe($duSite, "famille « $famille »");
+    }
 });
