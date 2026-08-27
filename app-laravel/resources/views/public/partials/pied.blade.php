@@ -19,13 +19,12 @@
     </div>
     <div>
       <h5>{{ __('Navigation') }}</h5>
-      <a href="/index.html">{{ __('Accueil') }}</a>
-      <a href="/presentation.html">{{ __('Présentation') }}</a>
-      <a href="/biens.html">{{ __('Biens immobiliers') }}</a>
-      <a href="{{ route('services.index') }}">{{ __('Nos Services') }}</a>
-      <a href="{{ route('actualites.index') }}">{{ __('Actualités') }}</a>
-      <a href="{{ route('faq.index') }}">{{ __('FAQ') }}</a>
-      <a href="/contact.html">{{ __('Contact') }}</a>
+      {{-- Meme raison que pour la barre du haut : ces sept liens etaient
+           recopies a la main a cote de ceux de l'en-tete, et les deux listes
+           divergeaient des qu'on oubliait l'une des deux. --}}
+      @foreach ($menuPiedNavigation as $entree)
+        <a href="{{ $entree->lien() }}">{{ $entree->libelle($langueDuSite) }}</a>
+      @endforeach
     </div>
     <div>
       <h5>{{ __('Nos Services') }}</h5>
@@ -47,14 +46,22 @@
       {{-- Trois lignes distinctes plutot qu'une chaine a sauts de ligne : le
            contrôle des traductions lit le texte source, ou « \n » compte pour
            deux caracteres, et ne retrouverait jamais la cle resolue. --}}
-      <p>{{ __('Cocody, Cité des Arts') }}<br>{{ __('Résidence Paon, 3ème étage') }}<br>{{ __("Abidjan, Côte d'Ivoire") }}</p>
-      <p><strong>{{ __('Tél:') }}</strong> +225 07 06 16 50 29</p>
-      <p><strong>{{ __('Email:') }}</strong> contact@sci4k.com</p>
+      {{-- Les coordonnees viennent de Configuration > Contact. Elles etaient
+           ecrites ici, et l'ecran de configuration promettait pourtant de les
+           piloter : deux sources, dont une seule etait affichee. Le repli sur
+           le texte d'origine couvre la base pas encore renseignee. --}}
+      <p>{!! nl2br(e($adressePostale)) !!}</p>
+      @if ($telephonePublic)
+        <p><strong>{{ __('Tél:') }}</strong> {{ $telephonePublic }}</p>
+      @endif
+      @if ($emailPublic)
+        <p><strong>{{ __('Email:') }}</strong> {{ $emailPublic }}</p>
+      @endif
     </div>
   </div>
   <div class="bottom-bar">
     <span>{{ __('© :annee SCI4K — Tous droits réservés.', ['annee' => now()->year]) }}</span>
-    <span class="legal-links"><a href="/mentions-legales.html">{{ __('Mentions légales') }}</a> · <a href="/politique-confidentialite.html">{{ __('Politique de confidentialité') }}</a></span>
+    <span class="legal-links">@foreach ($menuPiedLegal as $entree)<a href="{{ $entree->lien() }}">{{ $entree->libelle($langueDuSite) }}</a>@if (! $loop->last) · @endif @endforeach</span>
     <span>{{ __('Société Civile Immobilière — Abidjan, Côte d\'Ivoire') }}</span>
   </div>
  </div>

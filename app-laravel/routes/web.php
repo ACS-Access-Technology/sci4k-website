@@ -17,6 +17,7 @@ use App\Livewire\Admin\ImageDeFondFormulaire;
 use App\Livewire\Admin\ImageDeFondListe;
 use App\Livewire\Admin\MembreEquipeFormulaire;
 use App\Livewire\Admin\MembreEquipeListe;
+use App\Livewire\Admin\Menus;
 use App\Livewire\Admin\PartenaireFormulaire;
 use App\Livewire\Admin\PartenaireListe;
 use App\Livewire\Admin\Referentiels;
@@ -147,6 +148,7 @@ Route::middleware(['auth', 'role:administrateur|editeur|lecteur'])
         Route::middleware('role:administrateur')->group(function () {
             Route::get('/configuration', Configuration::class)->name('configuration');
             Route::get('/referentiels', Referentiels::class)->name('referentiels');
+            Route::get('/menus', Menus::class)->name('menus');
         });
     });
 

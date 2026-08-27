@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\EntreeDeMenu;
 use App\Models\Parametre;
 use App\Models\Service;
 use App\Services\Traduction\Traducteur;
@@ -100,8 +101,50 @@ class AppServiceProvider extends ServiceProvider
     protected function composerLePiedDePage(): void
     {
         View::composer('public.partials.pied', function ($vue) {
-            $vue->with('servicesDuPied', Service::visibles()->ordonnees()->get());
+            $vue->with([
+                'servicesDuPied' => Service::visibles()->ordonnees()->get(),
+                'menuPiedNavigation' => $this->entreesDeMenu('pied_navigation'),
+                'menuPiedLegal' => $this->entreesDeMenu('pied_legal'),
+                'langueDuSite' => app()->getLocale(),
+                // Les coordonnees viennent de la configuration. Le repli sur le
+                // texte d'origine couvre une base pas encore renseignee : un
+                // pied de page sans adresse serait pire qu'un pied de page
+                // portant l'ancienne.
+                // Le repli reprend les TROIS cles existantes plutot qu'une
+                // seule chaine a sauts de ligne : le controle des traductions
+                // lit le texte source, ou « \n » compte pour deux caracteres,
+                // et ne retrouverait jamais la cle resolue. Le gabarit le
+                // disait deja — je venais de refaire l'erreur qu'il decrit.
+                'adressePostale' => Parametre::lire('adresse_postale', implode("\n", [
+                    __('Cocody, Cité des Arts'),
+                    __('Résidence Paon, 3ème étage'),
+                    __("Abidjan, Côte d'Ivoire"),
+                ])),
+                'telephonePublic' => Parametre::lire('telephone', '+225 07 06 16 50 29'),
+                'emailPublic' => Parametre::lire('email_public', 'contact@sci4k.com'),
+            ]);
         });
+
+        View::composer('public.partials.entete', function ($vue) {
+            $vue->with('menuPrincipal', $this->entreesDeMenu('principal'));
+        });
+    }
+
+    /**
+     * Les entrees visibles d'un menu, dans l'ordre.
+     *
+     * Rend une collection VIDE si la table n'existe pas encore — pendant une
+     * migration, ou sur une base fraichement clonee. Le site doit rester
+     * servable dans cet etat : un menu absent degrade la navigation, une
+     * exception rend la page entiere introuvable.
+     */
+    protected function entreesDeMenu(string $menu)
+    {
+        try {
+            return EntreeDeMenu::duMenu($menu)->visibles()->ordonnees()->get();
+        } catch (\Throwable) {
+            return collect();
+        }
     }
 
     /**
