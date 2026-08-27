@@ -33,8 +33,13 @@ class DatabaseSeeder extends Seeder
         // `db:seed` de routine les emporte : les corrections faites depuis
         // l'administration seraient defaites sans que personne ne le demande.
         //
+        // ReferentielsSeeder les rejoint : il reecrit les libelles francais et
+        // anglais a chaque passage, donc il defairait le renommage d'une zone
+        // ou d'un type de bien fait depuis l'administration.
+        //
         //   php artisan db:seed --class=ServiceFaqSeeder
         //   php artisan db:seed --class=BlocsDeContenuSeeder
+        //   php artisan db:seed --class=ReferentielsSeeder
         $this->call([
             RoleSeeder::class,
             CategorieSeeder::class,

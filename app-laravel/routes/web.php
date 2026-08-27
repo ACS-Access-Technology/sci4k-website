@@ -19,6 +19,7 @@ use App\Livewire\Admin\MembreEquipeFormulaire;
 use App\Livewire\Admin\MembreEquipeListe;
 use App\Livewire\Admin\PartenaireFormulaire;
 use App\Livewire\Admin\PartenaireListe;
+use App\Livewire\Admin\Referentiels;
 use App\Livewire\Admin\ReglageDeSectionFormulaire;
 use App\Livewire\Admin\ReglageDeSectionListe;
 use App\Livewire\Admin\RubriqueFaqFormulaire;
@@ -145,6 +146,7 @@ Route::middleware(['auth', 'role:administrateur|editeur|lecteur'])
         // middleware sur /livewire/update.
         Route::middleware('role:administrateur')->group(function () {
             Route::get('/configuration', Configuration::class)->name('configuration');
+            Route::get('/referentiels', Referentiels::class)->name('referentiels');
         });
     });
 
