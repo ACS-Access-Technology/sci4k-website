@@ -14,6 +14,7 @@
 
 <p class="px-2 pb-1 pt-2 text-xs font-medium uppercase tracking-wide text-zinc-400">{{ __('Pilotage') }}</p>
 <x-admin.lien-lateral route="dashboard" :intitule="__('Tableau de bord')" />
+<x-admin.lien-lateral route="admin.journal" :intitule="__('Journal des activités')" />
 
 <p class="px-2 pb-1 pt-4 text-xs font-medium uppercase tracking-wide text-zinc-400">{{ __('Contenu') }}</p>
 <x-admin.lien-lateral route="admin.articles.liste" motif="admin.articles.*" :intitule="__('Articles')" />

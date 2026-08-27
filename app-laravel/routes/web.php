@@ -16,6 +16,7 @@ use App\Livewire\Admin\FaqFormulaire;
 use App\Livewire\Admin\FaqListe;
 use App\Livewire\Admin\ImageDeFondFormulaire;
 use App\Livewire\Admin\ImageDeFondListe;
+use App\Livewire\Admin\JournalActivite;
 use App\Livewire\Admin\MembreEquipeFormulaire;
 use App\Livewire\Admin\MembreEquipeListe;
 use App\Livewire\Admin\Menus;
@@ -91,6 +92,10 @@ Route::middleware(['auth', 'role:administrateur|editeur|redacteur|lecteur'])
         Route::get('/services', ServiceListe::class)->name('services.liste');
         Route::get('/faq', FaqListe::class)->name('faq.liste');
         Route::get('/rubriques-faq', RubriqueFaqListe::class)->name('rubriques-faq.liste');
+
+        // Journal en lecture seule, ouvert a tous les roles qui entrent dans
+        // l'administration : savoir qui a touche a quoi n'est pas un privilege.
+        Route::get('/journal', JournalActivite::class)->name('journal');
 
         // Petits ensembles edites d'un bloc : un seul ecran chacun, ni liste ni
         // formulaire separes. Un lecteur peut les consulter, le composant

@@ -183,24 +183,47 @@
                 <h2 class="text-sm font-semibold text-zinc-900 dark:text-white">{{ __('Activité récente') }}</h2>
             </div>
 
+            {{-- Chaque ligne dit QUI a fait QUOI, et pas seulement ce qui a
+                 bouge : la version precedente deduisait l'activite du champ
+                 `updated_at` et ne pouvait ni nommer l'action, ni son auteur.
+                 Un element supprime reste lisible ici — c'est meme le cas ou
+                 le journal sert le plus. --}}
             <ul class="divide-y divide-zinc-200 dark:divide-zinc-700">
                 @forelse ($recents as $recent)
+                    @php($lien = $recent->lienDEdition())
+
                     <li class="flex items-center gap-3 px-5 py-3">
-                        <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
-                            <x-admin.icone :nom="$recent['icone']" />
+                        <span @class([
+                            'flex size-9 shrink-0 items-center justify-center rounded-lg',
+                            'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' => $recent->action === \App\Models\ActiviteJournalisee::PUBLICATION,
+                            'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300' => $recent->action === \App\Models\ActiviteJournalisee::SUPPRESSION,
+                            'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400' => ! in_array($recent->action, [\App\Models\ActiviteJournalisee::PUBLICATION, \App\Models\ActiviteJournalisee::SUPPRESSION], true),
+                        ])>
+                            <x-admin.icone :nom="$recent->icone()" />
                         </span>
 
                         <div class="min-w-0 flex-1">
-                            <a href="{{ route($recent['route'], $recent['element']) }}" wire:navigate
-                               class="block truncate text-sm font-medium text-zinc-900 hover:underline dark:text-white">
-                                {{ $recent['intitule'] }}
-                            </a>
-                            <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ $recent['famille'] }}</span>
+                            @if ($lien)
+                                <a href="{{ $lien }}" wire:navigate
+                                   class="block truncate text-sm font-medium text-zinc-900 hover:underline dark:text-white">
+                                    {{ $recent->sujet_intitule }}
+                                </a>
+                            @else
+                                {{-- Pas de lien vers ce qui n'existe plus : un clic
+                                     rendrait une page d'erreur. --}}
+                                <span class="block truncate text-sm font-medium text-zinc-500 line-through dark:text-zinc-400">
+                                    {{ $recent->sujet_intitule }}
+                                </span>
+                            @endif
+
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                {{ $recent->famille() }} {{ $recent->verbe() }}@if ($recent->auteur_nom) · {{ $recent->auteur_nom }}@endif
+                            </span>
                         </div>
 
                         <time class="shrink-0 text-xs text-zinc-500 dark:text-zinc-400"
-                              datetime="{{ $recent['quand']?->toIso8601String() }}">
-                            {{ $recent['quand']?->diffForHumans() }}
+                              datetime="{{ $recent->created_at?->toIso8601String() }}">
+                            {{ $recent->created_at?->diffForHumans() }}
                         </time>
                     </li>
                 @empty
@@ -211,7 +234,10 @@
             </ul>
 
             <div class="border-t border-zinc-200 p-3 text-center dark:border-zinc-700">
-                <a href="{{ route('admin.articles.liste') }}" wire:navigate
+                {{-- Ce lien menait a la liste des ARTICLES, alors que le panneau
+                     couvre seize familles : il montrait moins que ce qu'il
+                     resumait. --}}
+                <a href="{{ route('admin.journal') }}" wire:navigate
                    class="text-sm text-zinc-600 hover:underline dark:text-zinc-400">{{ __('Tout afficher') }}</a>
             </div>
         </div>

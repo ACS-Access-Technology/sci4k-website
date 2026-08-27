@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\CollectionOrdonnable;
+use App\Models\Concerns\JournaliseSesChangements;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,6 +18,7 @@ class Partenaire extends Model
 {
     use CollectionOrdonnable;
     use HasFactory;
+    use JournaliseSesChangements;
 
     protected $table = 'partenaires';
 

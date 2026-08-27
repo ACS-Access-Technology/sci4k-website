@@ -10,14 +10,19 @@
     <body class="min-h-screen bg-white dark:bg-zinc-800" x-data="{ mobileNavOpen: false }">
         <div class="flex min-h-screen">
             {{-- Desktop sidebar --}}
-            <aside class="hidden lg:flex lg:w-64 lg:shrink-0 lg:flex-col border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+            {{-- « sticky top-0 h-screen » borne la barre a la hauteur de la
+                 fenetre. Sans cela elle grandit avec son contenu, la page
+                 entiere devient le seul element qui defile, et faire defiler la
+                 barre emporte l'ecran de travail avec elle — signale par le
+                 client. Le defilement propre est pose sur la liste des entrees,
+                 juste en dessous : le logo et le pied de barre restent en
+                 place. --}}
+            <aside class="hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-64 lg:shrink-0 lg:flex-col border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
                 <div class="flex items-center justify-between p-4">
                     <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
                 </div>
 
-                <nav class="flex-1 space-y-1 px-3">
-                    
-
+                <nav class="min-h-0 flex-1 space-y-1 overflow-y-auto px-3">
                     @include('layouts.app.partials.navigation-laterale')
                 </nav>
 
@@ -64,9 +69,7 @@
                         </button>
                     </div>
 
-                    <nav class="flex-1 space-y-1 px-3">
-                        
-
+                    <nav class="min-h-0 flex-1 space-y-1 overflow-y-auto px-3">
                         @include('layouts.app.partials.navigation-laterale')
                     </nav>
 

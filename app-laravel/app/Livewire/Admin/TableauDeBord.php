@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Models\ActiviteJournalisee;
 use App\Models\Article;
 use App\Models\ChiffreCle;
 use App\Models\Encart;
@@ -287,39 +288,17 @@ class TableauDeBord extends Component
     /* ------------------------------------------------------- activite */
 
     /**
-     * Les derniers contenus touches, toutes familles confondues.
+     * Les dernieres actions faites depuis l'administration.
      *
-     * Les familles n'ont pas de table commune : la liste est assemblee en PHP
-     * plutot que par une union SQL, qui aurait exige des colonnes de meme nom
-     * partout et fige les modeles les uns aux autres.
+     * Lues dans le JOURNAL, et non plus deduites du champ `updated_at` de
+     * chaque famille. L'ancienne version ne pouvait dire ni ce qui s'etait
+     * passe — creation, modification, publication — ni qui l'avait fait, et
+     * elle perdait toute trace d'un element supprime. Un enregistrement sans
+     * changement reel suffisait aussi a faire remonter un contenu en tete.
      */
     protected function activiteRecente()
     {
-        $recents = collect();
-
-        $sources = [
-            [Article::class, 'titre_fr', __('Article'), 'admin.articles.edition', 'document'],
-            [Service::class, 'nom_fr', __('Service'), 'admin.services.edition', 'grille'],
-            [QuestionFaq::class, 'question_fr', __('Question'), 'admin.faq.edition', 'question'],
-            [Temoignage::class, 'auteur', __('Témoignage'), 'admin.temoignages.edition', 'guillemets'],
-            [MembreEquipe::class, 'nom', __('Membre'), 'admin.equipe.edition', 'personne'],
-            [Partenaire::class, 'nom', __('Partenaire'), 'admin.partenaires.edition', 'grille'],
-        ];
-
-        foreach ($sources as [$modele, $colonne, $famille, $route, $icone]) {
-            foreach ($modele::query()->latest('updated_at')->limit(5)->get() as $element) {
-                $recents->push([
-                    'famille' => $famille,
-                    'icone' => $icone,
-                    'intitule' => (string) $element->$colonne,
-                    'quand' => $element->updated_at,
-                    'route' => $route,
-                    'element' => $element,
-                ]);
-            }
-        }
-
-        return $recents->sortByDesc('quand')->take(6)->values();
+        return ActiviteJournalisee::recentes()->limit(6)->get();
     }
 
     /**
@@ -340,7 +319,7 @@ class TableauDeBord extends Component
             ],
             [
                 'titre' => __('Messages'),
-                'texte' => __("Demandes de visite et formulaires de contact. Arrive avec la réception des messages du site."),
+                'texte' => __('Demandes de visite et formulaires de contact. Arrive avec la réception des messages du site.'),
             ],
         ];
     }

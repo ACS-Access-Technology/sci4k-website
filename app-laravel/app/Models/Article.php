@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\JournaliseSesChangements;
 use App\Models\Concerns\TraduitParColonnes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 class Article extends Model
 {
     use HasFactory;
+    use JournaliseSesChangements;
     use TraduitParColonnes;
 
     /**
