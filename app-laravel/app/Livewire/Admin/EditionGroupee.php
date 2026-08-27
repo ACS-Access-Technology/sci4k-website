@@ -286,8 +286,26 @@ abstract class EditionGroupee extends Component
 
         $rang = 0;
 
+        // Seules les colonnes que l'ecran declare sont ecrites. `$this->lignes`
+        // est une propriete publique : le navigateur en fixe le contenu, cles
+        // comprises, et la validation ne retire pas les cles qu'elle ignore.
+        // Sans ce filtre, toute colonne `fillable` absente de l'ecran serait
+        // ecrivable sans passer par aucune regle. Les trois ecrans actuels
+        // declarent chacun tout leur `fillable`, si bien que rien n'est
+        // exploitable aujourd'hui — c'est une coincidence, pas une garantie,
+        // et elle tomberait au premier ecran qui n'expose qu'une partie de son
+        // modele.
+        $declarees = [];
+
+        foreach ($this->champsBilingues() as $champ) {
+            $declarees[] = $champ.'_fr';
+            $declarees[] = $champ.'_en';
+        }
+
+        $declarees = array_merge($declarees, array_keys($this->champsSimples()));
+
         foreach ($this->lignes as $cle => $ligne) {
-            $donnees = $ligne;
+            $donnees = array_intersect_key($ligne, array_flip($declarees));
             $donnees['visible'] = (bool) ($ligne['visible'] ?? false);
             // Le rang suit l'ordre d'affichage a l'ecran : l'editeur voit ce
             // qu'il obtiendra, sans avoir a saisir un numero.

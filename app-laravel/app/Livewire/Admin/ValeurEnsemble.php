@@ -24,13 +24,6 @@ class ValeurEnsemble extends EditionGroupee
         return ['titre', 'texte'];
     }
 
-    protected function champsSimples(): array
-    {
-        // Le trace SVG de l'icone. Nullable : une valeur sans icone s'affiche,
-        // simplement sans pictogramme.
-        return ['icone_svg' => ['nullable', 'string', 'max:4000']];
-    }
-
     protected function sectionReglee(): ?string
     {
         return 'about.values';

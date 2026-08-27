@@ -7,12 +7,6 @@
         __('Valeurs') => null,
     ],
     'champs' => ['titre' => __('Titre'), 'texte' => __('Description')],
-    'champsSimples' => [
-        'icone_svg' => [
-            'intitule' => __('Icône (tracé SVG)'),
-            'aide' => __('Facultatif. Laissez vide pour une valeur sans pictogramme.'),
-        ],
-    ],
     'colonnes' => 2,
     'intituleRang' => __('Valeur'),
     'libelleAjout' => __('Ajouter une valeur'),

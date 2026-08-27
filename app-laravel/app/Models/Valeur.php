@@ -20,7 +20,7 @@ class Valeur extends Model
 
     protected $table = 'valeurs';
 
-    protected $fillable = ['ordre', 'visible', 'titre_fr', 'titre_en', 'texte_fr', 'texte_en', 'icone_svg'];
+    protected $fillable = ['ordre', 'visible', 'titre_fr', 'titre_en', 'texte_fr', 'texte_en'];
 
     protected $casts = ['ordre' => 'integer', 'visible' => 'boolean'];
 

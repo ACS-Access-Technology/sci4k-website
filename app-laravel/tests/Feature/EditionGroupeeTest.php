@@ -7,6 +7,7 @@ use App\Models\ChiffreCle;
 use App\Models\EtapeProcessus;
 use App\Models\User;
 use App\Models\Valeur;
+use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
 
@@ -151,4 +152,48 @@ it('couvre aussi les etapes du processus', function () {
         ->assertHasNoErrors();
 
     expect($etape->fresh()->titre_fr)->toBe('Écoute renforcée');
+});
+
+/*
+ * L'ecran des valeurs ne demande pas de pictogramme.
+ *
+ * Il en demandait un — « Icône (tracé SVG) », 4000 caracteres libres — que rien
+ * n'affichait : la carte d'une valeur porte un NUMERO, sur le site statique
+ * comme sur la page portee. Le champ faisait donc saisir un contenu sans effet,
+ * et laissait dormir un risque : les icones de service, elles, sont rendues
+ * sans echappement. Le jour ou l'on aurait affiche celle d'une valeur en
+ * copiant ce motif, un trace saisi en administration se serait execute chez le
+ * visiteur.
+ */
+it('ne propose aucun trace SVG sur les valeurs', function () {
+    $corps = Livewire::actingAs($this->editeur)->test(ValeurEnsemble::class)->html();
+
+    expect($corps)->not->toContain('icone_svg')
+        ->and($corps)->not->toContain('SVG');
+});
+
+it('n a plus de colonne d icone sur les valeurs', function () {
+    expect(Schema::hasColumn('valeurs', 'icone_svg'))->toBeFalse();
+});
+
+/*
+ * La page de presentation numerote les valeurs, elle ne les illustre pas.
+ * C'est ce qui rendait le champ mensonger ; le test le dit a l'endroit ou le
+ * visiteur le constate.
+ */
+it('numerote les valeurs sur la page publique', function () {
+    Valeur::query()->update(['visible' => true]);
+
+    $corps = $this->get('/presentation')->assertOk()->getContent();
+
+    // L'assertion vise la GRILLE DES VALEURS, pas la page : celle-ci contient
+    // des SVG legitimes — bascule de theme, fleche de la newsletter — et
+    // chercher « <svg » partout les aurait attrapes. Premier jet rouge pour
+    // cette raison exactement.
+    $grille = mb_substr($corps, mb_strpos($corps, 'values-grid'));
+    $grille = mb_substr($grille, 0, mb_strpos($grille, '</section>'));
+
+    expect($grille)->toContain('value-num')
+        ->and($grille)->toContain('01')
+        ->and($grille)->not->toContain('<svg');
 });
