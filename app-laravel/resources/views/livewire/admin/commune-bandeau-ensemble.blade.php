@@ -30,6 +30,11 @@
         __('Banderole') => null,
     ],
     'apercu' => $apercu,
+    // Le bandeau est UNE bande pleine largeur, pas une grille de cartes.
+    'apercuPleineLargeur' => true,
+    // Il n'affiche ni titre ni chapo sur le site : les proposer aurait fait
+    // saisir un texte que rien ne rend.
+    'enteteAffichee' => false,
     'champs' => [],
     'champsSimples' => [
         'nom' => [

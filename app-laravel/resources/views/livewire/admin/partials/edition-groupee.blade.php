@@ -12,6 +12,11 @@
 @php($champsSimples = $champsSimples ?? [])
 @php($sousTitre = $sousTitre ?? null)
 
+{{-- Ce bloc porte-t-il du contenu bilingue ? Les champs a suffixe _fr/_en,
+     et l'en-tete de section quand elle est proposee. La banderole des communes
+     n'a ni l'un ni l'autre : ses noms de communes sont des noms propres. --}}
+@php($aDuBilingue = count($champs) > 0 || ($enteteAffichee ?? true))
+
 <form wire:submit="enregistrer" class="space-y-6">
 
     <x-admin.entete-page :titre="$titre" :fil="$fil" :resume="$sousTitre">
@@ -56,20 +61,37 @@
 
         <div class="rounded-xl border border-zinc-200 p-5 dark:border-zinc-700">
             <p class="text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">{{ __('Aperçu sur le site') }}</p>
-            <div class="mt-4 grid gap-4 {{ $colonnesApercu }}">
-                {!! $apercu !!}
-            </div>
+
+            {{-- Tous les apercus ne sont pas des grilles de cartes. Celui de la
+                 banderole est UNE bande qui prend toute la largeur : la glisser
+                 dans une grille a quatre colonnes la reduisait au quart de
+                 l'ecran, et son texte s'y coupait. Le bloc dit donc lui-meme la
+                 forme de son apercu. --}}
+            @if ($apercuPleineLargeur ?? false)
+                <div class="mt-4">{!! $apercu !!}</div>
+            @else
+                <div class="mt-4 grid gap-4 {{ $colonnesApercu }}">
+                    {!! $apercu !!}
+                </div>
+            @endif
         </div>
     @endisset
 
-    @if ($traductionActive)
+    {{-- Promettre une traduction automatique sur un bloc qui n'a aucun champ
+         bilingue serait mentir a l'editeur : il chercherait ce que l'autre
+         langue va remplir, et ne trouverait rien. --}}
+    @if ($traductionActive && $aDuBilingue)
         <p class="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 dark:border-sky-800 dark:bg-sky-950 dark:text-sky-100">
             {{ __("Vous pouvez ne remplir qu'une langue : l'autre sera traduite à l'enregistrement. Un texte déjà saisi n'est jamais remplacé.") }}
         </p>
     @endif
 
     {{-- Onglets de la langue du CONTENU. « Français » et « English » restent
-         ecrits dans leur propre langue : ce sont des endonymes. --}}
+         ecrits dans leur propre langue : ce sont des endonymes.
+
+         Ils disparaissent quand rien n'est bilingue : deux onglets qui
+         n'echangent aucun champ font croire a un ecran casse. --}}
+    @if ($aDuBilingue)
     <div class="border-b border-zinc-200 dark:border-zinc-700">
         <nav class="flex gap-4" aria-label="{{ __('Langue du contenu') }}">
             @foreach (['fr' => 'Français', 'en' => 'English'] as $code => $intitule)
@@ -82,6 +104,7 @@
             @endforeach
         </nav>
     </div>
+    @endif
 
     <div class="grid gap-6 {{ $sectionReglee ? 'lg:grid-cols-3' : '' }}">
         <div class="{{ $sectionReglee ? 'lg:col-span-2' : '' }} grid gap-4 {{ ($colonnes ?? 1) > 1 ? 'sm:grid-cols-2' : '' }}">
@@ -157,11 +180,19 @@
             <aside class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
                 <h2 class="text-sm font-semibold text-zinc-900 dark:text-white">{{ __('Réglages du bloc') }}</h2>
                 <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                    {{ __("En-tête de la section sur le site.") }}
+                    {{ ($enteteAffichee ?? true)
+                        ? __("En-tête de la section sur le site.")
+                        : __("Apparence du bloc sur le site.") }}
                 </p>
 
                 <div class="mt-4 space-y-4">
-                    @foreach (['titre' => __('Titre de la section'), 'chapo' => __('Chapô')] as $nom => $intitule)
+                    {{-- Certains blocs n'affichent AUCUN en-tete sur le site —
+                         la banderole en est un. Leur proposer un titre et un
+                         chapo aurait fait saisir un texte que rien ne rend :
+                         c'est le defaut d'ecran menteur releve cinq fois sur ce
+                         projet. Ils reglent alors leur apparence, et rien
+                         d'autre. --}}
+                    @foreach (($enteteAffichee ?? true) ? ['titre' => __('Titre de la section'), 'chapo' => __('Chapô')] : [] as $nom => $intitule)
                         @foreach (['fr', 'en'] as $code)
                             <label class="block {{ $langueActive === $code ? '' : 'hidden' }}">
                                 <span class="text-sm font-medium">
