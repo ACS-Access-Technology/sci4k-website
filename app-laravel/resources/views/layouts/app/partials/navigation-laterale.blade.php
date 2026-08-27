@@ -34,6 +34,9 @@
 <x-admin.lien-lateral route="admin.images-de-fond.liste" motif="admin.images-de-fond.*" :intitule="__('Images de fond')" />
 <x-admin.lien-lateral route="admin.reglages-de-section.liste" motif="admin.reglages-de-section.*" :intitule="__('En-têtes de section')" />
 
+<p class="px-2 pb-1 pt-4 text-xs font-medium uppercase tracking-wide text-zinc-400">{{ __('Demandes') }}</p>
+<x-admin.lien-lateral route="admin.messages" :intitule="__('Messages de contact')" />
+
 {{-- Les trois ecrans de reglages sont reserves aux administrateurs. Leur
      route le refuse deja ; ne pas les AFFICHER a un editeur evite de lui
      proposer une porte qui se fermera sur lui. --}}

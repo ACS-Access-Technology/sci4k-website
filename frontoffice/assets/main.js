@@ -1020,8 +1020,39 @@ document.addEventListener('DOMContentLoaded', function () {
     if (map[serviceParam]) document.getElementById('contactSubject').value = map[serviceParam];
   }
 
+  /* Depose le message sur le serveur, sans bloquer le visiteur.
+
+     La conversation WhatsApp reste le canal principal — c'est celui que
+     l'agence releve — mais rien n'y etait conserve : un telephone qui change
+     de main emportait toutes les demandes, et l'ecran « Messages » du
+     backoffice n'aurait eu aucune donnee a afficher.
+
+     L'envoi est « au mieux » : une erreur reseau ne doit pas empecher
+     l'ouverture de WhatsApp, qui est ce que le visiteur attend. */
+  function sci4kDeposerLeMessage(champs) {
+    try {
+      fetch('/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(champs)
+      }).catch(function () { /* silencieux : WhatsApp prend le relais */ });
+    } catch (e) { /* navigateur sans fetch : idem */ }
+  }
+
   window.handleContactSubmit = function (event) {
     event.preventDefault();
+
+    /* Enregistre d'abord, ouvre WhatsApp ensuite. L'ordre compte : sur
+       telephone, la page peut etre quittee des l'ouverture de WhatsApp, et un
+       envoi lance apres ne partirait jamais. */
+    sci4kDeposerLeMessage({
+      nom: sci4kValeur('contactName'),
+      telephone: sci4kValeur('contactPhone'),
+      email: sci4kValeur('contactEmail'),
+      sujet: sci4kValeur('contactSubject'),
+      message: sci4kValeur('messageTextarea'),
+      site_web: sci4kValeur('contactSiteWeb')
+    });
 
     /* La demande part sur WhatsApp : c'est le canal reellement releve par
        l'agence. Le formulaire ne fait que composer le message, l'envoi final

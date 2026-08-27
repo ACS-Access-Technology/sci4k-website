@@ -179,6 +179,13 @@
         <p class="sub" id="formSub" data-i18n="contact.form.sub">Remplissez le formulaire ci-dessous et notre équipe vous recontactera sous 24 heures ouvrées.</p>
         <div class="alert-success" id="successAlert" data-i18n="contact.form.success">Votre message est prêt : la conversation WhatsApp s'ouvre dans un nouvel onglet. Appuyez sur Envoyer pour le transmettre à SCI4K.</div>
         <form id="contactForm" onsubmit="handleContactSubmit(event)">
+          <!-- Champ piege : invisible et hors du parcours au clavier, un
+               humain ne le remplit jamais. Un robot remplit tout ce qu'il
+               trouve, et le serveur refuse alors l'envoi. -->
+          <div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden">
+            <label for="contactSiteWeb">Site web</label>
+            <input type="text" id="contactSiteWeb" name="site_web" tabindex="-1" autocomplete="off">
+          </div>
           <div class="form-row">
             <div class="form-group">
               <label for="contactName" data-i18n="contact.form.name">Nom complet *</label>

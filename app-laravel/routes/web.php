@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActualiteController;
 use App\Http\Controllers\LangueController;
+use App\Http\Controllers\MessageDeContactController;
 use App\Http\Controllers\PagePubliqueController;
 use App\Http\Controllers\PlanDuSiteController;
 use App\Livewire\Admin\ArticleFormulaire;
@@ -20,6 +21,7 @@ use App\Livewire\Admin\JournalActivite;
 use App\Livewire\Admin\MembreEquipeFormulaire;
 use App\Livewire\Admin\MembreEquipeListe;
 use App\Livewire\Admin\Menus;
+use App\Livewire\Admin\MessageListe;
 use App\Livewire\Admin\PartenaireFormulaire;
 use App\Livewire\Admin\PartenaireListe;
 use App\Livewire\Admin\Referentiels;
@@ -69,6 +71,14 @@ Route::permanentRedirect('/services.html', '/services');
 Route::permanentRedirect('/faq.html', '/faq');
 Route::permanentRedirect('/presentation.html', '/presentation');
 
+// Le SEUL point d'ecriture ouvert au public. La limitation de debit y remplace
+// l'authentification : le formulaire vit dans une page statique de public/, qui
+// ne traverse pas la session et n'a donc pas de jeton CSRF a presenter. Le
+// controleur ajoute un champ piege et borne toutes les longueurs.
+Route::post('/messages', MessageDeContactController::class)
+    ->middleware('throttle:5,1')
+    ->name('messages.reception');
+
 Route::get('/langue/{code}', [LangueController::class, 'basculer'])->name('langue.basculer');
 
 // Plan du site rendu depuis la base : le fichier fige de frontoffice/ annonçait
@@ -96,6 +106,9 @@ Route::middleware(['auth', 'role:administrateur|editeur|redacteur|lecteur'])
         // Journal en lecture seule, ouvert a tous les roles qui entrent dans
         // l'administration : savoir qui a touche a quoi n'est pas un privilege.
         Route::get('/journal', JournalActivite::class)->name('journal');
+
+        // Demandes recues du site public.
+        Route::get('/messages', MessageListe::class)->name('messages');
 
         // Petits ensembles edites d'un bloc : un seul ecran chacun, ni liste ni
         // formulaire separes. Un lecteur peut les consulter, le composant
