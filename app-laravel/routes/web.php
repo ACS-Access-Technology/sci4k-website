@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\AbonnementNewsletterController;
 use App\Http\Controllers\ActualiteController;
 use App\Http\Controllers\LangueController;
 use App\Http\Controllers\MessageDeContactController;
 use App\Http\Controllers\PagePubliqueController;
 use App\Http\Controllers\PlanDuSiteController;
+use App\Livewire\Admin\AbonneNewsletterListe;
 use App\Livewire\Admin\ArticleFormulaire;
 use App\Livewire\Admin\ArticleListe;
 use App\Livewire\Admin\ChiffreCleEnsemble;
@@ -79,6 +81,12 @@ Route::post('/messages', MessageDeContactController::class)
     ->middleware('throttle:5,1')
     ->name('messages.reception');
 
+// Inscription a la lettre d'information, depuis le pied de page de toutes les
+// pages du site. Memes protections que ci-dessus.
+Route::post('/newsletter', AbonnementNewsletterController::class)
+    ->middleware('throttle:5,1')
+    ->name('newsletter.inscription');
+
 Route::get('/langue/{code}', [LangueController::class, 'basculer'])->name('langue.basculer');
 
 // Plan du site rendu depuis la base : le fichier fige de frontoffice/ annonçait
@@ -97,7 +105,11 @@ Route::middleware(['auth', 'role:administrateur|editeur|redacteur|lecteur'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/', fn () => view('admin.tableau-de-bord'))->name('tableau-de-bord');
+        // /admin servait une page souche du lot 1 — un titre et « connecte en
+        // tant que » — pendant que le vrai tableau de bord vivait sur
+        // /dashboard. Deux adresses, dont une vide : celle-ci renvoie
+        // desormais vers celle qui montre quelque chose.
+        Route::redirect('/', '/dashboard')->name('tableau-de-bord');
         Route::get('/articles', ArticleListe::class)->name('articles.liste');
         Route::get('/services', ServiceListe::class)->name('services.liste');
         Route::get('/faq', FaqListe::class)->name('faq.liste');
@@ -109,6 +121,7 @@ Route::middleware(['auth', 'role:administrateur|editeur|redacteur|lecteur'])
 
         // Demandes recues du site public.
         Route::get('/messages', MessageListe::class)->name('messages');
+        Route::get('/newsletter', AbonneNewsletterListe::class)->name('newsletter');
 
         // Petits ensembles edites d'un bloc : un seul ecran chacun, ni liste ni
         // formulaire separes. Un lecteur peut les consulter, le composant

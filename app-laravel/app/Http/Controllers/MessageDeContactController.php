@@ -8,6 +8,7 @@ use App\Models\Parametre;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 
 /**
  * Reception des messages du formulaire de contact.
@@ -38,6 +39,10 @@ class MessageDeContactController extends Controller
             'email' => ['nullable', 'email', 'max:160'],
             'sujet' => ['nullable', 'string', 'max:190'],
             'message' => ['required', 'string', 'max:5000'],
+            // La question de FAQ arrive par le meme point d'entree : c'est le
+            // meme objet — un expediteur, une demande, une reponse attendue —
+            // et le meme ecran y repond. Seule l'origine differe.
+            'source' => ['nullable', Rule::in(array_keys(MessageDeContact::sources()))],
             // Le champ piege. Il doit rester vide.
             'site_web' => ['prohibited'],
         ], [

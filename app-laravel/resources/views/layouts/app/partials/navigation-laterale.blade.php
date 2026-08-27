@@ -36,6 +36,7 @@
 
 <p class="px-2 pb-1 pt-4 text-xs font-medium uppercase tracking-wide text-zinc-400">{{ __('Demandes') }}</p>
 <x-admin.lien-lateral route="admin.messages" :intitule="__('Messages de contact')" />
+<x-admin.lien-lateral route="admin.newsletter" :intitule="__('Abonnés newsletter')" />
 
 {{-- Les trois ecrans de reglages sont reserves aux administrateurs. Leur
      route le refuse deja ; ne pas les AFFICHER a un editeur evite de lui

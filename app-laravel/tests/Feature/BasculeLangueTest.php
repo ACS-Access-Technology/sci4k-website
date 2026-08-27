@@ -10,7 +10,7 @@ beforeEach(function () {
 });
 
 it('sert l administration en francais par defaut', function () {
-    $this->actingAs($this->admin)->get('/admin');
+    $this->actingAs($this->admin)->get('/dashboard');
 
     expect(app()->getLocale())->toBe('fr');
 });
@@ -18,7 +18,7 @@ it('sert l administration en francais par defaut', function () {
 it('bascule en anglais et le retient', function () {
     $this->actingAs($this->admin)->get('/langue/en')->assertRedirect();
 
-    $this->actingAs($this->admin)->get('/admin');
+    $this->actingAs($this->admin)->get('/dashboard');
 
     expect(app()->getLocale())->toBe('en');
 });
@@ -27,7 +27,7 @@ it('revient au francais', function () {
     $this->actingAs($this->admin)->get('/langue/en');
     $this->actingAs($this->admin)->get('/langue/fr')->assertRedirect();
 
-    $this->actingAs($this->admin)->get('/admin');
+    $this->actingAs($this->admin)->get('/dashboard');
 
     expect(app()->getLocale())->toBe('fr');
 });
@@ -35,7 +35,7 @@ it('revient au francais', function () {
 it('refuse une langue inconnue et reste en francais', function () {
     $this->actingAs($this->admin)->get('/langue/de')->assertNotFound();
 
-    $this->actingAs($this->admin)->get('/admin');
+    $this->actingAs($this->admin)->get('/dashboard');
 
     expect(app()->getLocale())->toBe('fr');
 });
@@ -43,9 +43,9 @@ it('refuse une langue inconnue et reste en francais', function () {
 it('affiche les libelles en anglais une fois bascule', function () {
     $this->actingAs($this->admin)->get('/langue/en');
 
-    $this->actingAs($this->admin)->get('/admin')->assertSee('Dashboard');
+    $this->actingAs($this->admin)->get('/dashboard')->assertSee('Dashboard');
 });
 
 it('affiche les libelles en francais par defaut', function () {
-    $this->actingAs($this->admin)->get('/admin')->assertSee('Tableau de bord');
+    $this->actingAs($this->admin)->get('/dashboard')->assertSee('Tableau de bord');
 });

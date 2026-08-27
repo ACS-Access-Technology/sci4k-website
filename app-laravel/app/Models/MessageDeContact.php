@@ -32,9 +32,25 @@ class MessageDeContact extends Model
      * les ecrit par affectation directe, ce qui nomme explicitement qui en a
      * le droit.
      */
-    protected $fillable = ['nom', 'email', 'telephone', 'sujet', 'message'];
+    protected $fillable = ['nom', 'email', 'telephone', 'sujet', 'message', 'source'];
 
     protected $casts = ['repondu_a' => 'datetime'];
+
+    /** Le formulaire d'ou vient le message. */
+    public const DE_CONTACT = 'contact';
+
+    public const DE_FAQ = 'faq';
+
+    /**
+     * @return array<string, string>
+     */
+    public static function sources(): array
+    {
+        return [
+            self::DE_CONTACT => __('Formulaire de contact'),
+            self::DE_FAQ => __('Question posée depuis la FAQ'),
+        ];
+    }
 
     public const NOUVEAU = 'nouveau';
 

@@ -370,6 +370,13 @@
       <p class="sub" data-i18n="faq.ask.sub">Posez-nous directement votre question, un conseiller SCI4K vous répondra sous 24 heures ouvrées.</p>
       <div class="ask-alert-success" id="askSuccessAlert" data-i18n="faq.ask.success">✓ Votre question est prête : la conversation WhatsApp s'ouvre dans un nouvel onglet. Appuyez sur Envoyer pour la transmettre à SCI4K.</div>
       <form id="askForm" onsubmit="handleAskSubmit(event)">
+          <!-- Champ piege, comme sur le formulaire de contact : invisible et
+               hors du parcours au clavier. Un robot remplit tout ce qu'il
+               trouve, et le serveur refuse alors l'envoi. -->
+          <div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden">
+            <label for="askSiteWeb">Site web</label>
+            <input type="text" id="askSiteWeb" name="site_web" tabindex="-1" autocomplete="off">
+          </div>
         <div class="ask-form-row">
           <div class="ask-form-group">
             <label for="askName" data-i18n="faq.ask.name">Nom complet *</label>

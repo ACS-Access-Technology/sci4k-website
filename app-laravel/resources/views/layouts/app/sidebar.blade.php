@@ -26,25 +26,6 @@
                     @include('layouts.app.partials.navigation-laterale')
                 </nav>
 
-                <nav class="space-y-1 px-3 pb-3">
-                    <a
-                        href="https://github.com/laravel/livewire-starter-kit"
-                        target="_blank"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5"
-                    >
-                        <x-icons.folder-git-2 />
-                        {{ __('Repository') }}
-                    </a>
-                    <a
-                        href="https://laravel.com/docs/starter-kits#livewire"
-                        target="_blank"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5"
-                    >
-                        <x-icons.book-open-text />
-                        {{ __('Documentation') }}
-                    </a>
-                </nav>
-
                 <div class="space-y-3 border-t border-zinc-200 p-3 dark:border-zinc-700">
                     <x-bascule-theme />
                     <x-desktop-user-menu />
@@ -71,17 +52,6 @@
 
                     <nav class="min-h-0 flex-1 space-y-1 overflow-y-auto px-3">
                         @include('layouts.app.partials.navigation-laterale')
-                    </nav>
-
-                    <nav class="space-y-1 px-3 pb-3">
-                        <a href="https://github.com/laravel/livewire-starter-kit" target="_blank" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5">
-                            <x-icons.folder-git-2 />
-                            {{ __('Repository') }}
-                        </a>
-                        <a href="https://laravel.com/docs/starter-kits#livewire" target="_blank" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5">
-                            <x-icons.book-open-text />
-                            {{ __('Documentation') }}
-                        </a>
                     </nav>
 
                     <div class="border-t border-zinc-200 p-3 dark:border-zinc-700">
@@ -132,7 +102,7 @@
                     <nav class="flex items-center gap-4">
                         <a href="{{ route('home') }}" target="_blank" class="hover:underline">{{ __('Accueil') }}</a>
                         <a href="{{ route('faq.index') }}" target="_blank" class="hover:underline">{{ __('FAQ') }}</a>
-                        <a href="{{ route('appearance.edit') }}" wire:navigate class="hover:underline">{{ __('Réglages') }}</a>
+                        <a href="{{ route('profile.edit') }}" wire:navigate class="hover:underline">{{ __('Mon profil') }}</a>
                     </nav>
                 </footer>
             </div>
