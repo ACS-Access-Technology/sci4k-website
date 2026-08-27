@@ -10,10 +10,15 @@
   bandeau reel occupe toute la largeur de l'ecran : un apercu au quart de
   l'espace ne montrait pas ce qu'on regle.
 --}}
+{{-- Les couleurs de la bande ne portent AUCUNE variante « dark: », et c'est
+     voulu : elles montrent le fond choisi pour le SITE, pas le theme de
+     l'administration. Le premier jet faisait suivre le theme de l'editeur, si
+     bien qu'un fond « clair » s'affichait sombre dans une administration
+     sombre — l'apercu contredisait le reglage qu'il illustrait. --}}
 <div @class([
     'overflow-hidden rounded-lg',
     'bg-zinc-900 text-zinc-100' => $fond === 'sombre',
-    'bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100' => $fond !== 'sombre',
+    'bg-zinc-100 text-zinc-800' => $fond !== 'sombre',
 ])>
     @if ($noms->isEmpty())
         <p class="px-4 py-3 text-sm opacity-70">{{ __('Aucune commune affichée pour le moment.') }}</p>

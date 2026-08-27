@@ -173,3 +173,40 @@ it('propose la banderole dans la barre laterale', function () {
     expect($this->actingAs($this->editeur)->get('/dashboard')->getContent())
         ->toContain('/admin/banderole');
 });
+
+/*
+ * L'apercu doit montrer le reglage du SITE, pas le theme de l'administration.
+ *
+ * Signale par le client : en mode clair, la bande s'affichait presque noir sur
+ * noir. Deux causes distinctes derriere ce symptome — une feuille de style
+ * perimee cote poste de travail, et ces variantes « dark: » qui faisaient
+ * suivre le theme de l'editeur. La seconde est dans le code, donc testable.
+ */
+it('rend l apercu independant du theme de l administration', function () {
+    $partiel = file_get_contents(resource_path('views/livewire/admin/partials/apercu-bandeau.blade.php'));
+
+    // On mesure la DECLARATION des couleurs de la bande, seul endroit ou le
+    // defaut peut revenir. Une variante « dark: » y ferait de nouveau suivre le
+    // theme de l'editeur, et un fond « clair » s'afficherait sombre.
+    $debut = mb_strpos($partiel, '<div @class([');
+    $declaration = mb_substr($partiel, $debut, mb_strpos($partiel, '])>') - $debut);
+
+    expect($declaration)->not->toContain('dark:')
+        ->and($declaration)->toContain('bg-zinc-900 text-zinc-100')
+        ->and($declaration)->toContain('bg-zinc-100 text-zinc-800');
+});
+
+it('pose une couleur de texte partout ou il pose un fond', function () {
+    // Un fond sans couleur de texte laisse le texte heriter de la page : la
+    // bande devient alors illisible dans l'un des deux themes. C'est le
+    // symptome exact que le client a vu.
+    $partiel = file_get_contents(resource_path('views/livewire/admin/partials/apercu-bandeau.blade.php'));
+
+    preg_match_all("/'(bg-[^']*)'/", $partiel, $fonds);
+
+    expect($fonds[1])->not->toBeEmpty();
+
+    foreach ($fonds[1] as $classe) {
+        expect($classe)->toContain('text-');
+    }
+});
