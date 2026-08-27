@@ -9,7 +9,10 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        foreach (['administrateur', 'editeur', 'lecteur'] as $nom) {
+        // « redacteur » vient de la maquette des utilisateurs. Ce n'est pas un
+        // role decoratif : il ne peut pas publier, et ne voit que ses propres
+        // articles. Voir User::roles().
+        foreach (['administrateur', 'editeur', 'redacteur', 'lecteur'] as $nom) {
             Role::findOrCreate($nom);
         }
     }

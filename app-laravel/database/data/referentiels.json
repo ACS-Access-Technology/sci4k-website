@@ -1,0 +1,26 @@
+[
+    { "famille": "types_de_bien", "valeur": "villa-duplex", "libelle_fr": "Villa & Duplex", "libelle_en": "Villa & duplex", "ordre": 1, "visible": true },
+    { "famille": "types_de_bien", "valeur": "appartement-studio", "libelle_fr": "Appartement & Studio", "libelle_en": "Flat & studio", "ordre": 2, "visible": true },
+    { "famille": "types_de_bien", "valeur": "immeuble-de-rapport", "libelle_fr": "Immeuble de rapport", "libelle_en": "Investment building", "ordre": 3, "visible": true },
+    { "famille": "types_de_bien", "valeur": "terrain-viabilise", "libelle_fr": "Terrain viabilisé", "libelle_en": "Serviced plot", "ordre": 4, "visible": true },
+
+    { "famille": "zones", "valeur": "cocody-riviera", "libelle_fr": "Cocody & Riviera", "libelle_en": "Cocody & Riviera", "ordre": 1, "visible": true },
+    { "famille": "zones", "valeur": "bingerville", "libelle_fr": "Bingerville", "libelle_en": "Bingerville", "ordre": 2, "visible": true },
+    { "famille": "zones", "valeur": "marcory", "libelle_fr": "Marcory", "libelle_en": "Marcory", "ordre": 3, "visible": true },
+    { "famille": "zones", "valeur": "plateau", "libelle_fr": "Le Plateau", "libelle_en": "Le Plateau", "ordre": 4, "visible": true },
+    { "famille": "zones", "valeur": "abatta", "libelle_fr": "Abatta", "libelle_en": "Abatta", "ordre": 5, "visible": true },
+
+    { "famille": "tranches_pieces", "valeur": "1-2", "libelle_fr": "1 à 2 pièces", "libelle_en": "1 to 2 rooms", "ordre": 1, "visible": true },
+    { "famille": "tranches_pieces", "valeur": "3-4", "libelle_fr": "3 à 4 pièces", "libelle_en": "3 to 4 rooms", "ordre": 2, "visible": true },
+    { "famille": "tranches_pieces", "valeur": "5-plus", "libelle_fr": "5+ pièces", "libelle_en": "5+ rooms", "ordre": 3, "visible": true },
+
+    { "famille": "tranches_surface", "valeur": "moins-100", "libelle_fr": "< 100 m²", "libelle_en": "< 100 m²", "ordre": 1, "visible": true },
+    { "famille": "tranches_surface", "valeur": "100-250", "libelle_fr": "100 m² à 250 m²", "libelle_en": "100 m² to 250 m²", "ordre": 2, "visible": true },
+    { "famille": "tranches_surface", "valeur": "250-500", "libelle_fr": "250 m² à 500 m²", "libelle_en": "250 m² to 500 m²", "ordre": 3, "visible": true },
+    { "famille": "tranches_surface", "valeur": "plus-500", "libelle_fr": "> 500 m²", "libelle_en": "> 500 m²", "ordre": 4, "visible": true },
+
+    { "famille": "statuts_juridiques", "valeur": "acd-disponible", "libelle_fr": "ACD disponible", "libelle_en": "ACD available", "ordre": 1, "visible": true },
+    { "famille": "statuts_juridiques", "valeur": "titre-foncier", "libelle_fr": "Titre foncier", "libelle_en": "Land title", "ordre": 2, "visible": true },
+    { "famille": "statuts_juridiques", "valeur": "lettre-attribution", "libelle_fr": "Lettre d'attribution", "libelle_en": "Letter of allocation", "ordre": 3, "visible": true },
+    { "famille": "statuts_juridiques", "valeur": "arrete-concession", "libelle_fr": "Arrêté de concession", "libelle_en": "Concession order", "ordre": 4, "visible": true }
+]

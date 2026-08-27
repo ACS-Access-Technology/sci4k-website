@@ -10,48 +10,20 @@
     <body class="min-h-screen bg-white dark:bg-zinc-800" x-data="{ mobileNavOpen: false }">
         <div class="flex min-h-screen">
             {{-- Desktop sidebar --}}
-            <aside class="hidden lg:flex lg:w-64 lg:shrink-0 lg:flex-col border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+            {{-- « sticky top-0 h-screen » borne la barre a la hauteur de la
+                 fenetre. Sans cela elle grandit avec son contenu, la page
+                 entiere devient le seul element qui defile, et faire defiler la
+                 barre emporte l'ecran de travail avec elle — signale par le
+                 client. Le defilement propre est pose sur la liste des entrees,
+                 juste en dessous : le logo et le pied de barre restent en
+                 place. --}}
+            <aside class="hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-64 lg:shrink-0 lg:flex-col border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
                 <div class="flex items-center justify-between p-4">
                     <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
                 </div>
 
-                <nav class="flex-1 space-y-1 px-3">
-                    <p class="px-2 pb-1 text-xs text-zinc-400">{{ __('Platform') }}</p>
-
-
-                    <x-admin.lien-lateral route="dashboard" :intitule="__('Tableau de bord')" />
-                    <x-admin.lien-lateral route="admin.articles.liste" motif="admin.articles.*" :intitule="__('Articles')" />
-                    <x-admin.lien-lateral route="admin.services.liste" motif="admin.services.*" :intitule="__('Services')" />
-                    <x-admin.lien-lateral route="admin.faq.liste" motif="admin.faq.*" :intitule="__('FAQ')" />
-                    <x-admin.lien-lateral route="admin.rubriques-faq.liste" motif="admin.rubriques-faq.*" :intitule="__('Rubriques de la FAQ')" />
-                    <x-admin.lien-lateral route="admin.temoignages.liste" motif="admin.temoignages.*" :intitule="__('Témoignages')" />
-                    <x-admin.lien-lateral route="admin.partenaires.liste" motif="admin.partenaires.*" :intitule="__('Partenaires')" />
-                    <x-admin.lien-lateral route="admin.equipe.liste" motif="admin.equipe.*" :intitule="__('Équipe')" />
-                    <x-admin.lien-lateral route="admin.valeurs" :intitule="__('Valeurs')" />
-                    <x-admin.lien-lateral route="admin.chiffres-cles" :intitule="__('Chiffres clés')" />
-                    <x-admin.lien-lateral route="admin.etapes-processus" :intitule="__('Étapes du processus')" />
-                    <x-admin.lien-lateral route="admin.encarts.liste" motif="admin.encarts.*" :intitule="__('Encarts')" />
-                    <x-admin.lien-lateral route="admin.images-de-fond.liste" motif="admin.images-de-fond.*" :intitule="__('Images de fond')" />
-                    <x-admin.lien-lateral route="admin.reglages-de-section.liste" motif="admin.reglages-de-section.*" :intitule="__('En-têtes de section')" />
-                </nav>
-
-                <nav class="space-y-1 px-3 pb-3">
-                    <a
-                        href="https://github.com/laravel/livewire-starter-kit"
-                        target="_blank"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5"
-                    >
-                        <x-icons.folder-git-2 />
-                        {{ __('Repository') }}
-                    </a>
-                    <a
-                        href="https://laravel.com/docs/starter-kits#livewire"
-                        target="_blank"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5"
-                    >
-                        <x-icons.book-open-text />
-                        {{ __('Documentation') }}
-                    </a>
+                <nav class="min-h-0 flex-1 space-y-1 overflow-y-auto px-3">
+                    @include('layouts.app.partials.navigation-laterale')
                 </nav>
 
                 <div class="space-y-3 border-t border-zinc-200 p-3 dark:border-zinc-700">
@@ -78,35 +50,8 @@
                         </button>
                     </div>
 
-                    <nav class="flex-1 space-y-1 px-3">
-                        <p class="px-2 pb-1 text-xs text-zinc-400">{{ __('Platform') }}</p>
-
-
-                        <x-admin.lien-lateral route="dashboard" :intitule="__('Tableau de bord')" />
-                        <x-admin.lien-lateral route="admin.articles.liste" motif="admin.articles.*" :intitule="__('Articles')" />
-                        <x-admin.lien-lateral route="admin.services.liste" motif="admin.services.*" :intitule="__('Services')" />
-                        <x-admin.lien-lateral route="admin.faq.liste" motif="admin.faq.*" :intitule="__('FAQ')" />
-                        <x-admin.lien-lateral route="admin.rubriques-faq.liste" motif="admin.rubriques-faq.*" :intitule="__('Rubriques de la FAQ')" />
-                        <x-admin.lien-lateral route="admin.temoignages.liste" motif="admin.temoignages.*" :intitule="__('Témoignages')" />
-                        <x-admin.lien-lateral route="admin.partenaires.liste" motif="admin.partenaires.*" :intitule="__('Partenaires')" />
-                        <x-admin.lien-lateral route="admin.equipe.liste" motif="admin.equipe.*" :intitule="__('Équipe')" />
-                        <x-admin.lien-lateral route="admin.valeurs" :intitule="__('Valeurs')" />
-                        <x-admin.lien-lateral route="admin.chiffres-cles" :intitule="__('Chiffres clés')" />
-                        <x-admin.lien-lateral route="admin.etapes-processus" :intitule="__('Étapes du processus')" />
-                        <x-admin.lien-lateral route="admin.encarts.liste" motif="admin.encarts.*" :intitule="__('Encarts')" />
-                        <x-admin.lien-lateral route="admin.images-de-fond.liste" motif="admin.images-de-fond.*" :intitule="__('Images de fond')" />
-                        <x-admin.lien-lateral route="admin.reglages-de-section.liste" motif="admin.reglages-de-section.*" :intitule="__('En-têtes de section')" />
-                    </nav>
-
-                    <nav class="space-y-1 px-3 pb-3">
-                        <a href="https://github.com/laravel/livewire-starter-kit" target="_blank" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5">
-                            <x-icons.folder-git-2 />
-                            {{ __('Repository') }}
-                        </a>
-                        <a href="https://laravel.com/docs/starter-kits#livewire" target="_blank" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5">
-                            <x-icons.book-open-text />
-                            {{ __('Documentation') }}
-                        </a>
+                    <nav class="min-h-0 flex-1 space-y-1 overflow-y-auto px-3">
+                        @include('layouts.app.partials.navigation-laterale')
                     </nav>
 
                     <div class="border-t border-zinc-200 p-3 dark:border-zinc-700">
@@ -157,7 +102,7 @@
                     <nav class="flex items-center gap-4">
                         <a href="{{ route('home') }}" target="_blank" class="hover:underline">{{ __('Accueil') }}</a>
                         <a href="{{ route('faq.index') }}" target="_blank" class="hover:underline">{{ __('FAQ') }}</a>
-                        <a href="{{ route('appearance.edit') }}" wire:navigate class="hover:underline">{{ __('Réglages') }}</a>
+                        <a href="{{ route('profile.edit') }}" wire:navigate class="hover:underline">{{ __('Mon profil') }}</a>
                     </nav>
                 </footer>
             </div>

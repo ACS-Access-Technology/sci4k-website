@@ -17,14 +17,20 @@ it('laisse entrer un editeur', function () {
     $user = User::factory()->create();
     $user->assignRole('editeur');
 
-    $this->actingAs($user)->get('/admin')->assertOk();
+    // /admin renvoie vers /dashboard depuis qu'il ne sert plus une page
+    // souche. Le controle de role reste pose sur le groupe, donc sur cette
+    // redirection : un role refuse ne l'obtient pas.
+    $this->actingAs($user)->get('/admin')->assertRedirect('/dashboard');
 });
 
 it('laisse entrer un administrateur', function () {
     $user = User::factory()->create();
     $user->assignRole('administrateur');
 
-    $this->actingAs($user)->get('/admin')->assertOk();
+    // /admin renvoie vers /dashboard depuis qu'il ne sert plus une page
+    // souche. Le controle de role reste pose sur le groupe, donc sur cette
+    // redirection : un role refuse ne l'obtient pas.
+    $this->actingAs($user)->get('/admin')->assertRedirect('/dashboard');
 });
 
 it('refuse un utilisateur sans role', function () {

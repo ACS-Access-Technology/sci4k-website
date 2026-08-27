@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\ChiffreCle;
+use App\Models\CommuneDuBandeau;
 use App\Models\Encart;
 use App\Models\EtapeProcessus;
 use App\Models\MembreEquipe;
+use App\Models\Partenaire;
 use App\Models\QuestionFaq;
 use App\Models\ReglageDeSection;
-use App\Models\Partenaire;
 use App\Models\Service;
 use App\Models\Temoignage;
 use App\Models\Valeur;
@@ -32,7 +33,12 @@ class PagePubliqueController extends Controller
         $enTetes = ReglageDeSection::whereIn('slug', [
             'home.hero', 'home.services', 'home.articles',
             'home.testimonials', 'home.partners', 'ad.house',
+            CommuneDuBandeau::SECTION,
         ])->get()->keyBy('slug');
+
+        // Reglages d'apparence du bandeau. Ils vivent dans les options de son
+        // en-tete de section, comme la duree d'animation des chiffres cles.
+        $reglageBandeau = $enTetes->get(CommuneDuBandeau::SECTION);
 
         return view('public.accueil', [
             'hero' => $enTetes->get('home.hero'),
@@ -43,6 +49,10 @@ class PagePubliqueController extends Controller
             'annonce' => $enTetes->get('ad.house'),
             'banderole' => Encart::visibles()->ordonnees()->first(),
             'chiffres' => ChiffreCle::where('visible', true)->orderBy('ordre')->orderBy('id')->get(),
+            'communesDuBandeau' => CommuneDuBandeau::visibles()->ordonnees()->get(),
+            'bandeauFond' => $reglageBandeau?->option('fond', 'sombre') ?? 'sombre',
+            'bandeauSeparateur' => $reglageBandeau?->option('separateur', '·') ?? '·',
+            'bandeauCasse' => $reglageBandeau?->option('casse', 'majuscules') ?? 'majuscules',
             'services' => Service::visibles()->ordonnees()->get(),
             // Les trois derniers articles publies, les plus recents d'abord.
             'articles' => Article::publies()->with('categorie')->latest('date_publication')->limit(3)->get(),

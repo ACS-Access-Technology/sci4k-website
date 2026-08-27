@@ -1,0 +1,20 @@
+[
+    { "menu": "principal", "cible": "/", "libelle_fr": "Accueil", "libelle_en": "Home", "ordre": 1, "visible": true },
+    { "menu": "principal", "cible": "presentation.index", "libelle_fr": "Présentation", "libelle_en": "About", "ordre": 2, "visible": true },
+    { "menu": "principal", "cible": "/biens.html", "libelle_fr": "Biens Immobiliers", "libelle_en": "Properties", "ordre": 3, "visible": true },
+    { "menu": "principal", "cible": "services.index", "libelle_fr": "Nos Services", "libelle_en": "Our Services", "ordre": 4, "visible": true },
+    { "menu": "principal", "cible": "actualites.index", "libelle_fr": "Actualités", "libelle_en": "News", "ordre": 5, "visible": true },
+    { "menu": "principal", "cible": "faq.index", "libelle_fr": "FAQ", "libelle_en": "FAQ", "ordre": 6, "visible": true },
+    { "menu": "principal", "cible": "/contact.html", "libelle_fr": "Contact", "libelle_en": "Contact", "ordre": 7, "visible": true },
+
+    { "menu": "pied_navigation", "cible": "/", "libelle_fr": "Accueil", "libelle_en": "Home", "ordre": 1, "visible": true },
+    { "menu": "pied_navigation", "cible": "presentation.index", "libelle_fr": "Présentation", "libelle_en": "About", "ordre": 2, "visible": true },
+    { "menu": "pied_navigation", "cible": "/biens.html", "libelle_fr": "Biens immobiliers", "libelle_en": "Properties", "ordre": 3, "visible": true },
+    { "menu": "pied_navigation", "cible": "services.index", "libelle_fr": "Nos Services", "libelle_en": "Our Services", "ordre": 4, "visible": true },
+    { "menu": "pied_navigation", "cible": "actualites.index", "libelle_fr": "Actualités", "libelle_en": "News", "ordre": 5, "visible": true },
+    { "menu": "pied_navigation", "cible": "faq.index", "libelle_fr": "FAQ", "libelle_en": "FAQ", "ordre": 6, "visible": true },
+    { "menu": "pied_navigation", "cible": "/contact.html", "libelle_fr": "Contact", "libelle_en": "Contact", "ordre": 7, "visible": true },
+
+    { "menu": "pied_legal", "cible": "/mentions-legales.html", "libelle_fr": "Mentions légales", "libelle_en": "Legal notice", "ordre": 1, "visible": true },
+    { "menu": "pied_legal", "cible": "/politique-confidentialite.html", "libelle_fr": "Politique de confidentialité", "libelle_en": "Privacy policy", "ordre": 2, "visible": true }
+]

@@ -12,6 +12,15 @@
   serveur pour les rendre ; son gestionnaire de clic s'execute encore ici et
   aligne localStorage avant que la navigation ne parte, ce qui laisse les deux
   familles de pages d'accord sur la langue choisie.
+
+  Les sept liens etaient ecrits DEUX FOIS — une fois pour l'ecran large, une
+  fois pour le menu telephone — et recopies a la main. Ils viennent desormais
+  de la base, en un seul endroit : ajouter une page ne demande plus de penser
+  aux deux listes, ni de remarquer l'oubli en reduisant la fenetre.
+
+  La classe « active » etait par ailleurs posee EN DUR sur Actualites, si bien
+  que ce lien s'affichait actif sur toutes les pages du site. Elle suit
+  maintenant l'adresse reellement demandee.
 --}}
 @php($langue = app()->getLocale())
 @php($autreLangue = $langue === 'fr' ? 'en' : 'fr')
@@ -20,13 +29,9 @@
   <div class="wrap nav">
     <a href="/index.html" class="logo"><span class="mark"><img src="/images/image (3).png" alt="{{ __('Logo SCI4K') }}"></span> SCI4K</a>
     <nav class="links">
-      <a href="/index.html">{{ __('Accueil') }}</a>
-      <a href="/presentation.html">{{ __('Présentation') }}</a>
-      <a href="/biens.html">{{ __('Biens Immobiliers') }}</a>
-      <a href="{{ route('services.index') }}">{{ __('Nos Services') }}</a>
-      <a href="{{ route('actualites.index') }}" class="active">{{ __('Actualités') }}</a>
-      <a href="{{ route('faq.index') }}">{{ __('FAQ') }}</a>
-      <a href="/contact.html">{{ __('Contact') }}</a>
+      @foreach ($menuPrincipal as $entree)
+        <a href="{{ $entree->lien() }}" @class(['active' => $entree->estCourante()])>{{ $entree->libelle($langue) }}</a>
+      @endforeach
     </nav>
     <div class="util-switches">
       <button class="theme-toggle" aria-label="{{ __('Basculer mode sombre / clair') }}" title="{{ __('Mode sombre / clair') }}">
@@ -40,13 +45,9 @@
     <button class="burger" id="burgerBtn" aria-label="{{ __('Menu Mobile') }}">☰</button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
-    <a href="/index.html">{{ __('Accueil') }}</a>
-    <a href="/presentation.html">{{ __('Présentation') }}</a>
-    <a href="/biens.html">{{ __('Biens Immobiliers') }}</a>
-    <a href="{{ route('services.index') }}">{{ __('Nos Services') }}</a>
-    <a href="{{ route('actualites.index') }}">{{ __('Actualités') }}</a>
-    <a href="{{ route('faq.index') }}">{{ __('FAQ') }}</a>
-    <a href="/contact.html">{{ __('Contact') }}</a>
+    @foreach ($menuPrincipal as $entree)
+      <a href="{{ $entree->lien() }}" @class(['active' => $entree->estCourante()])>{{ $entree->libelle($langue) }}</a>
+    @endforeach
     <div class="util-switches">
       <button class="theme-toggle" aria-label="{{ __('Basculer mode sombre / clair') }}" title="{{ __('Mode sombre / clair') }}">
         <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>

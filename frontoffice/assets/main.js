@@ -16,6 +16,29 @@ function sci4kValeur(id) {
   return el ? el.value.trim() : '';
 }
 
+/* Depose une demande sur le serveur, sans bloquer le visiteur.
+
+   La conversation WhatsApp reste le canal principal — c'est celui que l'agence
+   releve — mais rien n'y etait conserve : un telephone qui change de main
+   emportait toutes les demandes, et l'ecran « Messages » du backoffice
+   n'aurait eu aucune donnee a afficher.
+
+   Deux formulaires s'en servent, le contact et la question de FAQ : la
+   fonction vit donc ici, au meme niveau que sci4kValeur, et non dans le bloc
+   d'une seule page.
+
+   L'envoi est « au mieux » : une erreur reseau ne doit pas empecher
+   l'ouverture de WhatsApp, qui est ce que le visiteur attend. */
+function sci4kDeposerLeMessage(champs) {
+  try {
+    fetch('/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(champs)
+    }).catch(function () { /* silencieux : WhatsApp prend le relais */ });
+  } catch (e) { /* navigateur sans fetch : idem */ }
+}
+
 /* Compose le lien en garantissant une URL exploitable. Une URL trop longue
    est rejetee sans message par le navigateur ou par WhatsApp : la demande
    serait perdue au moment meme ou le visiteur croit l'envoyer. La borne
@@ -1023,6 +1046,18 @@ document.addEventListener('DOMContentLoaded', function () {
   window.handleContactSubmit = function (event) {
     event.preventDefault();
 
+    /* Enregistre d'abord, ouvre WhatsApp ensuite. L'ordre compte : sur
+       telephone, la page peut etre quittee des l'ouverture de WhatsApp, et un
+       envoi lance apres ne partirait jamais. */
+    sci4kDeposerLeMessage({
+      nom: sci4kValeur('contactName'),
+      telephone: sci4kValeur('contactPhone'),
+      email: sci4kValeur('contactEmail'),
+      sujet: sci4kValeur('contactSubject'),
+      message: sci4kValeur('messageTextarea'),
+      site_web: sci4kValeur('contactSiteWeb')
+    });
+
     /* La demande part sur WhatsApp : c'est le canal reellement releve par
        l'agence. Le formulaire ne fait que composer le message, l'envoi final
        reste un geste explicite du visiteur dans WhatsApp. */
@@ -1071,6 +1106,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
   window.handleAskSubmit = function (event) {
     event.preventDefault();
+
+    /* Depose d'abord, comme le formulaire de contact : une question posee par
+       un prospect ne doit pas disparaitre parce que WhatsApp a ete ferme sans
+       envoyer. Elle arrive dans le meme ecran « Messages », marquee comme
+       venant de la FAQ. */
+    sci4kDeposerLeMessage({
+      nom: sci4kValeur('askName'),
+      email: sci4kValeur('askEmail'),
+      message: sci4kValeur('askQuestion'),
+      source: 'faq',
+      site_web: sci4kValeur('askSiteWeb')
+    });
 
     /* Meme acheminement que le formulaire de contact : la question part sur
        WhatsApp, seul canal reellement releve par l'agence. */
@@ -1310,10 +1357,24 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       champ.removeAttribute('aria-invalid');
 
-      var sujet = encodeURIComponent('Inscription newsletter SCI4K');
-      var corps = encodeURIComponent('Bonjour,\n\nJe souhaite m\'inscrire à la newsletter SCI4K.\n\nAdresse email : ' + adresse + '\n');
-      window.location.href = 'mailto:' + EMAIL_AGENCE + '?subject=' + sujet + '&body=' + corps;
+      /* L'adresse part sur le SERVEUR, et non plus vers le logiciel de
+         courrier du visiteur. Un lien « mailto: » ne fait rien du tout sur la
+         plupart des telephones, ou aucun compte n'y est configure : l'agence
+         perdait des adresses sans jamais savoir combien.
+
+         Le champ se vide sans attendre la reponse : l'inscription est sans
+         consequence pour le visiteur, et le faire patienter sur un reseau lent
+         serait pire qu'un envoi rate. */
+      try {
+        fetch('/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ email: adresse, site_web: '' })
+        }).catch(function () {});
+      } catch (e) {}
+
       champ.value = '';
+      champ.setAttribute('placeholder', champ.getAttribute('data-merci') || champ.getAttribute('placeholder'));
     }
 
     bouton.addEventListener('click', inscrire);

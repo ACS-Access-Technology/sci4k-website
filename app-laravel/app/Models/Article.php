@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\JournaliseSesChangements;
 use App\Models\Concerns\TraduitParColonnes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 class Article extends Model
 {
     use HasFactory;
+    use JournaliseSesChangements;
     use TraduitParColonnes;
 
     /**
@@ -21,7 +23,7 @@ class Article extends Model
     public const DOSSIER_COUVERTURES = 'storage/actualites';
 
     protected $fillable = [
-        'slug', 'categorie_id', 'date_publication', 'statut',
+        'slug', 'categorie_id', 'auteur_id', 'date_publication', 'statut',
         'titre_fr', 'titre_en', 'resume_fr', 'resume_en',
         'contenu_fr', 'contenu_en',
         'image_source',
@@ -116,6 +118,25 @@ class Article extends Model
     public function categorie()
     {
         return $this->belongsTo(Categorie::class, 'categorie_id');
+    }
+
+    /**
+     * Le compte qui a redige l'article.
+     *
+     * Nullable : les douze articles importes du site n'ont pas d'auteur connu,
+     * et leur en inventer un aurait attribue a quelqu'un un texte qu'il n'a pas
+     * ecrit. Nul aussi quand l'auteur a quitte l'entreprise — supprimer son
+     * compte ne retire pas ses articles du site.
+     */
+    public function auteur()
+    {
+        return $this->belongsTo(User::class, 'auteur_id');
+    }
+
+    /** Les articles rediges par ce compte. */
+    public function scopeDeLAuteur($requete, int $id)
+    {
+        return $requete->where('auteur_id', $id);
     }
 
     public function getRouteKeyName(): string

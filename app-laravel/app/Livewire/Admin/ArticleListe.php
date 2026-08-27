@@ -66,6 +66,10 @@ class ArticleListe extends Component
 
         $articles = Article::query()
             ->with('categorie')
+            // Un redacteur ne voit que ses propres articles. La restriction est
+            // posee sur la REQUETE et non sur l'affichage : masquer des lignes
+            // deja chargees les laisse dans la reponse envoyee au navigateur.
+            ->when(auth()->user()?->limiteASesArticles(), fn ($r) => $r->where('auteur_id', auth()->id()))
             // La recherche porte sur les deux langues : un editeur anglophone
             // doit retrouver un article dont seul le titre anglais lui parle.
             ->when($this->recherche !== '', fn ($r) => $r->where(function ($q) {

@@ -87,6 +87,15 @@ class ArticleFormulaire extends Component
     {
         $this->langueActive = app()->getLocale();
 
+        // Un redacteur ne modifie QUE ses propres articles. Sans ce controle,
+        // la description de son role — « ses propres contenus » — n'aurait ete
+        // qu'une phrase dans un panneau, et il aurait edite ceux de tout le
+        // monde.
+        if ($article?->exists && auth()->user()?->limiteASesArticles()
+            && $article->auteur_id !== auth()->id()) {
+            abort(403);
+        }
+
         if (! $article?->exists) {
             $this->datePublication = now()->format('Y-m-d');
 
@@ -166,7 +175,22 @@ class ArticleFormulaire extends Component
         // persistants ne contient que ceux d'authentification du framework.
         // Une page laissee ouverte par un editeur retrograde en lecteur
         // continuerait sinon d'enregistrer.
-        abort_unless((bool) auth()->user()?->hasAnyRole(['administrateur', 'editeur']), 403);
+        abort_unless((bool) auth()->user()?->hasAnyRole(['administrateur', 'editeur', 'redacteur']), 403);
+
+        // Meme controle qu'au montage, rejoue ici : l'ecran a pu rester ouvert
+        // pendant qu'un editeur reprenait l'article a son compte.
+        if ($this->article?->exists && auth()->user()?->limiteASesArticles()
+            && $this->article->auteur_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Le redacteur ne PUBLIE pas : c'est tout l'objet de son role. Le champ
+        // est deja masque dans le gabarit, mais `statut` est une propriete
+        // publique — le navigateur en fixe la valeur, et une propriete masquee
+        // reste accessible depuis /livewire/update.
+        if (! auth()->user()?->peutPublier()) {
+            $this->statut = 'brouillon';
+        }
 
         // Avant la validation, et non apres : les champs remplis par traduction
         // doivent satisfaire les regles « required » comme s'ils avaient ete
@@ -184,6 +208,9 @@ class ArticleFormulaire extends Component
             'categorie_id' => $this->categorieId,
             'date_publication' => $this->datePublication,
             'statut' => $this->statut,
+            // L'auteur est pose a la CREATION seulement : reprendre un article
+            // pour y corriger une virgule ne doit pas en changer la signature.
+            'auteur_id' => $this->article?->auteur_id ?? auth()->id(),
             'titre_fr' => $this->titreFr,
             'titre_en' => $this->titreEn,
             'resume_fr' => $this->resumeFr,
