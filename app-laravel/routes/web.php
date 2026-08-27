@@ -7,6 +7,7 @@ use App\Http\Controllers\PlanDuSiteController;
 use App\Livewire\Admin\ArticleFormulaire;
 use App\Livewire\Admin\ArticleListe;
 use App\Livewire\Admin\ChiffreCleEnsemble;
+use App\Livewire\Admin\CommuneBandeauEnsemble;
 use App\Livewire\Admin\Configuration;
 use App\Livewire\Admin\EncartFormulaire;
 use App\Livewire\Admin\EncartListe;
@@ -106,6 +107,7 @@ Route::middleware(['auth', 'role:administrateur|editeur|lecteur'])
         Route::get('/valeurs', ValeurEnsemble::class)->name('valeurs');
         Route::get('/chiffres-cles', ChiffreCleEnsemble::class)->name('chiffres-cles');
         Route::get('/etapes-processus', EtapeProcessusEnsemble::class)->name('etapes-processus');
+        Route::get('/banderole', CommuneBandeauEnsemble::class)->name('banderole');
 
         // Un lecteur consulte la liste mais n'ecrit pas : la restriction est
         // posee ici, et non sur le groupe entier.

@@ -79,6 +79,24 @@
   </a>
 </section>
 
+{{-- BANDEAU DES COMMUNES --}}
+{{-- Il existait dans index.html et avait disparu au portage du lot 2 : la
+     page servie n'en contenait plus trace, la page statique si. Il revient,
+     et depuis la base cette fois — l'administration en regle la liste,
+     l'ordre, le separateur, la casse et le fond.
+
+     La liste est repetee DEUX FOIS, comme a l'origine : le bandeau defile en
+     boucle, et une seule serie laisserait un blanc a chaque tour. --}}
+@if ($communesDuBandeau->isNotEmpty())
+  <div @class(['marquee-band', 'marquee-band-clair' => $bandeauFond !== 'sombre'])>
+    <div class="marquee-track" @class(['marquee-brut' => $bandeauCasse !== 'majuscules'])>
+      @foreach ($communesDuBandeau->concat($communesDuBandeau) as $commune)
+        <span>{{ $commune->nom }}</span><span><b>{{ $bandeauSeparateur }}</b></span>
+      @endforeach
+    </div>
+  </div>
+@endif
+
 {{-- SERVICES --}}
 @if ($services->isNotEmpty())
   <section class="services-section" id="services">

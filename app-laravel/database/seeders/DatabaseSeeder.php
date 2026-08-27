@@ -41,6 +41,7 @@ class DatabaseSeeder extends Seeder
         //   php artisan db:seed --class=BlocsDeContenuSeeder
         //   php artisan db:seed --class=ReferentielsSeeder
         //   php artisan db:seed --class=MenusSeeder
+        //   php artisan db:seed --class=CommunesDuBandeauSeeder
         $this->call([
             RoleSeeder::class,
             CategorieSeeder::class,

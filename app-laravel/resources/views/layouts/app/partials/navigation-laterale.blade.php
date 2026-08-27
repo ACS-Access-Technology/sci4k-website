@@ -28,6 +28,7 @@
 <x-admin.lien-lateral route="admin.valeurs" :intitule="__('Valeurs')" />
 <x-admin.lien-lateral route="admin.chiffres-cles" :intitule="__('Chiffres clés')" />
 <x-admin.lien-lateral route="admin.etapes-processus" :intitule="__('Étapes du processus')" />
+<x-admin.lien-lateral route="admin.banderole" :intitule="__('Banderole des communes')" />
 <x-admin.lien-lateral route="admin.encarts.liste" motif="admin.encarts.*" :intitule="__('Encarts')" />
 <x-admin.lien-lateral route="admin.images-de-fond.liste" motif="admin.images-de-fond.*" :intitule="__('Images de fond')" />
 <x-admin.lien-lateral route="admin.reglages-de-section.liste" motif="admin.reglages-de-section.*" :intitule="__('En-têtes de section')" />
