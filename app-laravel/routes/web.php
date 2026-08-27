@@ -31,6 +31,7 @@ use App\Livewire\Admin\ServiceListe;
 use App\Livewire\Admin\TableauDeBord;
 use App\Livewire\Admin\TemoignageFormulaire;
 use App\Livewire\Admin\TemoignageListe;
+use App\Livewire\Admin\UtilisateurListe;
 use App\Livewire\Admin\ValeurEnsemble;
 use Illuminate\Support\Facades\Route;
 
@@ -81,7 +82,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', TableauDeBord::class)->name('dashboard');
 });
 
-Route::middleware(['auth', 'role:administrateur|editeur|lecteur'])
+Route::middleware(['auth', 'role:administrateur|editeur|redacteur|lecteur'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
@@ -111,9 +112,16 @@ Route::middleware(['auth', 'role:administrateur|editeur|lecteur'])
 
         // Un lecteur consulte la liste mais n'ecrit pas : la restriction est
         // posee ici, et non sur le groupe entier.
-        Route::middleware('role:administrateur|editeur')->group(function () {
+        // Le redacteur ecrit des ARTICLES, et rien d'autre : ses deux routes
+        // sont donc ouvertes a part, hors du groupe qui donne acces aux
+        // services, a la FAQ et aux blocs. Le composant refuse ensuite qu'il
+        // publie, et qu'il touche aux articles d'un autre.
+        Route::middleware('role:administrateur|editeur|redacteur')->group(function () {
             Route::get('/articles/creation', ArticleFormulaire::class)->name('articles.creation');
             Route::get('/articles/{article}/edition', ArticleFormulaire::class)->name('articles.edition');
+        });
+
+        Route::middleware('role:administrateur|editeur')->group(function () {
             Route::get('/services/creation', ServiceFormulaire::class)->name('services.creation');
             Route::get('/services/{service}/edition', ServiceFormulaire::class)->name('services.edition');
 
@@ -151,6 +159,7 @@ Route::middleware(['auth', 'role:administrateur|editeur|lecteur'])
             Route::get('/configuration', Configuration::class)->name('configuration');
             Route::get('/referentiels', Referentiels::class)->name('referentiels');
             Route::get('/menus', Menus::class)->name('menus');
+            Route::get('/utilisateurs', UtilisateurListe::class)->name('utilisateurs');
         });
     });
 

@@ -37,17 +37,27 @@
             @error('datePublication') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
         </label>
 
-        <label class="block">
-            <span class="text-sm font-medium">{{ __('Statut') }}</span>
-            <select wire:model="statut" class="{{ $champ }}">
-                <option value="brouillon">{{ __('Brouillon') }}</option>
-                <option value="publie">{{ __('Publié') }}</option>
-            </select>
-            <span class="mt-1 block text-xs text-zinc-500">
-                {{ __("Un brouillon n'apparaît pas sur le site public.") }}
-            </span>
-            @error('statut') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
-        </label>
+        {{-- Un redacteur ne choisit pas le statut : il ne publie pas. On le lui
+             DIT plutot que de lui presenter un choix sans effet — le composant
+             ramene de toute facon la valeur a « brouillon », le navigateur
+             pouvant fixer une propriete publique meme masquee. --}}
+        @if (auth()->user()?->peutPublier())
+            <label class="block">
+                <span class="text-sm font-medium">{{ __('Statut') }}</span>
+                <select wire:model="statut" class="{{ $champ }}">
+                    <option value="brouillon">{{ __('Brouillon') }}</option>
+                    <option value="publie">{{ __('Publié') }}</option>
+                </select>
+                <span class="mt-1 block text-xs text-zinc-500">
+                    {{ __("Un brouillon n'apparaît pas sur le site public.") }}
+                </span>
+                @error('statut') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+            </label>
+        @else
+            <div class="rounded-lg border border-dashed border-zinc-300 p-3 text-sm text-zinc-600 dark:border-zinc-600 dark:text-zinc-300">
+                {{ __('Cet article restera un brouillon : un éditeur le relira avant publication.') }}
+            </div>
+        @endif
     </div>
 
     {{--

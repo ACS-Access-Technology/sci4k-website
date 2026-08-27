@@ -40,5 +40,6 @@
     <p class="px-2 pb-1 pt-4 text-xs font-medium uppercase tracking-wide text-zinc-400">{{ __('Réglages') }}</p>
     <x-admin.lien-lateral route="admin.configuration" :intitule="__('Configuration')" />
     <x-admin.lien-lateral route="admin.menus" :intitule="__('Menus du site')" />
+    <x-admin.lien-lateral route="admin.utilisateurs" :intitule="__('Utilisateurs')" />
     <x-admin.lien-lateral route="admin.referentiels" :intitule="__('Référentiels')" />
 @endif

@@ -1,9 +1,11 @@
 {
     "+:nombre ce mois-ci|+:nombre ce mois-ci": "+:nombre ce mois-ci|+:nombre ce mois-ci",
     "2FA recovery codes": "Codes de secours",
+    ":nombre actif|:nombre actifs": ":nombre actif|:nombre actifs",
     ":nombre affiché|:nombre affichés": ":nombre affiché|:nombre affichés",
     ":nombre article en brouillon|:nombre articles en brouillon": ":nombre article en brouillon|:nombre articles en brouillon",
     ":nombre article publié|:nombre articles publiés": ":nombre article publié|:nombre articles publiés",
+    ":nombre compte|:nombre comptes": ":nombre compte|:nombre comptes",
     ":nombre entrée|:nombre entrées": ":nombre entrée|:nombre entrées",
     ":nombre jour|:nombre jours": ":nombre jour|:nombre jours",
     ":nombre masqué|:nombre masqués": ":nombre masqué|:nombre masqués",
