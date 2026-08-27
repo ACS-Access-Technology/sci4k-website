@@ -100,6 +100,7 @@ class ActiviteJournalisee extends Model
     {
         return match ($this->sujet_type) {
             Article::class => __("l'article"),
+            Bien::class => __('le bien'),
             Service::class => __('le service'),
             QuestionFaq::class => __('la question'),
             RubriqueFaq::class => __('la rubrique de FAQ'),
@@ -141,6 +142,7 @@ class ActiviteJournalisee extends Model
     {
         return match ($this->sujet_type) {
             Article::class => __('Article'),
+            Bien::class => __('Bien'),
             Service::class => __('Service'),
             QuestionFaq::class => __('Question'),
             RubriqueFaq::class => __('Rubrique de FAQ'),
@@ -166,6 +168,7 @@ class ActiviteJournalisee extends Model
     {
         return match ($this->sujet_type) {
             Article::class => 'document',
+            Bien::class => 'grille',
             QuestionFaq::class, RubriqueFaq::class => 'question',
             Temoignage::class => 'guillemets',
             MembreEquipe::class, User::class => 'personne',
@@ -187,6 +190,7 @@ class ActiviteJournalisee extends Model
 
         $route = match ($this->sujet_type) {
             Article::class => 'admin.articles.edition',
+            Bien::class => 'admin.biens.edition',
             Service::class => 'admin.services.edition',
             QuestionFaq::class => 'admin.faq.edition',
             RubriqueFaq::class => 'admin.rubriques-faq.edition',

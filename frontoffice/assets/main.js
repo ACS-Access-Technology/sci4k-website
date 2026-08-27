@@ -29,6 +29,47 @@ function sci4kValeur(id) {
 
    L'envoi est « au mieux » : une erreur reseau ne doit pas empecher
    l'ouverture de WhatsApp, qui est ce que le visiteur attend. */
+/* Demande de visite, depuis la fiche d'un bien.
+
+   Contrairement au contact et a la question de FAQ, celle-ci ne passe PAS par
+   WhatsApp : elle porte un creneau et un bien precis, que l'agence doit
+   retrouver dans son ecran de suivi. Le visiteur reste sur la page et voit sa
+   demande confirmee. */
+window.handleVisiteSubmit = function (event) {
+  event.preventDefault();
+
+  var formulaire = event.target;
+  var valeur = function (id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; };
+
+  fetch('/visites', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({
+      nom: valeur('visiteNom'),
+      telephone: valeur('visiteTelephone'),
+      email: valeur('visiteEmail'),
+      message: valeur('visiteMessage'),
+      creneau_souhaite: valeur('visiteCreneau') || null,
+      bien: formulaire.getAttribute('data-bien'),
+      site_web: valeur('visiteSiteWeb')
+    })
+  }).then(function (reponse) {
+    /* La confirmation n'apparait qu'apres l'accord du serveur : c'est un
+       rendez-vous, pas une inscription sans consequence. Annoncer un succes
+       qui n'a pas eu lieu ferait attendre un rappel qui ne viendra pas. */
+    if (!reponse.ok) throw new Error('refus');
+    var ok = document.getElementById('visiteConfirmation');
+    if (ok) ok.style.display = 'block';
+    formulaire.reset();
+  }).catch(function () {
+    var ok = document.getElementById('visiteConfirmation');
+    if (ok) {
+      ok.textContent = 'Envoi impossible pour le moment. Appelez-nous au +225 07 06 16 50 29.';
+      ok.style.display = 'block';
+    }
+  });
+};
+
 function sci4kDeposerLeMessage(champs) {
   try {
     fetch('/messages', {
@@ -865,6 +906,13 @@ document.addEventListener('DOMContentLoaded', function () {
   function renderPropertyCards() {
     var lang = currentLang();
     var grid = document.getElementById('propertyGrid');
+
+    /* Le catalogue est desormais rendu par le serveur : la grille n'existe plus
+       dans le HTML de la page. Sans ce retrait, l'ecriture ci-dessous levait
+       une erreur qui interrompait le script — et emportait avec elle
+       l'observateur qui devoile les elements « reveal », laissant les six biens
+       invisibles alors qu'ils etaient bel et bien dans la page. */
+    if (!grid) return;
     grid.innerHTML = window.SCI4K_PROPERTIES.map(function (prop) {
       var t = prop[lang];
       var badgeLabel = i18nText(prop.mode === 'vente' ? 'biens.mode.vente' : 'biens.mode.location', lang);
@@ -978,11 +1026,14 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   function updateResultsCount(count) {
+    var cible = document.getElementById('resultsCount');
+    if (!cible) return;
+
     var lang = currentLang();
     var suffix = lang === 'fr'
       ? (count > 1 ? ' biens disponibles' : ' bien disponible')
       : (count > 1 ? ' properties available' : ' property available');
-    document.getElementById('resultsCount').textContent = count + suffix;
+    cible.textContent = count + suffix;
   }
 
   document.addEventListener('sci4k:langchange', function () {

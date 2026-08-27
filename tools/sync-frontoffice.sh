@@ -19,7 +19,8 @@
 #
 # PAGES VOLONTAIREMENT EXCLUES
 # ----------------------------
-# index.html, actualites.html, actualite-detail.html, services.html, faq.html
+# index.html, actualites.html, actualite-detail.html, services.html, faq.html,
+# biens.html
 # et presentation.html ne sont pas copiees : Laravel sert desormais ces six
 # pages depuis la base. Les copier
 # ferait coexister deux adresses rendant deux versions divergentes du meme
@@ -43,7 +44,7 @@ fi
 source_fo="$racine/frontoffice"
 cible="$racine/app-laravel/public"
 
-exclues=("index.html" "actualites.html" "actualite-detail.html" "services.html" "faq.html" "presentation.html")
+exclues=("index.html" "actualites.html" "actualite-detail.html" "services.html" "faq.html" "presentation.html" "biens.html")
 
 echo "Synchronisation depuis $source_fo"
 
