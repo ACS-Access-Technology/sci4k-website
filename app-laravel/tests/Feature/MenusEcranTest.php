@@ -136,3 +136,36 @@ it('n enregistre pas deux fois les entrees ajoutees', function () {
 
     expect(EntreeDeMenu::where('menu', 'principal')->count())->toBe(1);
 });
+
+/*
+ * La barre laterale.
+ *
+ * Les trois ecrans de reglages avaient une route et aucun lien : ils etaient
+ * donc inaccessibles autrement qu'en tapant l'adresse. Signale par le client,
+ * pas par un test — d'ou ces trois-ci.
+ */
+it('propose les trois ecrans de reglages a un administrateur', function () {
+    $corps = $this->actingAs($this->admin)->get('/dashboard')->assertOk()->getContent();
+
+    expect($corps)->toContain('/admin/configuration')
+        ->and($corps)->toContain('/admin/menus')
+        ->and($corps)->toContain('/admin/referentiels');
+});
+
+it('ne propose pas les ecrans de reglages a un editeur', function () {
+    // La route les refuse deja ; ne pas les afficher evite de proposer une
+    // porte qui se fermera sur lui.
+    $corps = $this->actingAs($this->editeur)->get('/dashboard')->assertOk()->getContent();
+
+    expect($corps)->not->toContain('/admin/configuration')
+        ->and($corps)->not->toContain('/admin/referentiels');
+});
+
+it('n ecrit la barre laterale qu a un seul endroit', function () {
+    // Elle vivait en double — ecran large et menu telephone — et il fallait
+    // penser aux deux a chaque ecran ajoute.
+    $barre = file_get_contents(resource_path('views/layouts/app/sidebar.blade.php'));
+
+    expect(substr_count($barre, "@include('layouts.app.partials.navigation-laterale')"))->toBe(2)
+        ->and($barre)->not->toContain('admin.reglages-de-section.liste');
+});

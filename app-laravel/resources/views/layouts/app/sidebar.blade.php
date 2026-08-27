@@ -16,23 +16,9 @@
                 </div>
 
                 <nav class="flex-1 space-y-1 px-3">
-                    <p class="px-2 pb-1 text-xs text-zinc-400">{{ __('Platform') }}</p>
+                    
 
-
-                    <x-admin.lien-lateral route="dashboard" :intitule="__('Tableau de bord')" />
-                    <x-admin.lien-lateral route="admin.articles.liste" motif="admin.articles.*" :intitule="__('Articles')" />
-                    <x-admin.lien-lateral route="admin.services.liste" motif="admin.services.*" :intitule="__('Services')" />
-                    <x-admin.lien-lateral route="admin.faq.liste" motif="admin.faq.*" :intitule="__('FAQ')" />
-                    <x-admin.lien-lateral route="admin.rubriques-faq.liste" motif="admin.rubriques-faq.*" :intitule="__('Rubriques de la FAQ')" />
-                    <x-admin.lien-lateral route="admin.temoignages.liste" motif="admin.temoignages.*" :intitule="__('Témoignages')" />
-                    <x-admin.lien-lateral route="admin.partenaires.liste" motif="admin.partenaires.*" :intitule="__('Partenaires')" />
-                    <x-admin.lien-lateral route="admin.equipe.liste" motif="admin.equipe.*" :intitule="__('Équipe')" />
-                    <x-admin.lien-lateral route="admin.valeurs" :intitule="__('Valeurs')" />
-                    <x-admin.lien-lateral route="admin.chiffres-cles" :intitule="__('Chiffres clés')" />
-                    <x-admin.lien-lateral route="admin.etapes-processus" :intitule="__('Étapes du processus')" />
-                    <x-admin.lien-lateral route="admin.encarts.liste" motif="admin.encarts.*" :intitule="__('Encarts')" />
-                    <x-admin.lien-lateral route="admin.images-de-fond.liste" motif="admin.images-de-fond.*" :intitule="__('Images de fond')" />
-                    <x-admin.lien-lateral route="admin.reglages-de-section.liste" motif="admin.reglages-de-section.*" :intitule="__('En-têtes de section')" />
+                    @include('layouts.app.partials.navigation-laterale')
                 </nav>
 
                 <nav class="space-y-1 px-3 pb-3">
@@ -79,23 +65,9 @@
                     </div>
 
                     <nav class="flex-1 space-y-1 px-3">
-                        <p class="px-2 pb-1 text-xs text-zinc-400">{{ __('Platform') }}</p>
+                        
 
-
-                        <x-admin.lien-lateral route="dashboard" :intitule="__('Tableau de bord')" />
-                        <x-admin.lien-lateral route="admin.articles.liste" motif="admin.articles.*" :intitule="__('Articles')" />
-                        <x-admin.lien-lateral route="admin.services.liste" motif="admin.services.*" :intitule="__('Services')" />
-                        <x-admin.lien-lateral route="admin.faq.liste" motif="admin.faq.*" :intitule="__('FAQ')" />
-                        <x-admin.lien-lateral route="admin.rubriques-faq.liste" motif="admin.rubriques-faq.*" :intitule="__('Rubriques de la FAQ')" />
-                        <x-admin.lien-lateral route="admin.temoignages.liste" motif="admin.temoignages.*" :intitule="__('Témoignages')" />
-                        <x-admin.lien-lateral route="admin.partenaires.liste" motif="admin.partenaires.*" :intitule="__('Partenaires')" />
-                        <x-admin.lien-lateral route="admin.equipe.liste" motif="admin.equipe.*" :intitule="__('Équipe')" />
-                        <x-admin.lien-lateral route="admin.valeurs" :intitule="__('Valeurs')" />
-                        <x-admin.lien-lateral route="admin.chiffres-cles" :intitule="__('Chiffres clés')" />
-                        <x-admin.lien-lateral route="admin.etapes-processus" :intitule="__('Étapes du processus')" />
-                        <x-admin.lien-lateral route="admin.encarts.liste" motif="admin.encarts.*" :intitule="__('Encarts')" />
-                        <x-admin.lien-lateral route="admin.images-de-fond.liste" motif="admin.images-de-fond.*" :intitule="__('Images de fond')" />
-                        <x-admin.lien-lateral route="admin.reglages-de-section.liste" motif="admin.reglages-de-section.*" :intitule="__('En-têtes de section')" />
+                        @include('layouts.app.partials.navigation-laterale')
                     </nav>
 
                     <nav class="space-y-1 px-3 pb-3">
