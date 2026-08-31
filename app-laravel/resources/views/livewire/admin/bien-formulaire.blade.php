@@ -291,6 +291,21 @@
 
         {{-- ------------------------------------------------- publication --}}
         <aside class="space-y-4 rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
+            <div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+                <div class="relative h-36 bg-zinc-100 dark:bg-zinc-800">
+                    @if ($bien?->photos?->first())
+                        <img src="{{ asset($bien->photos->first()->fichier) }}" alt="" class="h-full w-full object-cover">
+                    @else
+                        <x-public.illustration-bien :type="$type" class="h-full w-full" />
+                    @endif
+                    <span class="absolute left-2 top-2 rounded bg-white/90 px-2 py-1 text-xs font-medium text-zinc-800">{{ __('Aperçu') }}</span>
+                </div>
+                <div class="space-y-1 p-3">
+                    <p class="text-xs text-zinc-500">{{ $quartier ?: __('Localité non renseignée') }}</p>
+                    <h2 class="font-semibold text-zinc-900 dark:text-white">{{ $titreFr ?: __('Titre du bien') }}</h2>
+                    <p class="text-sm text-zinc-600 dark:text-zinc-300">{{ $sousTitreFr ?: __('Sous-titre du bien') }}</p>
+                </div>
+            </div>
             <h2 class="text-sm font-semibold text-zinc-900 dark:text-white">{{ __('Publication') }}</h2>
 
             <label class="block">

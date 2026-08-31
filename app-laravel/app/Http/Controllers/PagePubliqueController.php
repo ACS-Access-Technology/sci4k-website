@@ -8,6 +8,7 @@ use App\Models\CommuneDuBandeau;
 use App\Models\Encart;
 use App\Models\EtapeProcessus;
 use App\Models\MembreEquipe;
+use App\Models\PageStatique;
 use App\Models\Partenaire;
 use App\Models\QuestionFaq;
 use App\Models\ReglageDeSection;
@@ -18,6 +19,12 @@ use Illuminate\Contracts\View\View;
 
 class PagePubliqueController extends Controller
 {
+    public function pageStatique(string $slug): View
+    {
+        abort_unless(in_array($slug, ['contact', 'mentions-legales', 'politique-confidentialite'], true), 404);
+        $page = PageStatique::where('slug', $slug)->where('publie', true)->firstOrFail();
+        return view('public.page-statique', ['page' => $page, 'langue' => app()->getLocale()]);
+    }
     /**
      * Page d'accueil.
      *
@@ -40,6 +47,9 @@ class PagePubliqueController extends Controller
         // en-tete de section, comme la duree d'animation des chiffres cles.
         $reglageBandeau = $enTetes->get(CommuneDuBandeau::SECTION);
 
+        $banderole = Encart::visibles()->ordonnees()->first();
+        $banderole?->increment('impressions');
+
         return view('public.accueil', [
             'hero' => $enTetes->get('home.hero'),
             'enteteServices' => $enTetes->get('home.services'),
@@ -47,7 +57,7 @@ class PagePubliqueController extends Controller
             'enteteTemoignages' => $enTetes->get('home.testimonials'),
             'entetePartenaires' => $enTetes->get('home.partners'),
             'annonce' => $enTetes->get('ad.house'),
-            'banderole' => Encart::visibles()->ordonnees()->first(),
+            'banderole' => $banderole,
             'chiffres' => ChiffreCle::where('visible', true)->orderBy('ordre')->orderBy('id')->get(),
             'communesDuBandeau' => CommuneDuBandeau::visibles()->ordonnees()->get(),
             'bandeauFond' => $reglageBandeau?->option('fond', 'sombre') ?? 'sombre',
@@ -76,9 +86,11 @@ class PagePubliqueController extends Controller
 
         // L'en-tete du bloc « processus » et sa mise en page vivent sur la
         // section services.process, editee depuis l'ecran des etapes.
-        $enteteProcessus = ReglageDeSection::where('slug', 'services.process')->first();
+        $enTetes = ReglageDeSection::whereIn('slug', ['services.page', 'services.process'])->get()->keyBy('slug');
+        $enteteProcessus = $enTetes->get('services.process');
 
         return view('public.services', [
+            'banniere' => $enTetes->get('services.page'),
             'services' => Service::visibles()->ordonnees()->get(),
             'etapes' => EtapeProcessus::where('visible', true)->orderBy('ordre')->orderBy('id')->get(),
             'enteteProcessus' => $enteteProcessus,
@@ -150,6 +162,8 @@ class PagePubliqueController extends Controller
 
         return view('public.faq', [
             'groupes' => $questions->groupBy(fn ($q) => $q->rubrique->id),
+            'banniere' => ReglageDeSection::where('slug', 'faq.page')->first(),
+            'question' => ReglageDeSection::where('slug', 'faq.ask')->first(),
             'langue' => $langue,
             'noeudPage' => [
                 '@type' => 'FAQPage',

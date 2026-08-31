@@ -22,11 +22,18 @@ class Encart extends Model
 
     protected $table = 'encarts';
 
-    protected $fillable = ['slug', 'ordre', 'visible', 'etiquette_fr', 'etiquette_en', 'titre_fr', 'titre_en', 'texte_fr', 'texte_en', 'libelle_bouton_fr', 'libelle_bouton_en', 'cible_bouton', 'image_source'];
+    protected $fillable = ['slug', 'ordre', 'visible', 'etiquette_fr', 'etiquette_en', 'titre_fr', 'titre_en', 'texte_fr', 'texte_en', 'libelle_bouton_fr', 'libelle_bouton_en', 'cible_bouton', 'image_source', 'diffusion_de', 'diffusion_a', 'impressions'];
 
-    protected $casts = ['visible' => 'boolean', 'ordre' => 'integer'];
+    protected $casts = ['visible' => 'boolean', 'ordre' => 'integer', 'diffusion_de' => 'datetime', 'diffusion_a' => 'datetime', 'impressions' => 'integer'];
 
     protected $attributes = ['ordre' => 0, 'visible' => true];
+
+    public function estDiffuse(): bool
+    {
+        return $this->visible
+            && (! $this->diffusion_de || $this->diffusion_de->isPast())
+            && (! $this->diffusion_a || $this->diffusion_a->isFuture());
+    }
 
     /** Etiquette au-dessus du titre. */
     public function etiquette(string $langue = 'fr'): string

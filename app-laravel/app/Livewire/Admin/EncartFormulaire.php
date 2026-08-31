@@ -56,6 +56,8 @@ class EncartFormulaire extends FormulaireDeBloc
                 'regles' => ['nullable', 'string', 'max:255'],
                 'aide' => __('Adresse vers laquelle le bouton conduit.'),
             ],
+            'diffusion_de' => ['intitule' => __('Début de diffusion'), 'type' => 'texte', 'regles' => ['nullable', 'date']],
+            'diffusion_a' => ['intitule' => __('Fin de diffusion'), 'type' => 'texte', 'regles' => ['nullable', 'date', 'after_or_equal:valeurs.diffusion_de']],
         ];
     }
 

@@ -342,6 +342,7 @@ class BienFormulaire extends Component
         $this->televerserLesPhotos();
 
         session()->flash('message', __('Bien enregistré.'));
+        $this->dispatch('toast', message: __('Bien enregistré.'), variant: 'success');
 
         return $this->redirect(route('admin.biens.liste'), navigate: true);
     }

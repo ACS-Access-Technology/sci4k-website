@@ -21,6 +21,8 @@ use App\Livewire\Admin\EncartFormulaire;
 use App\Livewire\Admin\EncartListe;
 use App\Livewire\Admin\EtapeProcessusEnsemble;
 use App\Livewire\Admin\FaqFormulaire;
+use App\Livewire\Admin\Frequentation;
+use App\Livewire\Admin\PagesStatiques;
 use App\Livewire\Admin\FaqListe;
 use App\Livewire\Admin\ImageDeFondFormulaire;
 use App\Livewire\Admin\ImageDeFondListe;
@@ -28,6 +30,7 @@ use App\Livewire\Admin\JournalActivite;
 use App\Livewire\Admin\MembreEquipeFormulaire;
 use App\Livewire\Admin\MembreEquipeListe;
 use App\Livewire\Admin\Menus;
+use App\Livewire\Admin\Mediatheque;
 use App\Livewire\Admin\MessageListe;
 use App\Livewire\Admin\PartenaireFormulaire;
 use App\Livewire\Admin\PartenaireListe;
@@ -82,6 +85,9 @@ Route::permanentRedirect('/biens.html', '/biens');
 Route::get('/services', [PagePubliqueController::class, 'services'])->name('services.index');
 Route::get('/faq', [PagePubliqueController::class, 'faq'])->name('faq.index');
 Route::get('/presentation', [PagePubliqueController::class, 'presentation'])->name('presentation.index');
+Route::get('/contact', fn () => app(PagePubliqueController::class)->pageStatique('contact'))->name('contact.index');
+Route::get('/mentions-legales', fn () => app(PagePubliqueController::class)->pageStatique('mentions-legales'))->name('mentions-legales.index');
+Route::get('/politique-confidentialite', fn () => app(PagePubliqueController::class)->pageStatique('politique-confidentialite'))->name('politique-confidentialite.index');
 
 // Memes raisons que pour /actualites.html ci-dessus : les pages statiques du
 // meme nom sont exclues de tools/sync-frontoffice.sh.
@@ -120,6 +126,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Le tableau de bord etait une vue statique aux quatre rectangles haches
     // du starter kit. Il compte desormais le contenu, d'ou un composant.
     Route::get('dashboard', TableauDeBord::class)->name('dashboard');
+    Route::get('/admin/pages-editables', PagesStatiques::class)->name('admin.pages-statiques');
 });
 
 Route::middleware(['auth', 'role:administrateur|editeur|redacteur|lecteur'])
@@ -145,6 +152,8 @@ Route::middleware(['auth', 'role:administrateur|editeur|redacteur|lecteur'])
         Route::get('/messages', MessageListe::class)->name('messages');
         Route::get('/visites', DemandeDeVisiteListe::class)->name('visites');
         Route::get('/newsletter', AbonneNewsletterListe::class)->name('newsletter');
+        Route::get('/mediatheque', Mediatheque::class)->name('mediatheque');
+        Route::get('/frequentation', Frequentation::class)->name('frequentation');
 
         // Petits ensembles edites d'un bloc : un seul ecran chacun, ni liste ni
         // formulaire separes. Un lecteur peut les consulter, le composant

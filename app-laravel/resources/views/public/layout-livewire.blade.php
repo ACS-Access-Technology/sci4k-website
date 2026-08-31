@@ -11,15 +11,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ $titre ?? __('Biens Immobiliers') }} — SCI4K</title>
-<meta name="description" content="{{ $description ?? '' }}">
+<title>{{ $titre ?? __('Biens Immobiliers') }} — {{ $nomDuSite }}</title>
+<meta name="description" content="{{ $description ?? $descriptionSite }}">
+@unless ($autoriserIndexation)
+<meta name="robots" content="noindex, nofollow">
+@endunless
+@if ($searchConsole)
+<meta name="google-site-verification" content="{{ $searchConsole }}">
+@endif
 <meta property="og:type" content="website">
-<meta property="og:title" content="{{ $titre ?? '' }} — SCI4K">
-<meta property="og:description" content="{{ $description ?? '' }}">
+<meta property="og:title" content="{{ $titre ?? '' }} — {{ $nomDuSite }}">
+<meta property="og:description" content="{{ $description ?? $descriptionSite }}">
 <meta property="og:url" content="{{ url()->current() }}">
-<meta property="og:image" content="{{ url('/images/image%20(3).png') }}">
+<meta property="og:image" content="{{ url($logoPublic) }}">
 <meta property="og:locale" content="{{ app()->getLocale() === 'en' ? 'en_US' : 'fr_FR' }}">
 <meta name="twitter:card" content="summary">
+<link rel="icon" href="{{ asset($faviconPublic) }}">
+<link rel="apple-touch-icon" href="{{ asset($faviconPublic) }}">
 {{-- L'adresse canonique ignore les filtres : une meme fiche de catalogue
      filtree de six facons ne doit pas compter pour six pages aux yeux d'un
      moteur de recherche. --}}
@@ -32,7 +40,25 @@ document.documentElement.setAttribute('data-theme',sombre?'dark':'light');}catch
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('assets/images.css') }}">
+@if ($variablesImagesDeFond)
+<style>
+:root {
+@foreach ($variablesImagesDeFond as $slugImage => $urlImage)
+  --img-{{ $slugImage }}: url('{{ $urlImage }}');
+@endforeach
+}
+</style>
+@endif
 <link rel="stylesheet" href="{{ asset('assets/style.css') }}">
+@if ($googleAnalytics)
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ urlencode($googleAnalytics) }}"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '{{ $googleAnalytics }}');
+</script>
+@endif
 @include('public.partials.donnees-structurees', ['noeudPage' => $noeudPage ?? null])
 </head>
 <body class="page-biens">
@@ -41,6 +67,20 @@ document.documentElement.setAttribute('data-theme',sombre?'dark':'light');}catch
 {{ $slot }}
 
 @include('public.partials.pied')
+@include('public.partials.flottants')
 <script src="{{ asset('assets/main.js') }}" defer></script>
+@if ($tawkActif && $tawkIdentifiant)
+<script>
+var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/{{ $tawkIdentifiant }}';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+@endif
 </body>
 </html>

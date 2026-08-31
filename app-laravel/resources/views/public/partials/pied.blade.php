@@ -13,8 +13,15 @@
  <div class="wrap">
   <div class="footer-top">
     <div>
-      <div class="foot-logo"><img src="/images/image (3).png" alt="{{ __('Logo SCI4K') }}" style="height:36px;width:auto;" loading="lazy"> SCI4K</div>
-      <p>{{ __('Société Civile Immobilière basée à Abidjan — Cocody, Cité des Arts. Achat, vente, location, construction et gestion de patrimoine immobilier.') }}</p>
+      <div class="foot-logo"><img src="{{ asset($logoPublic) }}" alt="{{ __('Logo :site', ['site' => $nomDuSite]) }}" style="height:36px;width:auto;" loading="lazy"> {{ $nomDuSite }}</div>
+      <p>{{ $descriptionCourte }}</p>
+      @if ($liensSociaux)
+        <div class="social-links">
+          @foreach ($liensSociaux as $lienSocial)
+            <a href="{{ $lienSocial['url'] }}" target="_blank" rel="noopener noreferrer">{{ $lienSocial['intitule'] }}</a>
+          @endforeach
+        </div>
+      @endif
       <div class="newsletter"><input type="email" aria-label="{{ __('Votre adresse email') }}" placeholder="{{ __('Votre adresse email') }}"><button type="button" class="newsletter-btn" aria-label="{{ __("S'inscrire à la newsletter") }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></button></div>
     </div>
     <div>
@@ -60,9 +67,9 @@
     </div>
   </div>
   <div class="bottom-bar">
-    <span>{{ __('© :annee SCI4K — Tous droits réservés.', ['annee' => now()->year]) }}</span>
+    <span>{{ str_replace(':annee', (string) now()->year, $copyrightPublic) }}</span>
     <span class="legal-links">@foreach ($menuPiedLegal as $entree)<a href="{{ $entree->lien() }}">{{ $entree->libelle($langueDuSite) }}</a>@if (! $loop->last) · @endif @endforeach</span>
-    <span>{{ __('Société Civile Immobilière — Abidjan, Côte d\'Ivoire') }}</span>
+    <span>{{ $sousTitrePied }}</span>
   </div>
  </div>
 </footer>

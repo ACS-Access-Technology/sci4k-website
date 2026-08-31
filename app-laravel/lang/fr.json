@@ -12,6 +12,7 @@
     ":nombre jour|:nombre jours": ":nombre jour|:nombre jours",
     ":nombre masqué|:nombre masqués": ":nombre masqué|:nombre masqués",
     ":nombre membre sans photo|:nombre membres sans photo": ":nombre membre sans photo|:nombre membres sans photo",
+    ":nombre image disponible|:nombre images disponibles": ":nombre image disponible|:nombre images disponibles",
     ":nombre note à 5 étoiles|:nombre notes à 5 étoiles": ":nombre note à 5 étoiles|:nombre notes à 5 étoiles",
     ":nombre pièce|:nombre pièces": ":nombre pièce|:nombre pièces",
     ":nombre question|:nombre questions": ":nombre question|:nombre questions",

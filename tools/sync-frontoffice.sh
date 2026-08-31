@@ -35,13 +35,13 @@ set -euo pipefail
 
 racine="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-if [ ! -d "$racine/frontoffice" ] || [ ! -d "$racine/app-laravel/public" ]; then
+if [ ! -d "$racine/maquettes-frontoffice" ] || [ ! -d "$racine/app-laravel/public" ]; then
     echo "Erreur : lancer ce script depuis la racine du depot." >&2
-    echo "  frontoffice/ et app-laravel/public/ doivent exister." >&2
+    echo "  maquettes-frontoffice/ et app-laravel/public/ doivent exister." >&2
     exit 1
 fi
 
-source_fo="$racine/frontoffice"
+source_fo="$racine/maquettes-frontoffice"
 cible="$racine/app-laravel/public"
 
 exclues=("index.html" "actualites.html" "actualite-detail.html" "services.html" "faq.html" "presentation.html" "biens.html")

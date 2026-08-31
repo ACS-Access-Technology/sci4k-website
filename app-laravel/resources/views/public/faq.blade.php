@@ -13,9 +13,9 @@
 --}}
 <section class="page-banner pb-faq">
   <div class="wrap">
-    <div class="tag reveal">{{ __('Questions fréquentes') }}</div>
-    <h1 class="reveal">{{ __('Toutes les réponses à vos questions') }}</h1>
-    <p class="reveal">{{ __('Foncier, construction, gestion locative, achat, vente et administration de biens : retrouvez nos réponses aux questions les plus posées par nos clients à Abidjan.') }}</p>
+    <div class="tag reveal">{{ $banniere?->etiquette($langue) ?: __('Questions fréquentes') }}</div>
+    <h1 class="reveal">{{ $banniere?->titre($langue) ?: __('Toutes les réponses à vos questions') }}</h1>
+    <p class="reveal">{{ $banniere?->chapo($langue) ?: __('Foncier, construction, gestion locative, achat, vente et administration de biens : retrouvez nos réponses aux questions les plus posées par nos clients à Abidjan.') }}</p>
   </div>
 </section>
 
@@ -61,8 +61,8 @@
 <section class="ask-section">
   <div class="wrap">
     <div class="ask-card reveal">
-      <h3>{{ __('Vous ne trouvez pas votre réponse ?') }}</h3>
-      <p class="sub">{{ __('Posez-nous directement votre question, un conseiller SCI4K vous répondra sous 24 heures ouvrées.') }}</p>
+      <h3>{{ $question?->titre($langue) ?: __('Vous ne trouvez pas votre réponse ?') }}</h3>
+      <p class="sub">{{ $question?->chapo($langue) ?: __('Posez-nous directement votre question, un conseiller SCI4K vous répondra sous 24 heures ouvrées.') }}</p>
       <div class="ask-alert-success" id="askSuccessAlert">{{ __("✓ Votre question est prête : la conversation WhatsApp s'ouvre dans un nouvel onglet. Appuyez sur Envoyer pour la transmettre à SCI4K.") }}</div>
       <form id="askForm" onsubmit="handleAskSubmit(event)">
         <div class="ask-form-row">
@@ -78,6 +78,10 @@
         <div class="ask-form-group">
           <label for="askQuestion">{{ __('Votre question *') }}</label>
           <textarea id="askQuestion" name="question" rows="4" required maxlength="900" placeholder="{{ __('Écrivez votre question ici...') }}"></textarea>
+        </div>
+        <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
+          <label for="askSiteWeb">Site web</label>
+          <input type="text" id="askSiteWeb" name="site_web" tabindex="-1" autocomplete="off">
         </div>
         <button type="submit" class="ask-submit-btn">{{ __('Envoyer ma question →') }}</button>
       </form>

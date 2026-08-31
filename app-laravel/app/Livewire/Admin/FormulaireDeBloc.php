@@ -313,6 +313,7 @@ abstract class FormulaireDeBloc extends Component
         }
 
         session()->flash('message', __(':intitule enregistré.', ['intitule' => $this->intitule()]));
+        $this->dispatch('toast', message: __(':intitule enregistré.', ['intitule' => $this->intitule()]), variant: 'success');
         $this->redirectRoute($this->routeListe());
     }
 

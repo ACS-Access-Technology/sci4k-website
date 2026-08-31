@@ -685,6 +685,39 @@ window.SCI4K_PROPERTIES = [
 /* ---- Moteur theme clair/sombre + langue ---- */
 /* SCI4K — Dark/Light mode + FR/EN language engine (shared across all pages) */
 (function () {
+  var teamModal = document.getElementById('teamModalOverlay');
+  if (teamModal) {
+    var teamTitle = document.getElementById('teamModalTitle');
+    var teamRole = document.getElementById('teamModalRole');
+    var teamBio = document.getElementById('teamModalBio');
+    var teamAvatar = document.getElementById('teamModalAvatar');
+    var teamLinks = document.getElementById('teamModalLinks');
+    var teamClose = document.getElementById('teamModalClose');
+    var dernierTeam = null;
+    function fermerTeam() { teamModal.classList.remove('active'); teamModal.hidden = true; if (dernierTeam) dernierTeam.focus(); }
+    document.querySelectorAll('[data-team-name]').forEach(function (card) {
+      card.addEventListener('click', function () {
+        var data = { nom: card.dataset.teamName, fonction: card.dataset.teamRole, biographie: card.dataset.teamBio, email: card.dataset.teamEmail, linkedin: card.dataset.teamLinkedin, photo: card.dataset.teamPhoto };
+        dernierTeam = card;
+        teamTitle.textContent = data.nom;
+        teamRole.textContent = data.fonction || '';
+        teamBio.textContent = data.biographie || '';
+        teamAvatar.innerHTML = data.photo ? '<img src="' + data.photo.replace(/"/g, '&quot;') + '" alt="">' : '<span aria-hidden="true">◎</span>';
+        teamLinks.innerHTML = '';
+        if (data.email) teamLinks.insertAdjacentHTML('beforeend', '<a href="mailto:' + encodeURIComponent(data.email) + '">Email</a>');
+        if (data.linkedin) teamLinks.insertAdjacentHTML('beforeend', '<a href="' + data.linkedin.replace(/"/g, '&quot;') + '" target="_blank" rel="noopener noreferrer">LinkedIn</a>');
+        teamModal.hidden = false;
+        teamModal.classList.add('active');
+        teamClose.focus();
+      });
+    });
+    teamClose.addEventListener('click', fermerTeam);
+    teamModal.addEventListener('click', function (event) { if (event.target === teamModal) fermerTeam(); });
+    document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && teamModal.classList.contains('active')) fermerTeam(); });
+  }
+})();
+
+(function () {
   var THEME_KEY = 'sci4k-theme';
   var LANG_KEY = 'sci4k-lang';
 

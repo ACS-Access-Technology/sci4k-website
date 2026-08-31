@@ -1,4 +1,5 @@
 import './ordre';
+import './recadrage-image';
 
 // Preference d'apparence — clair / sombre / systeme.
 //

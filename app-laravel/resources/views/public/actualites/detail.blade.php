@@ -37,6 +37,16 @@
         @foreach (preg_split('/\R{2,}/u', trim($article->contenu($langue))) as $paragraphe)
           <p>{{ $paragraphe }}</p>
         @endforeach
+        @if ($partageActif)
+          @php($urlArticle = route('actualites.detail', $article))
+          <div class="article-share">
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($urlArticle) }}" target="_blank" rel="noopener noreferrer">{{ __('Facebook') }}</a>
+            <a href="https://wa.me/?text={{ urlencode($article->titre($langue).' '.$urlArticle) }}" target="_blank" rel="noopener noreferrer">{{ __('WhatsApp') }}</a>
+            <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode($urlArticle) }}" target="_blank" rel="noopener noreferrer">{{ __('LinkedIn') }}</a>
+            <a href="https://twitter.com/intent/tweet?url={{ urlencode($urlArticle) }}&text={{ urlencode($article->titre($langue)) }}" target="_blank" rel="noopener noreferrer">{{ __('X/Twitter') }}</a>
+            <button type="button" onclick="navigator.clipboard && navigator.clipboard.writeText('{{ $urlArticle }}')">{{ __('Copier le lien') }}</button>
+          </div>
+        @endif
       </div>
     </article>
 
@@ -45,9 +55,9 @@
 
 <section class="news-cta">
   <div class="wrap">
-    <h2>{{ __("Une question sur l'un de ces sujets ?") }}</h2>
-    <p>{{ __("Nos conseillers répondent à vos questions sur le foncier, l'achat, la location et la gestion de votre patrimoine à Abidjan.") }}</p>
-    <a href="/contact.html" class="cta-btn">{{ __('Contacter SCI4K') }}</a>
+    <h2>{{ $cta?->titre($langue) ?: __("Une question sur l'un de ces sujets ?") }}</h2>
+    <p>{{ $cta?->chapo($langue) ?: __("Nos conseillers répondent à vos questions sur le foncier, l'achat, la location et la gestion de votre patrimoine à Abidjan.") }}</p>
+    <a href="{{ route('contact.index') }}" class="cta-btn">{{ __('Contacter SCI4K') }}</a>
   </div>
 </section>
 

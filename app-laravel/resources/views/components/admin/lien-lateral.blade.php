@@ -1,4 +1,4 @@
-@props(['route', 'motif' => null, 'intitule'])
+@props(['route', 'motif' => null, 'intitule', 'icone' => 'document'])
 
 {{--
   Un lien de la barre laterale.
@@ -22,6 +22,6 @@
     ])
     @if ($actif) aria-current="page" @endif
 >
-    <x-icons.layout-grid />
+    <x-admin.icone :nom="$icone" />
     {{ $intitule }}
 </a>

@@ -14,9 +14,9 @@
 --}}
 <section class="page-banner pb-services">
   <div class="wrap">
-    <div class="tag reveal">{{ __('Expertise Immobilière') }}</div>
-    <h1 class="reveal">{{ __('Nos Services & Prestations') }}</h1>
-    <p class="reveal">{{ __("SCI4K propose une gamme complète de solutions immobilières adaptées aux exigences des particuliers, propriétaires et investisseurs à Abidjan.") }}</p>
+    <div class="tag reveal">{{ $banniere?->etiquette($langue) ?: __('Expertise Immobilière') }}</div>
+    <h1 class="reveal">{{ $banniere?->titre($langue) ?: __('Nos Services & Prestations') }}</h1>
+    <p class="reveal">{{ $banniere?->chapo($langue) ?: __("SCI4K propose une gamme complète de solutions immobilières adaptées aux exigences des particuliers, propriétaires et investisseurs à Abidjan.") }}</p>
   </div>
 </section>
 
@@ -135,7 +135,7 @@
           @endforeach
         </ul>
       @endif
-      <a class="svc-panel-cta" href="/contact.html">{{ $service->libelleBouton($langue) }}</a>
+      <a class="svc-panel-cta" href="{{ route('contact.index', ['service' => $service->slug]) }}">{{ $service->libelleBouton($langue) }}</a>
     </div>
   @endforeach
 </div>

@@ -112,6 +112,10 @@
             <x-ui.toast />
         @endpersist
 
+        @if (session('message'))
+            <div x-data x-init="$dispatch('toast', { message: @js(session('message')), variant: 'success' })"></div>
+        @endif
+
         @livewireScripts
     </body>
 </html>

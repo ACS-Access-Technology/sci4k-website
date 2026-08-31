@@ -31,6 +31,12 @@
 
             <div class="flex-1"></div>
 
+            <a href="{{ route('home') }}" target="_blank" title="{{ __('Ouvrir le frontoffice') }}"
+               class="hidden items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-200/50 lg:flex dark:text-zinc-300 dark:hover:bg-white/5">
+                <span aria-hidden="true">↗</span>
+                <span>{{ __('Voir le site') }}</span>
+            </a>
+
             <nav class="hidden items-center gap-1 lg:flex">
                 <a href="https://github.com/laravel/livewire-starter-kit" target="_blank" title="{{ __('Repository') }}" class="rounded-lg p-2 text-zinc-600 hover:bg-zinc-200/50 dark:text-zinc-300 dark:hover:bg-white/5">
                     <x-icons.folder-git-2 />

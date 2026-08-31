@@ -70,10 +70,12 @@ abstract class ListeOrdonnable extends Component
         $recus = count(array_unique($ids));
 
         if ($recus !== ($this->modele())::query()->count()) {
+            $this->dispatch('toast', message: __('Le tri n’a pas été enregistré : rechargez la liste complète.'), variant: 'error');
             return;
         }
 
         ($this->modele())::reordonner($ids);
+        $this->dispatch('toast', message: __('Ordre enregistré.'), variant: 'success');
     }
 
     public function basculerVisibilite(int $id): void
@@ -82,6 +84,7 @@ abstract class ListeOrdonnable extends Component
 
         $element = ($this->modele())::findOrFail($id);
         $element->update(['visible' => ! $element->visible]);
+        $this->dispatch('toast', message: $element->visible ? __('Élément rendu visible.') : __('Élément masqué.'), variant: 'success');
     }
 
     /**
@@ -117,7 +120,7 @@ abstract class ListeOrdonnable extends Component
 
         ($this->modele())::findOrFail($id)->delete();
 
-        session()->flash('message', __('Élément supprimé.'));
+        $this->dispatch('toast', message: __('Élément supprimé.'), variant: 'success');
     }
 
     /** Les elements de l'ecran, filtres et ordonnes. */

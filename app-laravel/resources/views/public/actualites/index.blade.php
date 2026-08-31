@@ -8,9 +8,9 @@
 
 <section class="page-banner pb-actualites">
   <div class="wrap">
-    <div class="tag reveal">{{ __('Actualités & conseils') }}</div>
-    <h1 class="reveal">{{ __('Actualités SCI4K') }}</h1>
-    <p class="reveal">{{ __("Foncier, marché, gestion locative : nos conseils d'experts pour réussir vos projets immobiliers à Abidjan.") }}</p>
+    <div class="tag reveal">{{ $banniere?->etiquette($langue) ?: __('Actualités & conseils') }}</div>
+    <h1 class="reveal">{{ $banniere?->titre($langue) ?: __('Actualités SCI4K') }}</h1>
+    <p class="reveal">{{ $banniere?->chapo($langue) ?: __("Foncier, marché, gestion locative : nos conseils d'experts pour réussir vos projets immobiliers à Abidjan.") }}</p>
   </div>
 </section>
 
@@ -82,20 +82,20 @@
       lieu d'une chaine, ce qui fait tomber la page en 500. Voir le ruling P et
       le test ClesDeTraductionTest, qui garde toutes les vues contre ce piege.
     --}}
-    <nav class="news-pagination" aria-label="{{ __('Pagination des actualités') }}">
-      <span class="is-disabled" aria-hidden="true">&larr;</span>
-      <a class="is-current" href="#" aria-current="page">1</a>
-      <span class="is-disabled" aria-hidden="true">&rarr;</span>
-    </nav>
+    @if ($articles->hasPages())
+      <nav class="news-pagination" aria-label="{{ __('Pagination des actualités') }}">
+        {{ $articles->links() }}
+      </nav>
+    @endif
 
   </div>
 </section>
 
 <section class="news-cta">
   <div class="wrap">
-    <h2>{{ __("Une question sur l'un de ces sujets ?") }}</h2>
-    <p>{{ __("Nos conseillers répondent à vos questions sur le foncier, l'achat, la location et la gestion de votre patrimoine à Abidjan.") }}</p>
-    <a href="/contact.html" class="cta-btn">{{ __('Contacter SCI4K') }}</a>
+    <h2>{{ $cta?->titre($langue) ?: __("Une question sur l'un de ces sujets ?") }}</h2>
+    <p>{{ $cta?->chapo($langue) ?: __("Nos conseillers répondent à vos questions sur le foncier, l'achat, la location et la gestion de votre patrimoine à Abidjan.") }}</p>
+    <a href="{{ route('contact.index') }}" class="cta-btn">{{ __('Contacter SCI4K') }}</a>
   </div>
 </section>
 

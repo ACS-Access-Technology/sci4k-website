@@ -147,7 +147,11 @@
 
       <div class="team-grid reveal-stagger">
         @foreach ($membres as $membre)
-          <div class="team-card reveal" style="--i:{{ $loop->index }}">
+            <button type="button" class="team-card reveal" style="--i:{{ $loop->index }}"
+              data-team-name="{{ $membre->nom }}" data-team-role="{{ $membre->fonction($langue) }}"
+              data-team-bio="{{ $membre->biographie($langue) }}" data-team-email="{{ $membre->email }}"
+              data-team-linkedin="{{ $membre->linkedin }}" data-team-photo="{{ $membre->photo ? asset($membre->photo) : '' }}"
+              aria-haspopup="dialog">
             <div>
               <div class="team-avatar">
                 {{-- La photo remplace la silhouette quand elle existe. Le
@@ -167,15 +171,27 @@
                 <h4>{{ $membre->nom }}</h4>
                 <span class="team-role">{{ $membre->fonction($langue) }}</span>
                 @if ($membre->biographie($langue))
-                  <p class="team-desc">{{ $membre->biographie($langue) }}</p>
+                  <p class="team-desc">{{ Str::limit($membre->biographie($langue), 220) }}</p>
                 @endif
               </div>
             </div>
-          </div>
+          </button>
         @endforeach
       </div>
     </div>
   </section>
 @endif
+
+<div class="modal-overlay" id="teamModalOverlay" role="presentation" hidden>
+  <div class="modal-container team-modal" role="dialog" aria-modal="true" aria-labelledby="teamModalTitle">
+    <button type="button" class="modal-close" id="teamModalClose" aria-label="{{ __('Fermer') }}">&times;</button>
+    <div class="team-modal-head">
+      <div class="team-avatar" id="teamModalAvatar"></div>
+      <div><h2 class="modal-title" id="teamModalTitle"></h2><p class="team-role" id="teamModalRole"></p></div>
+    </div>
+    <p class="team-modal-bio" id="teamModalBio"></p>
+    <div class="team-modal-links" id="teamModalLinks"></div>
+  </div>
+</div>
 
 @endsection

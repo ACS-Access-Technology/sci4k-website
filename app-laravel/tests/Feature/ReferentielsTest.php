@@ -228,7 +228,11 @@ it('rappelle les referentiels geres ailleurs sans les rendre modifiables', funct
 it('emploie les memes valeurs techniques que les filtres du site', function () {
     $this->seed(ReferentielsSeeder::class);
 
-    $html = file_get_contents(base_path('../frontoffice/biens.html'));
+    $html = file_get_contents(
+        file_exists(base_path('../frontoffice/biens.html'))
+            ? base_path('../frontoffice/biens.html')
+            : base_path('../maquettes-frontoffice/biens.html')
+    );
 
     $familles = [
         'selectType' => 'types_de_bien',

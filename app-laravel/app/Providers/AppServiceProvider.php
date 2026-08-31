@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\EntreeDeMenu;
+use App\Models\ImageDeFond;
 use App\Models\Parametre;
 use App\Models\Service;
 use App\Services\Traduction\Traducteur;
@@ -106,6 +107,12 @@ class AppServiceProvider extends ServiceProvider
                 'menuPiedNavigation' => $this->entreesDeMenu('pied_navigation'),
                 'menuPiedLegal' => $this->entreesDeMenu('pied_legal'),
                 'langueDuSite' => app()->getLocale(),
+                'nomDuSite' => $this->parametre('nom_du_site', 'SCI4K'),
+                'logoPublic' => $this->parametre('logo', 'images/image (3).png'),
+                'descriptionCourte' => $this->parametre('description_courte', __('Société Civile Immobilière basée à Abidjan — Cocody, Cité des Arts. Achat, vente, location, construction et gestion de patrimoine immobilier.')),
+                'liensSociaux' => $this->liensSociaux(),
+                'copyrightPublic' => $this->parametre('copyright', __('© :annee SCI4K — Tous droits réservés.', ['annee' => now()->year])),
+                'sousTitrePied' => $this->parametre('sous_titre_pied', __("Société Civile Immobilière — Abidjan, Côte d'Ivoire")),
                 // Les coordonnees viennent de la configuration. Le repli sur le
                 // texte d'origine couvre une base pas encore renseignee : un
                 // pied de page sans adresse serait pire qu'un pied de page
@@ -126,7 +133,42 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('public.partials.entete', function ($vue) {
-            $vue->with('menuPrincipal', $this->entreesDeMenu('principal'));
+            $vue->with([
+                'menuPrincipal' => $this->entreesDeMenu('principal'),
+                'nomDuSite' => $this->parametre('nom_du_site', 'SCI4K'),
+                'logoPublic' => $this->parametre('logo', 'images/image (3).png'),
+                'ctaHeaderActif' => $this->parametreActif('cta_header_actif', true),
+                'ctaHeaderLibelle' => $this->parametre('cta_header_libelle_'.app()->getLocale(), __('Nous contacter')),
+                'ctaHeaderUrl' => $this->parametre('cta_header_url', route('contact.index')),
+            ]);
+        });
+
+        View::composer(['public.layout', 'public.layout-livewire'], function ($vue) {
+            $logo = $this->parametre('logo', 'images/image (3).png');
+            $favicon = $this->parametre('favicon', $logo);
+
+            $vue->with([
+                'nomDuSite' => $this->parametre('nom_du_site', 'SCI4K'),
+                'descriptionSite' => $this->parametre('description_courte', __("Société Civile Immobilière à Abidjan : achat, vente, location, construction et gestion de patrimoine immobilier.")),
+                'logoPublic' => $logo,
+                'faviconPublic' => $favicon,
+                'googleAnalytics' => $this->parametre('google_analytics'),
+                'searchConsole' => $this->parametre('search_console'),
+                'autoriserIndexation' => $this->parametreActif('autoriser_indexation', true),
+                'variablesImagesDeFond' => $this->variablesImagesDeFond(),
+                'tawkActif' => $this->parametreActif('chat_actif', false),
+                'tawkIdentifiant' => $this->parametre('tawk_identifiant'),
+            ]);
+        });
+
+        View::composer('public.partials.flottants', function ($vue) {
+            $numero = preg_replace('/\D+/', '', (string) $this->parametre('whatsapp', '2250706165029'));
+
+            $vue->with([
+                'whatsappPublic' => $numero ?: '2250706165029',
+                'whatsappMessage' => $this->parametre('whatsapp_message_'.app()->getLocale(), __('Bonjour SCI4K, je souhaite avoir des informations.')),
+                'chatActif' => $this->parametreActif('chat_actif', false),
+            ]);
         });
     }
 
@@ -144,6 +186,52 @@ class AppServiceProvider extends ServiceProvider
             return EntreeDeMenu::duMenu($menu)->visibles()->ordonnees()->get();
         } catch (\Throwable) {
             return collect();
+        }
+    }
+
+    protected function parametre(string $cle, mixed $defaut = null): mixed
+    {
+        try {
+            return Schema::hasTable('parametres') ? Parametre::lire($cle, $defaut) : $defaut;
+        } catch (\Throwable) {
+            return $defaut;
+        }
+    }
+
+    protected function parametreActif(string $cle, bool $defaut = false): bool
+    {
+        try {
+            return Schema::hasTable('parametres') ? Parametre::actif($cle, $defaut) : $defaut;
+        } catch (\Throwable) {
+            return $defaut;
+        }
+    }
+
+    protected function liensSociaux(): array
+    {
+        return collect(['facebook' => 'Facebook', 'instagram' => 'Instagram', 'linkedin' => 'LinkedIn', 'youtube' => 'YouTube'])
+            ->map(fn ($intitule, $cle) => ['intitule' => $intitule, 'url' => $this->parametre($cle)])
+            ->filter(fn ($lien) => filled($lien['url']))
+            ->values()
+            ->all();
+    }
+
+    protected function variablesImagesDeFond(): array
+    {
+        try {
+            if (! Schema::hasTable('images_de_fond')) {
+                return [];
+            }
+
+            return ImageDeFond::query()
+                ->where('visible', true)
+                ->whereNotNull('fichier')
+                ->orderBy('ordre')
+                ->get(['slug', 'fichier'])
+                ->mapWithKeys(fn (ImageDeFond $image) => [$image->slug => asset($image->fichier)])
+                ->all();
+        } catch (\Throwable) {
+            return [];
         }
     }
 

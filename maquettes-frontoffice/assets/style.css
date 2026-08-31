@@ -509,6 +509,17 @@ nav.links a:hover::after, nav.links a.active::after{width:100%;}
     display:flex; flex-direction:column; justify-content:space-between;
   }
 
+.team-card{width:100%; padding:0; text-align:left; font:inherit; color:inherit; cursor:pointer;}
+.team-desc{display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
+.team-avatar img{width:100%;height:100%;object-fit:cover;}
+.team-modal{max-width:680px;}
+.team-modal-head{display:flex;align-items:center;gap:20px;margin-bottom:20px;}
+.team-modal-head .team-avatar{width:112px;height:112px;flex:none;border-radius:50%;overflow:hidden;}
+.team-modal-head .team-avatar span{font-size:54px;}
+.team-modal-bio{white-space:pre-line;line-height:1.7;color:var(--texte-appuye);}
+.team-modal-links{display:flex;gap:16px;margin-top:24px;}
+.team-modal-links a{font-weight:700;color:var(--gold-600);text-decoration:underline;}
+
 .team-card:hover{ transform:translateY(-8px); box-shadow:var(--shadow); border-color:var(--gold-500); }
 
 .team-avatar{

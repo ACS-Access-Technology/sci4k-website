@@ -4,9 +4,9 @@ namespace App\Livewire\Public;
 
 use App\Models\Bien;
 use App\Models\Referentiel;
+use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -29,20 +29,27 @@ class CatalogueDesBiens extends Component
 {
     use WithPagination;
 
-    #[Url(as: 'offre', except: '')]
-    public string $offre = '';
+    public string $offre = Bien::LOCATION;
 
-    #[Url(as: 'type', except: '')]
     public string $type = '';
 
-    #[Url(as: 'zone', except: '')]
     public string $zone = '';
 
-    #[Url(as: 'pieces', except: '')]
     public string $pieces = '';
 
-    #[Url(as: 'surface', except: '')]
     public string $surface = '';
+
+    public ?Bien $bienOuvert = null;
+
+    public function ouvrirBien(int $id): void
+    {
+        $this->bienOuvert = Bien::query()->publies()->with('photos')->findOrFail($id);
+    }
+
+    public function fermerBien(): void
+    {
+        $this->bienOuvert = null;
+    }
 
     public function updating($nom): void
     {
@@ -86,6 +93,8 @@ class CatalogueDesBiens extends Component
         return view('public.biens', [
             'biens' => $biens,
             'langue' => $langue,
+            'banniere' => ReglageDeSection::where('slug', 'biens.page')->first(),
+            'filtres' => ReglageDeSection::where('slug', 'biens.filters')->first(),
             'types' => Referentiel::deLaFamille('types_de_bien')->visibles()->ordonnees()->get(),
             'zones' => Referentiel::deLaFamille('zones')->visibles()->ordonnees()->get(),
             'tranchesPieces' => Referentiel::deLaFamille('tranches_pieces')->visibles()->ordonnees()->get(),

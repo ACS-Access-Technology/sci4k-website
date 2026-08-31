@@ -1,0 +1,10 @@
+<div class="max-w-4xl space-y-6">
+    <x-admin.entete-page :titre="__('Pages éditables')" :fil="[__('Accueil') => route('dashboard'), __('Pages éditables') => null]" />
+    <label class="block"><span class="text-sm font-medium">{{ __('Page') }}</span><select wire:model.live="page" class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"><option value="contact">{{ __('Contact') }}</option><option value="mentions-legales">{{ __('Mentions légales') }}</option><option value="politique-confidentialite">{{ __('Politique de confidentialité') }}</option></select></label>
+    <form wire:submit="enregistrer" class="space-y-4">
+        <div class="grid gap-4 sm:grid-cols-2"><label><span class="text-sm font-medium">{{ __('Titre français') }}</span><input wire:model="titreFr" class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"></label><label><span class="text-sm font-medium">{{ __('Titre anglais') }}</span><input wire:model="titreEn" class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"></label></div>
+        <div class="grid gap-4 sm:grid-cols-2"><label><span class="text-sm font-medium">{{ __('Contenu français') }}</span><textarea wire:model="contenuFr" rows="18" class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"></textarea></label><label><span class="text-sm font-medium">{{ __('Contenu anglais') }}</span><textarea wire:model="contenuEn" rows="18" class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"></textarea></label></div>
+        <label class="flex items-center gap-2"><input type="checkbox" wire:model="publie" class="rounded border-zinc-300"><span class="text-sm">{{ __('Page publiée') }}</span></label>
+        <button type="submit" class="rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white dark:bg-white dark:text-zinc-900">{{ __('Enregistrer') }}</button>
+    </form>
+</div>

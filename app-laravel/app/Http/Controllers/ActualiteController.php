@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\Categorie;
+use App\Models\Parametre;
+use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,10 +16,13 @@ class ActualiteController extends Controller
     public function index(): View
     {
         $langue = app()->getLocale();
+        $enTetes = ReglageDeSection::whereIn('slug', ['news.page', 'news.cta'])->get()->keyBy('slug');
 
         return view('public.actualites.index', [
-            'articles' => Article::publies()->with('categorie')->get(),
+            'articles' => Article::publies()->with('categorie')->latest('date_publication')->paginate(9),
             'categories' => Categorie::orderBy('ordre')->get(),
+            'banniere' => $enTetes->get('news.page'),
+            'cta' => $enTetes->get('news.cta'),
             'langue' => $langue,
             'noeudPage' => [
                 '@type' => 'CollectionPage',
@@ -71,6 +76,8 @@ class ActualiteController extends Controller
         return view('public.actualites.detail', [
             'article' => $article,
             'langue' => $langue,
+            'cta' => ReglageDeSection::where('slug', 'news.cta')->first(),
+            'partageActif' => Parametre::actif('boutons_partage', false),
             'noeudPage' => $noeud,
         ]);
     }

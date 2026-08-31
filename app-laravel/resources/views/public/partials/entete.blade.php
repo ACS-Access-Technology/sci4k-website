@@ -27,7 +27,7 @@
 
 <header id="siteHeader">
   <div class="wrap nav">
-    <a href="/index.html" class="logo"><span class="mark"><img src="/images/image (3).png" alt="{{ __('Logo SCI4K') }}"></span> SCI4K</a>
+    <a href="{{ route('home') }}" class="logo"><span class="mark"><img src="{{ asset($logoPublic) }}" alt="{{ __('Logo :site', ['site' => $nomDuSite]) }}"></span> {{ $nomDuSite }}</a>
     <nav class="links">
       @foreach ($menuPrincipal as $entree)
         <a href="{{ $entree->lien() }}" @class(['active' => $entree->estCourante()])>{{ $entree->libelle($langue) }}</a>
@@ -41,7 +41,9 @@
       <a class="lang-toggle" href="{{ route('langue.basculer', $autreLangue) }}"
          aria-label="{{ __('Changer de langue') }}" title="Français / English">{{ strtoupper($autreLangue) }}</a>
     </div>
-    <a href="/contact.html" class="cta-btn">{{ __('Nous contacter') }}</a>
+    @if ($ctaHeaderActif)
+      <a href="{{ $ctaHeaderUrl }}" class="cta-btn">{{ $ctaHeaderLibelle }}</a>
+    @endif
     <button class="burger" id="burgerBtn" aria-label="{{ __('Menu Mobile') }}">☰</button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
@@ -56,5 +58,8 @@
       <a class="lang-toggle" href="{{ route('langue.basculer', $autreLangue) }}"
          aria-label="{{ __('Changer de langue') }}" title="Français / English">{{ strtoupper($autreLangue) }}</a>
     </div>
+    @if ($ctaHeaderActif)
+      <a href="{{ $ctaHeaderUrl }}" class="cta-btn">{{ $ctaHeaderLibelle }}</a>
+    @endif
   </div>
 </header>
