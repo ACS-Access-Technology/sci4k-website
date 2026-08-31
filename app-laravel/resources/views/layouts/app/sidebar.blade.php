@@ -97,12 +97,15 @@
                      plutot que d'etre figee : la page se serait trompee dans
                      quatre mois. --}}
                 <footer class="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 px-6 py-4 text-xs text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
-                    <span>{{ __('© :annee SCI4K — Panneau d’administration.', ['annee' => now()->year]) }}</span>
+                    <span>{{ __('© :annee SCI4K — Panneau d\'administration.', ['annee' => now()->year]) }}</span>
 
                     <nav class="flex items-center gap-4">
                         <a href="{{ route('home') }}" target="_blank" class="hover:underline">{{ __('Accueil') }}</a>
-                        <a href="{{ route('faq.index') }}" target="_blank" class="hover:underline">{{ __('FAQ') }}</a>
                         <a href="{{ route('profile.edit') }}" wire:navigate class="hover:underline">{{ __('Mon profil') }}</a>
+                        <form method="POST" action="{{ route('logout') }}" class="inline">
+                            @csrf
+                            <button type="submit" class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:underline cursor-pointer">{{ __('Se déconnecter') }}</button>
+                        </form>
                     </nav>
                 </footer>
             </div>

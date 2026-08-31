@@ -229,7 +229,7 @@ class ArticleFormulaire extends Component
             $this->article = Article::create($donnees);
         }
 
-        session()->flash('message', __('Article enregistré.'));
+        $this->dispatch('toast', message: __('Article enregistré.'), variant: 'success');
         $this->redirectRoute('admin.articles.liste');
     }
 

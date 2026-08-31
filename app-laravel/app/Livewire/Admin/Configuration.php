@@ -270,7 +270,7 @@ class Configuration extends Component
             }
         }
 
-        session()->flash('succes', __('Configuration enregistrée.'));
+        $this->dispatch('toast', message: __('Configuration enregistrée.'), variant: 'success');
     }
 
     /**

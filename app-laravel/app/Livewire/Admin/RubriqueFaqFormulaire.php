@@ -99,7 +99,7 @@ class RubriqueFaqFormulaire extends Component
             ]);
         }
 
-        session()->flash('message', __('Rubrique enregistrée.'));
+        $this->dispatch('toast', message: __('Rubrique enregistrée.'), variant: 'success');
         $this->redirectRoute('admin.rubriques-faq.liste');
     }
 

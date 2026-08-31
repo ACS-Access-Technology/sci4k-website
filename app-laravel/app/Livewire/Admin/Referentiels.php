@@ -237,7 +237,7 @@ class Referentiels extends Component
 
         $this->charger();
 
-        session()->flash('succes', __('Référentiels enregistrés.'));
+        $this->dispatch('toast', message: __('Référentiels enregistrés.'), variant: 'success');
     }
 
     public function render(): View

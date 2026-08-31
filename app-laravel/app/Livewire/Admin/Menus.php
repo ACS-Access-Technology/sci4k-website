@@ -193,7 +193,7 @@ class Menus extends Component
 
         $this->charger();
 
-        session()->flash('succes', __('Menus enregistrés.'));
+        $this->dispatch('toast', message: __('Menus enregistrés.'), variant: 'success');
     }
 
     public function render(): View

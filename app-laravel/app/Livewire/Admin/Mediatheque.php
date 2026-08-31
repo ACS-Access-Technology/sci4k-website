@@ -30,22 +30,35 @@ class Mediatheque extends Component
     /** @return list<array{chemin: string, nom: string, extension: string, taille: string}> */
     protected function images(): array
     {
-        $racine = public_path('images');
-        if (! File::isDirectory($racine)) {
-            return [];
+        $extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'];
+        $dossiers = [
+            'images' => public_path('images'),
+            'storage' => storage_path('app/public'),
+        ];
+
+        $images = collect();
+
+        foreach ($dossiers as $prefixe => $racine) {
+            if (! File::isDirectory($racine)) {
+                continue;
+            }
+
+            $images = $images->merge(collect(File::allFiles($racine))
+                ->filter(fn ($fichier) => in_array(strtolower($fichier->getExtension()), $extensions, true))
+                ->map(function ($fichier) use ($racine, $prefixe) {
+                    $cheminRelatif = str_replace(DIRECTORY_SEPARATOR, '/', ltrim(str_replace($racine, '', $fichier->getPathname()), DIRECTORY_SEPARATOR));
+                    $cheminPublic = $prefixe === 'storage' ? 'storage/'.$cheminRelatif : 'images/'.$cheminRelatif;
+                    return [
+                        'chemin' => $cheminPublic,
+                        'nom' => $fichier->getFilename(),
+                        'extension' => strtolower($fichier->getExtension()),
+                        'taille' => number_format($fichier->getSize() / 1024, 0, ',', ' ').' Ko',
+                        'source' => $prefixe,
+                    ];
+                }));
         }
 
-        return collect(File::allFiles($racine))
-            ->filter(fn ($fichier) => in_array(strtolower($fichier->getExtension()), ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'], true))
-            ->map(function ($fichier) use ($racine) {
-                $chemin = str_replace(DIRECTORY_SEPARATOR, '/', ltrim(str_replace($racine, '', $fichier->getPathname()), DIRECTORY_SEPARATOR));
-                return [
-                    'chemin' => 'images/'.$chemin,
-                    'nom' => $fichier->getFilename(),
-                    'extension' => strtolower($fichier->getExtension()),
-                    'taille' => number_format($fichier->getSize() / 1024, 0, ',', ' ').' Ko',
-                ];
-            })
+        return $images
             ->filter(fn ($image) => $this->recherche === '' || str_contains(strtolower($image['nom']), strtolower($this->recherche)))
             ->filter(fn ($image) => $this->type === '' || $image['extension'] === $this->type)
             ->sortBy('nom', SORT_NATURAL | SORT_FLAG_CASE)

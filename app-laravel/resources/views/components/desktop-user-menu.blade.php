@@ -15,9 +15,9 @@
         x-on:click="open = ! open"
         x-bind:aria-expanded="open"
         aria-haspopup="true"
-        class="flex min-h-11 w-full cursor-pointer items-center gap-2 rounded-lg p-2 text-sm hover:bg-zinc-200/50 dark:hover:bg-white/5"
+        class="flex min-h-11 w-full cursor-pointer items-center gap-2 rounded-lg border border-zinc-200 bg-white p-2 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700"
     >
-        <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-content text-xs font-medium text-accent-foreground">
+        <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-xs font-medium text-white dark:bg-white dark:text-zinc-900">
             {{ auth()->user()->initials() }}
         </span>
 
@@ -36,10 +36,10 @@
         x-transition
         x-on:click="open = false"
         role="menu"
-        class="absolute end-0 z-20 mt-2 w-56 rounded-lg border border-zinc-200 bg-white p-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
+        class="absolute end-0 z-50 mt-2 w-56 rounded-lg border border-zinc-200 bg-white p-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
     >
         <div class="flex items-center gap-2 px-2 py-1.5 text-start text-sm">
-            <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-content text-xs font-medium text-accent-foreground">
+            <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-xs font-medium text-white dark:bg-white dark:text-zinc-900">
                 {{ auth()->user()->initials() }}
             </span>
             <span class="grid flex-1 text-start leading-tight">
@@ -57,7 +57,7 @@
             class="flex min-h-11 items-center gap-2 rounded-md px-2 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
         >
             <x-icons.cog />
-            {{ __('Settings') }}
+            {{ __('Paramètres') }}
         </a>
 
         <x-ui.separator class="my-1" />
@@ -68,10 +68,10 @@
                 type="submit"
                 data-test="logout-button"
                 role="menuitem"
-                class="flex min-h-11 w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-start text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/5"
+                class="flex min-h-11 w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-start text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
             >
                 <x-icons.logout />
-                {{ __('Log out') }}
+                {{ __('Se déconnecter') }}
             </button>
         </form>
     </div>

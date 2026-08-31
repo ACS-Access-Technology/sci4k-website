@@ -163,7 +163,7 @@ class PagePubliqueController extends Controller
         return view('public.faq', [
             'groupes' => $questions->groupBy(fn ($q) => $q->rubrique->id),
             'banniere' => ReglageDeSection::where('slug', 'faq.page')->first(),
-            'question' => ReglageDeSection::where('slug', 'faq.ask')->first(),
+            'sectionQuestion' => ReglageDeSection::where('slug', 'faq.ask')->first(),
             'langue' => $langue,
             'noeudPage' => [
                 '@type' => 'FAQPage',

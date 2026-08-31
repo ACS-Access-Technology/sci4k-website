@@ -78,7 +78,7 @@
   </div>
 </section>
 
-<section class="properties-section">
+<section class="properties-section" wire:loading.class="opacity-50" wire:loading.style="pointer-events:none;transition:opacity .2s">
   <div class="wrap">
     <div class="filters-bar">
       <div class="filters" id="pillFilters">
@@ -167,29 +167,105 @@
       <div class="modal-header-badge">{{ $bienOuvert->statut_juridique ?: __('Fiche du bien') }}</div>
       <h2 class="modal-title" id="bien-modal-titre">{{ $bienOuvert->titre($langue) }}</h2>
       <div class="modal-loc">{{ $bienOuvert->quartier }}@if ($bienOuvert->quartier && $zones->firstWhere('valeur', $bienOuvert->zone)), @endif{{ $zones->firstWhere('valeur', $bienOuvert->zone)?->libelle($langue) }}</div>
-      <div class="modal-hero-visual">
-            @if ($bienOuvert->photos->isNotEmpty())
-              <img src="{{ asset($bienOuvert->photos->first()->fichier) }}" alt="{{ $bienOuvert->titre($langue) }}" style="width:100%;height:100%;object-fit:cover">
-            @else
-              <x-public.illustration-bien :type="$bienOuvert->type" />
-            @endif
-      </div>
+
+      {{-- Galerie photo --}}
+      @if ($bienOuvert->photos->isNotEmpty())
+        <div class="modal-hero-visual">
+          <img src="{{ asset($bienOuvert->photos->first()->fichier) }}" alt="{{ $bienOuvert->titre($langue) }}" style="width:100%;height:100%;object-fit:cover">
+        </div>
+        @if ($bienOuvert->photos->count() > 1)
+          <div style="display:flex;gap:8px;overflow-x:auto;margin-bottom:24px;padding-bottom:4px;">
+            @foreach ($bienOuvert->photos as $photo)
+              <img src="{{ asset($photo->fichier) }}" alt="{{ $photo->texteAlternatif($langue) }}"
+                   loading="lazy" style="width:80px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;cursor:pointer;border:2px solid transparent;transition:border-color .2s;"
+                   onmouseover="this.style.borderColor='var(--gold-500)'" onmouseout="this.style.borderColor='transparent'"
+                   onclick="var m=document.querySelector('.modal-hero-visual img');if(m)m.src=this.src">
+            @endforeach
+          </div>
+        @endif
+      @else
+        <div class="modal-hero-visual">
+          <x-public.illustration-bien :type="$bienOuvert->type" />
+        </div>
+      @endif
+
+      {{-- Prix --}}
+      @if ($bienOuvert->prixFormate())
+        <p style="font-size:22px;font-weight:800;color:var(--gold-300);margin-bottom:20px;">{{ $bienOuvert->prixFormate() }}</p>
+      @endif
+
+      {{-- Grille de specifications --}}
       <div class="modal-specs-grid">
-        @foreach ([__('Type de bien') => $types->firstWhere('valeur', $bienOuvert->type)?->libelle($langue), __('Surface totale') => ($bienOuvert->surface_habitable ?? $bienOuvert->surface_terrain) ? (($bienOuvert->surface_habitable ?? $bienOuvert->surface_terrain).' m²') : null, __('Pièces / Chambres') => $bienOuvert->nombre_pieces ? $bienOuvert->nombre_pieces.' / '.($bienOuvert->nombre_chambres ?? 0) : null, __('Statut juridique') => $bienOuvert->statut_juridique] as $intitule => $valeur)
+        @foreach ([
+          __('Type') => $types->firstWhere('valeur', $bienOuvert->type)?->libelle($langue),
+          __('Surface') => ($bienOuvert->surface_habitable ?? $bienOuvert->surface_terrain) ? (($bienOuvert->surface_habitable ?? $bienOuvert->surface_terrain).' m²') : null,
+          __('Pièces') => $bienOuvert->nombre_pieces,
+          __('Chambres') => $bienOuvert->nombre_chambres,
+          __("Salles d'eau") => $bienOuvert->nombre_salles_eau,
+          __('Statut juridique') => $bienOuvert->statut_juridique,
+          __('Numéro de titre') => $bienOuvert->numero_titre,
+        ] as $intitule => $valeur)
           @if ($valeur)<div class="spec-item"><label>{{ $intitule }}</label><val>{{ $valeur }}</val></div>@endif
         @endforeach
       </div>
+
+      {{-- Description --}}
       <div class="modal-description">
         <h4>{{ __('Description intégrale du bien') }}</h4>
         <p>{{ $bienOuvert->description($langue) ?: $bienOuvert->accroche($langue) }}</p>
       </div>
+
+      {{-- Equipements --}}
       @if ($bienOuvert->equipements($langue))
         <div class="modal-features-list">
           @foreach ($bienOuvert->equipements($langue) as $equipement)<span class="feat-tag">✓ {{ $equipement }}</span>@endforeach
         </div>
       @endif
-      <div class="modal-footer-bar">
-        <a class="modal-action-btn" href="{{ route('biens.detail', $bienOuvert) }}#formulaireVisite">{{ __('Planifier une visite') }} →</a>
+
+      {{-- Formulaire de visite integre --}}
+      <div class="contact-card" style="margin-top:28px;background:var(--dark-surface);border-color:var(--dark-border);">
+        <h3 style="color:var(--dark-text);">{{ __('Demander une visite') }}</h3>
+        <p class="sub" style="color:var(--dark-text-muted);">{{ __("Laissez vos coordonnées : un conseiller vous rappelle pour convenir d'un créneau.") }}</p>
+
+        <form id="modalFormulaireVisite" style="margin:0;padding:0;background:transparent;border:none;box-shadow:none;"
+              data-bien="{{ $bienOuvert->slug }}" onsubmit="handleModalVisiteSubmit(event)">
+          <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
+            <label for="modalVisiteSiteWeb">Site web</label>
+            <input type="text" id="modalVisiteSiteWeb" name="site_web" tabindex="-1" autocomplete="off">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="modalVisiteNom">{{ __('Nom complet') }} *</label>
+              <input type="text" id="modalVisiteNom" name="nom" required maxlength="80" autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label for="modalVisiteTelephone">{{ __('Téléphone') }} *</label>
+              <input type="tel" id="modalVisiteTelephone" name="telephone" required maxlength="40" autocomplete="tel">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="modalVisiteEmail">{{ __('E-mail') }}</label>
+              <input type="email" id="modalVisiteEmail" name="email" maxlength="160" autocomplete="email">
+            </div>
+            <div class="form-group">
+              <label for="modalVisiteCreneau">{{ __('Créneau souhaité') }}</label>
+              <input type="date" id="modalVisiteCreneau" name="creneau_souhaite" min="{{ now()->toDateString() }}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="modalVisiteMessage">{{ __('Précisions') }}</label>
+            <textarea id="modalVisiteMessage" name="message" rows="3" maxlength="2000"></textarea>
+          </div>
+
+          <button type="submit" class="hero-btn-primary">{{ __('Envoyer ma demande') }}</button>
+          <p id="modalVisiteConfirmation" style="display:none;margin-top:12px;color:var(--dark-text-muted);">
+            {{ __('Votre demande est enregistrée. Un conseiller vous rappelle sous 24 heures ouvrées.') }}
+          </p>
+        </form>
       </div>
     </div>
   </div>

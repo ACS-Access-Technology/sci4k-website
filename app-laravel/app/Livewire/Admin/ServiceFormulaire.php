@@ -252,7 +252,7 @@ class ServiceFormulaire extends Component
             $this->service->update($donnees);
         }
 
-        session()->flash('message', __('Service enregistré.'));
+        $this->dispatch('toast', message: __('Service enregistré.'), variant: 'success');
         $this->redirectRoute('admin.services.liste');
     }
 

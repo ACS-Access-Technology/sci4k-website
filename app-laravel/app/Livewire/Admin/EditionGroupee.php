@@ -340,7 +340,7 @@ abstract class EditionGroupee extends Component
             $this->lignes[$element->id] = $this->ligneDepuis($element);
         }
 
-        session()->flash('message', __('Modifications enregistrées.'));
+        $this->dispatch('toast', message: __('Modifications enregistrées.'), variant: 'success');
     }
 
     protected function enregistrerLesReglages(): void

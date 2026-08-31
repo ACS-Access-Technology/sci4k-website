@@ -61,8 +61,8 @@
 <section class="ask-section">
   <div class="wrap">
     <div class="ask-card reveal">
-      <h3>{{ $question?->titre($langue) ?: __('Vous ne trouvez pas votre réponse ?') }}</h3>
-      <p class="sub">{{ $question?->chapo($langue) ?: __('Posez-nous directement votre question, un conseiller SCI4K vous répondra sous 24 heures ouvrées.') }}</p>
+      <h3>{{ $sectionQuestion?->titre($langue) ?: __('Vous ne trouvez pas votre réponse ?') }}</h3>
+      <p class="sub">{{ $sectionQuestion?->chapo($langue) ?: __('Posez-nous directement votre question, un conseiller SCI4K vous répondra sous 24 heures ouvrées.') }}</p>
       <div class="ask-alert-success" id="askSuccessAlert">{{ __("✓ Votre question est prête : la conversation WhatsApp s'ouvre dans un nouvel onglet. Appuyez sur Envoyer pour la transmettre à SCI4K.") }}</div>
       <form id="askForm" onsubmit="handleAskSubmit(event)">
         <div class="ask-form-row">

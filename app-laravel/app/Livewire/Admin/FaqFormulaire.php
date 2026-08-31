@@ -138,7 +138,7 @@ class FaqFormulaire extends Component
             $this->question = QuestionFaq::create($donnees);
         }
 
-        session()->flash('message', __('Question enregistrée.'));
+        $this->dispatch('toast', message: __('Question enregistrée.'), variant: 'success');
         $this->redirectRoute('admin.faq.liste');
     }
 

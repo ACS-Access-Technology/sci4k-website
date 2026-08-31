@@ -82,6 +82,8 @@
     "Log in": "Se connecter",
     "Log in to your account": "Connexion à votre compte",
     "Log out": "Se déconnecter",
+    "Paramètres": "Paramètres",
+    "© :annee SCI4K — Panneau d'administration.": "© :annee SCI4K — Panneau d'administration.",
     "Manage your passkeys for passwordless sign-in": "Gérez vos clés d'accès pour vous connecter sans mot de passe",
     "Manage your profile and account settings": "Gérez votre profil et les réglages de votre compte",
     "Manage your two-factor authentication settings": "Gérez vos réglages de double authentification",
@@ -149,5 +151,6 @@
     "login using a recovery code": "vous connecter avec un code de secours",
     "login using an authentication code": "vous connecter avec un code d'authentification",
     "or you can": "ou bien",
-    "or, enter the code manually": "ou saisissez la clé manuellement"
+    "or, enter the code manually": "ou saisissez la clé manuellement",
+    "Laissez vos coordonnées : un conseiller vous rappelle pour convenir d'un créneau.": "Laissez vos coordonnées : un conseiller vous rappelle pour convenir d'un créneau."
 }
