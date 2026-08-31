@@ -350,6 +350,8 @@ html[data-theme="dark"] .partner-logo-card .p-name{color:var(--dark-text-muted);
 
 html[data-theme="dark"] .partner-logo-card svg{color:var(--dark-text);}
 
+html[data-theme="dark"] .partner-logo-card .partner-logo-img{filter:brightness(1.4) saturate(0.8);}
+
 html[data-theme="dark"] .partners-section h2{color:var(--dark-text);}
 
 html[data-theme="dark"] .tag.tag-home{color:var(--gold-300); border-color:var(--gold-300);}
