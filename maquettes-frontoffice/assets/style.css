@@ -308,19 +308,15 @@ section{padding:110px 0;}
 
 .partner-logo-card:hover{transform:translateY(-8px) scale(1.03);border-color:var(--gold-500);box-shadow:0 20px 40px rgba(30,34,39,0.12);}
 
-.partner-logo-card img{max-height:52px;max-width:150px;width:auto;object-fit:contain;filter:grayscale(20%);transition:filter .3s ease;}
+.partner-logo-card img,.partner-logo-img{max-height:52px;max-width:150px;width:auto;height:auto;object-fit:contain;transition:opacity .3s ease;}
 
-.partner-logo-card:hover img{filter:grayscale(0%);}
+.partner-logo-card:hover img,.partner-logo-card:hover .partner-logo-img{opacity:1;}
 
 .partner-logo-card .partner-fallback{display:none;align-items:center;justify-content:center;gap:8px;}
 
 .partner-logo-card .p-mark{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#fff;letter-spacing:0.5px;text-align:center;line-height:1.2;flex-shrink:0;}
 
 .partner-logo-card .p-name{font-size:11.5px;font-weight:700;color:var(--navy-900);line-height:1.3;text-align:center;}
-
-.logo-svg-wrap{display:flex;align-items:center;justify-content:center;width:100%;height:56px;}
-
-.logo-svg-wrap svg{max-width:150px;max-height:52px;width:auto;height:auto;}
 
 .footer-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.2fr;gap:50px;padding-bottom:60px;border-bottom:1px solid rgba(255,255,255,0.08);}
 
@@ -351,6 +347,8 @@ html[data-theme="dark"] .partners-section{background:var(--dark-bg); border-top-
 html[data-theme="dark"] .partner-logo-card{background:var(--dark-surface); border-color:var(--dark-border);}
 
 html[data-theme="dark"] .partner-logo-card .p-name{color:var(--dark-text-muted);}
+
+html[data-theme="dark"] .partner-logo-card svg{color:var(--dark-text);}
 
 html[data-theme="dark"] .partners-section h2{color:var(--dark-text);}
 
@@ -1783,10 +1781,7 @@ p, .article-body p, .news-card p, .service-item-content p, .legal-block p{
    Les logos sont concus pour du blanc : en theme sombre ils devenaient
    illisibles sur le fond de carte. La plaque reste claire dans les deux themes.
    ========================================================================== */
-.logo-svg-wrap{background:#fff;border-radius:12px;padding:10px 14px;
-  box-shadow:inset 0 0 0 1px rgba(31,51,70,.06);}
-[data-theme="dark"] .logo-svg-wrap{background:#fff;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);}
-[data-theme="dark"] .partner-logo-card img{filter:none;}
+.partner-logo-img{display:block;margin:0 auto;}
 a.partner-logo-card{text-decoration:none;color:inherit;display:block;cursor:pointer;}
 a.partner-logo-card:hover .p-name{color:var(--gold-600);}
 [data-theme="dark"] a.partner-logo-card:hover .p-name{color:var(--gold-300);}

@@ -2,43 +2,43 @@
   {
     "ordre": 1,
     "nom": "Credit Access CI",
-    "logo": "images/partners/credit-access.png",
+    "logo": "images/partners/credit-access.svg",
     "site": "https://www.creditaccess.ci"
   },
   {
     "ordre": 2,
     "nom": "NSIA Banque",
-    "logo": "images/partners/nsia-banque.png",
+    "logo": "images/partners/nsia-banque.svg",
     "site": "https://www.nsiabanque.ci"
   },
   {
     "ordre": 3,
     "nom": "BMS-CI",
-    "logo": "images/partners/bms-ci.png",
+    "logo": "images/partners/bms-ci.svg",
     "site": "https://www.bms-ci.net"
   },
   {
     "ordre": 4,
     "nom": "Fonds Prévoyance Police",
-    "logo": "images/partners/fppn.png",
+    "logo": "images/partners/fppn.svg",
     "site": ""
   },
   {
     "ordre": 5,
     "nom": "CNPS Côte d'Ivoire",
-    "logo": "images/partners/cnps.jpeg",
+    "logo": "images/partners/cnps.svg",
     "site": "https://www.cnps.ci"
   },
   {
     "ordre": 6,
     "nom": "CIE — Électricité CI",
-    "logo": "images/partners/cie.webp",
+    "logo": "images/partners/cie.svg",
     "site": "https://www.cie.ci"
   },
   {
     "ordre": 7,
     "nom": "Ordre des Architectes CI",
-    "logo": "images/partners/ordre-architectes.png",
+    "logo": "images/partners/ordre-architectes.svg",
     "site": ""
   }
 ]

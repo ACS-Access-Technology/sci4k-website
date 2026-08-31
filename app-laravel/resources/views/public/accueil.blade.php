@@ -283,18 +283,12 @@
           @if ($partenaire->aUnSite())
             <a class="partner-logo-card" href="{{ $partenaire->site }}" target="_blank" rel="noopener noreferrer"
                title="{{ __('Ouvrir le site de :nom', ['nom' => $partenaire->nom]) }}">
-              <div class="logo-svg-wrap">
-                <img src="{{ asset($partenaire->logo) }}" alt="{{ $partenaire->nom }}"
-                     style="max-height:52px;max-width:150px;width:auto;height:auto;object-fit:contain;" loading="lazy">
-              </div>
+              <img src="{{ asset($partenaire->logo) }}" alt="{{ $partenaire->nom }}" class="partner-logo-img" loading="lazy">
               <span class="p-name">{{ $partenaire->nom }}</span>
             </a>
           @else
             <div class="partner-logo-card">
-              <div class="logo-svg-wrap">
-                <img src="{{ asset($partenaire->logo) }}" alt="{{ $partenaire->nom }}"
-                     style="max-height:52px;max-width:150px;width:auto;height:auto;object-fit:contain;" loading="lazy">
-              </div>
+              <img src="{{ asset($partenaire->logo) }}" alt="{{ $partenaire->nom }}" class="partner-logo-img" loading="lazy">
               <span class="p-name">{{ $partenaire->nom }}</span>
             </div>
           @endif
