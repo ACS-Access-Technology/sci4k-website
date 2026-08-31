@@ -348,10 +348,6 @@ html[data-theme="dark"] .partner-logo-card{background:var(--dark-surface); borde
 
 html[data-theme="dark"] .partner-logo-card .p-name{color:var(--dark-text-muted);}
 
-html[data-theme="dark"] .partner-logo-card svg{color:var(--dark-text);}
-
-html[data-theme="dark"] .partner-logo-card .partner-logo-img{filter:brightness(1.4) saturate(0.8);}
-
 html[data-theme="dark"] .partners-section h2{color:var(--dark-text);}
 
 html[data-theme="dark"] .tag.tag-home{color:var(--gold-300); border-color:var(--gold-300);}
@@ -1783,7 +1779,8 @@ p, .article-body p, .news-card p, .service-item-content p, .legal-block p{
    Les logos sont concus pour du blanc : en theme sombre ils devenaient
    illisibles sur le fond de carte. La plaque reste claire dans les deux themes.
    ========================================================================== */
-.partner-logo-img{display:block;margin:0 auto;}
+.partner-logo-img{display:block;margin:0 auto;background:#fff;border-radius:10px;padding:8px 12px;}
+[data-theme="dark"] .partner-logo-img{background:#fff;}
 a.partner-logo-card{text-decoration:none;color:inherit;display:block;cursor:pointer;}
 a.partner-logo-card:hover .p-name{color:var(--gold-600);}
 [data-theme="dark"] a.partner-logo-card:hover .p-name{color:var(--gold-300);}
