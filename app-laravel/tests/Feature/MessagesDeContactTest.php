@@ -308,9 +308,14 @@ it('propose les messages dans la barre laterale', function () {
 it('n inscrit pas les messages au journal des activites', function () {
     Mail::fake();
 
+    // On mesure l'ECART et non le total : des creations dans le beforeEach
+    // sont elles-meme journalisees. Compter le total aurait fait passer ce
+    // test au rouge pour la mauvaise raison.
+    $avant = ActiviteJournalisee::count();
+
     // Le journal rend compte de ce que font les COMPTES du backoffice. Une
     // ligne par visiteur le remplirait de bruit.
     $this->postJson('/messages', ['nom' => 'Léon', 'message' => 'Bonjour'])->assertCreated();
 
-    expect(ActiviteJournalisee::count())->toBe(0);
+    expect(ActiviteJournalisee::count())->toBe($avant);
 });

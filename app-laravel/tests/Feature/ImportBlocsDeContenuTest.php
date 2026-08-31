@@ -28,7 +28,7 @@ it('reprend le compte attendu de chaque famille', function () {
     expect(Temoignage::count())->toBe(3);
     expect(Partenaire::count())->toBe(7);
     expect(MembreEquipe::count())->toBe(4);
-    expect(Encart::count())->toBe(1);
+    expect(Encart::count())->toBe(3);
     expect(ImageDeFond::count())->toBe(20);
     expect(Valeur::count())->toBe(4);
     expect(ChiffreCle::count())->toBe(3);
