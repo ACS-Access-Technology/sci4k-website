@@ -140,9 +140,8 @@
   </section>
 @endif
 
-{{-- ENCART — mode « annonce maison ». La regie complete (emplacements, dates
-     de diffusion, comptage d'impressions) fera l'objet de son propre lot ; ce
-     bloc reste pilote par l'en-tete de section ad.house. --}}
+{{-- ENCART — Annonce reelle de l'accueil, geree depuis « Annonces & Actions »
+     du backoffice (slug accueil.annonce). --}}
 @if ($annonce)
   <section class="ad-section" id="encart-accueil" data-slot="accueil-apres-services" data-mode="maison">
     <div class="wrap">
@@ -156,11 +155,11 @@
               <div class="tag tag-home">{{ $annonce->etiquette($langue) }}</div>
             @endif
             <h3>{{ $annonce->titre($langue) }}</h3>
-            @if ($annonce->chapo($langue))
-              <p>{{ $annonce->chapo($langue) }}</p>
+            @if ($annonce->texte($langue))
+              <p>{{ $annonce->texte($langue) }}</p>
             @endif
-            <a href="/biens.html" class="cta-btn">
-              <span>{{ __('Voir les parcelles') }}</span>
+            <a href="{{ $annonce->cible_bouton ?: '/biens' }}" class="cta-btn">
+              <span>{{ $annonce->libelleBouton($langue) ?: __('Voir les parcelles') }}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
             </a>
           </div>

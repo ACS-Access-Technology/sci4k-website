@@ -33,7 +33,7 @@
 <x-admin.lien-lateral route="admin.chiffres-cles" icone="graphique" :intitule="__('Chiffres clés')" />
 <x-admin.lien-lateral route="admin.etapes-processus" icone="escalier" :intitule="__('Étapes du processus')" />
 <x-admin.lien-lateral route="admin.banderole" icone="bandeau" :intitule="__('Banderole des communes')" />
-<x-admin.lien-lateral route="admin.encarts.liste" motif="admin.encarts.*" icone="encart" :intitule="__('Encarts')" />
+<x-admin.lien-lateral route="admin.encarts.liste" motif="admin.encarts.*" icone="encart" :intitule="__('Annonces & Actions')" />
 <x-admin.lien-lateral route="admin.images-de-fond.liste" motif="admin.images-de-fond.*" icone="image" :intitule="__('Images de fond')" />
 <x-admin.lien-lateral route="admin.reglages-de-section.liste" motif="admin.reglages-de-section.*" icone="crayon" :intitule="__('En-têtes de section')" />
 

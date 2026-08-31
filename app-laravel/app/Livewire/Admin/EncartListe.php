@@ -26,7 +26,7 @@ class EncartListe extends ListeOrdonnable
 
     protected function titre(): string
     {
-        return __('Encarts');
+        return __('Annonces & Actions');
     }
 
     /** Le slug designe l'endroit du site qui affiche l'encart : un encart cree ne s'afficherait nulle part, un encart supprime laisserait un vide. */

@@ -39,7 +39,7 @@ class PagePubliqueController extends Controller
 
         $enTetes = ReglageDeSection::whereIn('slug', [
             'home.hero', 'home.services', 'home.articles',
-            'home.testimonials', 'home.partners', 'ad.house',
+            'home.testimonials', 'home.partners',
             CommuneDuBandeau::SECTION,
         ])->get()->keyBy('slug');
 
@@ -47,8 +47,35 @@ class PagePubliqueController extends Controller
         // en-tete de section, comme la duree d'animation des chiffres cles.
         $reglageBandeau = $enTetes->get(CommuneDuBandeau::SECTION);
 
-        $banderole = Encart::visibles()->ordonnees()->first();
-        $banderole?->increment('impressions');
+        // Annonce reelle de l'accueil, geree depuis « Annonces & Actions »
+        // du backoffice (slug accueil.annonce).
+        $annonce = Encart::where('slug', 'accueil.annonce')
+            ->where('visible', true)
+            ->first();
+        if ($annonce) {
+            $de = $annonce->diffusion_de;
+            $a = $annonce->diffusion_a;
+            if (($de && $de->isFuture()) || ($a && $a->isPast())) {
+                $annonce = null;
+            } else {
+                $annonce->increment('impressions');
+            }
+        }
+
+        // Bandeau CTA en bas de page, geree depuis « Annonces & Actions »
+        // (slug accueil).
+        $banderole = Encart::where('slug', 'accueil')
+            ->where('visible', true)
+            ->first();
+        if ($banderole) {
+            $de = $banderole->diffusion_de;
+            $a = $banderole->diffusion_a;
+            if (($de && $de->isFuture()) || ($a && $a->isPast())) {
+                $banderole = null;
+            } else {
+                $banderole->increment('impressions');
+            }
+        }
 
         return view('public.accueil', [
             'hero' => $enTetes->get('home.hero'),
@@ -56,7 +83,7 @@ class PagePubliqueController extends Controller
             'enteteArticles' => $enTetes->get('home.articles'),
             'enteteTemoignages' => $enTetes->get('home.testimonials'),
             'entetePartenaires' => $enTetes->get('home.partners'),
-            'annonce' => $enTetes->get('ad.house'),
+            'annonce' => $annonce,
             'banderole' => $banderole,
             'chiffres' => ChiffreCle::where('visible', true)->orderBy('ordre')->orderBy('id')->get(),
             'communesDuBandeau' => CommuneDuBandeau::visibles()->ordonnees()->get(),
@@ -89,12 +116,28 @@ class PagePubliqueController extends Controller
         $enTetes = ReglageDeSection::whereIn('slug', ['services.page', 'services.process'])->get()->keyBy('slug');
         $enteteProcessus = $enTetes->get('services.process');
 
+        // Annonce promo apres la section processus, geree depuis l'ecran
+        // « Encarts » du backoffice (slug services.annonce).
+        $annonce = Encart::where('slug', 'services.annonce')
+            ->where('visible', true)
+            ->first();
+        if ($annonce) {
+            $de = $annonce->diffusion_de;
+            $a = $annonce->diffusion_a;
+            if (($de && $de->isFuture()) || ($a && $a->isPast())) {
+                $annonce = null;
+            } else {
+                $annonce->increment('impressions');
+            }
+        }
+
         return view('public.services', [
             'banniere' => $enTetes->get('services.page'),
             'services' => Service::visibles()->ordonnees()->get(),
             'etapes' => EtapeProcessus::where('visible', true)->orderBy('ordre')->orderBy('id')->get(),
             'enteteProcessus' => $enteteProcessus,
             'miseEnPageProcessus' => $enteteProcessus?->option('mise_en_page', 'frise') ?? 'frise',
+            'annonce' => $annonce,
             'langue' => $langue,
             'noeudPage' => [
                 '@type' => 'CollectionPage',

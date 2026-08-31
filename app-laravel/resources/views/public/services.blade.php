@@ -99,6 +99,35 @@
 @endif
 
 {{--
+  Annonce promo apres la section processus. L'encart est gere depuis
+  l'ecran « Encarts » du backoffice (slug services.annonce).
+  La section disparait si l'encart n'est pas diffuse.
+--}}
+@if ($annonce)
+  <section class="services-cta-section">
+    <div class="wrap">
+      <div class="biens-cta-banner reveal">
+        <div class="biens-cta-content">
+          @if ($annonce->etiquette($langue))
+            <div class="tag">{{ $annonce->etiquette($langue) }}</div>
+          @endif
+          <h3>{{ $annonce->titre($langue) }}</h3>
+          @if ($annonce->texte($langue))
+            <p>{{ $annonce->texte($langue) }}</p>
+          @endif
+        </div>
+        @if ($annonce->libelleBouton($langue))
+          <a href="{{ $annonce->cible_bouton ?: '/contact' }}" class="cta-btn">
+            <span>{{ $annonce->libelleBouton($langue) }}</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+          </a>
+        @endif
+      </div>
+    </div>
+  </section>
+@endif
+
+{{--
   Modale de detail : meme structure que l'original (#svcModal vide, rempli au
   clic par assets/main.js depuis #svcPanel-{slug}). Les panneaux sont rendus
   cote serveur depuis la base, avec les memes classes CSS que l'original

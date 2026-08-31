@@ -17,7 +17,7 @@
     x-transition
     role="status"
     aria-live="polite"
-    class="fixed bottom-4 end-4 z-50"
+    class="fixed top-4 end-4 z-50"
 >
     <div
         :class="variant === 'success' ? 'bg-zinc-900 dark:bg-white dark:text-zinc-900' : 'bg-red-600'"

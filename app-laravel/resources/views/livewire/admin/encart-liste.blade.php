@@ -3,11 +3,11 @@
      nulle part, un encart supprimé laisserait un vide. Le partiel omet les
      deux dès que 'routeCreation' est absente. --}}
 @include('livewire.admin.partials.bloc-liste', [
-    'titre' => __('Encarts'),
+    'titre' => __('Annonces & Actions'),
     'fil' => [
         __('Accueil') => route('dashboard'),
         __('Contenu') => null,
-        __('Encarts') => null,
+        __('Annonces & Actions') => null,
     ],
     'colonnes' => ['slug' => __('Emplacement'), 'titre' => __('Titre'), 'bouton' => __('Bouton')],
     'cellule' => fn ($element, $cle) => match ($cle) {
