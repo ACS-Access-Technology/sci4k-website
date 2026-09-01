@@ -7,6 +7,7 @@ use App\Models\ChiffreCle;
 use App\Models\CommuneDuBandeau;
 use App\Models\Encart;
 use App\Models\EtapeProcessus;
+use App\Models\ImageDeFond;
 use App\Models\MembreEquipe;
 use App\Models\PageStatique;
 use App\Models\Partenaire;
@@ -166,7 +167,14 @@ class PagePubliqueController extends Controller
             'about.page', 'about.overview', 'about.dg', 'about.values', 'about.team',
         ])->get()->keyBy('slug');
 
+        // Les deux illustrations de la page etaient ecrites en dur dans le
+        // gabarit : les changer demandait de toucher au code. Elles passent
+        // par « Images de fond », comme tous les autres visuels du site.
+        $visuels = ImageDeFond::parSlugs(['presentation-apercu', 'presentation-directeur']);
+
         return view('public.presentation', [
+            'visuelApercu' => $visuels->get('presentation-apercu'),
+            'visuelDirecteur' => $visuels->get('presentation-directeur'),
             'banniere' => $enTetes->get('about.page'),
             'apercu' => $enTetes->get('about.overview'),
             'motDuDirecteur' => $enTetes->get('about.dg'),
