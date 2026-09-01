@@ -76,8 +76,19 @@ function sci4kDeposerLeMessage(champs) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify(champs)
-    }).catch(function () { /* silencieux : WhatsApp prend le relais */ });
-  } catch (e) { /* navigateur sans fetch : idem */ }
+    }).then(function (reponse) {
+      /* Le visiteur n'est pas averti — WhatsApp prend le relais et sa demande
+         part quand meme. Mais l'echec doit laisser une trace quelque part :
+         un .catch() seul n'en laissait aucune, et il ne se declenchait meme
+         pas, une reponse 419 n'etant pas un rejet de promesse. Le depot dans
+         le backoffice a ainsi pu echouer sans que rien ne le dise. */
+      if (!reponse.ok) {
+        console.warn('SCI4K : le message n\'a pas ete depose (HTTP ' + reponse.status + ').');
+      }
+    }).catch(function (e) {
+      console.warn('SCI4K : le message n\'a pas ete depose.', e);
+    });
+  } catch (e) { /* navigateur sans fetch : WhatsApp prend le relais */ }
 }
 
 /* Compose le lien en garantissant une URL exploitable. Une URL trop longue
@@ -1454,7 +1465,16 @@ document.addEventListener('DOMContentLoaded', function () {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify({ email: adresse, site_web: '' })
-        }).catch(function () {});
+        }).then(function (reponse) {
+          /* Meme raison qu'au depot d'un message : le visiteur voit son champ
+             se vider quoi qu'il arrive, mais un echec doit rester lisible
+             dans la console plutot que de disparaitre sans bruit. */
+          if (!reponse.ok) {
+            console.warn('SCI4K : inscription a la lettre d\'information refusee (HTTP ' + reponse.status + ').');
+          }
+        }).catch(function (e) {
+          console.warn('SCI4K : inscription a la lettre d\'information echouee.', e);
+        });
       } catch (e) {}
 
       champ.value = '';
