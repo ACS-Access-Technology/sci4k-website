@@ -1337,9 +1337,22 @@ h1,h2,h3{font-family:'Montserrat',sans-serif; font-weight:800; letter-spacing:-0
 
 /* ---- Overrides propres a une page (via body.page-*) ---- */
 body.page-biens{background-image:none; background-color:var(--paper); background-attachment:initial; color:var(--ink);}
+/* Ces regles retrecissent .wrap pour la LECTURE — une colonne de 1040 px se
+   lit mieux qu'une de 1240. Mais l'en-tete est lui aussi un .wrap : il se
+   retrouvait comprime a la largeur du texte, et sa barre de navigation
+   debordait — « Biens Immobiliers » et « Nos Services » passaient sur deux
+   lignes, et « Contact » chevauchait les boutons de theme et de langue. Le
+   defaut n'apparaissait qu'au-dessus de 1120 px, en dessous de quoi la barre
+   cede la place au menu burger.
+   L'exception existait deja pour la banniere ; elle manquait pour l'en-tete,
+   et pour le pied de page qui a la meme structure. */
 body.page-actualite .wrap{max-width:1040px;}
+body.page-actualite header .wrap,
+body.page-actualite footer .wrap,
 body.page-actualite .page-banner .wrap{max-width:1240px;}
 body.page-legal .wrap{max-width:840px;}
+body.page-legal header .wrap,
+body.page-legal footer .wrap{max-width:1240px;}
 body.page-legal .legal-block a{text-decoration:underline; text-decoration-color:var(--line);}
 body.page-legal footer{padding:50px 0; text-align:center; font-size:13px; border-top:none;}
 
