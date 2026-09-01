@@ -1310,6 +1310,16 @@ html[data-theme="dark"] .logo{ color:var(--dark-text); }
 
 h1,h2{font-family:'Montserrat',sans-serif; font-weight:800; letter-spacing:-0.01em; margin:0;}
 
+/* Largeur de lecture des pages editables, servies par Laravel sous la classe
+   page-statique. Les pages HTML d'origine passaient par body.page-legal, dont
+   la regle ramene TOUS les .wrap a 840 px ; sans equivalent, le texte
+   juridique s'etalait sur 1240 px, ou une ligne devient penible a suivre.
+   La contrainte ne vise que les deux sections de contenu, et surtout pas
+   l'en-tete ni le pied : c'est exactement l'erreur qui faisait deborder la
+   barre de navigation sur la page d'un article. */
+body.page-statique .legal-hero .wrap,
+body.page-statique .legal-section .wrap{ max-width:840px; }
+
 .legal-hero{ padding:160px 0 50px; }
 
 .legal-hero h1{ font-size:clamp(32px,4.5vw,48px); color:var(--navy-950); margin-bottom:10px; }
