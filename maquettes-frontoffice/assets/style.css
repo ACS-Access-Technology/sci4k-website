@@ -86,6 +86,25 @@ html[data-theme="dark"]{
 
 html{scroll-behavior:smooth;}
 
+/* La gouttiere de la barre de defilement est reservee en permanence.
+   Sans cela, toute page qui change de hauteur fait apparaitre ou disparaitre
+   la barre, et la mise en page se decale horizontalement de sa largeur — une
+   quinzaine de pixels. Le catalogue des biens en est l'exemple le plus net :
+   filtrer fait passer le document de 2532 a 2048 px, et chaque clic decalait
+   la page.
+   Le defaut est INVISIBLE sur un poste regle en barres flottantes, macOS par
+   defaut : la barre s'y superpose au contenu et n'occupe aucune largeur. Il
+   frappe en revanche Windows, Linux, et macOS regle sur « toujours afficher ».
+   C'est pourquoi il a pu passer inapercu ici.
+
+   Deux declarations plutot qu'une : scrollbar-gutter n'existe dans Safari
+   qu'a partir de la version 18.2, et le site tourne sur des Mac.
+   overflow-y:scroll couvre tous les navigateurs en gardant la barre presente
+   en permanence ; la ou scrollbar-gutter est compris, il prend le relais et
+   reserve la place sans forcer une barre inerte. Sur un poste en barres
+   flottantes, ni l'un ni l'autre ne se voit. */
+html{overflow-y:scroll; scrollbar-gutter:stable;}
+
 h1,h2,h3,.display{font-family:'Montserrat',sans-serif; font-weight:800; letter-spacing:-0.02em; margin:0;}
 
 img{display:block; max-width:100%;}
