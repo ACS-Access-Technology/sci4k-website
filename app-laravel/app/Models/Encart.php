@@ -34,8 +34,9 @@ class Encart extends Model
 
         static::saving(function (self $modele) {
             foreach (['diffusion_de', 'diffusion_a'] as $champ) {
-                if ($modele->{$champ} === '' || $modele->{$champ} === 'null') {
-                    $modele->{$champ} = null;
+                $brut = $modele->getAttributes()[$champ] ?? null;
+                if (is_string($brut) && $brut === '') {
+                    $modele->setAttribute($champ, null);
                 }
             }
         });
