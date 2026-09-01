@@ -20,16 +20,28 @@ use Livewire\WithPagination;
  * 245 biens ; a ce compte-la, la page devient lourde avant meme d'etre lue, et
  * un telephone sur reseau lent en paie le prix.
  *
- * Les filtres vivent dans l'ADRESSE. Une recherche devient donc un lien qu'on
- * envoie a quelqu'un, qu'on met en favori, et qu'un moteur peut indexer — trois
- * choses qu'un filtre en memoire ne sait pas faire.
+ * Les filtres ne vivent PLUS dans l'adresse : les attributs #[Url] ont ete
+ * retires, la selection d'un filtre menant alors droit a une page de
+ * resultats au lieu de rester sur place. Ils sont donc en memoire, et une
+ * recherche ne se partage plus par un lien. Ce paragraphe decrivait
+ * l'inverse ; le corriger vaut mieux que de laisser le commentaire promettre
+ * ce que le code ne fait pas.
  */
 #[Layout('public.layout-livewire')]
 class CatalogueDesBiens extends Component
 {
     use WithPagination;
 
-    public string $offre = Bien::LOCATION;
+    /**
+     * Vide, comme les quatre autres filtres : le catalogue s'ouvre sur TOUS
+     * les biens.
+     *
+     * Il demarrait sur Bien::LOCATION. Un visiteur arrivant sur la page voyait
+     * donc la pastille « Location » deja active et les seuls biens a louer,
+     * sans avoir rien demande — les biens a vendre etaient invisibles jusqu'a
+     * ce qu'il pense a cliquer « Tous ».
+     */
+    public string $offre = '';
 
     public string $type = '';
 
