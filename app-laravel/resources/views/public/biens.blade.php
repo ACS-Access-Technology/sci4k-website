@@ -78,7 +78,12 @@
   </div>
 </section>
 
-<section class="properties-section" wire:loading.class="opacity-50" wire:loading.style="pointer-events:none;transition:opacity .2s">
+{{-- « opacity-50 » est une classe de Tailwind, absente de la feuille du site
+     public : l'attenuation annoncee ne se produisait jamais, et seul
+     pointer-events:none s'appliquait. Le visiteur n'avait donc AUCUN signe
+     que son clic etait pris en compte pendant l'aller-retour serveur.
+     L'opacite passe en style en ligne, qui ne depend d'aucune feuille. --}}
+<section class="properties-section" wire:loading.style="opacity:.5;pointer-events:none;transition:opacity .2s">
   <div class="wrap">
     <div class="filters-bar">
       <div class="filters" id="pillFilters">
@@ -98,7 +103,13 @@
 
     <div class="prop-grid reveal-stagger">
       @forelse ($biens as $bien)
-        <article class="prop-card" style="--i:{{ $loop->index }}">
+        {{-- wire:key est indispensable, et il manquait. Sans lui, chaque
+             re-rendu du composant — ouvrir une fiche en est un — laisse
+             Livewire reconstruire les cartes au lieu de les reutiliser. Les
+             images repartent alors de zero : le temps qu'elles reprennent
+             leur taille, la grille se retasse et la page bouge sous les yeux
+             du visiteur, juste avant que la fiche n'apparaisse. --}}
+        <article class="prop-card" wire:key="bien-{{ $bien->id }}" style="--i:{{ $loop->index }}">
           <div class="prop-visual">
             <span @class(['prop-badge', 'vente' => $bien->offre === \App\Models\Bien::VENTE])>
               {{ $offres[$bien->offre] ?? $bien->offre }}
