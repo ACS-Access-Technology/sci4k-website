@@ -98,5 +98,19 @@
     "ordre": 20,
     "slug": "erreur",
     "fichier": "images/404error.jpg"
+  },
+  {
+    "ordre": 21,
+    "slug": "presentation-apercu",
+    "fichier": "images/presentation/apercu.jpg",
+    "texte_alternatif_fr": "Immobilier Abidjan",
+    "texte_alternatif_en": "Real estate in Abidjan"
+  },
+  {
+    "ordre": 22,
+    "slug": "presentation-directeur",
+    "fichier": "images/presentation/silhouette.svg",
+    "texte_alternatif_fr": "Portrait du Directeur Général",
+    "texte_alternatif_en": "Portrait of the Managing Director"
   }
 ]

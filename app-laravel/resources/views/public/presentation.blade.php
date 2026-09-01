@@ -61,8 +61,12 @@
       </div>
     </div>
 
+    {{-- Le repli sur le fichier d'origine n'est pas decoratif : l'entree peut
+         etre masquee depuis « Images de fond », et une section sans
+         illustration vaut mieux qu'une image cassee. --}}
     <div class="overview-media reveal">
-      <img src="{{ asset('images/presentation/apercu.jpg') }}" alt="{{ __('Immobilier Abidjan') }}"
+      <img src="{{ asset($visuelApercu?->fichier ?: 'images/presentation/apercu.jpg') }}"
+           alt="{{ $visuelApercu?->texteAlternatif($langue) ?: __('Immobilier Abidjan') }}"
            style="border-radius:24px; box-shadow:var(--shadow);" loading="lazy">
     </div>
   </div>
@@ -73,7 +77,8 @@
   <div class="wrap pres-grid">
     <div class="pres-media reveal">
       <div class="frame">
-        <img src="{{ asset('images/presentation/silhouette.svg') }}" alt="{{ __('Portrait du Directeur Général') }}" loading="lazy">
+        <img src="{{ asset($visuelDirecteur?->fichier ?: 'images/presentation/silhouette.svg') }}"
+             alt="{{ $visuelDirecteur?->texteAlternatif($langue) ?: __('Portrait du Directeur Général') }}" loading="lazy">
       </div>
       <div class="float-card">
         <b class="cnt" data-target="14">0</b>

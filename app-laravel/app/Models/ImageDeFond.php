@@ -31,6 +31,53 @@ class ImageDeFond extends Model
 
     protected $attributes = ['ordre' => 0, 'visible' => true];
 
+    /**
+     * Les emplacements servis par une balise <img>, et non par un fond CSS.
+     *
+     * La table s'appelle « images de fond » parce qu'elle n'a d'abord servi
+     * qu'a des variables --img-{slug}. Ces deux-la sont des illustrations
+     * posees dans le HTML de la page Presentation : elles vivent au meme
+     * endroit parce que l'editeur les cherche au meme endroit, mais elles
+     * n'ont ni les memes dimensions utiles ni le voile sombre applique aux
+     * fonds. L'ecran d'edition le dit, plutot que d'afficher a tous la meme
+     * consigne dont la moitie serait fausse.
+     */
+    public const VISUELS_EN_LIGNE = [
+        'presentation-apercu',
+        'presentation-directeur',
+    ];
+
+    public function estVisuelEnLigne(): bool
+    {
+        return in_array($this->slug, self::VISUELS_EN_LIGNE, true);
+    }
+
+    /**
+     * Les images visibles portant ces slugs, indexees par slug.
+     *
+     * Rend une collection VIDE si la table n'existe pas encore — meme raison
+     * qu'AppServiceProvider : le site doit rester servable pendant une
+     * migration. Une page sans illustration se lit ; une exception non.
+     *
+     * @param  list<string>  $slugs
+     * @return \Illuminate\Support\Collection<string, self>
+     */
+    public static function parSlugs(array $slugs): \Illuminate\Support\Collection
+    {
+        try {
+            // Pas de garde sur « fichier » : la colonne est NOT NULL. Un
+            // chemin vide reste possible, et c'est le gabarit qui retombe
+            // alors sur le fichier d'origine.
+            return static::query()
+                ->whereIn('slug', $slugs)
+                ->where('visible', true)
+                ->get()
+                ->keyBy('slug');
+        } catch (\Throwable) {
+            return collect();
+        }
+    }
+
     /** Texte de remplacement, lu par les lecteurs d'ecran. */
     public function texteAlternatif(string $langue = 'fr'): string
     {

@@ -24,7 +24,9 @@ class ImageDeFondFormulaire extends FormulaireDeBloc
                 'intitule' => __("Identifiant d'emplacement"),
                 'type' => 'fige',
                 'regles' => ['required', 'string', 'max:190', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
-                'aide' => __('Correspond à la variable CSS qui sert cette image. Définitif.'),
+                'aide' => $this->visuelEnLigne()
+                    ? __("Désigne l'emplacement de cette illustration dans la page. Définitif.")
+                    : __('Correspond à la variable CSS qui sert cette image. Définitif.'),
             ],
             'texte_alternatif' => [
                 'intitule' => __('Texte de remplacement'),
@@ -39,6 +41,21 @@ class ImageDeFondFormulaire extends FormulaireDeBloc
     protected function fichierGere(): ?array
     {
         return ['fichier', 'fonds'];
+    }
+
+    /**
+     * Pas de recadrage sur cet ecran.
+     *
+     * L'etape de recadrage rend un CARRE. Elle est juste pour un portrait
+     * rond ou une vignette ; elle ne l'est ni pour un fond de section, dont
+     * la consigne demande 1920 × 800, ni pour les illustrations de la page
+     * Presentation, affichees a leurs proportions d'origine. Un fond ramene
+     * au carre est recadre deux fois : une fois ici, une fois par le
+     * navigateur qui le retaille pour couvrir la section.
+     */
+    protected function recadrageDuFichier(): bool
+    {
+        return false;
     }
 
     protected function vue(): string
@@ -73,8 +90,33 @@ class ImageDeFondFormulaire extends FormulaireDeBloc
         $this->preparer($element);
     }
 
+    /**
+     * Cette entree est-elle une illustration posee dans le HTML, et non un
+     * fond CSS ? Voir ImageDeFond::VISUELS_EN_LIGNE.
+     */
+    protected function visuelEnLigne(): bool
+    {
+        return $this->element instanceof ImageDeFond && $this->element->estVisuelEnLigne();
+    }
+
+    /**
+     * La consigne suit l'emplacement, au lieu d'annoncer la meme chose a tous.
+     *
+     * « 1920 × 800 px, un voile sombre est applique » est vrai d'un fond de
+     * section et faux d'une illustration de la page Presentation : aucun voile
+     * n'y est pose, et l'image est affichee a sa taille. La donner partout
+     * aurait fait de cet ecran un ecran menteur de plus.
+     */
     protected function descriptionDuFichier(): array
     {
+        if ($this->visuelEnLigne()) {
+            return [
+                'intitule' => __('Illustration'),
+                'aide' => __("Affichée telle quelle dans la page, sans voile ni recadrage. 1200 px de large suffisent."),
+                'forme' => 'rectangle',
+            ];
+        }
+
         return [
             'intitule' => __('Fichier de fond'),
             'aide' => __('1920 × 800 px minimum. Un voile sombre est appliqué automatiquement.'),
