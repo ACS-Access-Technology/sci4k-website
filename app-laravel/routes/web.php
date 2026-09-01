@@ -122,7 +122,12 @@ Route::get('/langue/{code}', [LangueController::class, 'basculer'])->name('langu
 // cette route — le serveur sert un fichier de public/ avant d'entrer dans PHP.
 Route::get('/sitemap.xml', PlanDuSiteController::class)->name('plan-du-site');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+// Ces deux adresses n'exigeaient qu'un compte connecte, la ou tout le reste de
+// l'administration exige un role. « verified » n'y ajoutait rien : le
+// middleware ne bloque que si le modele implemente MustVerifyEmail, ce que
+// User ne fait pas. Un compte sans role lisait donc le tableau de bord et le
+// journal des activites qu'il affiche. Meme garde que le groupe ci-dessous.
+Route::middleware(['auth', 'verified', 'role:administrateur|editeur|redacteur|lecteur'])->group(function () {
     // Le tableau de bord etait une vue statique aux quatre rectangles haches
     // du starter kit. Il compte desormais le contenu, d'ou un composant.
     Route::get('dashboard', TableauDeBord::class)->name('dashboard');

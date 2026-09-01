@@ -362,6 +362,7 @@
     "Jamais": "Never",
     "Journal": "Log",
     "Journal des activités": "Activity log",
+    "L'accès au backoffice est délivré par un administrateur.": "Backoffice access is granted by an administrator.",
     "L'identifiant d'adresse n'accepte que des minuscules, des chiffres et des traits d'union, par exemple : acd-securiser-terrain.": "The URL slug accepts only lowercase letters, digits and hyphens, for example: acd-securiser-terrain.",
     "L'identifiant d'adresse n'accepte que des minuscules, des chiffres et des traits d'union, par exemple : gestion-location.": "The URL slug accepts only lowercase letters, digits and hyphens, for example: gestion-location.",
     "L'identifiant d'adresse ne se modifie pas : il sert de lien depuis le pied de page du site.": "The URL slug cannot be changed: the site footer links to it.",

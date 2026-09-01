@@ -51,9 +51,12 @@
             </div>
         </form>
 
-        <div class="space-x-1 text-sm text-center rtl:space-x-reverse text-zinc-600 dark:text-zinc-400">
-            <span>{{ __('Don\'t have an account?') }}</span>
-            <x-ui.link :href="route('register')" wire:navigate>{{ __('Sign up') }}</x-ui.link>
-        </div>
+        {{-- Pas de lien « Créer un compte » : ce site n'a pas d'espace membre.
+             Les comptes du backoffice sont crees par un administrateur depuis
+             l'ecran des utilisateurs, qui envoie au titulaire un lien pour
+             choisir son mot de passe. --}}
+        <p class="text-sm text-center text-zinc-600 dark:text-zinc-400">
+            {{ __("L'accès au backoffice est délivré par un administrateur.") }}
+        </p>
     </div>
 </x-layouts::auth>

@@ -27,8 +27,20 @@ class PagesStatiques extends Component
         $this->charger();
     }
 
+    /**
+     * Charge la page choisie, apres avoir verifie QUI demande et LAQUELLE.
+     *
+     * Les deux controles manquaient ici, alors qu'enregistrer() en portait un.
+     * Or cette methode ecrit aussi : firstOrCreate() cree la ligne absente.
+     * Un compte sans droit d'edition pouvait donc, en fixant la propriete
+     * publique $page depuis le navigateur, semer autant de lignes qu'il
+     * voulait sur des slugs que le site public ne sert jamais.
+     */
     protected function charger(): void
     {
+        abort_unless(auth()->user()?->hasAnyRole(['administrateur', 'editeur']), 403);
+        abort_unless(in_array($this->page, PageStatique::slugsEditables(), true), 404);
+
         $page = PageStatique::firstOrCreate(['slug' => $this->page], [
             'titre_fr' => ucfirst($this->page),
             'titre_en' => ucfirst($this->page),
@@ -45,6 +57,7 @@ class PagesStatiques extends Component
     public function enregistrer(): void
     {
         abort_unless(auth()->user()?->hasAnyRole(['administrateur', 'editeur']), 403);
+        abort_unless(in_array($this->page, PageStatique::slugsEditables(), true), 404);
         $this->validate([
             'titreFr' => ['required', 'string', 'max:190'],
             'titreEn' => ['nullable', 'string', 'max:190'],
