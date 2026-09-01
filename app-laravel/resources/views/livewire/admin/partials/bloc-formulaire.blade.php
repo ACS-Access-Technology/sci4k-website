@@ -68,7 +68,7 @@
                     <img src="{{ asset($fichierActuel) }}" alt=""
                          class="{{ $descriptionFichier['forme'] === 'rond'
                              ? 'size-16 rounded-full object-cover'
-                             : 'h-14 w-20 rounded object-contain' }}">
+                             : 'max-h-24 max-w-xs rounded object-contain' }}">
                     <button type="button" wire:click="retirerFichier"
                             class="text-sm text-red-600 hover:underline">{{ __('Retirer') }}</button>
                 @else
