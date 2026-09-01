@@ -165,13 +165,8 @@ abstract class FormulaireDeBloc extends Component
     {
         $this->langueActive = app()->getLocale();
 
-        foreach ($this->champs() as $nom => $description) {
-            if ($description['bilingue'] ?? false) {
-                $this->valeurs[$nom.'_fr'] = '';
-                $this->valeurs[$nom.'_en'] = '';
-            } else {
-                $this->valeurs[$nom] = '';
-            }
+        foreach ($this->clesDeclarees() as $cle) {
+            $this->valeurs[$cle] = '';
         }
 
         if ($this->gereLaVisibilite()) {
@@ -199,6 +194,39 @@ abstract class FormulaireDeBloc extends Component
     public function estCreation(): bool
     {
         return ! $this->element?->exists;
+    }
+
+    /**
+     * Les seules colonnes que cet ecran a le droit d'ecrire.
+     *
+     * $valeurs est une propriete publique Livewire : le navigateur en fixe le
+     * contenu, CLES COMPRISES. Sans cette liste, enregistrer() passait le
+     * tableau tel quel a create()/update(), et toute colonne « fillable » du
+     * modele devenait atteignable même si aucun champ ne l'affichait — les
+     * impressions d'un encart, les options JSON d'un reglage de section.
+     * EditionGroupee filtre deja de cette maniere ; ce formulaire ne le
+     * faisait pas.
+     *
+     * @return list<string>
+     */
+    protected function clesDeclarees(): array
+    {
+        $cles = [];
+
+        foreach ($this->champs() as $nom => $description) {
+            if ($description['bilingue'] ?? false) {
+                $cles[] = $nom.'_fr';
+                $cles[] = $nom.'_en';
+            } else {
+                $cles[] = $nom;
+            }
+        }
+
+        if ($this->gereLaVisibilite()) {
+            $cles[] = 'visible';
+        }
+
+        return $cles;
     }
 
     protected function rules(): array
@@ -300,7 +328,8 @@ abstract class FormulaireDeBloc extends Component
 
         $this->validate();
 
-        $donnees = $this->valeurs;
+        // Voir clesDeclarees() : on ne garde que les colonnes de cet ecran.
+        $donnees = array_intersect_key($this->valeurs, array_flip($this->clesDeclarees()));
 
         if ($this->gereLaVisibilite()) {
             // La case a cocher renvoie '1' ou '', jamais un booleen.

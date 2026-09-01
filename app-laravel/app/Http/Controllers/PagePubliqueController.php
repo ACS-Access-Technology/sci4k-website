@@ -21,7 +21,7 @@ class PagePubliqueController extends Controller
 {
     public function pageStatique(string $slug): View
     {
-        abort_unless(in_array($slug, ['contact', 'mentions-legales', 'politique-confidentialite'], true), 404);
+        abort_unless(in_array($slug, PageStatique::slugsEditables(), true), 404);
         $page = PageStatique::where('slug', $slug)->where('publie', true)->firstOrFail();
         return view('public.page-statique', ['page' => $page, 'langue' => app()->getLocale()]);
     }

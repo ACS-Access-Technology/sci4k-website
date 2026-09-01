@@ -10,11 +10,17 @@
     <body class="min-h-screen bg-white antialiased dark:bg-linear-to-b dark:from-neutral-950 dark:to-neutral-900">
         <div class="bg-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
             <div class="flex w-full max-w-sm flex-col gap-2">
-                <a href="{{ route('home') }}" class="flex flex-col items-center gap-2 font-medium" wire:navigate>
-                    <span class="flex h-9 w-9 mb-1 items-center justify-center rounded-md">
-                        <x-app-logo-icon class="size-9 fill-current text-black dark:text-white" />
+                {{-- Le nom est ECRIT, et non seulement lu par un lecteur
+                     d'ecran : le logo du site est une photographie, illisible
+                     a 36 px. Meme traitement que l'en-tete du site public et
+                     que la barre laterale — un visuel, puis le nom. --}}
+                <a href="{{ route('home') }}" class="mb-2 flex flex-col items-center gap-2 font-medium" wire:navigate>
+                    <span class="flex size-14 items-center justify-center overflow-hidden rounded-xl">
+                        <x-app-logo-icon class="size-14" />
                     </span>
-                    <span class="sr-only">{{ config('app.name', 'Laravel') }}</span>
+                    <span class="text-lg font-bold tracking-tight text-zinc-900 dark:text-white">
+                        {{ config('app.name', 'SCI4K') }}
+                    </span>
                 </a>
                 <div class="flex flex-col gap-6">
                     {{ $slot }}

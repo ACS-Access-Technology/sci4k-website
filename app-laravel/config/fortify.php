@@ -160,8 +160,19 @@ return [
     |
     */
 
+    // Features::registration() est VOLONTAIREMENT absent. Ce site n'a pas
+    // d'espace membre : les seuls comptes sont ceux du backoffice, et ils
+    // naissent d'une invitation envoyee par un administrateur depuis l'ecran
+    // des utilisateurs. Laisser l'inscription ouverte revenait a offrir a un
+    // inconnu un compte actif — CreateNewUser ne posait ni role ni statut, et
+    // le middleware « verified » ne bloquait personne puisque User
+    // n'implemente pas MustVerifyEmail. Le tableau de bord, et le journal des
+    // activites qu'il affiche, etaient donc lisibles par n'importe qui.
+    //
+    // La fermeture ne tient pas qu'a cette ligne : la vue, la route et
+    // l'action de creation ont ete retirees avec elle, pour qu'on ne puisse
+    // pas rouvrir la porte sans s'en rendre compte.
     'features' => [
-        Features::registration(),
         Features::resetPasswords(),
         Features::emailVerification(),
         Features::twoFactorAuthentication([
