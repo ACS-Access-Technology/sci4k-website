@@ -21,7 +21,12 @@ it('sert la page HTML d origine tant que le contenu est vide', function (string 
     $reponse->assertDontSee('page-statique');
     expect(strlen($reponse->getContent()))
         ->toBeGreaterThan(2000, 'La page servie doit etre la page HTML complete, pas une coquille.');
-})->with(['contact', 'mentions-legales', 'politique-confidentialite']);
+    // « contact » ne figure plus ici : sa page est desormais rendue par
+    // PagePubliqueController::contact() et ne passe plus par ce repli. L'y
+    // laisser aurait donne un test vert pour une raison qui n'a plus rien a
+    // voir avec ce qu'il pretend verifier — la page portee contient elle aussi
+    // un formulaire et depasse largement 2000 octets.
+})->with(['mentions-legales', 'politique-confidentialite']);
 
 it('sert le formulaire de contact et la carte', function () {
     $reponse = $this->get('/contact');
@@ -47,11 +52,13 @@ it('sert le contenu de la base des qu il est saisi', function () {
  * blanche la ou la page d'origine existe encore.
  */
 it('traite un contenu fait d espaces comme un contenu vide', function () {
-    PageStatique::where('slug', 'contact')->update(['contenu_fr' => "  \n  "]);
+    PageStatique::where('slug', 'mentions-legales')->update(['contenu_fr' => "  \n  "]);
 
-    $this->get('/contact')
-        ->assertOk()
-        ->assertSee('id="contactForm"', false);
+    $reponse = $this->get('/mentions-legales');
+
+    $reponse->assertOk();
+    $reponse->assertDontSee('page-statique');
+    expect(strlen($reponse->getContent()))->toBeGreaterThan(2000);
 });
 
 it('refuse un slug hors de la liste', function () {
@@ -63,12 +70,14 @@ it('refuse un slug hors de la liste', function () {
  * sur la page d'origine, qui existe toujours dans public/.
  */
 it('retombe aussi quand la page est depubliee', function () {
-    PageStatique::where('slug', 'contact')->update([
+    PageStatique::where('slug', 'mentions-legales')->update([
         'contenu_fr' => 'Un texte quelconque.',
         'publie' => false,
     ]);
 
-    $this->get('/contact')
-        ->assertOk()
-        ->assertSee('id="contactForm"', false);
+    $reponse = $this->get('/mentions-legales');
+
+    $reponse->assertOk();
+    $reponse->assertDontSee('Un texte quelconque.', false);
+    expect(strlen($reponse->getContent()))->toBeGreaterThan(2000);
 });

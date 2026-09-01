@@ -44,7 +44,7 @@ fi
 source_fo="$racine/maquettes-frontoffice"
 cible="$racine/app-laravel/public"
 
-exclues=("index.html" "actualites.html" "actualite-detail.html" "services.html" "faq.html" "presentation.html" "biens.html")
+exclues=("index.html" "actualites.html" "actualite-detail.html" "services.html" "faq.html" "presentation.html" "biens.html" "contact.html")
 
 echo "Synchronisation depuis $source_fo"
 
