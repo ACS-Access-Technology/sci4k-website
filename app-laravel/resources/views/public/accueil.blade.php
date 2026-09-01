@@ -272,8 +272,7 @@
           @endif
           <h2 style="font-size:clamp(28px,3vw,42px);color:var(--texte-titre);margin-top:8px;">{{ $entetePartenaires?->titre($langue) ?: __('Nos Partenaires Privilégiés') }}</h2>
         </div>
-        <div class="slider-btns"></div>
-      </div>
+        </div>
 
       <div class="partners-carousel-viewport reveal" id="partnersViewport">
         @foreach ($partenaires as $partenaire)
