@@ -300,15 +300,28 @@ section{padding:110px 0;}
 
 .slider-arrow-btn:hover{background:var(--navy-950);color:var(--gold-300);transform:scale(1.15);border-color:var(--navy-950);}
 
-.partners-carousel-viewport{display:flex;flex-wrap:nowrap;gap:18px;padding:10px 0 24px;overflow:visible;}
+/* Une grille qui passe a la ligne, et non une rangee unique. En nowrap avec
+   flex:1 1 0, dix partenaires se partageaient la largeur en dix : des cartes
+   de 120px ou le nom tombait sur quatre lignes. Le nombre de partenaires est
+   pilote depuis le backoffice, la mise en page ne peut donc pas supposer
+   qu'ils tiennent sur une rangee. */
+.partners-carousel-viewport{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:18px;padding:10px 0 24px;overflow:visible;}
 
 .partners-carousel-viewport::-webkit-scrollbar{display:none;}
 
-.partner-logo-card{flex:1 1 0;min-width:0;background:var(--paper);border:1.5px solid var(--line);border-radius:20px;padding:22px 16px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.04);transition:transform .4s cubic-bezier(.34,1.56,.64,1),border-color .3s ease,box-shadow .3s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;}
+/* justify-content:flex-start et non center : les noms font une a quatre
+   lignes selon le partenaire, et un centrage vertical faisait flotter chaque
+   logo a une hauteur differente d'une carte a l'autre. Ancres en haut, les
+   plaques s'alignent sur une meme ligne. */
+.partner-logo-card{min-width:0;background:var(--paper);border:1.5px solid var(--line);border-radius:20px;padding:22px 16px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.04);transition:transform .4s cubic-bezier(.34,1.56,.64,1),border-color .3s ease,box-shadow .3s ease;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:12px;cursor:pointer;}
 
 .partner-logo-card:hover{transform:translateY(-8px) scale(1.03);border-color:var(--gold-500);box-shadow:0 20px 40px rgba(30,34,39,0.12);}
 
-.partner-logo-card img,.partner-logo-img{max-height:64px;width:auto;height:auto;max-width:80%;object-fit:contain;transition:opacity .3s ease;}
+/* Boite fixe plutot que max-height : avec width:auto, un logo large et bas
+   rendait une plaque plus courte qu'un logo carre, et les noms demarraient a
+   des hauteurs differentes. object-fit:contain garde les proportions de
+   chaque logo a l'interieur de la boite. */
+.partner-logo-card img,.partner-logo-img{box-sizing:border-box;width:100%;height:64px;padding:6px;object-fit:contain;transition:opacity .3s ease;}
 
 .partner-logo-card:hover img,.partner-logo-card:hover .partner-logo-img{opacity:1;}
 
@@ -1779,9 +1792,12 @@ p, .article-body p, .news-card p, .service-item-content p, .legal-block p{
    Les logos sont concus pour du blanc : en theme sombre ils devenaient
    illisibles sur le fond de carte. La plaque reste claire dans les deux themes.
    ========================================================================== */
-.partner-logo-img{display:block;margin:0 auto;max-height:64px;width:auto;max-width:80%;object-fit:contain;background:#fff;border-radius:10px;}
+.partner-logo-img{display:block;box-sizing:border-box;width:100%;height:64px;padding:6px;object-fit:contain;background:#fff;border-radius:10px;}
 [data-theme="dark"] .partner-logo-img{background:#fff;}
-a.partner-logo-card{text-decoration:none;color:inherit;display:block;cursor:pointer;}
+/* Pas de display:block ici : il ecrasait le flex de .partner-logo-card, et les
+   cartes des partenaires qui ont un site perdaient le gap de 12px. Elles ne
+   ressemblaient donc pas a celles des partenaires qui n'en ont pas. */
+a.partner-logo-card{text-decoration:none;color:inherit;cursor:pointer;}
 a.partner-logo-card:hover .p-name{color:var(--gold-600);}
 [data-theme="dark"] a.partner-logo-card:hover .p-name{color:var(--gold-300);}
 

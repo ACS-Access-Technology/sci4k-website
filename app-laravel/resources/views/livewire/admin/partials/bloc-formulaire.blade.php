@@ -80,7 +80,11 @@
                 @endif
             </div>
 
-            <input type="file" wire:model="fichier" accept="image/*" class="{{ $classeChamp }}">
+            {{-- L'etape de recadrage s'accroche a TOUS les champs de fichier,
+                 depuis un ecouteur global. Ce marqueur est le seul moyen de
+                 l'en dispenser ici : voir recadrageDuFichier(). --}}
+            <input type="file" wire:model="fichier" accept="image/*" class="{{ $classeChamp }}"
+                   @unless ($recadrageDuFichier) data-sans-recadrage @endunless>
 
             @if ($descriptionFichier['aide'])
                 <span class="mt-1 block text-xs text-zinc-500 dark:text-zinc-400">{{ $descriptionFichier['aide'] }}</span>

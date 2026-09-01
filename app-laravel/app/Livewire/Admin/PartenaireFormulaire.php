@@ -66,6 +66,20 @@ class PartenaireFormulaire extends FormulaireDeBloc
         $this->preparer($element);
     }
 
+    /**
+     * Pas de recadrage sur un logo de partenaire.
+     *
+     * Deux raisons, et la seconde est la pire. Un logo n'a pas de proportions
+     * negociables — le contraindre dans un carre l'etire ou le rogne, alors
+     * que le site l'affiche a hauteur libre. Et le recadrage rend un JPEG,
+     * sans couche alpha : le fond transparent que l'aide reclame juste en
+     * dessous ressortait noir.
+     */
+    protected function recadrageDuFichier(): bool
+    {
+        return false;
+    }
+
     protected function descriptionDuFichier(): array
     {
         return [

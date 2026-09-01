@@ -119,6 +119,20 @@ abstract class FormulaireDeBloc extends Component
     }
 
     /**
+     * Le fichier televerse passe-t-il par l'etape de recadrage ?
+     *
+     * Vrai partout ou l'image est affichee dans un cadre impose — un portrait
+     * rond de membre d'equipe, une vignette. Faux la ou l'image doit garder
+     * ses proportions ET sa transparence : le recadrage rend un carre au
+     * format JPEG, qui n'a pas de couche alpha et aplatit donc le fond
+     * transparent en noir.
+     */
+    protected function recadrageDuFichier(): bool
+    {
+        return true;
+    }
+
+    /**
      * Ce bloc peut-il etre masque du site ?
      *
      * Faux pour les en-tetes de section, qui n'ont pas de colonne `visible` :
@@ -375,6 +389,7 @@ abstract class FormulaireDeBloc extends Component
             'traductionActive' => app(Traducteur::class)->disponible(),
             'fichierGere' => $this->fichierGere() !== null,
             'descriptionFichier' => $this->descriptionDuFichier(),
+            'recadrageDuFichier' => $this->recadrageDuFichier(),
             'gereLaVisibilite' => $this->gereLaVisibilite(),
         ])->title($this->estCreation()
             ? __('Nouveau : :intitule', ['intitule' => $this->intitule()])

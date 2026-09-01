@@ -109,6 +109,10 @@ async function recadrerFichiers(input, fichiers) {
 document.addEventListener('change', (event) => {
     const input = event.target;
     if (!(input instanceof HTMLInputElement) || input.type !== 'file' || input.dataset.sci4kRecadrage === 'actif') return;
+    // Certains champs refusent le recadrage : un logo de partenaire n'a pas de
+    // proportions negociables, et le rendu JPEG lui ferait perdre sa
+    // transparence. Le marqueur est pose par le gabarit, pas devine ici.
+    if (input.hasAttribute('data-sans-recadrage')) return;
     const fichiers = [...input.files].filter((fichier) => fichier.type.startsWith('image/') && fichier.type !== 'image/svg+xml');
     if (!fichiers.length) return;
     event.stopImmediatePropagation();
