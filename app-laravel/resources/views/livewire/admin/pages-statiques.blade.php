@@ -1,6 +1,16 @@
 <div class="max-w-4xl space-y-6">
     <x-admin.entete-page :titre="__('Pages éditables')" :fil="[__('Accueil') => route('dashboard'), __('Pages éditables') => null]" />
     <label class="block"><span class="text-sm font-medium">{{ __('Page') }}</span><select wire:model.live="page" class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950">@foreach (\App\Models\PageStatique::EDITABLES as $slugEditable => $intituleEditable)<option value="{{ $slugEditable }}">{{ __($intituleEditable) }}</option>@endforeach</select></label>
+    {{-- L'ecran doit dire ce que le site sert reellement. Tant que le contenu
+         francais est vide, la route retombe sur la page HTML d'origine :
+         l'editeur voyait sinon un champ vide sans savoir si sa page etait
+         blanche ou intacte. --}}
+    @if (trim($contenuFr) === '')
+        <p class="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200" role="status">
+            {{ __("Ce contenu est vide : le site sert encore la page d'origine. Elle sera remplacée dès que vous enregistrerez un texte ici.") }}
+        </p>
+    @endif
+
     <form wire:submit="enregistrer" class="space-y-4">
         <div class="grid gap-4 sm:grid-cols-2"><label><span class="text-sm font-medium">{{ __('Titre français') }}</span><input wire:model="titreFr" class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"></label><label><span class="text-sm font-medium">{{ __('Titre anglais') }}</span><input wire:model="titreEn" class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"></label></div>
         <div class="grid gap-4 sm:grid-cols-2"><label><span class="text-sm font-medium">{{ __('Contenu français') }}</span><textarea wire:model="contenuFr" rows="18" class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"></textarea></label><label><span class="text-sm font-medium">{{ __('Contenu anglais') }}</span><textarea wire:model="contenuEn" rows="18" class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"></textarea></label></div>
