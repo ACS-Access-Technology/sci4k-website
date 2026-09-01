@@ -10,6 +10,7 @@ use App\Models\EtapeProcessus;
 use App\Models\ImageDeFond;
 use App\Models\MembreEquipe;
 use App\Models\PageStatique;
+use App\Models\Parametre;
 use App\Models\Partenaire;
 use App\Models\QuestionFaq;
 use App\Models\ReglageDeSection;
@@ -145,6 +146,67 @@ class PagePubliqueController extends Controller
                 '@id' => route('services.index').'#page',
                 'url' => route('services.index'),
                 'name' => __('Nos services').' — SCI4K',
+                'inLanguage' => $langue,
+                'isPartOf' => ['@id' => rtrim(url('/'), '/').'/#site'],
+            ],
+        ]);
+    }
+
+    /**
+     * Page de contact.
+     *
+     * Portee depuis la page HTML, qui vivait dans public/ et servait des
+     * coordonnees ecrites en dur. Deux reglages de l'onglet « Contact » de la
+     * configuration n'etaient lus par personne — les horaires et les
+     * coordonnees de la carte : ils s'appliquent desormais ici.
+     *
+     * Chaque valeur se replie sur le texte d'origine, pour qu'une installation
+     * neuve serve une page complete plutot qu'une page a trous.
+     */
+    public function contact(): View
+    {
+        $langue = app()->getLocale();
+
+        $enTetes = ReglageDeSection::whereIn('slug', ['contact.page', 'contact.form', 'contact.map'])
+            ->get()->keyBy('slug');
+
+        $adresse = Parametre::lire('adresse_postale', implode("\n", [
+            __('Cocody, Cité des Arts'),
+            __('Résidence Paon, 3ème étage'),
+            __("Abidjan, Côte d'Ivoire"),
+        ]));
+
+        // Le bandeau de la carte annonce l'adresse en deux temps : la ligne de
+        // rue, puis le reste. Le decoupage suit donc les retours a la ligne
+        // saisis dans la configuration, au lieu d'un texte fige.
+        $lignesAdresse = array_values(array_filter(array_map('trim', explode("\n", $adresse)), 'strlen'));
+
+        return view('public.contact', [
+            'banniere' => $enTetes->get('contact.page'),
+            'enteteFormulaire' => $enTetes->get('contact.form'),
+            'enteteCarte' => $enTetes->get('contact.map'),
+            // Passe explicitement : le composer qui alimente le gabarit ne
+            // porte pas jusqu'ici, Blade rendant la vue fille AVANT la mise en
+            // page dont elle herite.
+            'nomDuSite' => Parametre::lire('nom_du_site', 'SCI4K'),
+            'adressePostale' => $adresse,
+            'premiereLigneAdresse' => $lignesAdresse[1] ?? ($lignesAdresse[0] ?? ''),
+            'resteDeLAdresse' => implode(' — ', array_diff($lignesAdresse, [$lignesAdresse[1] ?? null])),
+            'telephonePublic' => Parametre::lire('telephone', '+225 07 06 16 50 29'),
+            'emailPublic' => Parametre::lire('email_public', 'contact@sci4k.com'),
+            'horaires' => Parametre::lire('horaires', implode("\n", [
+                __('Lundi — Vendredi : 08h00 - 18h00'),
+                __('Samedi : 09h00 - 13h00'),
+            ])),
+            // Le repli reprend les coordonnees de l'ancienne carte embarquee.
+            'coordonneesCarte' => Parametre::lire('coordonnees_carte', '5.3593,-3.9927'),
+            'whatsappPublic' => preg_replace('/\D+/', '', (string) Parametre::lire('whatsapp', '2250706165029')) ?: '2250706165029',
+            'langue' => $langue,
+            'noeudPage' => [
+                '@type' => 'ContactPage',
+                '@id' => route('contact.index').'#page',
+                'url' => route('contact.index'),
+                'name' => __('Contact').' — SCI4K',
                 'inLanguage' => $langue,
                 'isPartOf' => ['@id' => rtrim(url('/'), '/').'/#site'],
             ],

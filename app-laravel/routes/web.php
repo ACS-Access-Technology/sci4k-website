@@ -85,7 +85,7 @@ Route::permanentRedirect('/biens.html', '/biens');
 Route::get('/services', [PagePubliqueController::class, 'services'])->name('services.index');
 Route::get('/faq', [PagePubliqueController::class, 'faq'])->name('faq.index');
 Route::get('/presentation', [PagePubliqueController::class, 'presentation'])->name('presentation.index');
-Route::get('/contact', fn () => app(PagePubliqueController::class)->pageStatique('contact'))->name('contact.index');
+Route::get('/contact', [PagePubliqueController::class, 'contact'])->name('contact.index');
 Route::get('/mentions-legales', fn () => app(PagePubliqueController::class)->pageStatique('mentions-legales'))->name('mentions-legales.index');
 Route::get('/politique-confidentialite', fn () => app(PagePubliqueController::class)->pageStatique('politique-confidentialite'))->name('politique-confidentialite.index');
 
@@ -94,6 +94,7 @@ Route::get('/politique-confidentialite', fn () => app(PagePubliqueController::cl
 Route::permanentRedirect('/services.html', '/services');
 Route::permanentRedirect('/faq.html', '/faq');
 Route::permanentRedirect('/presentation.html', '/presentation');
+Route::permanentRedirect('/contact.html', '/contact');
 
 // Le SEUL point d'ecriture ouvert au public. La limitation de debit y remplace
 // l'authentification : le formulaire vit dans une page statique de public/, qui

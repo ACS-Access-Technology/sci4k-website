@@ -9,7 +9,12 @@
    Deux formulaires (contact et question de la FAQ) composent un message et
    l'ouvrent dans WhatsApp, seul canal reellement releve par l'agence. La
    logique est partagee ici plutot que dupliquee dans chaque page. */
-var SCI4K_WHATSAPP = '2250706165029';
+/* Le numero vient de la configuration quand la page est rendue par Laravel :
+   elle pose window.SCI4K_WHATSAPP avant ce script. L'aide du reglage annonce
+   « c'est celui vers lequel le formulaire de contact ouvre la conversation » —
+   ce qui etait faux tant que la valeur restait figee ici. Le repli couvre les
+   pages encore statiques, qui ne peuvent rien poser. */
+var SCI4K_WHATSAPP = window.SCI4K_WHATSAPP || '2250706165029';
 
 function sci4kValeur(id) {
   var el = document.getElementById(id);

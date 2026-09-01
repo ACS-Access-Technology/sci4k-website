@@ -20,10 +20,18 @@ class PageStatique extends Model
      * @var array<string, string>
      */
     public const EDITABLES = [
-        'contact' => 'Contact',
         'mentions-legales' => 'Mentions légales',
         'politique-confidentialite' => 'Politique de confidentialité',
     ];
+
+    /*
+     * « contact » a quitte cette liste : la page est desormais rendue par
+     * PagePubliqueController::contact(), et non plus par un bloc de texte.
+     * L'y laisser aurait fait un ecran menteur — un editeur aurait saisi un
+     * contenu que plus aucune adresse ne sert. Ses textes se modifient
+     * maintenant depuis « Sections du site » (contact.page, contact.form,
+     * contact.map) et depuis l'onglet « Contact » de la configuration.
+     */
 
     /** @return list<string> */
     public static function slugsEditables(): array
