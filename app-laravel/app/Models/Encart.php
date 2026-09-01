@@ -28,6 +28,19 @@ class Encart extends Model
 
     protected $attributes = ['ordre' => 0, 'visible' => true];
 
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::saving(function (self $modele) {
+            foreach (['diffusion_de', 'diffusion_a'] as $champ) {
+                if ($modele->{$champ} === '' || $modele->{$champ} === 'null') {
+                    $modele->{$champ} = null;
+                }
+            }
+        });
+    }
+
     public function estDiffuse(): bool
     {
         return $this->visible
