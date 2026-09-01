@@ -18,14 +18,56 @@ use App\Models\Service;
 use App\Models\Temoignage;
 use App\Models\Valeur;
 use Illuminate\Contracts\View\View;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class PagePubliqueController extends Controller
 {
-    public function pageStatique(string $slug): View
+    /**
+     * Sert une page editable, ou la page HTML d'origine si elle est vide.
+     *
+     * La migration qui a cree ces trois lignes les a posees avec un contenu
+     * VIDE et publie => true. Les routes ont ete branchees dessus sans que le
+     * contenu des pages HTML n'ait ete transfere : /contact, /mentions-legales
+     * et /politique-confidentialite servaient donc une coquille — un titre,
+     * puis directement le pied de page. La panne etait silencieuse parce que
+     * la ligne existe et qu'elle est publiee : firstOrFail() la trouvait.
+     *
+     * La page contact est le cas le plus couteux : son formulaire est le seul
+     * point d'ecriture ouvert au public, et le menu principal y renvoie.
+     *
+     * Le repli n'est pas une solution definitive. Mentions legales et
+     * politique de confidentialite sont du texte pur et ont vocation a etre
+     * saisies depuis le backoffice ; la page contact, elle, porte un
+     * formulaire, une carte et des horaires, et devra etre portee en Blade
+     * comme l'ont ete l'accueil et la presentation. En attendant, mieux vaut
+     * servir la vraie page que rien.
+     */
+    public function pageStatique(string $slug): SymfonyResponse|View
     {
         abort_unless(in_array($slug, PageStatique::slugsEditables(), true), 404);
-        $page = PageStatique::where('slug', $slug)->where('publie', true)->firstOrFail();
-        return view('public.page-statique', ['page' => $page, 'langue' => app()->getLocale()]);
+
+        $page = PageStatique::where('slug', $slug)->where('publie', true)->first();
+        $langue = app()->getLocale();
+
+        if (! $page || trim($page->contenu($langue)) === '') {
+            $fichier = public_path($slug.'.html');
+
+            abort_unless(is_file($fichier), 404);
+
+            // Le contenu est renvoye dans le corps de la reponse, et non
+            // diffuse par response()->file() : ces pages font une vingtaine de
+            // kilo-octets, et un fichier diffuse ne traverse pas le corps de la
+            // reponse — aucun test ne pourrait alors verifier ce qui est servi.
+            //
+            // Sans cache : le jour ou l'editeur saisit le contenu, la page doit
+            // basculer sans attendre l'expiration d'un en-tete.
+            return response(file_get_contents($fichier), 200, [
+                'Content-Type' => 'text/html; charset=UTF-8',
+                'Cache-Control' => 'no-cache, must-revalidate',
+            ]);
+        }
+
+        return view('public.page-statique', ['page' => $page, 'langue' => $langue]);
     }
     /**
      * Page d'accueil.
