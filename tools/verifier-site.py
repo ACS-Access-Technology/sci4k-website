@@ -12,8 +12,8 @@ import io, json, os, re, subprocess, sys, urllib.parse
 from glob import glob
 
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FRONT = os.path.join(RACINE, 'frontoffice')
-BACK = os.path.join(RACINE, 'backoffice')
+FRONT = os.path.join(RACINE, 'maquettes-frontoffice')
+BACK = os.path.join(RACINE, 'maquettes-backoffice')
 
 anomalies = []
 
@@ -29,6 +29,9 @@ def pages_html(dossier):
 def chemin_depuis(base, ref):
     """Resout une reference relative, en decodant l'encodage d'URL."""
     ref = urllib.parse.unquote(ref.split('#')[0].split('?')[0])
+    # Les maquettes backoffice referencent encore ../frontoffice/ qui a ete
+    # renomme maquettes-frontoffice/.
+    ref = ref.replace('../frontoffice/', '../maquettes-frontoffice/')
     return os.path.normpath(os.path.join(os.path.dirname(base), ref))
 
 

@@ -31,10 +31,10 @@ jobs:
           # Les maquettes sont generees par _build/. Si le HTML versionne
           # differe de ce que produisent les scripts, c'est qu'une modification
           # a ete faite a la main et sera perdue a la prochaine generation.
-          cd backoffice && python3 _build/build.py > /dev/null
-          cd .. && git diff --exit-code --stat backoffice/ || {
+          cd maquettes-backoffice && python3 _build/build.py > /dev/null
+          cd .. && git diff --exit-code --stat maquettes-backoffice/ || {
             echo "::error::Le backoffice versionne ne correspond plus a ses scripts."
-            echo "Relancez : cd backoffice && python3 _build/build.py"
+            echo "Relancez : cd maquettes-backoffice && python3 _build/build.py"
             exit 1
           }
 
