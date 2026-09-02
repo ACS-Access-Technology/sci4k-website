@@ -19,6 +19,21 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 abstract class ListeOrdonnable extends Component
 {
+    /**
+     * L'ecran est-il rendu A L'INTERIEUR d'un autre ?
+     *
+     * Vrai quand un ecran de page — « Pages du site → Accueil » — embarque
+     * cette liste dans l'un de ses modules. Le corps reste identique : mêmes
+     * statistiques, meme recherche, meme reordonnancement. Seul l'en-tete de
+     * page disparait, un titre et un fil d'Ariane n'ayant pas de sens au
+     * milieu d'une autre page.
+     *
+     * Embarquer plutot que reecrire : la refonte du backoffice rassemble les
+     * ecrans par page publique, et dupliquer le corps de chaque liste aurait
+     * cree deux versions a corriger a chaque defaut.
+     */
+    public bool $embarque = false;
+
     public string $recherche = '';
 
     /** '' | 'visibles' | 'masques' */

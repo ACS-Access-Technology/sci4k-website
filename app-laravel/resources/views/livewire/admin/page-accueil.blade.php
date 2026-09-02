@@ -87,11 +87,11 @@
 
                     {{-- EN-TETE DE SECTION --}}
                     @if ($description['section'] ?? null)
-                        @foreach ([
-                            'etiquette' => __('Étiquette'),
-                            'titre' => __('Titre'),
-                            'chapo' => __('Accroche'),
-                        ] as $champ => $intitule)
+                        {{-- La bande deroulante n'affiche que des communes : ni
+                             etiquette ni accroche n'y seraient jamais montrees. --}}
+                        @php($champsEntete = $description['champsEntete']
+                            ?? ['etiquette' => __('Étiquette'), 'titre' => __('Titre'), 'chapo' => __('Accroche')])
+                        @foreach ($champsEntete as $champ => $intitule)
                             <label class="block">
                                 <span class="text-sm font-medium">{{ $intitule }}</span>
                                 @if ($champ === 'chapo')
@@ -106,6 +106,35 @@
                                 @enderror
                             </label>
                         @endforeach
+                    @endif
+
+                    {{-- LES DEUX BOUTONS DU HERO
+                         Ils etaient ecrits en dur dans le gabarit public, et le
+                         premier pointait sur /biens.html — une adresse qui ne
+                         repond plus que par une redirection. --}}
+                    @if ($module === 'hero')
+                        <fieldset class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
+                            <legend class="px-1 text-sm font-medium">{{ __('Boutons') }}</legend>
+                            @foreach (['bouton1' => __('Bouton principal'), 'bouton2' => __('Bouton secondaire')] as $cle => $intituleBouton)
+                                <div class="mb-3 grid gap-3 sm:grid-cols-2">
+                                    <label class="block">
+                                        <span class="text-sm font-medium">{{ $intituleBouton }}</span>
+                                        <input wire:model="boutons.{{ $cle }}_libelle_{{ $langueActive }}"
+                                               placeholder="{{ $cle === 'bouton1' ? __('Rechercher un bien') : __('Découvrir SCI4K') }}"
+                                               class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950">
+                                    </label>
+                                    <label class="block">
+                                        <span class="text-sm font-medium">{{ __('Lien') }}</span>
+                                        <input wire:model="boutons.{{ $cle }}_cible"
+                                               placeholder="{{ $cle === 'bouton1' ? '/biens' : '/presentation' }}"
+                                               class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950">
+                                    </label>
+                                </div>
+                            @endforeach
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                                {{ __('Laissez vide pour garder le libellé et le lien d’origine.') }}
+                            </p>
+                        </fieldset>
                     @endif
 
                     {{-- APPARENCE DE LA BANDE DEROULANTE --}}
@@ -211,53 +240,22 @@
                 </div>
             @endif
 
-            {{-- COLLECTIONS DU MODULE --}}
-            @foreach ($collections as $famille => $elements)
-                <div class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900">
-                    <div class="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-                        <h3 class="text-sm font-semibold">
-                            {{ [
-                                'chiffres' => __('Chiffres clés'),
-                                'communes' => __('Communes défilantes'),
-                                'services' => __('Services affichés'),
-                                'temoignages' => __('Avis affichés'),
-                                'partenaires' => __('Partenaires affichés'),
-                            ][$famille] ?? $famille }}
-                        </h3>
-                        <a href="{{ [
-                            'chiffres' => route('admin.chiffres-cles'),
-                            'communes' => route('admin.banderole'),
-                            'services' => route('admin.services.liste'),
-                            'temoignages' => route('admin.temoignages.liste'),
-                            'partenaires' => route('admin.partenaires.liste'),
-                        ][$famille] }}" class="text-sm underline underline-offset-4">
-                            {{ __('Ajouter, réordonner, modifier en détail') }} →
-                        </a>
-                    </div>
+            {{-- L'ANCIEN ECRAN, ENTIER, DANS LE MODULE
 
-                    @if ($elements->isEmpty())
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Aucun élément pour le moment.') }}</p>
-                    @else
-                        <ul class="divide-y divide-zinc-100 dark:divide-zinc-800">
-                            @foreach ($elements as $element)
-                                <li wire:key="{{ $famille }}-{{ $element->id }}" class="flex items-center justify-between gap-3 py-2">
-                                    <span @class(['text-sm', 'text-zinc-400 line-through' => ! $element->visible])>
-                                        {{ $this->libelleDeLElement($famille, $element) }}
-                                    </span>
-                                    @if ($peutEcrire)
-                                        <button type="button" wire:click="basculer('{{ $famille }}', {{ $element->id }})"
-                                                class="shrink-0 rounded-md border border-zinc-300 px-2 py-1 text-xs font-medium dark:border-zinc-600">
-                                            {{ $element->visible ? __('Masquer') : __('Afficher') }}
-                                        </button>
-                                    @else
-                                        <span class="shrink-0 text-xs text-zinc-500">{{ $element->visible ? __('Affiché') : __('Masqué') }}</span>
-                                    @endif
-                                </li>
-                            @endforeach
-                        </ul>
-                    @endif
+                 Embarque et non reecrit : chaque collection garde ses
+                 statistiques, sa recherche, son reordonnancement par
+                 glisser-deposer et ses actions. Dupliquer ce corps aurait cree
+                 deux versions a corriger a chaque defaut.
+
+                 wire:key est indispensable sur un composant imbrique : sans
+                 lui, Livewire reutiliserait l'instance d'un module a l'autre
+                 et afficherait les temoignages sous l'intitule « Partenaires ». --}}
+            @if ($ecranEmbarque)
+                <div class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900">
+                    <h3 class="mb-4 text-sm font-semibold">{{ $ecranEmbarque['intitule'] }}</h3>
+                    @livewire($ecranEmbarque['composant'], ['embarque' => true], key('embarque-'.$module))
                 </div>
-            @endforeach
+            @endif
 
             {{-- ARTICLES : automatiques, donc montres sans faire croire a un choix --}}
             @if ($module === 'articles')
@@ -270,7 +268,13 @@
                         @forelse ($articles as $article)
                             <li class="flex items-center justify-between gap-3 py-2">
                                 <span class="text-sm">{{ $article->titre($langueActive) }}</span>
-                                <a href="{{ route('admin.articles.edition', $article) }}" class="shrink-0 text-xs underline underline-offset-4">{{ __('Modifier') }}</a>
+                                {{-- Pas de lien vers l'ecran des articles : il
+                                     deviendra la page « Actualités » de la
+                                     refonte, et renvoyer vers un ecran voue a
+                                     disparaitre rendrait celui-ci dependant. --}}
+                                <span class="shrink-0 text-xs text-zinc-500 dark:text-zinc-400">
+                                    {{ $article->date_publication?->translatedFormat('j M Y') }}
+                                </span>
                             </li>
                         @empty
                             <li class="py-2 text-sm text-zinc-500 dark:text-zinc-400">{{ __('Aucun article publié pour le moment.') }}</li>

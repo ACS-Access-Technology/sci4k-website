@@ -29,7 +29,7 @@ it('affiche les huit modules dans l ordre du site', function () {
     Livewire::actingAs($this->admin)->test(PageAccueil::class)
         ->assertOk()
         ->assertSeeInOrder([
-            'Bannière principale',
+            'Hero',
             'Bande déroulante',
             'Services',
             'Annonce',
@@ -43,9 +43,68 @@ it('affiche les huit modules dans l ordre du site', function () {
 it('ouvre le module demande', function () {
     Livewire::actingAs($this->admin)->test(PageAccueil::class)
         ->call('ouvrir', 'partenaires')
-        ->assertSet('module', 'partenaires')
-        ->assertSee('Partenaires affichés');
+        ->assertSet('module', 'partenaires');
 });
+
+/**
+ * Chaque module qui pilote une collection embarque l'ANCIEN ECRAN ENTIER, et
+ * non un resume renvoyant ailleurs : c'est la condition pour que les ecrans
+ * par type de contenu puissent disparaitre sans rien perdre.
+ */
+it('embarque l ecran complet de la collection', function (string $module, string $marqueur) {
+    $rendu = Livewire::actingAs($this->admin)->test(PageAccueil::class)
+        ->call('ouvrir', $module)
+        ->html();
+
+    expect($rendu)->toContain($marqueur);
+})->with([
+    // Le texte du glisser-deposer ne sort que du corps de l'ancien ecran : le
+    // trouver ici prouve que l'ecran entier est rendu, et pas un resume.
+    ['temoignages', 'Faites glisser une ligne par sa poignée'],
+    ['partenaires', 'Faites glisser une ligne par sa poignée'],
+    ['services', 'Faites glisser une ligne par sa poignée'],
+    // Les deux editeurs groupes sont montes comme composants imbriques :
+    // Livewire ne rend pas leur corps dans le test du parent, seul leur
+    // ancrage y figure. Leur contenu est couvert par leurs propres tests.
+    ['hero', 'wire:name="admin.chiffre-cle-ensemble"'],
+    ['bandeau', 'wire:name="admin.commune-bandeau-ensemble"'],
+]);
+
+/** Les statistiques de l'ancien ecran suivent, elles aussi. */
+it('embarque les statistiques de l ancien ecran', function () {
+    Temoignage::factory()->create(['visible' => true, 'note' => 5]);
+
+    Livewire::actingAs($this->admin)->test(PageAccueil::class)
+        ->call('ouvrir', 'temoignages')
+        ->assertSee('Note moyenne')
+        ->assertSee('Affichés sur le site');
+});
+
+/** L'en-tete de page de l'ecran embarque ne doit PAS apparaitre : la page qui
+ *  l'accueille porte deja le sien, et deux fils d'Ariane se contrediraient. */
+it('n affiche pas le fil d Ariane de l ecran embarque', function () {
+    $rendu = Livewire::actingAs($this->admin)->test(PageAccueil::class)
+        ->call('ouvrir', 'temoignages')
+        ->html();
+
+    expect(substr_count($rendu, 'aria-label="Fil d’Ariane"'))->toBeLessThanOrEqual(1);
+});
+
+/** L'ecran ne doit renvoyer vers aucun ecran voue a disparaitre. */
+it('ne renvoie vers aucun ancien ecran de liste', function (string $module) {
+    $rendu = Livewire::actingAs($this->admin)->test(PageAccueil::class)
+        ->call('ouvrir', $module)
+        ->html();
+
+    foreach ([
+        route('admin.chiffres-cles'),
+        route('admin.banderole'),
+        route('admin.temoignages.liste'),
+        route('admin.partenaires.liste'),
+    ] as $adresse) {
+        expect($rendu)->not->toContain('href="'.$adresse.'"');
+    }
+})->with(['hero', 'bandeau', 'articles', 'temoignages', 'partenaires']);
 
 it('refuse un module inconnu', function () {
     Livewire::actingAs($this->admin)->test(PageAccueil::class)
@@ -85,6 +144,38 @@ it('enregistre un encart avec ses dates de diffusion', function () {
         ->and($encart->visible)->toBeTrue();
 });
 
+/**
+ * Les deux boutons du hero etaient ecrits en dur dans le gabarit public, et le
+ * premier pointait sur /biens.html — une adresse qui ne repond plus que par une
+ * redirection.
+ */
+it('enregistre les deux boutons du hero et les sert sur le site', function () {
+    Livewire::actingAs($this->admin)->test(PageAccueil::class)
+        ->call('ouvrir', 'hero')
+        ->set('boutons.bouton1_libelle_fr', 'Voir nos biens')
+        ->set('boutons.bouton1_cible', '/biens?offre=vente')
+        ->set('boutons.bouton2_libelle_fr', 'Qui sommes-nous')
+        ->set('boutons.bouton2_cible', '/presentation')
+        ->call('enregistrer')
+        ->assertHasNoErrors();
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('Voir nos biens', false)
+        ->assertSee('Qui sommes-nous', false)
+        ->assertSee('/biens?offre=vente', false);
+});
+
+/** Sans saisie, le site garde les libelles et les liens d'origine. */
+it('garde les boutons d origine quand rien n est saisi', function () {
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('Rechercher un bien', false)
+        ->assertSee('Découvrir SCI4K', false)
+        // Et surtout plus /biens.html, qui ne repond que par une redirection.
+        ->assertDontSee('href="/biens.html"', false);
+});
+
 it('refuse une fin de diffusion anterieure au debut', function () {
     Livewire::actingAs($this->admin)->test(PageAccueil::class)
         ->call('ouvrir', 'annonce')
@@ -110,22 +201,6 @@ it('enregistre l apparence de la bande deroulante', function () {
         ->and($section->option('casse'))->toBe('normale');
 });
 
-it('bascule l affichage d un element de collection', function () {
-    $temoignage = Temoignage::factory()->create(['visible' => true]);
-
-    Livewire::actingAs($this->admin)->test(PageAccueil::class)
-        ->call('ouvrir', 'temoignages')
-        ->call('basculer', 'temoignages', $temoignage->id);
-
-    expect($temoignage->fresh()->visible)->toBeFalse();
-});
-
-it('refuse une famille de collection inconnue', function () {
-    Livewire::actingAs($this->admin)->test(PageAccueil::class)
-        ->call('basculer', 'utilisateurs', 1)
-        ->assertNotFound();
-});
-
 /**
  * Un lecteur consulte, il ne modifie pas. Le controle est sur l'ACTION et non
  * seulement sur l'affichage du bouton : Livewire expose toute methode publique
@@ -140,9 +215,6 @@ it('interdit toute ecriture a un lecteur', function () {
         ->call('enregistrer')
         ->assertForbidden();
 
-    Livewire::actingAs($lecteur)->test(PageAccueil::class)
-        ->call('basculer', 'temoignages', 1)
-        ->assertForbidden();
 });
 
 it('ferme l ecran a un compte sans role', function () {

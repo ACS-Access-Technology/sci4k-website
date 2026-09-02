@@ -2,14 +2,10 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\ChiffreCle;
 use App\Models\CommuneDuBandeau;
 use App\Models\Encart;
 use App\Models\ImageDeFond;
-use App\Models\Partenaire;
 use App\Models\ReglageDeSection;
-use App\Models\Service;
-use App\Models\Temoignage;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -49,16 +45,20 @@ class PageAccueil extends Component
     {
         return [
             'hero' => [
-                'intitule' => __('Bannière principale'),
-                'resume' => __('Étiquette, titre, accroche, chiffres clés et image de fond.'),
+                'intitule' => __('Hero'),
+                'resume' => __('Étiquette, titre, accroche, boutons, chiffres clés et image de fond.'),
                 'section' => 'home.hero',
                 'fond' => 'accueil-hero',
                 'ancre' => '#accueil',
             ],
             'bandeau' => [
                 'intitule' => __('Bande déroulante'),
-                'resume' => __('Communes défilantes sous la bannière, et leur apparence.'),
+                'resume' => __('Communes défilantes sous le hero, et leur apparence.'),
                 'section' => CommuneDuBandeau::SECTION,
+                // Ni etiquette ni accroche : la banderole n'affiche que les
+                // communes. Les proposer aurait ete offrir deux champs dont
+                // rien n'aurait jamais montre le contenu.
+                'champsEntete' => [],
                 'ancre' => null,
             ],
             'services' => [
@@ -117,6 +117,9 @@ class PageAccueil extends Component
     /** Reglages d'apparence de la bande deroulante. */
     public array $bandeau = [];
 
+    /** Libelles et cibles des deux boutons du hero. */
+    public array $boutons = [];
+
     public ?string $message = null;
 
     protected function peutEcrire(): bool
@@ -161,6 +164,7 @@ class PageAccueil extends Component
         $this->entete = [];
         $this->encart = [];
         $this->bandeau = [];
+        $this->boutons = [];
 
         if ($slug = $description['section'] ?? null) {
             $section = ReglageDeSection::where('slug', $slug)->first();
@@ -168,6 +172,14 @@ class PageAccueil extends Component
             foreach (['etiquette', 'titre', 'chapo'] as $champ) {
                 $this->entete[$champ.'_fr'] = (string) ($section?->{$champ.'_fr'} ?? '');
                 $this->entete[$champ.'_en'] = (string) ($section?->{$champ.'_en'} ?? '');
+            }
+
+            if ($this->module === 'hero') {
+                foreach (['bouton1', 'bouton2'] as $bouton) {
+                    $this->boutons[$bouton.'_libelle_fr'] = (string) ($section?->option($bouton.'_libelle_fr') ?? '');
+                    $this->boutons[$bouton.'_libelle_en'] = (string) ($section?->option($bouton.'_libelle_en') ?? '');
+                    $this->boutons[$bouton.'_cible'] = (string) ($section?->option($bouton.'_cible') ?? '');
+                }
             }
 
             if ($this->module === 'bandeau') {
@@ -213,6 +225,12 @@ class PageAccueil extends Component
         $regles['encart.diffusion_de'] = ['nullable', 'date'];
         $regles['encart.diffusion_a'] = ['nullable', 'date', 'after_or_equal:encart.diffusion_de'];
 
+        foreach (['bouton1', 'bouton2'] as $bouton) {
+            $regles['boutons.'.$bouton.'_libelle_fr'] = ['nullable', 'string', 'max:80'];
+            $regles['boutons.'.$bouton.'_libelle_en'] = ['nullable', 'string', 'max:80'];
+            $regles['boutons.'.$bouton.'_cible'] = ['nullable', 'string', 'max:190'];
+        }
+
         $regles['bandeau.fond'] = ['nullable', 'in:sombre,clair'];
         $regles['bandeau.separateur'] = ['nullable', 'string', 'max:5'];
         $regles['bandeau.casse'] = ['nullable', 'in:majuscules,normale'];
@@ -248,6 +266,11 @@ class PageAccueil extends Component
                 $section->poserOptions($this->bandeau);
                 $section->save();
             }
+
+            if ($this->module === 'hero' && $this->boutons !== []) {
+                $section->poserOptions($this->boutons);
+                $section->save();
+            }
         }
 
         if ($slug = $description['encart'] ?? null) {
@@ -273,62 +296,6 @@ class PageAccueil extends Component
         $this->dispatch('toast', message: __(':module enregistré.', ['module' => $description['intitule']]), variant: 'success');
     }
 
-    /**
-     * Bascule la visibilite d'un element d'une collection du module ouvert.
-     *
-     * C'est le geste le plus courant sur ces listes — retirer un temoignage,
-     * masquer un partenaire — et il ne vaut pas un aller-retour vers l'ecran
-     * dedie. Les modifications de fond (photo, texte long) y restent.
-     */
-    public function basculer(string $famille, int $id): void
-    {
-        abort_unless($this->peutEcrire(), 403);
-
-        $modele = $this->modeleDeLaFamille($famille);
-        abort_unless($modele !== null, 404);
-
-        $element = $modele::findOrFail($id);
-        $element->visible = ! $element->visible;
-        $element->save();
-
-        $this->dispatch('toast', message: __('Affichage mis à jour.'), variant: 'success');
-    }
-
-    /** Les collections que cet ecran sait masquer ou afficher. */
-    protected function modeleDeLaFamille(string $famille): ?string
-    {
-        return [
-            'chiffres' => ChiffreCle::class,
-            'communes' => CommuneDuBandeau::class,
-            'services' => Service::class,
-            'temoignages' => Temoignage::class,
-            'partenaires' => Partenaire::class,
-        ][$famille] ?? null;
-    }
-
-    /**
-     * Comment nommer un element de collection a l'ecran.
-     *
-     * Chaque famille porte son intitule sur une colonne differente — « nom »
-     * pour une commune ou un partenaire, « auteur » pour un avis, une methode
-     * traduite pour un service ou un chiffre cle. La vue enchainait des ?? sur
-     * des appels de methode, ce qui ne protege de rien : l'operateur teste une
-     * valeur nulle, pas une methode absente, et l'ecran tombait sur un
-     * Temoignage.
-     */
-    public function libelleDeLElement(string $famille, mixed $element): string
-    {
-        $libelle = match ($famille) {
-            'communes', 'partenaires' => $element->nom,
-            'temoignages' => $element->auteur,
-            'chiffres' => trim(($element->valeur ?? '').($element->suffixe ?? '').' '.$element->intitule($this->langueActive)),
-            'services' => $element->titre($this->langueActive),
-            default => null,
-        };
-
-        return trim((string) $libelle) ?: __('(sans titre)');
-    }
-
     /** Le fond du module ouvert, s'il en a un. */
     public function fondDuModule(): ?ImageDeFond
     {
@@ -337,21 +304,33 @@ class PageAccueil extends Component
         return $slug ? ImageDeFond::where('slug', $slug)->first() : null;
     }
 
+    /**
+     * L'ecran complet a embarquer dans le module ouvert, s'il y en a un.
+     *
+     * Chaque module qui pilote une collection affiche l'ancien ecran ENTIER —
+     * statistiques, recherche, reordonnancement, actions — plutot qu'un
+     * resume renvoyant ailleurs. C'est la condition pour que les ecrans par
+     * type de contenu puissent disparaitre sans rien perdre.
+     *
+     * @return array{composant: string, intitule: string}|null
+     */
+    public function ecranEmbarque(): ?array
+    {
+        return [
+            'hero' => ['composant' => 'admin.chiffre-cle-ensemble', 'intitule' => __('Chiffres clés')],
+            'bandeau' => ['composant' => 'admin.commune-bandeau-ensemble', 'intitule' => __('Communes défilantes')],
+            'services' => ['composant' => 'admin.service-liste', 'intitule' => __('Services')],
+            'temoignages' => ['composant' => 'admin.temoignage-liste', 'intitule' => __('Avis clients')],
+            'partenaires' => ['composant' => 'admin.partenaire-liste', 'intitule' => __('Partenaires')],
+        ][$this->module] ?? null;
+    }
+
     public function render(): View
     {
-        $collections = match ($this->module) {
-            'hero' => ['chiffres' => ChiffreCle::query()->orderBy('ordre')->orderBy('id')->get()],
-            'bandeau' => ['communes' => CommuneDuBandeau::query()->orderBy('ordre')->orderBy('id')->get()],
-            'services' => ['services' => Service::query()->orderBy('ordre')->orderBy('id')->get()],
-            'temoignages' => ['temoignages' => Temoignage::query()->orderBy('ordre')->orderBy('id')->get()],
-            'partenaires' => ['partenaires' => Partenaire::query()->orderBy('ordre')->orderBy('id')->get()],
-            default => [],
-        };
-
         return view('livewire.admin.page-accueil', [
             'modules' => $this->modules(),
             'description' => $this->moduleCourant(),
-            'collections' => $collections,
+            'ecranEmbarque' => $this->ecranEmbarque(),
             'fond' => $this->fondDuModule(),
             // Les trois articles que l'accueil affichera : ils ne se choisissent
             // pas, ce sont les plus recents publies. L'ecran les montre pour

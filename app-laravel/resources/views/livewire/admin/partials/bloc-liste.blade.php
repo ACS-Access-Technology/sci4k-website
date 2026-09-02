@@ -20,21 +20,38 @@
 
 <div class="space-y-6">
 
-    <x-admin.entete-page :titre="$titre" :fil="$fil"
-        :resume="trans_choice(':nombre élément|:nombre éléments', $elements->count(), ['nombre' => $elements->count()])">
-        <x-slot:actions>
-            <x-bascule-langue />
-            @if ($routeCreation)
-                @hasanyrole('administrateur|editeur')
+    {{-- Embarque dans un ecran de page, ce bloc n'a pas de titre a lui : la
+         page qui l'accueille porte deja le sien. Le bouton de creation, lui,
+         reste indispensable — sans quoi la liste ne servirait qu'a consulter. --}}
+    @unless ($embarque ?? false)
+        <x-admin.entete-page :titre="$titre" :fil="$fil"
+            :resume="trans_choice(':nombre élément|:nombre éléments', $elements->count(), ['nombre' => $elements->count()])">
+            <x-slot:actions>
+                <x-bascule-langue />
+                @if ($routeCreation)
+                    @hasanyrole('administrateur|editeur')
+                        <a href="{{ route($routeCreation) }}" wire:navigate
+                           class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                            <x-admin.icone nom="plus" />
+                            {{ $libelleCreation }}
+                        </a>
+                    @endhasanyrole
+                @endif
+            </x-slot:actions>
+        </x-admin.entete-page>
+    @else
+        @if ($routeCreation)
+            @hasanyrole('administrateur|editeur')
+                <div class="flex justify-end">
                     <a href="{{ route($routeCreation) }}" wire:navigate
                        class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
                         <x-admin.icone nom="plus" />
                         {{ $libelleCreation }}
                     </a>
-                @endhasanyrole
-            @endif
-        </x-slot:actions>
-    </x-admin.entete-page>
+                </div>
+            @endhasanyrole
+        @endif
+    @endunless
 
     @if (session('message'))
         <div role="status" class="rounded-lg border border-green-300 bg-green-50 px-4 py-3 text-sm text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-100">

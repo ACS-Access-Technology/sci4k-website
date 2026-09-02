@@ -31,6 +31,16 @@ abstract class EditionGroupee extends Component
     use RemplitParTraduction;
 
     /**
+     * L'ecran est-il rendu A L'INTERIEUR d'un autre ?
+     *
+     * Vrai quand un ecran de page — « Pages du site → Accueil » — embarque
+     * cet editeur dans l'un de ses modules. Le corps reste identique ; seul
+     * l'en-tete de page disparait, un titre et un fil d'Ariane n'ayant pas de
+     * sens au milieu d'une autre page. Voir ListeOrdonnable::$embarque.
+     */
+    public bool $embarque = false;
+
+    /**
      * Les lignes en cours d'edition, indexees par identifiant.
      *
      * Une ligne ajoutee mais pas encore enregistree porte une cle « neuf-N » :

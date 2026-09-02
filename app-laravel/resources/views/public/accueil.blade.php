@@ -50,12 +50,18 @@
       <p class="lede reveal" style="transition-delay:.2s">{{ $hero->chapo($langue) }}</p>
     @endif
 
+    {{-- Les deux boutons viennent des options du hero, editables depuis
+         « Pages du site → Accueil ». Ils etaient ecrits en dur, et le premier
+         pointait sur /biens.html — une adresse qui ne repond plus que par une
+         redirection 301 depuis le portage du catalogue. --}}
     <div class="hero-actions reveal" style="transition-delay:.3s">
-      <a href="/biens.html" class="hero-btn-primary">
-        <span>{{ __('Rechercher un bien') }}</span>
+      <a href="{{ $hero?->option('bouton1_cible') ?: route('biens.index') }}" class="hero-btn-primary">
+        <span>{{ $hero?->option('bouton1_libelle_'.$langue) ?: __('Rechercher un bien') }}</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
       </a>
-      <a href="{{ route('presentation.index') }}" class="hero-btn-secondary">{{ __('Découvrir SCI4K') }}</a>
+      <a href="{{ $hero?->option('bouton2_cible') ?: route('presentation.index') }}" class="hero-btn-secondary">
+        {{ $hero?->option('bouton2_libelle_'.$langue) ?: __('Découvrir SCI4K') }}
+      </a>
     </div>
 
     {{-- Les compteurs viennent de la base. data-target porte la valeur que
