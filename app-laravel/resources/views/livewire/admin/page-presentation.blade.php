@@ -74,7 +74,15 @@
 
                 <form wire:submit="enregistrer" class="space-y-4">
 
-                    @foreach (['etiquette' => __('Étiquette'), 'titre' => __('Titre'), 'chapo' => __('Accroche')] as $champ => $intitule)
+                    {{-- Chaque module declare les champs d'en-tete qu'il
+                         emploie : le mot du directeur n'affiche pas d'accroche
+                         sur le site, et le champ n'aurait rien montre. --}}
+                    @php($tousLesChamps = ['etiquette' => __('Étiquette'), 'titre' => __('Titre'), 'chapo' => __('Accroche')])
+                    @php($champsEntete = isset($description['champsEntete'])
+                        ? array_intersect_key($tousLesChamps, array_flip($description['champsEntete']))
+                        : $tousLesChamps)
+
+                    @foreach ($champsEntete as $champ => $intitule)
                         <label class="block">
                             <span class="text-sm font-medium">{{ $intitule }}</span>
                             @if ($champ === 'chapo')

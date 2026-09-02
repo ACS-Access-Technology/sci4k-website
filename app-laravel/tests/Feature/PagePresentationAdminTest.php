@@ -199,3 +199,53 @@ it('ne propose pas de reordonner les modules', function () {
     Livewire::actingAs($this->admin)->test(PagePresentation::class)
         ->assertDontSee('wire:sortable', false);
 });
+
+
+/**
+ * Le mot du directeur n'affiche pas d'accroche sur le site : le champ
+ * n'aurait rien montre.
+ */
+it('n affiche pas d accroche sur le mot du directeur', function () {
+    $rendu = Livewire::actingAs($this->admin)->test(PagePresentation::class)
+        ->call('ouvrir', 'directeur')
+        ->html();
+
+    expect($rendu)->not->toContain('wire:model="entete.chapo_fr"')
+        ->and($rendu)->toContain('wire:model="entete.titre_fr"');
+});
+
+/** Les autres modules gardent leur accroche. */
+it('garde l accroche sur les modules qui l affichent', function (string $module) {
+    $rendu = Livewire::actingAs($this->admin)->test(PagePresentation::class)
+        ->call('ouvrir', $module)
+        ->html();
+
+    expect($rendu)->toContain('wire:model="entete.chapo_fr"');
+})->with(['banniere', 'presentation', 'valeurs', 'equipe']);
+
+/**
+ * L'editeur embarque ne doit pas afficher son panneau « Reglages du bloc » :
+ * il edite la MEME section que le formulaire du module, juste au-dessus. Deux
+ * formulaires pour une donnee, c'est une saisie qui en ecrase une autre selon
+ * l'ordre des clics.
+ */
+it('masque les reglages du bloc dans l editeur embarque', function () {
+    Valeur::factory()->create();
+
+    $rendu = Livewire::actingAs($this->admin)->test(PagePresentation::class)
+        ->call('ouvrir', 'valeurs')
+        ->html();
+
+    expect($rendu)->not->toContain('Réglages du bloc');
+});
+
+/** Sur son propre ecran, le panneau reste : rien d'autre n'edite la section. */
+it('garde les reglages du bloc sur l ecran des valeurs', function () {
+    Valeur::factory()->create();
+
+    $rendu = Livewire::actingAs($this->admin)
+        ->test(App\Livewire\Admin\ValeurEnsemble::class)
+        ->html();
+
+    expect($rendu)->toContain('Réglages du bloc');
+});

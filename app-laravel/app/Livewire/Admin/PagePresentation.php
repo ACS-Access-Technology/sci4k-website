@@ -52,6 +52,10 @@ class PagePresentation extends Component
                 'fond' => 'presentation-directeur',
                 'contenu' => true,
                 'compteur' => true,
+                // Pas d'accroche : ce bloc porte une etiquette, un titre et un
+                // corps de texte. Le gabarit public n'affiche jamais de chapo
+                // ici — le champ n'aurait rien montre.
+                'champsEntete' => ['etiquette', 'titre'],
             ],
             'valeurs' => [
                 'intitule' => __('Valeurs'),
