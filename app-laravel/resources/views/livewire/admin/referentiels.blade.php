@@ -10,16 +10,28 @@
 
 <form wire:submit="enregistrer" class="space-y-6">
 
-    <x-admin.entete-page
-        :titre="__('Référentiels')"
-        :fil="[__('Accueil') => route('dashboard'), __('Réglages') => null, __('Référentiels') => null]">
-        <x-slot:actions>
+    {{-- Embarque dans un ecran de page, ce bloc n'a pas de titre a lui : la
+         page qui l'accueille porte deja le sien. Le bouton d'enregistrement
+         reste, sans quoi la liste ne servirait qu'a lire. --}}
+    @if ($embarque ?? false)
+        <div class="flex flex-wrap justify-end gap-2">
             <x-bascule-langue />
             <button type="submit" class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
                 {{ __('Enregistrer') }}
             </button>
-        </x-slot:actions>
-    </x-admin.entete-page>
+        </div>
+    @else
+        <x-admin.entete-page
+            :titre="__('Référentiels')"
+            :fil="[__('Accueil') => route('dashboard'), __('Réglages') => null, __('Référentiels') => null]">
+            <x-slot:actions>
+                <x-bascule-langue />
+                <button type="submit" class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                    {{ __('Enregistrer') }}
+                </button>
+            </x-slot:actions>
+        </x-admin.entete-page>
+    @endif
 
     @if (session('succes'))
         <p class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
