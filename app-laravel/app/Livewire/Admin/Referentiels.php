@@ -22,6 +22,17 @@ use Livewire\Component;
 class Referentiels extends Component
 {
     /**
+     * L'ecran est-il rendu A L'INTERIEUR d'un autre ?
+     *
+     * Vrai quand « Pages du site → Biens immobiliers » l'embarque dans son
+     * module Filtres : ces cinq familles sont exactement le vocabulaire des
+     * filtres de /biens et des fiches de bien. Seul l'en-tete de page
+     * disparait, un titre et un fil d'Ariane n'ayant pas de sens au milieu
+     * d'une autre page.
+     */
+    public bool $embarque = false;
+
+    /**
      * Les lignes en cours d'edition, par famille puis par cle.
      *
      * Une ligne ajoutee mais pas encore enregistree porte une cle « neuf-N » :

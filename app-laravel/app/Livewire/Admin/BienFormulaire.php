@@ -128,6 +128,15 @@ class BienFormulaire extends Component
         return (bool) auth()->user()?->hasAnyRole(['administrateur', 'editeur']);
     }
 
+    /**
+     * Le formulaire est-il rendu A L'INTERIEUR d'une liste ?
+     *
+     * Ce composant n'herite pas de FormulaireDeBloc : il porte donc lui-meme
+     * ce que la classe mere apporte aux autres — en-tete masquee, « Annuler »
+     * qui referme, et enregistrement qui previent la liste.
+     */
+    public bool $embarque = false;
+
     public function mount(?Bien $bien = null): void
     {
         $this->langueActive = app()->getLocale();
@@ -341,8 +350,18 @@ class BienFormulaire extends Component
 
         $this->televerserLesPhotos();
 
-        session()->flash('message', __('Bien enregistré.'));
         $this->dispatch('toast', message: __('Bien enregistré.'), variant: 'success');
+
+        // Embarque dans une liste, on ne redirige pas : on previent la liste,
+        // qui se referme. Rediriger ferait quitter l'ecran de page au milieu
+        // d'une modification.
+        if ($this->embarque) {
+            $this->dispatch('bloc-enregistre');
+
+            return null;
+        }
+
+        session()->flash('message', __('Bien enregistré.'));
 
         return $this->redirect(route('admin.biens.liste'), navigate: true);
     }

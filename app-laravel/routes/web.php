@@ -23,6 +23,7 @@ use App\Livewire\Admin\EtapeProcessusEnsemble;
 use App\Livewire\Admin\FaqFormulaire;
 use App\Livewire\Admin\Frequentation;
 use App\Livewire\Admin\PageAccueil;
+use App\Livewire\Admin\PageBiens;
 use App\Livewire\Admin\PagePresentation;
 use App\Livewire\Admin\PagesStatiques;
 use App\Livewire\Admin\FaqListe;
@@ -153,6 +154,7 @@ Route::middleware(['auth', 'role:administrateur|editeur|redacteur|lecteur'])
         // lisent et ecrivent les memes tables.
         Route::get('/pages/accueil', PageAccueil::class)->name('pages.accueil');
         Route::get('/pages/presentation', PagePresentation::class)->name('pages.presentation');
+        Route::get('/pages/biens', PageBiens::class)->name('pages.biens');
 
         Route::get('/articles', ArticleListe::class)->name('articles.liste');
         Route::get('/biens', BienListe::class)->name('biens.liste');

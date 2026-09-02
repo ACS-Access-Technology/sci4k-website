@@ -22,6 +22,19 @@ class BienListe extends Component
 {
     use WithPagination;
 
+    /**
+     * L'ecran est-il rendu A L'INTERIEUR d'un autre ?
+     *
+     * Vrai quand « Pages du site → Biens immobiliers » l'embarque dans son
+     * module Catalogue. L'en-tete de page disparait alors — la page qui
+     * l'accueille porte le sien — et les liens d'edition cedent la place a un
+     * formulaire ouvert sur place, pour ne pas faire sortir l'editeur.
+     */
+    public bool $embarque = false;
+
+    /** Formulaire ouvert sur place : null, 'creation', ou l'identifiant edite. */
+    public null|int|string $formulaireOuvert = null;
+
     public string $recherche = '';
 
     public string $type = '';
@@ -82,6 +95,31 @@ class BienListe extends Component
         $this->message = __('Bien « :titre » supprimé.', ['titre' => $titre]);
     }
 
+    public function ouvrirCreation(): void
+    {
+        abort_unless($this->peutEcrire(), 403);
+
+        $this->formulaireOuvert = 'creation';
+    }
+
+    public function ouvrirEdition(int $id): void
+    {
+        abort_unless($this->peutEcrire(), 403);
+
+        // L'identifiant vient du navigateur : on verifie qu'il designe bien un
+        // bien avant de le passer au formulaire.
+        abort_unless(Bien::whereKey($id)->exists(), 404);
+
+        $this->formulaireOuvert = $id;
+    }
+
+    #[\Livewire\Attributes\On('bloc-enregistre')]
+    #[\Livewire\Attributes\On('bloc-annule')]
+    public function fermerFormulaire(): void
+    {
+        $this->formulaireOuvert = null;
+    }
+
     public function render(): View
     {
         $langue = app()->getLocale();
@@ -111,6 +149,10 @@ class BienListe extends Component
             'biens' => $biens,
             'langue' => $langue,
             'peutEcrire' => $this->peutEcrire(),
+            // Le MODELE et non l'identifiant : BienFormulaire attend un Bien
+            // dans son mount(), et le liage de route ne joue que pour un
+            // composant de pleine page.
+            'bienEnEdition' => is_int($this->formulaireOuvert) ? Bien::find($this->formulaireOuvert) : null,
             'types' => Referentiel::deLaFamille('types_de_bien')->ordonnees()->get(),
             'zones' => Referentiel::deLaFamille('zones')->ordonnees()->get(),
             'tranchesPieces' => Referentiel::deLaFamille('tranches_pieces')->ordonnees()->get(),

@@ -6,18 +6,40 @@
 
 <form wire:submit="enregistrer" class="space-y-6">
 
-    <x-admin.entete-page
-        :titre="$estCreation ? __('Nouveau bien') : __('Modifier le bien')"
-        :fil="[__('Accueil') => route('dashboard'), __('Biens') => route('admin.biens.liste'), ($estCreation ? __('Nouveau') : __('Modifier')) => null]">
-        <x-slot:actions>
-            <x-bascule-langue />
-            @if ($peutEcrire)
-                <button type="submit" class="rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900">
-                    {{ __('Enregistrer') }}
+    {{-- Ouvert dans une liste, le formulaire n'a ni titre de page ni fil
+         d'Ariane : la page qui l'accueille porte les siens. --}}
+    @if ($embarque ?? false)
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 pb-3 dark:border-zinc-700">
+            <h4 class="text-sm font-semibold">
+                {{ $estCreation ? __('Nouveau bien') : __('Modifier le bien') }}
+            </h4>
+            <div class="flex items-center gap-2">
+                <x-bascule-langue />
+                <button type="button" wire:click="$dispatch('bloc-annule')"
+                        class="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium dark:border-zinc-600">
+                    {{ __('Annuler') }}
                 </button>
-            @endif
-        </x-slot:actions>
-    </x-admin.entete-page>
+                @if ($peutEcrire)
+                    <button type="submit" class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-zinc-900">
+                        {{ __('Enregistrer') }}
+                    </button>
+                @endif
+            </div>
+        </div>
+    @else
+        <x-admin.entete-page
+            :titre="$estCreation ? __('Nouveau bien') : __('Modifier le bien')"
+            :fil="[__('Accueil') => route('dashboard'), __('Biens') => route('admin.biens.liste'), ($estCreation ? __('Nouveau') : __('Modifier')) => null]">
+            <x-slot:actions>
+                <x-bascule-langue />
+                @if ($peutEcrire)
+                    <button type="submit" class="rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900">
+                        {{ __('Enregistrer') }}
+                    </button>
+                @endif
+            </x-slot:actions>
+        </x-admin.entete-page>
+    @endif
 
     @if ($message)
         <p class="rounded-lg border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm dark:border-zinc-700 dark:bg-zinc-900">{{ $message }}</p>
