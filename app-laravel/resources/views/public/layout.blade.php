@@ -43,7 +43,7 @@ document.documentElement.setAttribute('data-theme',sombre?'dark':'light');}catch
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('assets/images.css') }}">
+<link rel="stylesheet" href="{{ \App\Support\Ressource::url('assets/images.css') }}">
 @if ($variablesImagesDeFond)
 <style>
 :root {
@@ -53,7 +53,7 @@ document.documentElement.setAttribute('data-theme',sombre?'dark':'light');}catch
 }
 </style>
 @endif
-<link rel="stylesheet" href="{{ asset('assets/style.css') }}">
+<link rel="stylesheet" href="{{ \App\Support\Ressource::url('assets/style.css') }}">
 @if ($googleAnalytics)
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ urlencode($googleAnalytics) }}"></script>
 <script>
@@ -73,7 +73,7 @@ gtag('config', '{{ $googleAnalytics }}');
 @include('public.partials.pied')
 @include('public.partials.flottants')
 {{-- defer indispensable : sans lui le bouton flottant reste inerte, corrige en aout 2026. --}}
-<script src="{{ asset('assets/main.js') }}" defer></script>
+<script src="{{ \App\Support\Ressource::url('assets/main.js') }}" defer></script>
 @if ($tawkActif && $tawkIdentifiant)
 <script>
 var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
