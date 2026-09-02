@@ -126,22 +126,33 @@ it('enregistre l en-tete d une section', function () {
         ->and($section->chapo_fr)->toBe('Une accroche revue.');
 });
 
-it('enregistre un encart avec ses dates de diffusion', function () {
-    Livewire::actingAs($this->admin)->test(PageAccueil::class)
-        ->call('ouvrir', 'cta')
-        ->set('encart.titre_fr', 'Prêt à concrétiser ?')
-        ->set('encart.cible_bouton', '/biens')
-        ->set('encart.visible', true)
-        ->set('encart.diffusion_de', '2026-09-01')
-        ->set('encart.diffusion_a', '2026-09-30')
-        ->call('enregistrer')
-        ->assertHasNoErrors();
+/**
+ * Les modules Annonce et CTA embarquent le FORMULAIRE D'ENCART, et non une
+ * copie de ses champs. Lui seul sait televerser une image, la remplacer et
+ * faire le menage de l'ancienne : la recopier avait donne un module d'annonce
+ * sans visuel.
+ */
+it('embarque le formulaire d encart, image comprise', function (string $module, string $slug) {
+    $rendu = Livewire::actingAs($this->admin)->test(PageAccueil::class)
+        ->call('ouvrir', $module)
+        ->html();
 
-    $encart = Encart::where('slug', 'accueil')->first();
+    expect($rendu)->toContain('wire:name="admin.encart-formulaire"');
+    expect(Encart::where('slug', $slug)->exists())->toBeTrue();
+})->with([
+    ['annonce', 'accueil.annonce'],
+    ['cta', 'accueil'],
+]);
 
-    expect($encart->titre_fr)->toBe('Prêt à concrétiser ?')
-        ->and($encart->cible_bouton)->toBe('/biens')
-        ->and($encart->visible)->toBeTrue();
+/** Le formulaire d'encart gere bien un fichier : c'est ce qui manquait. */
+it('permet de gerer l image de l encart', function () {
+    $encart = Encart::firstOrCreate(['slug' => 'accueil.annonce']);
+
+    $rendu = Livewire::actingAs($this->admin)
+        ->test(App\Livewire\Admin\EncartFormulaire::class, ['element' => $encart, 'embarque' => true])
+        ->html();
+
+    expect($rendu)->toContain('type="file"');
 });
 
 /**
@@ -176,13 +187,26 @@ it('garde les boutons d origine quand rien n est saisi', function () {
         ->assertDontSee('href="/biens.html"', false);
 });
 
-it('refuse une fin de diffusion anterieure au debut', function () {
+/**
+ * Un module d'encart n'affiche pas les champs d'en-tete de section : il n'a
+ * pas de section, et le formulaire n'aurait eu qu'un bouton « Enregistrer »
+ * sans rien a enregistrer.
+ */
+it('n affiche pas les champs de section sur un module d encart', function () {
     Livewire::actingAs($this->admin)->test(PageAccueil::class)
         ->call('ouvrir', 'annonce')
-        ->set('encart.diffusion_de', '2026-09-30')
-        ->set('encart.diffusion_a', '2026-09-01')
-        ->call('enregistrer')
-        ->assertHasErrors('encart.diffusion_a');
+        ->assertDontSee('wire:model="entete.titre_fr"', false);
+});
+
+/** Le formulaire embarque ne doit proposer aucune sortie vers un autre ecran. */
+it('n offre aucune sortie depuis le formulaire embarque', function () {
+    $encart = Encart::firstOrCreate(['slug' => 'accueil.annonce']);
+
+    $rendu = Livewire::actingAs($this->admin)
+        ->test(App\Livewire\Admin\EncartFormulaire::class, ['element' => $encart, 'embarque' => true])
+        ->html();
+
+    expect($rendu)->not->toContain(route('admin.encarts.liste'));
 });
 
 it('enregistre l apparence de la bande deroulante', function () {

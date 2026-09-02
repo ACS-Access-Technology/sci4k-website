@@ -70,7 +70,10 @@
 
                 {{-- Onglets de la langue du CONTENU. « Français » et « English »
                      restent ecrits dans leur propre langue : ce sont des endonymes. --}}
-                @if (($description['section'] ?? null) || ($description['encart'] ?? null))
+                {{-- Un module d'encart n'a pas de champs propres : son
+                     formulaire complet est embarque plus bas, avec sa propre
+                     bascule de langue. --}}
+                @if ($description['section'] ?? null)
                     <div class="mb-4 inline-flex rounded-lg border border-zinc-200 p-0.5 dark:border-zinc-700">
                         @foreach (['fr' => 'Français', 'en' => 'English'] as $code => $nom)
                             <button type="button" wire:click="$set('langueActive', '{{ $code }}')"
@@ -83,6 +86,10 @@
                     </div>
                 @endif
 
+                {{-- Le formulaire n'apparait que si le module pilote un
+                     en-tete de section. Un module d'encart n'aurait affiche
+                     qu'un bouton « Enregistrer » sans rien a enregistrer. --}}
+                @if ($description['section'] ?? null)
                 <form wire:submit="enregistrer" class="space-y-4">
 
                     {{-- EN-TETE DE SECTION --}}
@@ -162,53 +169,6 @@
                         </div>
                     @endif
 
-                    {{-- ENCART --}}
-                    @if ($description['encart'] ?? null)
-                        @foreach ([
-                            'etiquette' => __('Étiquette'),
-                            'titre' => __('Titre'),
-                            'texte' => __('Texte'),
-                            'libelle_bouton' => __('Libellé du bouton'),
-                        ] as $champ => $intitule)
-                            <label class="block">
-                                <span class="text-sm font-medium">{{ $intitule }}</span>
-                                @if ($champ === 'texte')
-                                    <textarea wire:model="encart.{{ $champ }}_{{ $langueActive }}" rows="3"
-                                              class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"></textarea>
-                                @else
-                                    <input wire:model="encart.{{ $champ }}_{{ $langueActive }}"
-                                           class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950">
-                                @endif
-                            </label>
-                        @endforeach
-
-                        <label class="block">
-                            <span class="text-sm font-medium">{{ __('Lien du bouton') }}</span>
-                            <input wire:model="encart.cible_bouton" placeholder="/biens"
-                                   class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950">
-                        </label>
-
-                        <div class="grid gap-4 sm:grid-cols-2">
-                            <label class="block">
-                                <span class="text-sm font-medium">{{ __('Diffuser à partir du') }}</span>
-                                <input type="date" wire:model="encart.diffusion_de"
-                                       class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950">
-                                @error('encart.diffusion_de') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
-                            </label>
-                            <label class="block">
-                                <span class="text-sm font-medium">{{ __("Jusqu'au") }}</span>
-                                <input type="date" wire:model="encart.diffusion_a"
-                                       class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950">
-                                @error('encart.diffusion_a') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
-                            </label>
-                        </div>
-
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" wire:model="encart.visible" class="rounded border-zinc-300">
-                            <span class="text-sm">{{ __('Afficher ce bloc sur le site') }}</span>
-                        </label>
-                    @endif
-
                     @if ($peutEcrire)
                         <button type="submit"
                                 class="rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white dark:bg-white dark:text-zinc-900">
@@ -220,6 +180,7 @@
                         </p>
                     @endif
                 </form>
+                @endif
             </div>
 
             {{-- IMAGE DE FOND DU MODULE --}}
@@ -253,7 +214,9 @@
             @if ($ecranEmbarque)
                 <div class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900">
                     <h3 class="mb-4 text-sm font-semibold">{{ $ecranEmbarque['intitule'] }}</h3>
-                    @livewire($ecranEmbarque['composant'], ['embarque' => true], key('embarque-'.$module))
+                    @livewire($ecranEmbarque['composant'],
+                        $ecranEmbarque['parametres'] ?? ['embarque' => true],
+                        key('embarque-'.$module))
                 </div>
             @endif
 

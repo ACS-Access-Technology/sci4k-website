@@ -173,7 +173,15 @@
                 class="inline-flex items-center rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
             {{ __('Enregistrer') }}
         </button>
-        <a href="{{ route($routeListe) }}" wire:navigate
-           class="text-sm text-zinc-600 hover:underline dark:text-zinc-400">{{ __('Annuler') }}</a>
+        {{-- Embarque, « Annuler » referme le formulaire sur place. Un lien vers
+             la liste aurait fait quitter la page d'accueil — exactement la
+             sortie que la refonte supprime. --}}
+        @if ($embarque ?? false)
+            <button type="button" wire:click="$dispatch('bloc-annule')"
+                    class="text-sm text-zinc-600 hover:underline dark:text-zinc-400">{{ __('Annuler') }}</button>
+        @else
+            <a href="{{ route($routeListe) }}" wire:navigate
+               class="text-sm text-zinc-600 hover:underline dark:text-zinc-400">{{ __('Annuler') }}</a>
+        @endif
     </div>
 </form>

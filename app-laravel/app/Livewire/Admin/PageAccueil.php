@@ -111,9 +111,6 @@ class PageAccueil extends Component
     /** Valeurs de l'en-tete de section du module ouvert. */
     public array $entete = [];
 
-    /** Valeurs de l'encart du module ouvert. */
-    public array $encart = [];
-
     /** Reglages d'apparence de la bande deroulante. */
     public array $bandeau = [];
 
@@ -162,7 +159,6 @@ class PageAccueil extends Component
     {
         $description = $this->moduleCourant();
         $this->entete = [];
-        $this->encart = [];
         $this->bandeau = [];
         $this->boutons = [];
 
@@ -191,19 +187,8 @@ class PageAccueil extends Component
             }
         }
 
-        if ($slug = $description['encart'] ?? null) {
-            $encart = Encart::where('slug', $slug)->first();
-
-            foreach (['etiquette', 'titre', 'texte', 'libelle_bouton'] as $champ) {
-                $this->encart[$champ.'_fr'] = (string) ($encart?->{$champ.'_fr'} ?? '');
-                $this->encart[$champ.'_en'] = (string) ($encart?->{$champ.'_en'} ?? '');
-            }
-
-            $this->encart['cible_bouton'] = (string) ($encart?->cible_bouton ?? '');
-            $this->encart['visible'] = (bool) ($encart?->visible ?? false);
-            $this->encart['diffusion_de'] = $encart?->diffusion_de?->format('Y-m-d') ?? '';
-            $this->encart['diffusion_a'] = $encart?->diffusion_a?->format('Y-m-d') ?? '';
-        }
+        // Rien a charger pour un encart : son propre formulaire est embarque
+        // dans le module, et c'est lui qui lit et ecrit ses champs.
     }
 
     protected function rules(): array
@@ -214,16 +199,6 @@ class PageAccueil extends Component
             $regles['entete.'.$champ.'_fr'] = ['nullable', 'string', 'max:500'];
             $regles['entete.'.$champ.'_en'] = ['nullable', 'string', 'max:500'];
         }
-
-        foreach (['etiquette', 'titre', 'texte', 'libelle_bouton'] as $champ) {
-            $regles['encart.'.$champ.'_fr'] = ['nullable', 'string', 'max:500'];
-            $regles['encart.'.$champ.'_en'] = ['nullable', 'string', 'max:500'];
-        }
-
-        $regles['encart.cible_bouton'] = ['nullable', 'string', 'max:190'];
-        $regles['encart.visible'] = ['nullable', 'boolean'];
-        $regles['encart.diffusion_de'] = ['nullable', 'date'];
-        $regles['encart.diffusion_a'] = ['nullable', 'date', 'after_or_equal:encart.diffusion_de'];
 
         foreach (['bouton1', 'bouton2'] as $bouton) {
             $regles['boutons.'.$bouton.'_libelle_fr'] = ['nullable', 'string', 'max:80'];
@@ -236,14 +211,6 @@ class PageAccueil extends Component
         $regles['bandeau.casse'] = ['nullable', 'in:majuscules,normale'];
 
         return $regles;
-    }
-
-    protected function validationAttributes(): array
-    {
-        return [
-            'encart.diffusion_de' => __('la date de début'),
-            'encart.diffusion_a' => __('la date de fin'),
-        ];
     }
 
     public function enregistrer(): void
@@ -273,24 +240,6 @@ class PageAccueil extends Component
             }
         }
 
-        if ($slug = $description['encart'] ?? null) {
-            $encart = Encart::firstOrNew(['slug' => $slug]);
-
-            // Seules les colonnes de cet ecran sont ecrites : « impressions »
-            // et « ordre » sont fillable, et un tableau public Livewire est
-            // fixe par le navigateur, cles comprises.
-            foreach (['etiquette', 'titre', 'texte', 'libelle_bouton'] as $champ) {
-                $encart->{$champ.'_fr'} = $this->encart[$champ.'_fr'] ?? '';
-                $encart->{$champ.'_en'} = $this->encart[$champ.'_en'] ?? '';
-            }
-
-            $encart->cible_bouton = $this->encart['cible_bouton'] ?: null;
-            $encart->visible = (bool) ($this->encart['visible'] ?? false);
-            $encart->diffusion_de = $this->encart['diffusion_de'] ?: null;
-            $encart->diffusion_a = $this->encart['diffusion_a'] ?: null;
-            $encart->save();
-        }
-
         $this->charger();
         $this->message = __('Module enregistré.');
         $this->dispatch('toast', message: __(':module enregistré.', ['module' => $description['intitule']]), variant: 'success');
@@ -316,6 +265,21 @@ class PageAccueil extends Component
      */
     public function ecranEmbarque(): ?array
     {
+        // Les deux encarts embarquent leur PROPRE formulaire, et non une copie
+        // de leurs champs : lui seul sait televerser une image, la remplacer et
+        // faire le menage de l'ancienne. La recopier ici avait donne un module
+        // d'annonce sans visuel.
+        if ($slug = $this->moduleCourant()['encart'] ?? null) {
+            return [
+                'composant' => 'admin.encart-formulaire',
+                'intitule' => $this->moduleCourant()['intitule'],
+                'parametres' => [
+                    'element' => Encart::firstOrCreate(['slug' => $slug]),
+                    'embarque' => true,
+                ],
+            ];
+        }
+
         return [
             'hero' => ['composant' => 'admin.chiffre-cle-ensemble', 'intitule' => __('Chiffres clés')],
             'bandeau' => ['composant' => 'admin.commune-bandeau-ensemble', 'intitule' => __('Communes défilantes')],
