@@ -22,6 +22,7 @@
      disparaitront quand toutes seront couvertes. --}}
 <p class="px-2 pb-1 pt-4 text-xs font-medium uppercase tracking-wide text-zinc-400">{{ __('Pages du site') }}</p>
 <x-admin.lien-lateral route="admin.pages.accueil" icone="grille" :intitule="__('Accueil')" />
+<x-admin.lien-lateral route="admin.pages.presentation" icone="personne" :intitule="__('Présentation')" />
 
 <p class="px-2 pb-1 pt-4 text-xs font-medium uppercase tracking-wide text-zinc-400">{{ __('Contenu') }}</p>
 <x-admin.lien-lateral route="admin.biens.liste" motif="admin.biens.*" icone="maison" :intitule="__('Biens immobiliers')" />

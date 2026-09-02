@@ -44,19 +44,23 @@
            meme convention que le contenu d'un article. Les decouper ici plutot
            que d'imposer un champ par paragraphe laisse l'editeur en ajouter ou
            en retirer sans qu'on touche au gabarit. --}}
-      @foreach (preg_split('/\R{2,}/u', trim((string) $apercu?->chapo($langue))) ?: [] as $paragraphe)
-        @continue(blank($paragraphe))
+      @foreach ($apercu?->paragraphes($langue) ?: [] as $paragraphe)
         <p>{{ $paragraphe }}</p>
       @endforeach
 
+      {{-- Les deux cartes viennent des options de la section, editables depuis
+           « Pages du site → Présentation ». Elles etaient ecrites en dur : leur
+           texte parle de notaires agrees et de quartiers couverts, deux choses
+           qui changent sans qu'on touche au code. Le repli reprend le texte
+           d'origine, pour qu'une base non renseignee affiche la meme page. --}}
       <div class="overview-highlights">
         <div class="highlight-card">
-          <h4>{{ __('Expertise Juridique') }}</h4>
-          <p>{{ __('Toutes nos transactions et acquisitions sont scrupuleusement auditées par des notaires agréés.') }}</p>
+          <h4>{{ $apercu?->option('atout1_titre_'.$langue) ?: __('Expertise Juridique') }}</h4>
+          <p>{{ $apercu?->option('atout1_texte_'.$langue) ?: __('Toutes nos transactions et acquisitions sont scrupuleusement auditées par des notaires agréés.') }}</p>
         </div>
         <div class="highlight-card">
-          <h4>{{ __('Ancrage Abidjanais') }}</h4>
-          <p>{{ __('Une présence active dans tous les secteurs stratégiques (Cocody, Plateau, Riviera, Marcory, Bingerville).') }}</p>
+          <h4>{{ $apercu?->option('atout2_titre_'.$langue) ?: __('Ancrage Abidjanais') }}</h4>
+          <p>{{ $apercu?->option('atout2_texte_'.$langue) ?: __('Une présence active dans tous les secteurs stratégiques (Cocody, Plateau, Riviera, Marcory, Bingerville).') }}</p>
         </div>
       </div>
     </div>
@@ -80,9 +84,11 @@
         <img src="{{ asset($visuelDirecteur?->fichier ?: 'images/presentation/silhouette.svg') }}"
              alt="{{ $visuelDirecteur?->texteAlternatif($langue) ?: __('Portrait du Directeur Général') }}" loading="lazy">
       </div>
+      {{-- Le compteur vient des options de la section. Sa valeur etait ecrite
+           en dur : « 14 quartiers » aurait vieilli en silence. --}}
       <div class="float-card">
-        <b class="cnt" data-target="14">0</b>
-        <span>{{ __("quartiers d'Abidjan couverts par notre réseau d'agents") }}</span>
+        <b class="cnt" data-target="{{ (int) ($motDuDirecteur?->option('compteur_valeur') ?: 14) }}">0</b>
+        <span>{{ $motDuDirecteur?->option('compteur_libelle_'.$langue) ?: __("quartiers d'Abidjan couverts par notre réseau d'agents") }}</span>
       </div>
     </div>
     <div class="pres-body">
@@ -91,8 +97,7 @@
       @endif
       <h3 class="reveal">{{ $motDuDirecteur?->titre($langue) ?: __('Bâtir des lieux de vie, pas seulement des bâtiments.') }}</h3>
 
-      @foreach (preg_split('/\R{2,}/u', trim((string) $motDuDirecteur?->chapo($langue))) ?: [] as $paragraphe)
-        @continue(blank($paragraphe))
+      @foreach ($motDuDirecteur?->paragraphes($langue) ?: [] as $paragraphe)
         <p class="reveal">{{ $paragraphe }}</p>
       @endforeach
 
