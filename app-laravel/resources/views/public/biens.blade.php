@@ -83,7 +83,15 @@
      pointer-events:none s'appliquait. Le visiteur n'avait donc AUCUN signe
      que son clic etait pris en compte pendant l'aller-retour serveur.
      L'opacite passe en style en ligne, qui ne depend d'aucune feuille. --}}
-<section class="properties-section" wire:loading.style="opacity:.5;pointer-events:none;transition:opacity .2s">
+{{-- wire:loading.class, et surtout PAS wire:loading.style : « style » n'est pas
+     un modificateur Livewire. Faute de le reconnaitre, Livewire retombait sur
+     son comportement par defaut et basculait le DISPLAY de cette section —
+     inline-block, puis none, puis retour. Une section en inline-block cesse
+     d'occuper la largeur : elle se retracte, et toute la mise en page centree
+     glissait vers la gauche avant de revenir, a chaque clic de filtre.
+     La classe est definie dans la feuille du site, pas empruntee a Tailwind
+     qui n'y est pas charge — c'etait le defaut de la version precedente. --}}
+<section class="properties-section" wire:loading.class="en-chargement">
   <div class="wrap">
     <div class="filters-bar">
       <div class="filters" id="pillFilters">
