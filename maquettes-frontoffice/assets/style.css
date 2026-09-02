@@ -105,6 +105,12 @@ html{scroll-behavior:smooth;}
    flottantes, ni l'un ni l'autre ne se voit. */
 html{overflow-y:scroll; scrollbar-gutter:stable;}
 
+/* Etat d'attente d'une section pilotee par Livewire, le temps de l'aller-retour
+   serveur. Definie ici et non empruntee a Tailwind, qui n'est pas charge sur le
+   site public : la classe utilitaire employee jusqu'ici n'existait dans aucune
+   feuille, et l'attenuation annoncee ne se produisait donc jamais. */
+.en-chargement{ opacity:.5; pointer-events:none; transition:opacity .2s ease; }
+
 h1,h2,h3,.display{font-family:'Montserrat',sans-serif; font-weight:800; letter-spacing:-0.02em; margin:0;}
 
 img{display:block; max-width:100%;}
