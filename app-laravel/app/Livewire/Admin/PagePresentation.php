@@ -44,6 +44,10 @@ class PagePresentation extends Component
                 'fond' => 'presentation-apercu',
                 'contenu' => true,
                 'atouts' => true,
+                // Pas d'accroche, pour la meme raison que le mot du directeur :
+                // le gabarit public n'en affiche pas ici. Le texte du bloc
+                // passe par « contenu ».
+                'champsEntete' => ['etiquette', 'titre'],
             ],
             'directeur' => [
                 'intitule' => __('Mot du Directeur'),

@@ -205,14 +205,14 @@ it('ne propose pas de reordonner les modules', function () {
  * Le mot du directeur n'affiche pas d'accroche sur le site : le champ
  * n'aurait rien montre.
  */
-it('n affiche pas d accroche sur le mot du directeur', function () {
+it('n affiche pas d accroche sur les blocs qui n en montrent pas', function (string $module) {
     $rendu = Livewire::actingAs($this->admin)->test(PagePresentation::class)
-        ->call('ouvrir', 'directeur')
+        ->call('ouvrir', $module)
         ->html();
 
     expect($rendu)->not->toContain('wire:model="entete.chapo_fr"')
         ->and($rendu)->toContain('wire:model="entete.titre_fr"');
-});
+})->with(['presentation', 'directeur']);
 
 /** Les autres modules gardent leur accroche. */
 it('garde l accroche sur les modules qui l affichent', function (string $module) {
@@ -221,7 +221,7 @@ it('garde l accroche sur les modules qui l affichent', function (string $module)
         ->html();
 
     expect($rendu)->toContain('wire:model="entete.chapo_fr"');
-})->with(['banniere', 'presentation', 'valeurs', 'equipe']);
+})->with(['banniere', 'valeurs', 'equipe']);
 
 /**
  * L'editeur embarque ne doit pas afficher son panneau « Reglages du bloc » :
