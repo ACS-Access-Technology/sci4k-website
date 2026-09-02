@@ -102,6 +102,16 @@ class ServiceFormulaire extends Component
     /** Langue du contenu saisi — sans rapport avec celle de l'interface. */
     public string $langueActive = 'fr';
 
+    /**
+     * Le formulaire est-il rendu A L'INTERIEUR d'une liste ?
+     *
+     * Ce composant n'herite pas de FormulaireDeBloc : il porte donc lui-meme
+     * ce que la classe mere apporte aux autres — en-tete masquee, « Annuler »
+     * qui referme, et enregistrement qui previent la liste au lieu de
+     * rediriger.
+     */
+    public bool $embarque = false;
+
     public function mount(?Service $service = null): void
     {
         $this->langueActive = app()->getLocale();
@@ -253,6 +263,16 @@ class ServiceFormulaire extends Component
         }
 
         $this->dispatch('toast', message: __('Service enregistré.'), variant: 'success');
+
+        // Embarque dans une liste, on ne redirige pas : on previent la liste,
+        // qui se referme. Rediriger ferait quitter la page d'accueil au milieu
+        // d'une modification.
+        if ($this->embarque) {
+            $this->dispatch('bloc-enregistre');
+
+            return;
+        }
+
         $this->redirectRoute('admin.services.liste');
     }
 

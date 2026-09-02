@@ -60,6 +60,15 @@ abstract class FormulaireDeBloc extends Component
     /** L'editeur a demande le retrait du fichier existant. */
     public bool $fichierARetirer = false;
 
+    /**
+     * Le formulaire est-il rendu A L'INTERIEUR d'une liste ?
+     *
+     * Vrai quand un ecran de page l'ouvre sur place, plutot que d'envoyer
+     * l'editeur sur une autre adresse. L'en-tete de page disparait alors, et
+     * l'enregistrement previent la liste au lieu de rediriger.
+     */
+    public bool $embarque = false;
+
     /** Langue du contenu saisi — sans rapport avec celle de l'interface. */
     public string $langueActive = 'fr';
 
@@ -353,6 +362,19 @@ abstract class FormulaireDeBloc extends Component
             $this->element = ($this->modele())::create($donnees);
         } else {
             $this->element->update($donnees);
+        }
+
+        // Embarque dans une liste, le formulaire ne redirige pas : il previent
+        // la liste qui l'a ouvert, laquelle se referme et se rafraichit. Une
+        // redirection ferait quitter la page d'accueil au milieu d'une
+        // modification, ce que la refonte cherche justement a eviter.
+        if ($this->embarque) {
+            $this->dispatch('bloc-enregistre');
+            $this->dispatch('toast',
+                message: __(':intitule enregistré.', ['intitule' => $this->intitule()]),
+                variant: 'success');
+
+            return;
         }
 
         session()->flash('message', __(':intitule enregistré.', ['intitule' => $this->intitule()]));

@@ -19,6 +19,80 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 abstract class ListeOrdonnable extends Component
 {
+    /**
+     * L'ecran est-il rendu A L'INTERIEUR d'un autre ?
+     *
+     * Vrai quand un ecran de page — « Pages du site → Accueil » — embarque
+     * cette liste dans l'un de ses modules. Le corps reste identique : mêmes
+     * statistiques, meme recherche, meme reordonnancement. Seul l'en-tete de
+     * page disparait, un titre et un fil d'Ariane n'ayant pas de sens au
+     * milieu d'une autre page.
+     *
+     * Embarquer plutot que reecrire : la refonte du backoffice rassemble les
+     * ecrans par page publique, et dupliquer le corps de chaque liste aurait
+     * cree deux versions a corriger a chaque defaut.
+     */
+    public bool $embarque = false;
+
+    /**
+     * Formulaire ouvert SUR PLACE : null, 'creation', ou l'identifiant edite.
+     *
+     * N'a de sens qu'embarque. Sur son propre ecran, la liste continue de
+     * renvoyer vers les adresses d'edition, qui restent utiles — un lien se
+     * partage, se met en favori et s'ouvre dans un onglet.
+     */
+    public null|int|string $formulaireOuvert = null;
+
+    /**
+     * Le composant Livewire du formulaire de ce bloc.
+     *
+     * Null quand la liste n'a pas de formulaire a ouvrir sur place ; elle
+     * retombe alors sur ses liens.
+     */
+    protected function composantFormulaire(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * Sous quel NOM le formulaire attend son modele.
+     *
+     * Les formulaires nes de FormulaireDeBloc l'appellent « element ».
+     * ServiceFormulaire, qui n'en herite pas, l'appelle « service » : lui
+     * passer « element » revenait a ne rien lui passer du tout, et il ouvrait
+     * son formulaire de CREATION a chaque demande de modification. Le nom est
+     * donc declare, et non suppose.
+     */
+    protected function parametreDuFormulaire(): string
+    {
+        return 'element';
+    }
+
+    public function ouvrirCreation(): void
+    {
+        abort_unless($this->peutEcrire(), 403);
+
+        $this->formulaireOuvert = 'creation';
+    }
+
+    public function ouvrirEdition(int $id): void
+    {
+        abort_unless($this->peutEcrire(), 403);
+
+        // L'identifiant vient du navigateur : on verifie qu'il designe bien une
+        // ligne de CE bloc avant de le passer au formulaire.
+        abort_unless(($this->modele())::whereKey($id)->exists(), 404);
+
+        $this->formulaireOuvert = $id;
+    }
+
+    #[\Livewire\Attributes\On('bloc-enregistre')]
+    #[\Livewire\Attributes\On('bloc-annule')]
+    public function fermerFormulaire(): void
+    {
+        $this->formulaireOuvert = null;
+    }
+
     public string $recherche = '';
 
     /** '' | 'visibles' | 'masques' */
@@ -158,6 +232,16 @@ abstract class ListeOrdonnable extends Component
             'elements' => $this->elements(),
             'langue' => app()->getLocale(),
             'peutEcrire' => $this->peutEcrire(),
+            // L'edition sur place n'est proposee qu'embarquee, et seulement si
+            // ce bloc declare un formulaire.
+            'composantFormulaire' => $this->embarque ? $this->composantFormulaire() : null,
+            // Le MODELE et non l'identifiant : le formulaire attend un Model
+            // dans son mount(), et le liage de route ne joue que pour un
+            // composant de pleine page.
+            'elementEnEdition' => is_int($this->formulaireOuvert)
+                ? ($this->modele())::find($this->formulaireOuvert)
+                : null,
+            'parametreDuFormulaire' => $this->parametreDuFormulaire(),
         ])->title($this->titre());
     }
 }

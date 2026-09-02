@@ -19,6 +19,12 @@ class TemoignageListe extends ListeOrdonnable
         return ['auteur', 'citation_fr', 'citation_en', 'role_fr', 'role_en'];
     }
 
+    /** Ouvert sur place quand la liste est embarquee dans un ecran de page. */
+    protected function composantFormulaire(): ?string
+    {
+        return 'admin.temoignage-formulaire';
+    }
+
     protected function vue(): string
     {
         return 'livewire.admin.temoignage-liste';

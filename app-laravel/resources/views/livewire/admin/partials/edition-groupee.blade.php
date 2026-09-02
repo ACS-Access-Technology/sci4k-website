@@ -19,6 +19,26 @@
 
 <form wire:submit="enregistrer" class="space-y-6">
 
+    {{-- Embarque dans un ecran de page, ce bloc n'a pas de titre a lui : la
+         page qui l'accueille porte deja le sien. Les boutons « Ajouter » et
+         « Enregistrer » restent, sans quoi la liste ne servirait qu'a lire. --}}
+    @if ($embarque ?? false)
+        <div class="flex flex-wrap justify-end gap-2">
+            @if ($peutEcrire && $ajoutPermis)
+                <button type="button" wire:click="ajouter"
+                        class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800">
+                    <x-admin.icone nom="plus" />
+                    {{ $libelleAjout ?? __('Ajouter') }}
+                </button>
+            @endif
+            @if ($peutEcrire)
+                <button type="submit"
+                        class="inline-flex items-center rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                    {{ __('Enregistrer') }}
+                </button>
+            @endif
+        </div>
+    @else
     <x-admin.entete-page :titre="$titre" :fil="$fil" :resume="$sousTitre">
         <x-slot:actions>
             <x-bascule-langue />
@@ -37,6 +57,7 @@
             @endif
         </x-slot:actions>
     </x-admin.entete-page>
+    @endif
 
     @if (session('message'))
         <div role="status" class="rounded-lg border border-green-300 bg-green-50 px-4 py-3 text-sm text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-100">
