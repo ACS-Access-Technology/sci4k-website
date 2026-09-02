@@ -43,15 +43,41 @@
         @if ($routeCreation)
             @hasanyrole('administrateur|editeur')
                 <div class="flex justify-end">
-                    <a href="{{ route($routeCreation) }}" wire:navigate
-                       class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-                        <x-admin.icone nom="plus" />
-                        {{ $libelleCreation }}
-                    </a>
+                    @if ($composantFormulaire)
+                        <button type="button" wire:click="ouvrirCreation"
+                                class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                            <x-admin.icone nom="plus" />
+                            {{ $libelleCreation }}
+                        </button>
+                    @else
+                        <a href="{{ route($routeCreation) }}" wire:navigate
+                           class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                            <x-admin.icone nom="plus" />
+                            {{ $libelleCreation }}
+                        </a>
+                    @endif
                 </div>
             @endhasanyrole
         @endif
     @endunless
+
+    {{-- LE FORMULAIRE, OUVERT SUR PLACE
+
+         Embarquee dans un ecran de page, la liste n'envoie plus l'editeur sur
+         une autre adresse : elle ouvre le formulaire ici meme, sous le tableau.
+
+         wire:key porte l'identifiant edite. Sans lui, Livewire reutiliserait
+         l'instance d'une ligne a l'autre et afficherait les valeurs de la
+         precedente — le meme defaut que celui corrige sur les cartes de biens. --}}
+    @if ($composantFormulaire && $formulaireOuvert !== null)
+        <div class="rounded-xl border border-zinc-300 bg-white p-5 dark:border-zinc-600 dark:bg-zinc-900">
+            @livewire($composantFormulaire,
+                $elementEnEdition
+                    ? ['element' => $elementEnEdition, 'embarque' => true]
+                    : ['embarque' => true],
+                key('formulaire-'.$formulaireOuvert))
+        </div>
+    @endif
 
     @if (session('message'))
         <div role="status" class="rounded-lg border border-green-300 bg-green-50 px-4 py-3 text-sm text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-100">
@@ -105,7 +131,12 @@
                      colonne seulement aurait affiche ses balises en clair. --}}
                 @foreach ($colonnes as $cle => $intitule)
                     <td class="px-4 py-3 text-zinc-700 dark:text-zinc-200">
-                        @if ($loop->first && $peutEcrire)
+                        @if ($loop->first && $peutEcrire && $composantFormulaire)
+                            <button type="button" wire:click="ouvrirEdition({{ $element->id }})"
+                                    class="text-left font-medium text-zinc-900 hover:underline dark:text-white">
+                                {!! $cellule($element, $cle) !!}
+                            </button>
+                        @elseif ($loop->first && $peutEcrire)
                             <a href="{{ route($routeEdition, $element) }}" wire:navigate
                                class="font-medium text-zinc-900 hover:underline dark:text-white">
                                 {!! $cellule($element, $cle) !!}
@@ -126,7 +157,14 @@
 
                 <td class="whitespace-nowrap px-4 py-3">
                     <div class="flex items-center justify-end gap-1">
-                        @if ($peutEcrire)
+                        @if ($peutEcrire && $composantFormulaire)
+                            <button type="button" wire:click="ouvrirEdition({{ $element->id }})"
+                                    title="{{ __('Modifier') }}"
+                                    aria-label="{{ __('Modifier :nom', ['nom' => $nomLisible($element)]) }}"
+                                    class="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white">
+                                <x-admin.icone nom="crayon" />
+                            </button>
+                        @elseif ($peutEcrire)
                             <a href="{{ route($routeEdition, $element) }}" wire:navigate
                                title="{{ __('Modifier') }}"
                                aria-label="{{ __('Modifier :nom', ['nom' => $nomLisible($element)]) }}"
