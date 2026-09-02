@@ -23,6 +23,12 @@ class ServiceListe extends ListeOrdonnable
         return 'admin.service-formulaire';
     }
 
+    /** ServiceFormulaire n'herite pas de FormulaireDeBloc : son modele s'appelle « service ». */
+    protected function parametreDuFormulaire(): string
+    {
+        return 'service';
+    }
+
     protected function vue(): string
     {
         return 'livewire.admin.service-liste';

@@ -174,7 +174,7 @@
         <div class="rounded-xl border border-zinc-300 bg-white p-5 dark:border-zinc-600 dark:bg-zinc-900">
             @livewire($composantFormulaire,
                 $elementEnEdition
-                    ? ['element' => $elementEnEdition, 'embarque' => true]
+                    ? [$parametreDuFormulaire => $elementEnEdition, 'embarque' => true]
                     : ['embarque' => true],
                 key('formulaire-'.$formulaireOuvert))
         </div>

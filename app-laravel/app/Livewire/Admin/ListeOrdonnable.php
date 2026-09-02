@@ -54,6 +54,20 @@ abstract class ListeOrdonnable extends Component
         return null;
     }
 
+    /**
+     * Sous quel NOM le formulaire attend son modele.
+     *
+     * Les formulaires nes de FormulaireDeBloc l'appellent « element ».
+     * ServiceFormulaire, qui n'en herite pas, l'appelle « service » : lui
+     * passer « element » revenait a ne rien lui passer du tout, et il ouvrait
+     * son formulaire de CREATION a chaque demande de modification. Le nom est
+     * donc declare, et non suppose.
+     */
+    protected function parametreDuFormulaire(): string
+    {
+        return 'element';
+    }
+
     public function ouvrirCreation(): void
     {
         abort_unless($this->peutEcrire(), 403);
@@ -227,6 +241,7 @@ abstract class ListeOrdonnable extends Component
             'elementEnEdition' => is_int($this->formulaireOuvert)
                 ? ($this->modele())::find($this->formulaireOuvert)
                 : null,
+            'parametreDuFormulaire' => $this->parametreDuFormulaire(),
         ])->title($this->titre());
     }
 }

@@ -1,7 +1,10 @@
 <?php
 
+use App\Livewire\Admin\ServiceFormulaire;
+use App\Livewire\Admin\ServiceListe;
 use App\Livewire\Admin\TemoignageFormulaire;
 use App\Livewire\Admin\TemoignageListe;
+use App\Models\Service;
 use App\Models\Temoignage;
 use App\Models\User;
 use Livewire\Livewire;
@@ -142,4 +145,44 @@ it('n affiche pas le fil d Ariane quand il est embarque', function () {
 
     expect($rendu)->not->toContain('aria-label="Fil d’Ariane"')
         ->and($rendu)->toContain('Annuler');
+});
+
+
+/**
+ * ServiceFormulaire n'herite pas de FormulaireDeBloc : son modele s'appelle
+ * « service » et non « element ».
+ *
+ * Lui passer « element » revenait a ne rien lui passer du tout, et il ouvrait
+ * son formulaire de CREATION a chaque demande de modification. Le nom du
+ * parametre est desormais declare par chaque liste, et ce controle le fixe.
+ */
+it('ouvre le service demande, et non un formulaire de creation', function () {
+    $service = Service::factory()->create(['nom_fr' => 'Gestion locative']);
+
+    $composant = Livewire::actingAs($this->admin)
+        ->test(ServiceFormulaire::class, ['service' => $service, 'embarque' => true]);
+
+    $composant->assertSet('estCreation', false);
+    expect($composant->html())->toContain('Modifier le service');
+});
+
+it('declare le bon nom de parametre pour chaque liste', function (string $liste, string $attendu) {
+    $methode = new ReflectionMethod($liste, 'parametreDuFormulaire');
+    $methode->setAccessible(true);
+
+    expect($methode->invoke(new $liste))->toBe($attendu);
+})->with([
+    [ServiceListe::class, 'service'],
+    [TemoignageListe::class, 'element'],
+]);
+
+/** Embarque, le formulaire de service ne propose aucune sortie non plus. */
+it('n offre aucune sortie depuis le formulaire de service embarque', function () {
+    $service = Service::factory()->create();
+
+    $rendu = Livewire::actingAs($this->admin)
+        ->test(ServiceFormulaire::class, ['service' => $service, 'embarque' => true])
+        ->html();
+
+    expect($rendu)->not->toContain(route('admin.services.liste'));
 });
