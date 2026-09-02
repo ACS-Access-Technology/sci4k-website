@@ -22,6 +22,7 @@ use App\Livewire\Admin\EncartListe;
 use App\Livewire\Admin\EtapeProcessusEnsemble;
 use App\Livewire\Admin\FaqFormulaire;
 use App\Livewire\Admin\Frequentation;
+use App\Livewire\Admin\PageAccueil;
 use App\Livewire\Admin\PagesStatiques;
 use App\Livewire\Admin\FaqListe;
 use App\Livewire\Admin\ImageDeFondFormulaire;
@@ -144,6 +145,13 @@ Route::middleware(['auth', 'role:administrateur|editeur|redacteur|lecteur'])
         // /dashboard. Deux adresses, dont une vide : celle-ci renvoie
         // desormais vers celle qui montre quelque chose.
         Route::redirect('/', '/dashboard')->name('tableau-de-bord');
+
+        // Refonte en cours : une page d'administration par page publique. Ces
+        // ecrans s'ajoutent aux ecrans par type de contenu, qui restent en
+        // place le temps que toutes les pages soient couvertes. Les deux
+        // lisent et ecrivent les memes tables.
+        Route::get('/pages/accueil', PageAccueil::class)->name('pages.accueil');
+
         Route::get('/articles', ArticleListe::class)->name('articles.liste');
         Route::get('/biens', BienListe::class)->name('biens.liste');
         Route::get('/services', ServiceListe::class)->name('services.liste');
