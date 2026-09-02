@@ -127,7 +127,10 @@
     </div>
     @endif
 
-    <div class="grid gap-6 {{ $sectionReglee ? 'lg:grid-cols-3' : '' }}">
+    {{-- La colonne de reglages disparait quand l'editeur est embarque : la
+         grille repasse alors sur une seule colonne, sinon la liste occuperait
+         deux tiers de la largeur et laisserait un vide a droite. --}}
+    <div class="grid gap-6 {{ $sectionReglee && ! ($embarque ?? false) ? 'lg:grid-cols-3' : '' }}">
         <div class="{{ $sectionReglee ? 'lg:col-span-2' : '' }} grid gap-4 {{ ($colonnes ?? 1) > 1 ? 'sm:grid-cols-2' : '' }}">
             @forelse ($lignes as $cle => $ligne)
                 <fieldset wire:key="ligne-{{ $cle }}"
@@ -197,7 +200,11 @@
             @endforelse
         </div>
 
-        @if ($sectionReglee)
+        {{-- Masque quand l'editeur est embarque : l'ecran de page qui
+             l'accueille edite DEJA cette section, juste au-dessus. Deux
+             formulaires pour la meme donnee, c'est la porte ouverte a une
+             saisie qui en ecrase une autre selon l'ordre des clics. --}}
+        @if ($sectionReglee && ! ($embarque ?? false))
             <aside class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
                 <h2 class="text-sm font-semibold text-zinc-900 dark:text-white">{{ __('Réglages du bloc') }}</h2>
                 <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">

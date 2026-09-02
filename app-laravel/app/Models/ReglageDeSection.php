@@ -26,7 +26,7 @@ class ReglageDeSection extends Model
 
     protected $table = 'reglages_de_section';
 
-    protected $fillable = ['slug', 'etiquette_fr', 'etiquette_en', 'titre_fr', 'titre_en', 'chapo_fr', 'chapo_en', 'options'];
+    protected $fillable = ['slug', 'etiquette_fr', 'etiquette_en', 'titre_fr', 'titre_en', 'chapo_fr', 'chapo_en', 'contenu_fr', 'contenu_en', 'options'];
 
     protected $casts = ['options' => 'array'];
 
@@ -48,6 +48,40 @@ class ReglageDeSection extends Model
     public function chapo(string $langue = 'fr'): string
     {
         return $this->texteDansLaLangue('chapo', $langue);
+    }
+
+    /**
+     * Corps de texte de la section, en plusieurs paragraphes.
+     *
+     * Retombe sur « chapo » tant que « contenu » est vide : ces textes y
+     * logeaient avant d'avoir leur propre champ, et une base non migree — ou
+     * un bloc qui n'a jamais eu de corps de texte — doit continuer de
+     * s'afficher comme avant.
+     */
+    public function contenu(string $langue = 'fr'): string
+    {
+        $texte = $this->texteDansLaLangue('contenu', $langue);
+
+        return $texte !== '' ? $texte : $this->chapo($langue);
+    }
+
+    /**
+     * Le corps de texte decoupe en paragraphes, sur les lignes vides.
+     *
+     * @return list<string>
+     */
+    public function paragraphes(string $langue = 'fr'): array
+    {
+        $texte = trim($this->contenu($langue));
+
+        if ($texte === '') {
+            return [];
+        }
+
+        return array_values(array_filter(
+            array_map('trim', preg_split('/\R{2,}/u', $texte) ?: []),
+            'strlen',
+        ));
     }
 
     /**

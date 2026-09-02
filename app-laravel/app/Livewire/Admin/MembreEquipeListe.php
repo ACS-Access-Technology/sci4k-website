@@ -19,6 +19,12 @@ class MembreEquipeListe extends ListeOrdonnable
         return ['nom', 'fonction_fr', 'fonction_en', 'biographie_fr', 'biographie_en'];
     }
 
+    /** Ouvert sur place quand la liste est embarquee dans un ecran de page. */
+    protected function composantFormulaire(): ?string
+    {
+        return 'admin.membre-equipe-formulaire';
+    }
+
     protected function vue(): string
     {
         return 'livewire.admin.membre-equipe-liste';
