@@ -29,8 +29,12 @@ class PageStatique extends Model
      * PagePubliqueController::contact(), et non plus par un bloc de texte.
      * L'y laisser aurait fait un ecran menteur — un editeur aurait saisi un
      * contenu que plus aucune adresse ne sert. Ses textes se modifient
-     * maintenant depuis « Sections du site » (contact.page, contact.form,
-     * contact.map) et depuis l'onglet « Contact » de la configuration.
+     * maintenant depuis « Pages du site → Contact ».
+     *
+     * Attention : la liste gouverne aussi la page ouverte au chargement de
+     * l'ecran. En retirer une qui y etait ecrite en dur a rendu cet ecran
+     * inaccessible — il repondait 404 a tout le monde. PagesStatiques prend
+     * desormais la premiere de cette liste, quelle qu'elle soit.
      */
 
     /** @return list<string> */

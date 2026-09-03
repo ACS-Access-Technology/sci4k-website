@@ -3,7 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\PorteDesTextesDeBloc;
-use App\Models\ImageDeFond;
+use App\Livewire\Concerns\PorteDesImagesDeFond;
 use App\Models\Parametre;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
@@ -33,6 +33,7 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class PageContact extends Component
 {
+    use PorteDesImagesDeFond;
     use PorteDesTextesDeBloc;
 
     /**
@@ -100,6 +101,8 @@ class PageContact extends Component
                 'resume' => __('Adresse, téléphone, e-mail et horaires affichés à côté du formulaire.'),
                 'section' => null,
                 'reglages' => ['adresse_postale', 'telephone', 'email_public', 'horaires'],
+                // Le fond du cadre : .info-box le pose sous son voile sombre.
+                'fond' => 'info-box',
             ],
             'carte' => [
                 'intitule' => __('Carte'),
@@ -292,12 +295,6 @@ class PageContact extends Component
         ][$this->module] ?? null;
     }
 
-    public function fondDuModule(): ?ImageDeFond
-    {
-        $slug = $this->moduleCourant()['fond'] ?? null;
-
-        return $slug ? ImageDeFond::where('slug', $slug)->first() : null;
-    }
 
     public function render(): View
     {
@@ -305,7 +302,7 @@ class PageContact extends Component
             'modules' => $this->modules(),
             'description' => $this->moduleCourant(),
             'ecranEmbarque' => $this->ecranEmbarque(),
-            'fond' => $this->fondDuModule(),
+            'images' => $this->imagesDuModule(),
             'peutEcrire' => $this->peutEcrire(),
             'reglagesDuModule' => $this->reglagesDuModule(),
             'peutReglerLeSite' => $this->peutReglerLeSite(),

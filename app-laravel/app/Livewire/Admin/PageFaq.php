@@ -3,7 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\PorteDesTextesDeBloc;
-use App\Models\ImageDeFond;
+use App\Livewire\Concerns\PorteDesImagesDeFond;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
@@ -29,6 +29,7 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class PageFaq extends Component
 {
+    use PorteDesImagesDeFond;
     use PorteDesTextesDeBloc;
 
     /**
@@ -218,12 +219,6 @@ class PageFaq extends Component
         ][$this->module] ?? null;
     }
 
-    public function fondDuModule(): ?ImageDeFond
-    {
-        $slug = $this->moduleCourant()['fond'] ?? null;
-
-        return $slug ? ImageDeFond::where('slug', $slug)->first() : null;
-    }
 
     public function render(): View
     {
@@ -231,7 +226,7 @@ class PageFaq extends Component
             'modules' => $this->modules(),
             'description' => $this->moduleCourant(),
             'ecranEmbarque' => $this->ecranEmbarque(),
-            'fond' => $this->fondDuModule(),
+            'images' => $this->imagesDuModule(),
             'peutEcrire' => $this->peutEcrire(),
         ])->title(__('Page FAQ'));
     }

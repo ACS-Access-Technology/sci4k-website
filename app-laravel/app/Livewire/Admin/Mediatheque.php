@@ -27,6 +27,34 @@ class Mediatheque extends Component
         $this->selection = null;
     }
 
+    /**
+     * Les images de fond qui n'appartiennent a AUCUNE page.
+     *
+     * Le pied de page s'affiche sur toutes, les pages d'erreur sur aucune :
+     * ni l'un ni l'autre n'a d'ecran de page ou se ranger. Elles echouaient
+     * donc entre deux chaises au retrait de l'ecran « Images de fond » — le
+     * site les affichait, plus rien ne les modifiait.
+     *
+     * La mediatheque les accueille : c'est deja l'ecran de ce qui n'est a
+     * aucune page, et il reste ouvert aux editeurs, la ou la configuration est
+     * reservee aux administrateurs.
+     *
+     * @return \Illuminate\Support\Collection<int, \App\Models\ImageDeFond>
+     */
+    public const FONDS_SANS_PAGE = ['footer', 'erreur'];
+
+    protected function fondsGlobaux(): \Illuminate\Support\Collection
+    {
+        $trouvees = \App\Models\ImageDeFond::whereIn('slug', self::FONDS_SANS_PAGE)
+            ->get()
+            ->keyBy('slug');
+
+        return collect(self::FONDS_SANS_PAGE)
+            ->map(fn (string $slug) => $trouvees->get($slug))
+            ->filter()
+            ->values();
+    }
+
     /** @return list<array{chemin: string, nom: string, extension: string, taille: string}> */
     protected function images(): array
     {
@@ -76,6 +104,7 @@ class Mediatheque extends Component
         return view('livewire.admin.mediatheque', [
             'images' => $this->images(),
             'total' => count($this->images()),
+            'fondsGlobaux' => $this->fondsGlobaux(),
         ])->title(__('Médiathèque'));
     }
 }

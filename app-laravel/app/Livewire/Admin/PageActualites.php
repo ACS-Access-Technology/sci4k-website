@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\ImageDeFond;
+use App\Livewire\Concerns\PorteDesImagesDeFond;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
@@ -24,6 +24,8 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class PageActualites extends Component
 {
+    use PorteDesImagesDeFond;
+
     /**
      * Les quatre modules de la page, dans l'ordre du site.
      *
@@ -163,12 +165,6 @@ class PageActualites extends Component
         ][$this->module] ?? null;
     }
 
-    public function fondDuModule(): ?ImageDeFond
-    {
-        $slug = $this->moduleCourant()['fond'] ?? null;
-
-        return $slug ? ImageDeFond::where('slug', $slug)->first() : null;
-    }
 
     public function render(): View
     {
@@ -176,7 +172,7 @@ class PageActualites extends Component
             'modules' => $this->modules(),
             'description' => $this->moduleCourant(),
             'ecranEmbarque' => $this->ecranEmbarque(),
-            'fond' => $this->fondDuModule(),
+            'images' => $this->imagesDuModule(),
             'peutEcrire' => $this->peutEcrire(),
         ])->title(__('Page Actualités'));
     }

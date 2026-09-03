@@ -4,7 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Models\CommuneDuBandeau;
 use App\Models\Encart;
-use App\Models\ImageDeFond;
+use App\Livewire\Concerns\PorteDesImagesDeFond;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
@@ -33,6 +33,8 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class PageAccueil extends Component
 {
+    use PorteDesImagesDeFond;
+
     /**
      * Les huit modules de l'accueil, dans l'ordre ou le visiteur les voit.
      *
@@ -246,12 +248,6 @@ class PageAccueil extends Component
     }
 
     /** Le fond du module ouvert, s'il en a un. */
-    public function fondDuModule(): ?ImageDeFond
-    {
-        $slug = $this->moduleCourant()['fond'] ?? null;
-
-        return $slug ? ImageDeFond::where('slug', $slug)->first() : null;
-    }
 
     /**
      * L'ecran complet a embarquer dans le module ouvert, s'il y en a un.
@@ -295,7 +291,7 @@ class PageAccueil extends Component
             'modules' => $this->modules(),
             'description' => $this->moduleCourant(),
             'ecranEmbarque' => $this->ecranEmbarque(),
-            'fond' => $this->fondDuModule(),
+            'images' => $this->imagesDuModule(),
             // Les trois articles que l'accueil affichera : ils ne se choisissent
             // pas, ce sont les plus recents publies. L'ecran les montre pour
             // que l'editeur sache ce qui sortira, sans laisser croire qu'il
