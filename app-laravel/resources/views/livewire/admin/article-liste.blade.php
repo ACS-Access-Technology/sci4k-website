@@ -2,22 +2,49 @@
 
 <div class="space-y-6">
 
-    <x-admin.entete-page
-        :titre="__('Articles & actualités')"
-        :fil="[__('Accueil') => route('dashboard'), __('Contenu') => null, __('Articles') => null]"
-        :resume="trans_choice(':nombre article publié|:nombre articles publiés', $indicateurs['publies'], ['nombre' => $indicateurs['publies']])
-                 .' · '.trans_choice(':nombre affiché|:nombre affichés', $articles->count(), ['nombre' => $articles->count()])">
-        <x-slot:actions>
-            <x-bascule-langue />
-            @hasanyrole('administrateur|editeur')
-                <a href="{{ route('admin.articles.creation') }}" wire:navigate
-                   class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+    {{-- Embarquee dans un ecran de page, la liste n'a ni titre ni fil d'Ariane
+         a elle, et son bouton d'ajout ouvre le formulaire SUR PLACE. --}}
+    @if ($embarque ?? false)
+        @if ($peutEcrire)
+            <div class="flex justify-end">
+                <button type="button" wire:click="ouvrirCreation"
+                        class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
                     <x-admin.icone nom="plus" />
                     {{ __('Nouvel article') }}
-                </a>
-            @endhasanyrole
-        </x-slot:actions>
-    </x-admin.entete-page>
+                </button>
+            </div>
+        @endif
+
+        {{-- wire:key porte l'identifiant edite : sans lui, Livewire
+             reutiliserait l'instance d'une ligne a l'autre et afficherait les
+             valeurs de la precedente. --}}
+        @if ($formulaireOuvert !== null)
+            <div class="rounded-xl border border-zinc-300 bg-white p-5 dark:border-zinc-600 dark:bg-zinc-900">
+                @livewire('admin.article-formulaire',
+                    $articleEnEdition
+                        ? ['article' => $articleEnEdition, 'embarque' => true]
+                        : ['embarque' => true],
+                    key('formulaire-'.$formulaireOuvert))
+            </div>
+        @endif
+    @else
+        <x-admin.entete-page
+            :titre="__('Articles & actualités')"
+            :fil="[__('Accueil') => route('dashboard'), __('Contenu') => null, __('Articles') => null]"
+            :resume="trans_choice(':nombre article publié|:nombre articles publiés', $indicateurs['publies'], ['nombre' => $indicateurs['publies']])
+                     .' · '.trans_choice(':nombre affiché|:nombre affichés', $articles->count(), ['nombre' => $articles->count()])">
+            <x-slot:actions>
+                <x-bascule-langue />
+                @hasanyrole('administrateur|editeur')
+                    <a href="{{ route('admin.articles.creation') }}" wire:navigate
+                       class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                        <x-admin.icone nom="plus" />
+                        {{ __('Nouvel article') }}
+                    </a>
+                @endhasanyrole
+            </x-slot:actions>
+        </x-admin.entete-page>
+    @endif
 
     @if (session('message'))
         <div role="status"
@@ -83,7 +110,10 @@
 
                         <div class="min-w-0">
                             @hasanyrole('administrateur|editeur')
-                                <a href="{{ route('admin.articles.edition', $article) }}" wire:navigate
+                                {{-- Le titre est lui aussi un raccourci vers la
+                                     fiche : embarque, il ouvre le formulaire sur
+                                     place au lieu de faire sortir l'editeur. --}}
+                                <a @if ($embarque ?? false) href="#" wire:click.prevent="ouvrirEdition({{ $article->id }})" @else href="{{ route('admin.articles.edition', $article) }}" wire:navigate @endif
                                    class="block truncate font-medium text-zinc-900 hover:underline dark:text-white">
                                     {{ $article->titre($langue) }}
                                 </a>
@@ -113,7 +143,7 @@
                 <td class="whitespace-nowrap px-4 py-3">
                     <div class="flex items-center justify-end gap-1">
                         @hasanyrole('administrateur|editeur')
-                            <a href="{{ route('admin.articles.edition', $article) }}" wire:navigate
+                            <a @if ($embarque ?? false) href="#" wire:click.prevent="ouvrirEdition({{ $article->id }})" @else href="{{ route('admin.articles.edition', $article) }}" wire:navigate @endif
                                title="{{ __('Modifier') }}" aria-label="{{ __('Modifier :titre', ['titre' => $article->titre($langue)]) }}"
                                class="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white">
                                 <x-admin.icone nom="crayon" />

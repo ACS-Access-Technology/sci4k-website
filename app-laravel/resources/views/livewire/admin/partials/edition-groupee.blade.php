@@ -142,13 +142,20 @@
                             {{ $loop->iteration }}
                         </span>
 
-                        <label class="ms-auto flex items-center gap-2">
-                            <input type="checkbox" wire:model="lignes.{{ $cle }}.visible"
-                                   @disabled(! $peutEcrire) class="rounded border-zinc-300">
-                            <span class="text-xs text-zinc-600 dark:text-zinc-400">{{ __('Visible') }}</span>
-                        </label>
+                        {{-- Masquee quand le modele n'a pas de colonne
+                             « visible » : les categories d'articles sont
+                             toutes proposees par le filtre public, et une case
+                             a decocher sans effet aurait menti. --}}
+                        @if ($visibiliteAffichee ?? true)
+                            <label class="ms-auto flex items-center gap-2">
+                                <input type="checkbox" wire:model="lignes.{{ $cle }}.visible"
+                                       @disabled(! $peutEcrire) class="rounded border-zinc-300">
+                                <span class="text-xs text-zinc-600 dark:text-zinc-400">{{ __('Visible') }}</span>
+                            </label>
+                        @endif
 
                         @if ($peutEcrire && $ajoutPermis)
+                            @unless ($visibiliteAffichee ?? true) <span class="ms-auto"></span> @endunless
                             <button type="button" wire:click="retirer('{{ $cle }}')"
                                     wire:confirm="{{ __('Retirer cet élément ? Il sera supprimé à l’enregistrement.') }}"
                                     title="{{ __('Retirer') }}"

@@ -284,7 +284,14 @@ abstract class EditionGroupee extends Component
             }
         }
 
-        $this->validate();
+        // Rien a valider quand l'ecran ne regle pas de section et n'a plus
+        // aucune ligne — apres le retrait de la derniere categorie, par
+        // exemple. Livewire refuse un jeu de regles vide, et l'editeur aurait
+        // vu une erreur technique la ou il venait simplement de tout retirer.
+        // Meme garde que Referentiels::enregistrer().
+        if ($this->rules() !== []) {
+            $this->validate();
+        }
 
         // Les elements sont relus depuis la base : les identifiants viennent du
         // navigateur, et l'un d'eux pourrait designer une ligne d'une autre

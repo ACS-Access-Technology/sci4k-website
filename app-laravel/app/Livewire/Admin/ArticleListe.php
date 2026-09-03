@@ -21,11 +21,57 @@ class ArticleListe extends Component
 {
     use WithPagination;
 
+    /**
+     * L'ecran est-il rendu A L'INTERIEUR d'un autre ?
+     *
+     * Vrai quand « Pages du site → Actualités » l'embarque dans son module
+     * Articles. L'en-tete de page disparait alors — la page qui l'accueille
+     * porte le sien — et les liens d'edition cedent la place a un formulaire
+     * ouvert sur place, pour ne pas faire sortir l'editeur.
+     *
+     * Ce composant n'herite pas de ListeOrdonnable : il porte donc lui-meme
+     * ce que la classe mere apporte aux autres, comme BienListe.
+     */
+    public bool $embarque = false;
+
+    /** Formulaire ouvert sur place : null, 'creation', ou l'identifiant edite. */
+    public null|int|string $formulaireOuvert = null;
+
     public string $recherche = '';
 
     public string $categorieId = '';
 
     public string $statut = '';
+
+    protected function peutEcrire(): bool
+    {
+        return (bool) auth()->user()?->hasAnyRole(['administrateur', 'editeur']);
+    }
+
+    public function ouvrirCreation(): void
+    {
+        abort_unless($this->peutEcrire(), 403);
+
+        $this->formulaireOuvert = 'creation';
+    }
+
+    public function ouvrirEdition(int $id): void
+    {
+        abort_unless($this->peutEcrire(), 403);
+
+        // L'identifiant vient du navigateur : on verifie qu'il designe bien un
+        // article avant de le passer au formulaire.
+        abort_unless(Article::whereKey($id)->exists(), 404);
+
+        $this->formulaireOuvert = $id;
+    }
+
+    #[\Livewire\Attributes\On('bloc-enregistre')]
+    #[\Livewire\Attributes\On('bloc-annule')]
+    public function fermerFormulaire(): void
+    {
+        $this->formulaireOuvert = null;
+    }
 
     /** Revenir a la premiere page des qu'un filtre change. */
     public function updating($nom): void
@@ -93,6 +139,11 @@ class ArticleListe extends Component
             'articles' => $articles,
             'categories' => Categorie::orderBy('ordre')->get(),
             'langue' => $langue,
+            'peutEcrire' => $this->peutEcrire(),
+            // Le MODELE et non l'identifiant : ArticleFormulaire attend un
+            // Article dans son mount(), et le liage de route ne joue que pour
+            // un composant de pleine page.
+            'articleEnEdition' => is_int($this->formulaireOuvert) ? Article::find($this->formulaireOuvert) : null,
             'indicateurs' => [
                 'publies' => (int) ($parStatut['publie'] ?? 0),
                 'brouillons' => (int) ($parStatut['brouillon'] ?? 0),
