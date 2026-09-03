@@ -127,6 +127,26 @@ class ReglageDeSection extends Model
         $this->options = array_merge($this->options ?? [], $valeurs);
     }
 
+    /**
+     * Une option BILINGUE, avec repli sur l'autre langue.
+     *
+     * Les libelles d'un formulaire n'ont pas de colonne a eux : ils sont neuf
+     * dans le seul bloc « poser une question », et neuf de plus au prochain
+     * formulaire. Ils vivent donc dans le sac d'options, sous des cles
+     * suffixees `_fr` / `_en`.
+     *
+     * Le repli sur l'autre langue evite qu'un bloc a demi traduit affiche un
+     * libelle vide : mieux vaut la mauvaise langue qu'un champ sans nom.
+     */
+    public function texteBilingue(string $nom, string $langue = 'fr'): string
+    {
+        $autre = $langue === 'fr' ? 'en' : 'fr';
+
+        $valeur = trim((string) $this->option($nom.'_'.$langue, ''));
+
+        return $valeur !== '' ? $valeur : trim((string) $this->option($nom.'_'.$autre, ''));
+    }
+
     /** L'en-tete d'une section, cree au besoin. */
     public static function pour(string $slug): self
     {

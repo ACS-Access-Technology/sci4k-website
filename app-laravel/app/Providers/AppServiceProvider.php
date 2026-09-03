@@ -170,6 +170,17 @@ class AppServiceProvider extends ServiceProvider
                 'chatActif' => $this->parametreActif('chat_actif', false),
             ]);
         });
+
+        // Le formulaire « poser une question » de la FAQ ouvre lui aussi une
+        // conversation WhatsApp, depuis assets/main.js, qui lit
+        // window.SCI4K_WHATSAPP. Seule la page Contact posait cette variable :
+        // sur /faq, main.js retombait sur le numero qu'il porte en dur et le
+        // reglage du backoffice restait sans effet sur ce seul formulaire.
+        View::composer('public.faq', function ($vue) {
+            $numero = preg_replace('/\D+/', '', (string) $this->parametre('whatsapp', '2250706165029'));
+
+            $vue->with('whatsappPublic', $numero ?: '2250706165029');
+        });
     }
 
     /**

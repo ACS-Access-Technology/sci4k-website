@@ -24,6 +24,18 @@ class FaqListe extends ListeOrdonnable
         return ['question_fr', 'question_en', 'reponse_fr', 'reponse_en'];
     }
 
+    /** Ouvert sur place quand la liste est embarquee dans un ecran de page. */
+    protected function composantFormulaire(): ?string
+    {
+        return 'admin.faq-formulaire';
+    }
+
+    /** FaqFormulaire n'herite pas de FormulaireDeBloc : son modele s'appelle « question ». */
+    protected function parametreDuFormulaire(): string
+    {
+        return 'question';
+    }
+
     protected function vue(): string
     {
         return 'livewire.admin.faq-liste';

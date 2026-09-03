@@ -26,6 +26,7 @@
 <x-admin.lien-lateral route="admin.pages.biens" icone="maison" :intitule="__('Biens immobiliers')" />
 <x-admin.lien-lateral route="admin.pages.services" icone="service" :intitule="__('Services')" />
 <x-admin.lien-lateral route="admin.pages.actualites" icone="article" :intitule="__('Actualités')" />
+<x-admin.lien-lateral route="admin.pages.faq" icone="question" :intitule="__('FAQ')" />
 
 <p class="px-2 pb-1 pt-4 text-xs font-medium uppercase tracking-wide text-zinc-400">{{ __('Contenu') }}</p>
 <x-admin.lien-lateral route="admin.biens.liste" motif="admin.biens.*" icone="maison" :intitule="__('Biens immobiliers')" />

@@ -61,22 +61,14 @@
         @endif
     @endunless
 
-    {{-- LE FORMULAIRE, OUVERT SUR PLACE
-
-         Embarquee dans un ecran de page, la liste n'envoie plus l'editeur sur
-         une autre adresse : elle ouvre le formulaire ici meme, sous le tableau.
-
-         wire:key porte l'identifiant edite. Sans lui, Livewire reutiliserait
-         l'instance d'une ligne a l'autre et afficherait les valeurs de la
-         precedente — le meme defaut que celui corrige sur les cartes de biens. --}}
     @if ($composantFormulaire && $formulaireOuvert !== null)
-        <div class="rounded-xl border border-zinc-300 bg-white p-5 dark:border-zinc-600 dark:bg-zinc-900">
-            @livewire($composantFormulaire,
-                $elementEnEdition
-                    ? [$parametreDuFormulaire => $elementEnEdition, 'embarque' => true]
-                    : ['embarque' => true],
-                key('formulaire-'.$formulaireOuvert))
-        </div>
+        @include('livewire.admin.partials.formulaire-sur-place', [
+            'composant' => $composantFormulaire,
+            'parametres' => $elementEnEdition
+                ? [$parametreDuFormulaire => $elementEnEdition, 'embarque' => true]
+                : ['embarque' => true],
+            'cle' => $formulaireOuvert,
+        ])
     @endif
 
     @if (session('message'))

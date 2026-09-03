@@ -15,6 +15,16 @@
                 </button>
             </div>
         @endhasanyrole
+
+        @if ($composantFormulaire && $formulaireOuvert !== null)
+            @include('livewire.admin.partials.formulaire-sur-place', [
+                'composant' => $composantFormulaire,
+                'parametres' => $elementEnEdition
+                    ? [$parametreDuFormulaire => $elementEnEdition, 'embarque' => true]
+                    : ['embarque' => true],
+                'cle' => $formulaireOuvert,
+            ])
+        @endif
     @else
         <x-admin.entete-page
             :titre="__('Services')"
@@ -167,16 +177,4 @@
         @endforelse
     </x-admin.tableau>
 
-    {{-- LE FORMULAIRE, OUVERT SUR PLACE. Meme raisonnement que bloc-liste :
-         wire:key porte l'identifiant edite, sans quoi Livewire reutiliserait
-         l'instance d'une ligne a l'autre. --}}
-    @if (($composantFormulaire ?? null) && $formulaireOuvert !== null)
-        <div class="rounded-xl border border-zinc-300 bg-white p-5 dark:border-zinc-600 dark:bg-zinc-900">
-            @livewire($composantFormulaire,
-                $elementEnEdition
-                    ? [$parametreDuFormulaire => $elementEnEdition, 'embarque' => true]
-                    : ['embarque' => true],
-                key('formulaire-'.$formulaireOuvert))
-        </div>
-    @endif
 </div>

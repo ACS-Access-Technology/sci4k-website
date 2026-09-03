@@ -2,21 +2,46 @@
 
 <div class="space-y-6">
 
-    <x-admin.entete-page
-        :titre="__('Rubriques de la FAQ')"
-        :fil="[__('Accueil') => route('dashboard'), __('FAQ') => route('admin.faq.liste'), __('Rubriques') => null]"
-        :resume="trans_choice(':nombre rubrique|:nombre rubriques', $elements->count(), ['nombre' => $elements->count()])">
-        <x-slot:actions>
-            <x-bascule-langue />
-            @hasanyrole('administrateur|editeur')
-                <a href="{{ route('admin.rubriques-faq.creation') }}" wire:navigate
-                   class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+    {{-- Cette liste a son propre balisage et ne passe pas par bloc-liste : les
+         adaptations faites la-bas ne l'atteignent pas. Embarquee, elle perd son
+         en-tete, et son bouton d'ajout ouvre le formulaire SUR PLACE. --}}
+    @if ($embarque ?? false)
+        @if ($peutEcrire)
+            <div class="flex justify-end">
+                <button type="button" wire:click="ouvrirCreation"
+                        class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
                     <x-admin.icone nom="plus" />
                     {{ __('Nouvelle rubrique') }}
-                </a>
-            @endhasanyrole
-        </x-slot:actions>
-    </x-admin.entete-page>
+                </button>
+            </div>
+        @endif
+
+        @if ($composantFormulaire && $formulaireOuvert !== null)
+            @include('livewire.admin.partials.formulaire-sur-place', [
+                'composant' => $composantFormulaire,
+                'parametres' => $elementEnEdition
+                    ? [$parametreDuFormulaire => $elementEnEdition, 'embarque' => true]
+                    : ['embarque' => true],
+                'cle' => $formulaireOuvert,
+            ])
+        @endif
+    @else
+        <x-admin.entete-page
+            :titre="__('Rubriques de la FAQ')"
+            :fil="[__('Accueil') => route('dashboard'), __('FAQ') => route('admin.faq.liste'), __('Rubriques') => null]"
+            :resume="trans_choice(':nombre rubrique|:nombre rubriques', $elements->count(), ['nombre' => $elements->count()])">
+            <x-slot:actions>
+                <x-bascule-langue />
+                @hasanyrole('administrateur|editeur')
+                    <a href="{{ route('admin.rubriques-faq.creation') }}" wire:navigate
+                       class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                        <x-admin.icone nom="plus" />
+                        {{ __('Nouvelle rubrique') }}
+                    </a>
+                @endhasanyrole
+            </x-slot:actions>
+        </x-admin.entete-page>
+    @endif
 
     @if (session('message'))
         <div role="status" class="rounded-lg border border-green-300 bg-green-50 px-4 py-3 text-sm text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-100">
@@ -72,7 +97,12 @@
                 </td>
 
                 <td class="px-4 py-3">
-                    @if ($peutEcrire)
+                    @if ($peutEcrire && $composantFormulaire)
+                        <button type="button" wire:click="ouvrirEdition({{ $element->id }})"
+                                class="block text-left font-medium text-zinc-900 hover:underline dark:text-white">
+                            {{ $element->nom($langue) }}
+                        </button>
+                    @elseif ($peutEcrire)
                         <a href="{{ route('admin.rubriques-faq.edition', $element) }}" wire:navigate
                            class="block font-medium text-zinc-900 hover:underline dark:text-white">
                             {{ $element->nom($langue) }}
@@ -96,13 +126,24 @@
 
                 <td class="whitespace-nowrap px-4 py-3">
                     <div class="flex items-center justify-end gap-1">
-                        @if ($peutEcrire)
-                            <a href="{{ route('admin.rubriques-faq.edition', $element) }}" wire:navigate
-                               title="{{ __('Modifier') }}"
-                               aria-label="{{ __('Modifier :nom', ['nom' => $element->nom($langue)]) }}"
-                               class="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white">
+                        @if ($peutEcrire && $composantFormulaire)
+                            <button type="button" wire:click="ouvrirEdition({{ $element->id }})"
+                                    title="{{ __('Modifier') }}"
+                                    aria-label="{{ __('Modifier :nom', ['nom' => $element->nom($langue)]) }}"
+                                    class="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white">
                                 <x-admin.icone nom="crayon" />
-                            </a>
+                            </button>
+                        @endif
+
+                        @if ($peutEcrire)
+                            @unless ($composantFormulaire)
+                                <a href="{{ route('admin.rubriques-faq.edition', $element) }}" wire:navigate
+                                   title="{{ __('Modifier') }}"
+                                   aria-label="{{ __('Modifier :nom', ['nom' => $element->nom($langue)]) }}"
+                                   class="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white">
+                                    <x-admin.icone nom="crayon" />
+                                </a>
+                            @endunless
 
                             {{-- Une rubrique portant des questions est refusée par
                                  le composant, pas ici : le bouton reste actif et
