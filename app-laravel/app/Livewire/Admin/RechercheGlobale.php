@@ -32,17 +32,22 @@ class RechercheGlobale extends Component
     /**
      * Les familles fouillees : modele, colonnes, intitule, route, icone.
      *
+     * La route mene a l'ECRAN DE PAGE qui porte le contenu, et non plus a une
+     * fiche d'edition : les ecrans par type de contenu ont ete retires, et
+     * chaque collection s'edite depuis la page qui l'affiche. Le resultat
+     * ouvre donc la page, a charge d'y retrouver la ligne.
+     *
      * @return list<array<int, mixed>>
      */
     protected function famillesCherchees(): array
     {
         return [
-            [Article::class, ['titre_fr', 'titre_en'], 'titre_fr', __('Article'), 'admin.articles.edition', 'document'],
-            [Service::class, ['nom_fr', 'nom_en'], 'nom_fr', __('Service'), 'admin.services.edition', 'grille'],
-            [QuestionFaq::class, ['question_fr', 'question_en'], 'question_fr', __('Question'), 'admin.faq.edition', 'question'],
-            [Temoignage::class, ['auteur', 'citation_fr', 'citation_en'], 'auteur', __('Témoignage'), 'admin.temoignages.edition', 'guillemets'],
-            [MembreEquipe::class, ['nom', 'fonction_fr', 'fonction_en'], 'nom', __('Membre'), 'admin.equipe.edition', 'personne'],
-            [Partenaire::class, ['nom'], 'nom', __('Partenaire'), 'admin.partenaires.edition', 'grille'],
+            [Article::class, ['titre_fr', 'titre_en'], 'titre_fr', __('Article'), 'admin.pages.actualites', 'document'],
+            [Service::class, ['nom_fr', 'nom_en'], 'nom_fr', __('Service'), 'admin.pages.services', 'grille'],
+            [QuestionFaq::class, ['question_fr', 'question_en'], 'question_fr', __('Question'), 'admin.pages.faq', 'question'],
+            [Temoignage::class, ['auteur', 'citation_fr', 'citation_en'], 'auteur', __('Témoignage'), 'admin.pages.accueil', 'guillemets'],
+            [MembreEquipe::class, ['nom', 'fonction_fr', 'fonction_en'], 'nom', __('Membre'), 'admin.pages.presentation', 'personne'],
+            [Partenaire::class, ['nom'], 'nom', __('Partenaire'), 'admin.pages.accueil', 'grille'],
         ];
     }
 

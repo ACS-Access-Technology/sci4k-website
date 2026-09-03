@@ -105,21 +105,23 @@ it('affiche les titres dans la langue de l interface', function () {
 /*
  * Les tests ci-dessous frappent la route reelle, et non le composant : c'est le
  * seul moyen de verifier le gabarit et les middlewares, que Livewire::test()
- * court-circuite. Cette page expose les brouillons, donc du contenu non publie
- * — l'endroit ou le controle d'acces merite d'etre teste pour de vrai.
+ * court-circuite. Cette liste expose les brouillons, donc du contenu non
+ * publie — l'endroit ou le controle d'acces merite d'etre teste pour de vrai.
+ *
+ * L'adresse a change : la liste n'a plus d'ecran a elle, elle est rendue par
+ * « Pages du site → Actualités ».
  */
 
 it('refuse la page a un visiteur non connecte', function () {
-    $this->get('/admin/articles')->assertRedirect('/login');
+    $this->get('/admin/pages/actualites')->assertRedirect('/login');
 });
 
-it('sert la page dans le gabarit de l administration', function () {
+it('sert la liste dans le gabarit de l administration', function () {
     Article::factory()->create(['categorie_id' => $this->categorie->id, 'titre_fr' => 'Un article']);
 
     $this->actingAs($this->editeur)
-        ->get('/admin/articles')
+        ->get('/admin/pages/actualites')
         ->assertOk()
-        ->assertSee('Un article')
         ->assertSee('sidebar', false);   // repere du gabarit d'administration
 });
 
@@ -129,5 +131,13 @@ it('laisse un lecteur consulter la liste', function () {
 
     Article::factory()->create(['categorie_id' => $this->categorie->id, 'titre_fr' => 'Un article']);
 
-    $this->actingAs($lecteur)->get('/admin/articles')->assertOk()->assertSee('Un article');
+    Livewire::actingAs($lecteur)
+        ->test(ArticleListe::class)
+        ->assertOk()
+        ->assertSee('Un article');
+});
+
+/** L'ancienne adresse ne repond plus. */
+it('ne sert plus l ancien ecran des articles', function () {
+    $this->actingAs($this->editeur)->get('/admin/articles')->assertNotFound();
 });

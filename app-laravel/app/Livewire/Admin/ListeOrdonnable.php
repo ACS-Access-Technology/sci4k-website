@@ -32,7 +32,7 @@ abstract class ListeOrdonnable extends Component
      * ecrans par page publique, et dupliquer le corps de chaque liste aurait
      * cree deux versions a corriger a chaque defaut.
      */
-    public bool $embarque = false;
+    public bool $embarque = true;
 
     /**
      * Formulaire ouvert SUR PLACE : null, 'creation', ou l'identifiant edite.

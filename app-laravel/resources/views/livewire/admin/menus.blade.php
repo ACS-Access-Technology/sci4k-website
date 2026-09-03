@@ -111,7 +111,7 @@
             <div>
                 <div class="flex items-baseline justify-between gap-2">
                     <span class="text-sm font-medium">{{ __('Nos Services') }}</span>
-                    <a href="{{ route('admin.services.liste') }}" wire:navigate class="text-xs text-zinc-600 hover:underline dark:text-zinc-300">{{ __('Modifier les services') }}</a>
+                    <a href="{{ route('admin.pages.services') }}" wire:navigate class="text-xs text-zinc-600 hover:underline dark:text-zinc-300">{{ __('Modifier les services') }}</a>
                 </div>
                 <div class="mt-2 flex flex-wrap gap-1.5">
                     @forelse ($servicesDuPied as $serviceDuPied)

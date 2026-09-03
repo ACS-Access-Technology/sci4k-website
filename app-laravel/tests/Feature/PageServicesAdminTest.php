@@ -146,11 +146,11 @@ it('ne renvoie vers aucun ancien ecran', function (string $module) {
         ->html();
 
     foreach ([
-        route('admin.services.liste'),
-        route('admin.etapes-processus'),
-        route('admin.encarts.liste'),
+        '/admin/services',
+        '/admin/etapes-processus',
+        '/admin/encarts',
     ] as $adresse) {
-        expect($rendu)->not->toContain('href="'.$adresse.'"');
+        expect($rendu)->not->toContain('href="'.$adresse);
     }
 })->with(['banniere', 'services', 'processus', 'annonce']);
 

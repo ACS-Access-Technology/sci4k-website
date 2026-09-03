@@ -96,7 +96,8 @@ it('interdit a un lecteur d ouvrir le formulaire', function () {
     $lecteur = User::factory()->create();
     $lecteur->assignRole('lecteur');
 
-    $this->actingAs($lecteur)
-        ->get(route('admin.services.edition', $this->service))
+    Livewire::actingAs($lecteur)
+        ->test(ServiceFormulaire::class, ['service' => $this->service])
+        ->call('enregistrer')
         ->assertForbidden();
 });

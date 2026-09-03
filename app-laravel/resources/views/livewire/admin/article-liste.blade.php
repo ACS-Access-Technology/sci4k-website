@@ -2,45 +2,27 @@
 
 <div class="space-y-6">
 
-    {{-- Embarquee dans un ecran de page, la liste n'a ni titre ni fil d'Ariane
-         a elle, et son bouton d'ajout ouvre le formulaire SUR PLACE. --}}
-    @if ($embarque ?? false)
-        @if ($peutEcrire)
-            <div class="flex justify-end">
-                <button type="button" wire:click="ouvrirCreation"
-                        class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-                    <x-admin.icone nom="plus" />
-                    {{ __('Nouvel article') }}
-                </button>
-            </div>
-        @endif
+    {{-- La liste n'a ni titre ni fil d'Ariane a elle : « Pages du site →
+         Actualités » est le seul endroit d'ou elle est rendue, et il porte les
+         siens. Son bouton d'ajout ouvre le formulaire SUR PLACE. --}}
+    @if ($peutEcrire)
+        <div class="flex justify-end">
+            <button type="button" wire:click="ouvrirCreation"
+                    class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                <x-admin.icone nom="plus" />
+                {{ __('Nouvel article') }}
+            </button>
+        </div>
+    @endif
 
-        @if ($formulaireOuvert !== null)
-            @include('livewire.admin.partials.formulaire-sur-place', [
-                'composant' => 'admin.article-formulaire',
-                'parametres' => $articleEnEdition
-                    ? ['article' => $articleEnEdition, 'embarque' => true]
-                    : ['embarque' => true],
-                'cle' => $formulaireOuvert,
-            ])
-        @endif
-    @else
-        <x-admin.entete-page
-            :titre="__('Articles & actualités')"
-            :fil="[__('Accueil') => route('dashboard'), __('Contenu') => null, __('Articles') => null]"
-            :resume="trans_choice(':nombre article publié|:nombre articles publiés', $indicateurs['publies'], ['nombre' => $indicateurs['publies']])
-                     .' · '.trans_choice(':nombre affiché|:nombre affichés', $articles->count(), ['nombre' => $articles->count()])">
-            <x-slot:actions>
-                <x-bascule-langue />
-                @hasanyrole('administrateur|editeur')
-                    <a href="{{ route('admin.articles.creation') }}" wire:navigate
-                       class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-                        <x-admin.icone nom="plus" />
-                        {{ __('Nouvel article') }}
-                    </a>
-                @endhasanyrole
-            </x-slot:actions>
-        </x-admin.entete-page>
+    @if ($formulaireOuvert !== null)
+        @include('livewire.admin.partials.formulaire-sur-place', [
+            'composant' => 'admin.article-formulaire',
+            'parametres' => $articleEnEdition
+                ? ['article' => $articleEnEdition, 'embarque' => true]
+                : ['embarque' => true],
+            'cle' => $formulaireOuvert,
+        ])
     @endif
 
     @if (session('message'))
@@ -108,9 +90,9 @@
                         <div class="min-w-0">
                             @hasanyrole('administrateur|editeur')
                                 {{-- Le titre est lui aussi un raccourci vers la
-                                     fiche : embarque, il ouvre le formulaire sur
-                                     place au lieu de faire sortir l'editeur. --}}
-                                <a @if ($embarque ?? false) href="#" wire:click.prevent="ouvrirEdition({{ $article->id }})" @else href="{{ route('admin.articles.edition', $article) }}" wire:navigate @endif
+                                     fiche : il ouvre le formulaire sur place au
+                                     lieu de faire sortir l'editeur. --}}
+                                <a href="#" wire:click.prevent="ouvrirEdition({{ $article->id }})"
                                    class="block truncate font-medium text-zinc-900 hover:underline dark:text-white">
                                     {{ $article->titre($langue) }}
                                 </a>
@@ -140,7 +122,7 @@
                 <td class="whitespace-nowrap px-4 py-3">
                     <div class="flex items-center justify-end gap-1">
                         @hasanyrole('administrateur|editeur')
-                            <a @if ($embarque ?? false) href="#" wire:click.prevent="ouvrirEdition({{ $article->id }})" @else href="{{ route('admin.articles.edition', $article) }}" wire:navigate @endif
+                            <a href="#" wire:click.prevent="ouvrirEdition({{ $article->id }})"
                                title="{{ __('Modifier') }}" aria-label="{{ __('Modifier :titre', ['titre' => $article->titre($langue)]) }}"
                                class="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white">
                                 <x-admin.icone nom="crayon" />

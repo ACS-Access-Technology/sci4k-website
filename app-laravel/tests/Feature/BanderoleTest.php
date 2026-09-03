@@ -169,9 +169,15 @@ it('montre un apercu doublé, comme le bandeau reel', function () {
     expect(substr_count($corps, '<span>Cocody</span>'))->toBeGreaterThanOrEqual(2);
 });
 
-it('propose la banderole dans la barre laterale', function () {
-    expect($this->actingAs($this->editeur)->get('/dashboard')->getContent())
-        ->toContain('/admin/banderole');
+/**
+ * La banderole n'a plus d'entree a elle : elle s'edite depuis le module
+ * « Bande déroulante » de l'ecran de la page d'accueil.
+ */
+it('mene a la banderole par l ecran de la page d accueil', function () {
+    $contenu = $this->actingAs($this->editeur)->get('/dashboard')->getContent();
+
+    expect($contenu)->toContain('/admin/pages/accueil')
+        ->and($contenu)->not->toContain('/admin/banderole');
 });
 
 /*

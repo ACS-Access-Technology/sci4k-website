@@ -65,7 +65,11 @@
 
                         <td class="px-4 py-3">
                             @if ($demande->bien)
-                                <a href="{{ route('admin.biens.edition', $demande->bien) }}" wire:navigate
+                                {{-- Vers l'ecran de la page Biens, et non plus
+                                     vers une fiche : les ecrans par type de
+                                     contenu ont ete retires, et le catalogue
+                                     s'edite depuis la page qui l'affiche. --}}
+                                <a href="{{ route('admin.pages.biens') }}" wire:navigate
                                    class="text-zinc-900 hover:underline dark:text-white">{{ $demande->bienLisible($langue) }}</a>
                             @elseif ($demande->bien_intitule)
                                 {{-- Le titre recopie survit au retrait du bien : une

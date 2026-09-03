@@ -135,7 +135,7 @@ class BienFormulaire extends Component
      * ce que la classe mere apporte aux autres — en-tete masquee, « Annuler »
      * qui referme, et enregistrement qui previent la liste.
      */
-    public bool $embarque = false;
+    public bool $embarque = true;
 
     public function mount(?Bien $bien = null): void
     {
@@ -352,18 +352,13 @@ class BienFormulaire extends Component
 
         $this->dispatch('toast', message: __('Bien enregistré.'), variant: 'success');
 
-        // Embarque dans une liste, on ne redirige pas : on previent la liste,
-        // qui se referme. Rediriger ferait quitter l'ecran de page au milieu
-        // d'une modification.
-        if ($this->embarque) {
-            $this->dispatch('bloc-enregistre');
+        // On ne redirige pas : on previent la liste, qui se referme. Rediriger
+        // ferait quitter l'ecran de page au milieu d'une modification — et
+        // depuis le retrait des ecrans par type de contenu, il n'y a plus
+        // d'adresse a soi vers laquelle revenir.
+        $this->dispatch('bloc-enregistre');
 
-            return null;
-        }
-
-        session()->flash('message', __('Bien enregistré.'));
-
-        return $this->redirect(route('admin.biens.liste'), navigate: true);
+        return null;
     }
 
     /** Chaque ligne non vide devient un equipement. */

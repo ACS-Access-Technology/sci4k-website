@@ -60,7 +60,7 @@ class TableauDeBord extends Component
                 'variation' => $this->variationMensuelle(Article::class),
                 'icone' => 'document',
                 'ton' => 'primaire',
-                'route' => 'admin.articles.liste',
+                'route' => 'admin.pages.actualites',
             ],
             [
                 'intitule' => __('Services en ligne'),
@@ -68,7 +68,7 @@ class TableauDeBord extends Component
                 'variation' => $this->variationMensuelle(Service::class),
                 'icone' => 'grille',
                 'ton' => 'succes',
-                'route' => 'admin.services.liste',
+                'route' => 'admin.pages.services',
             ],
             [
                 'intitule' => __('Questions de FAQ'),
@@ -76,7 +76,7 @@ class TableauDeBord extends Component
                 'variation' => $this->variationMensuelle(QuestionFaq::class),
                 'icone' => 'question',
                 'ton' => 'info',
-                'route' => 'admin.faq.liste',
+                'route' => 'admin.pages.faq',
             ],
             [
                 'intitule' => __('Éléments masqués'),
@@ -142,17 +142,17 @@ class TableauDeBord extends Component
     protected function repartition(): array
     {
         $familles = [
-            [__('Articles'), Article::count(), 'admin.articles.liste'],
-            [__('Questions de FAQ'), QuestionFaq::count(), 'admin.faq.liste'],
-            [__('Images de fond'), ImageDeFond::count(), 'admin.images-de-fond.liste'],
-            [__('Services'), Service::count(), 'admin.services.liste'],
-            [__('Partenaires'), Partenaire::count(), 'admin.partenaires.liste'],
-            [__('Équipe'), MembreEquipe::count(), 'admin.equipe.liste'],
-            [__('Témoignages'), Temoignage::count(), 'admin.temoignages.liste'],
-            [__('Valeurs'), Valeur::count(), 'admin.valeurs'],
-            [__('Étapes du processus'), EtapeProcessus::count(), 'admin.etapes-processus'],
-            [__('Chiffres clés'), ChiffreCle::count(), 'admin.chiffres-cles'],
-            [__('Encarts'), Encart::count(), 'admin.encarts.liste'],
+            [__('Articles'), Article::count(), 'admin.pages.actualites'],
+            [__('Questions de FAQ'), QuestionFaq::count(), 'admin.pages.faq'],
+            [__('Images de fond'), ImageDeFond::count(), 'admin.pages.accueil'],
+            [__('Services'), Service::count(), 'admin.pages.services'],
+            [__('Partenaires'), Partenaire::count(), 'admin.pages.accueil'],
+            [__('Équipe'), MembreEquipe::count(), 'admin.pages.presentation'],
+            [__('Témoignages'), Temoignage::count(), 'admin.pages.accueil'],
+            [__('Valeurs'), Valeur::count(), 'admin.pages.presentation'],
+            [__('Étapes du processus'), EtapeProcessus::count(), 'admin.pages.services'],
+            [__('Chiffres clés'), ChiffreCle::count(), 'admin.pages.accueil'],
+            [__('Encarts'), Encart::count(), 'admin.pages.accueil'],
         ];
 
         $maximum = max(1, max(array_column($familles, 1)));
@@ -244,7 +244,7 @@ class TableauDeBord extends Component
             $aFaire[] = [
                 'texte' => trans_choice(':nombre article en brouillon|:nombre articles en brouillon', $brouillons, ['nombre' => $brouillons]),
                 'detail' => __('Invisible sur le site tant qu’il n’est pas publié.'),
-                'route' => 'admin.articles.liste',
+                'route' => 'admin.pages.actualites',
             ];
         }
 
@@ -278,7 +278,7 @@ class TableauDeBord extends Component
             $aFaire[] = [
                 'texte' => trans_choice(':nombre membre sans photo|:nombre membres sans photo', $sansPhoto, ['nombre' => $sansPhoto]),
                 'detail' => __('Leur vignette affiche une initiale.'),
-                'route' => 'admin.equipe.liste',
+                'route' => 'admin.pages.presentation',
             ];
         }
 

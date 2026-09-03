@@ -109,8 +109,8 @@ it('ne renvoie vers aucun ancien ecran', function (string $module) {
         ->call('ouvrir', $module)
         ->html();
 
-    foreach ([route('admin.biens.liste'), route('admin.referentiels')] as $adresse) {
-        expect($rendu)->not->toContain('href="'.$adresse.'"');
+    foreach (['/admin/biens', route('admin.referentiels')] as $adresse) {
+        expect($rendu)->not->toContain('href="'.$adresse);
     }
 })->with(['banniere', 'filtres', 'catalogue']);
 
@@ -154,26 +154,7 @@ it('interdit l ouverture a un lecteur', function () {
         ->assertForbidden();
 });
 
-/** Embarquee, la liste ne propose plus aucun lien de sortie. */
-it('ne propose plus de lien vers l ecran des biens', function () {
-    $bien = Bien::factory()->create();
 
-    $rendu = Livewire::actingAs($this->admin)
-        ->test(BienListe::class, ['embarque' => true])
-        ->html();
-
-    expect($rendu)->not->toContain(route('admin.biens.edition', $bien))
-        ->and($rendu)->not->toContain(route('admin.biens.creation'));
-});
-
-/** Sur son propre ecran, en revanche, les liens restent. */
-it('garde ses liens quand elle n est pas embarquee', function () {
-    $bien = Bien::factory()->create();
-
-    $rendu = Livewire::actingAs($this->admin)->test(BienListe::class)->html();
-
-    expect($rendu)->toContain(route('admin.biens.edition', $bien));
-});
 
 /**
  * Enregistre depuis la liste, le formulaire ne redirige pas : il previent la

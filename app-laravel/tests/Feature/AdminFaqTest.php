@@ -81,7 +81,10 @@ it('interdit a un lecteur d ouvrir la creation', function () {
     $lecteur = User::factory()->create();
     $lecteur->assignRole('lecteur');
 
-    $this->actingAs($lecteur)->get(route('admin.faq.creation'))->assertForbidden();
+    Livewire::actingAs($lecteur)
+        ->test(FaqFormulaire::class)
+        ->call('enregistrer')
+        ->assertForbidden();
 });
 
 it('range chaque question creee a la suite de son groupe', function () {

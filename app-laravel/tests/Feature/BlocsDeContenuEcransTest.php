@@ -1,10 +1,8 @@
 <?php
 
-use App\Livewire\Admin\EncartListe;
 use App\Livewire\Admin\ImageDeFondFormulaire;
-use App\Livewire\Admin\ImageDeFondListe;
 use App\Livewire\Admin\PartenaireFormulaire;
-use App\Livewire\Admin\ReglageDeSectionFormulaire;
+use App\Livewire\Admin\PartenaireListe;
 use App\Livewire\Admin\TemoignageFormulaire;
 use App\Livewire\Admin\TemoignageListe;
 use App\Models\Encart;
@@ -42,19 +40,31 @@ beforeEach(function () {
 
 /* ------------------------------------------------------- contrat commun */
 
-it('sert les six ecrans de liste', function () {
+/**
+ * Les six ecrans de liste ont ete retires : chaque collection s'edite depuis
+ * l'ecran de la page qui l'affiche. Les composants, eux, vivent toujours — ce
+ * sont eux que ces ecrans embarquent.
+ */
+it('rend les trois listes de blocs', function () {
     Temoignage::factory()->create();
     Partenaire::factory()->create();
     MembreEquipe::factory()->create();
-    Encart::factory()->create();
-    ImageDeFond::factory()->create();
-    ReglageDeSection::factory()->create();
 
     foreach ([
-        'admin.temoignages.liste', 'admin.partenaires.liste', 'admin.equipe.liste',
-        'admin.encarts.liste', 'admin.images-de-fond.liste', 'admin.reglages-de-section.liste',
-    ] as $route) {
-        $this->actingAs($this->editeur)->get(route($route))->assertOk();
+        TemoignageListe::class,
+        PartenaireListe::class,
+        \App\Livewire\Admin\MembreEquipeListe::class,
+    ] as $composant) {
+        Livewire::actingAs($this->editeur)->test($composant, ['embarque' => true])->assertOk();
+    }
+});
+
+it('ne sert plus les six anciens ecrans de liste', function () {
+    foreach ([
+        '/admin/temoignages', '/admin/partenaires', '/admin/equipe',
+        '/admin/encarts', '/admin/images-de-fond', '/admin/reglages-de-section',
+    ] as $adresse) {
+        $this->actingAs($this->editeur)->get($adresse)->assertNotFound();
     }
 });
 
@@ -134,7 +144,6 @@ it('refuse de creer un encart, une image de fond ou un en-tete', function () {
     foreach ([
         \App\Livewire\Admin\EncartFormulaire::class,
         ImageDeFondFormulaire::class,
-        ReglageDeSectionFormulaire::class,
     ] as $composant) {
         Livewire::actingAs($this->editeur)->test($composant)->assertNotFound();
     }
@@ -152,18 +161,15 @@ it('laisse creer un temoignage, un partenaire et un membre', function () {
     }
 });
 
-it('refuse de supprimer un encart ou une image de fond', function () {
-    $encart = Encart::factory()->create();
-    $image = ImageDeFond::factory()->create();
-
-    Livewire::actingAs($this->editeur)->test(EncartListe::class)
-        ->call('supprimer', $encart->id)->assertForbidden();
-
-    Livewire::actingAs($this->editeur)->test(ImageDeFondListe::class)
-        ->call('supprimer', $image->id)->assertForbidden();
-
-    expect(Encart::find($encart->id))->not->toBeNull();
-    expect(ImageDeFond::find($image->id))->not->toBeNull();
+/**
+ * Les listes des encarts et des images de fond ont ete retirees : ces deux
+ * collections n'ont plus de liste du tout, seulement le formulaire qu'un
+ * module d'ecran de page embarque. Le refus de suppression tient donc a
+ * l'absence de tout point d'appel — plus a une garde dans une liste.
+ */
+it('ne propose plus aucune liste des encarts ni des images de fond', function () {
+    expect(class_exists(\App\Livewire\Admin\EncartListe::class))->toBeFalse()
+        ->and(class_exists(\App\Livewire\Admin\ImageDeFondListe::class))->toBeFalse();
 });
 
 it('ne laisse pas modifier le slug d un encart', function () {
@@ -244,32 +250,4 @@ it('ne touche jamais a un fichier du site statique', function () {
 
 /* ------------------------------------------------- en-tete de section */
 
-it('n offre pas de visibilite sur un en-tete de section', function () {
-    // La table n'a pas de colonne `visible` : proposer la case aurait produit
-    // une commande sans effet, et une ecriture sur une colonne absente.
-    $reglage = ReglageDeSection::factory()->create(['slug' => 'home.hero']);
 
-    $composant = Livewire::actingAs($this->editeur)
-        ->test(ReglageDeSectionFormulaire::class, ['element' => $reglage]);
-
-    $composant->assertDontSee('Visible sur le site');
-
-    $composant->set('valeurs.titre_fr', 'Nouveau titre')
-        ->set('valeurs.titre_en', 'New title')
-        ->call('enregistrer')
-        ->assertHasNoErrors();
-
-    expect($reglage->fresh()->titre_fr)->toBe('Nouveau titre');
-});
-
-it('ne laisse pas modifier la section d un en-tete', function () {
-    $reglage = ReglageDeSection::factory()->create(['slug' => 'home.hero']);
-
-    Livewire::actingAs($this->editeur)
-        ->test(ReglageDeSectionFormulaire::class, ['element' => $reglage])
-        ->set('valeurs.slug', 'about.page')
-        ->set('valeurs.titre_fr', 'Titre')->set('valeurs.titre_en', 'Title')
-        ->call('enregistrer');
-
-    expect($reglage->fresh()->slug)->toBe('home.hero');
-});

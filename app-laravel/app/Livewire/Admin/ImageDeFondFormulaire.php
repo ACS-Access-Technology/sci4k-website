@@ -63,10 +63,6 @@ class ImageDeFondFormulaire extends FormulaireDeBloc
         return 'livewire.admin.image-de-fond-formulaire';
     }
 
-    protected function routeListe(): string
-    {
-        return 'admin.images-de-fond.liste';
-    }
 
     protected function intitule(): string
     {

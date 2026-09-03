@@ -67,7 +67,7 @@ abstract class FormulaireDeBloc extends Component
      * l'editeur sur une autre adresse. L'en-tete de page disparait alors, et
      * l'enregistrement previent la liste au lieu de rediriger.
      */
-    public bool $embarque = false;
+    public bool $embarque = true;
 
     /** Langue du contenu saisi — sans rapport avec celle de l'interface. */
     public string $langueActive = 'fr';
@@ -92,9 +92,6 @@ abstract class FormulaireDeBloc extends Component
 
     /** Vue Blade de l'ecran. */
     abstract protected function vue(): string;
-
-    /** Route de la liste, ou l'on revient apres enregistrement. */
-    abstract protected function routeListe(): string;
 
     /** Intitule au singulier, pour les titres et le fil d'Ariane. */
     abstract protected function intitule(): string;
@@ -367,19 +364,13 @@ abstract class FormulaireDeBloc extends Component
         // Embarque dans une liste, le formulaire ne redirige pas : il previent
         // la liste qui l'a ouvert, laquelle se referme et se rafraichit. Une
         // redirection ferait quitter la page d'accueil au milieu d'une
-        // modification, ce que la refonte cherche justement a eviter.
-        if ($this->embarque) {
-            $this->dispatch('bloc-enregistre');
-            $this->dispatch('toast',
-                message: __(':intitule enregistré.', ['intitule' => $this->intitule()]),
-                variant: 'success');
-
-            return;
-        }
-
-        session()->flash('message', __(':intitule enregistré.', ['intitule' => $this->intitule()]));
-        $this->dispatch('toast', message: __(':intitule enregistré.', ['intitule' => $this->intitule()]), variant: 'success');
-        $this->redirectRoute($this->routeListe());
+        // modification, ce que la refonte cherche justement a eviter. Depuis
+        // le retrait des ecrans par type de contenu, c'est le SEUL chemin :
+        // ce formulaire n'a plus d'adresse a lui vers laquelle rediriger.
+        $this->dispatch('bloc-enregistre');
+        $this->dispatch('toast',
+            message: __(':intitule enregistré.', ['intitule' => $this->intitule()]),
+            variant: 'success');
     }
 
     /**

@@ -30,7 +30,7 @@ class BienListe extends Component
      * l'accueille porte le sien — et les liens d'edition cedent la place a un
      * formulaire ouvert sur place, pour ne pas faire sortir l'editeur.
      */
-    public bool $embarque = false;
+    public bool $embarque = true;
 
     /** Formulaire ouvert sur place : null, 'creation', ou l'identifiant edite. */
     public null|int|string $formulaireOuvert = null;

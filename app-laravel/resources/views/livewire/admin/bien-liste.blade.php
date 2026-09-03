@@ -8,43 +8,27 @@
 
 <div class="space-y-6">
 
-    {{-- Embarquee dans un ecran de page, la liste n'a ni titre ni fil d'Ariane
-         a elle, et son bouton d'ajout ouvre le formulaire SUR PLACE. --}}
-    @if ($embarque ?? false)
-        @if ($peutEcrire)
-            <div class="flex justify-end">
-                <button type="button" wire:click="ouvrirCreation"
-                        class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-                    <x-admin.icone nom="plus" />
-                    {{ __('Ajouter un bien') }}
-                </button>
-            </div>
-        @endif
+    {{-- La liste n'a ni titre ni fil d'Ariane a elle : « Pages du site → Biens
+         immobiliers » est le seul endroit d'ou elle est rendue, et il porte les
+         siens. Son bouton d'ajout ouvre le formulaire SUR PLACE. --}}
+    @if ($peutEcrire)
+        <div class="flex justify-end">
+            <button type="button" wire:click="ouvrirCreation"
+                    class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                <x-admin.icone nom="plus" />
+                {{ __('Ajouter un bien') }}
+            </button>
+        </div>
+    @endif
 
-        @if ($formulaireOuvert !== null)
-            @include('livewire.admin.partials.formulaire-sur-place', [
-                'composant' => 'admin.bien-formulaire',
-                'parametres' => $bienEnEdition
-                    ? ['bien' => $bienEnEdition, 'embarque' => true]
-                    : ['embarque' => true],
-                'cle' => $formulaireOuvert,
-            ])
-        @endif
-    @else
-        <x-admin.entete-page
-            :titre="__('Biens immobiliers')"
-            :fil="[__('Accueil') => route('dashboard'), __('Contenu') => null, __('Biens') => null]">
-            <x-slot:actions>
-                <x-bascule-langue />
-                @if ($peutEcrire)
-                    <a href="{{ route('admin.biens.creation') }}" wire:navigate
-                       class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-                        <x-admin.icone nom="plus" />
-                        {{ __('Ajouter un bien') }}
-                    </a>
-                @endif
-            </x-slot:actions>
-        </x-admin.entete-page>
+    @if ($formulaireOuvert !== null)
+        @include('livewire.admin.partials.formulaire-sur-place', [
+            'composant' => 'admin.bien-formulaire',
+            'parametres' => $bienEnEdition
+                ? ['bien' => $bienEnEdition, 'embarque' => true]
+                : ['embarque' => true],
+            'cle' => $formulaireOuvert,
+        ])
     @endif
 
     @include('livewire.admin.partials.statistiques-de-bloc', ['statistiques' => $statistiques])
@@ -146,7 +130,7 @@
                                 @endif
 
                                 <span class="min-w-0">
-                                    <a @if ($embarque ?? false) href="#" wire:click.prevent="ouvrirEdition({{ $bien->id }})" @else href="{{ route('admin.biens.edition', $bien) }}" wire:navigate @endif
+                                    <a href="#" wire:click.prevent="ouvrirEdition({{ $bien->id }})"
                                        class="block truncate font-medium text-zinc-900 hover:underline dark:text-white">
                                         {{ $bien->titre($langue) }}
                                     </a>
@@ -184,7 +168,7 @@
                         <td class="px-4 py-3 text-end">
                             @if ($peutEcrire)
                                 <div class="flex justify-end gap-3 text-xs">
-                                    <a @if ($embarque ?? false) href="#" wire:click.prevent="ouvrirEdition({{ $bien->id }})" @else href="{{ route('admin.biens.edition', $bien) }}" wire:navigate @endif
+                                    <a href="#" wire:click.prevent="ouvrirEdition({{ $bien->id }})"
                                        class="text-zinc-600 hover:underline dark:text-zinc-300">{{ __('Modifier') }}</a>
 
                                     <button type="button" wire:click="supprimer({{ $bien->id }})"

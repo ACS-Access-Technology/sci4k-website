@@ -117,13 +117,13 @@
     <section class="rounded-xl border border-zinc-200 dark:border-zinc-700">
         <div class="border-b border-zinc-200 px-4 py-3 dark:border-zinc-700">
             <h2 class="text-sm font-semibold text-zinc-900 dark:text-white">{{ __('Référentiels gérés ailleurs') }}</h2>
-            <p class="text-xs text-zinc-500 dark:text-zinc-400">{{ __("Ces deux listes ont leur propre écran. Elles sont rappelées ici pour mémoire ; on les modifie là-bas, pour qu'il n'existe qu'un seul endroit où le faire.") }}</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">{{ __("Ces deux listes s'éditent depuis l'écran de la page qui les affiche. Elles sont rappelées ici pour mémoire ; on les modifie là-bas, pour qu'il n'existe qu'un seul endroit où le faire.") }}</p>
         </div>
 
         <div class="grid gap-4 p-4 sm:grid-cols-2">
             @foreach ([
-                [__("Catégories d'articles"), $categoriesArticles, 'admin.articles.liste'],
-                [__('Rubriques de FAQ'), $rubriquesFaq, 'admin.rubriques-faq.liste'],
+                [__("Catégories d'articles"), $categoriesArticles, 'admin.pages.actualites'],
+                [__('Rubriques de FAQ'), $rubriquesFaq, 'admin.pages.faq'],
             ] as [$intitule, $elements, $route])
                 <div>
                     <div class="flex items-baseline justify-between gap-2">

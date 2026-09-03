@@ -97,12 +97,12 @@ it('ne renvoie vers aucun ancien ecran de liste', function (string $module) {
         ->html();
 
     foreach ([
-        route('admin.chiffres-cles'),
-        route('admin.banderole'),
-        route('admin.temoignages.liste'),
-        route('admin.partenaires.liste'),
+        '/admin/chiffres-cles',
+        '/admin/banderole',
+        '/admin/temoignages',
+        '/admin/partenaires',
     ] as $adresse) {
-        expect($rendu)->not->toContain('href="'.$adresse.'"');
+        expect($rendu)->not->toContain('href="'.$adresse);
     }
 })->with(['hero', 'bandeau', 'articles', 'temoignages', 'partenaires']);
 
@@ -206,7 +206,7 @@ it('n offre aucune sortie depuis le formulaire embarque', function () {
         ->test(App\Livewire\Admin\EncartFormulaire::class, ['element' => $encart, 'embarque' => true])
         ->html();
 
-    expect($rendu)->not->toContain(route('admin.encarts.liste'));
+    expect($rendu)->not->toContain('/admin/encarts');
 });
 
 it('enregistre l apparence de la bande deroulante', function () {

@@ -7,37 +7,27 @@
   signale.
 
   Attend : $champs, $estCreation, $langue, $traductionActive, $fichierGere,
-           $intitule, $routeListe, $fil, et $apercuFichier (facultatif).
+           $intitule, et $apercuFichier (facultatif).
 --}}
 @php($classeChamp = 'mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950')
 
 <form wire:submit="enregistrer" class="max-w-3xl space-y-6">
 
-    {{-- Ouvert dans une liste, le formulaire n'a ni titre de page ni fil
-         d'Ariane : la page qui l'accueille porte les siens. Un simple intitule
-         suffit a dire ce qu'on modifie. --}}
-    @if ($embarque ?? false)
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 pb-3 dark:border-zinc-700">
-            <h4 class="text-sm font-semibold">
-                {{ $estCreation ? __('Nouveau : :intitule', ['intitule' => $intitule]) : __('Modifier : :intitule', ['intitule' => $intitule]) }}
-            </h4>
-            <div class="flex items-center gap-2">
-                <x-bascule-langue />
-                <button type="button" wire:click="$dispatch('bloc-annule')"
-                        class="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium dark:border-zinc-600">
-                    {{ __('Annuler') }}
-                </button>
-            </div>
+    {{-- Le formulaire n'a ni titre de page ni fil d'Ariane : il est ouvert
+         DANS une liste, elle-meme rendue depuis un ecran de page qui porte les
+         siens. Un simple intitule suffit a dire ce qu'on modifie. --}}
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 pb-3 dark:border-zinc-700">
+        <h4 class="text-sm font-semibold">
+            {{ $estCreation ? __('Nouveau : :intitule', ['intitule' => $intitule]) : __('Modifier : :intitule', ['intitule' => $intitule]) }}
+        </h4>
+        <div class="flex items-center gap-2">
+            <x-bascule-langue />
+            <button type="button" wire:click="$dispatch('bloc-annule')"
+                    class="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium dark:border-zinc-600">
+                {{ __('Annuler') }}
+            </button>
         </div>
-    @else
-        <x-admin.entete-page
-            :titre="$estCreation ? __('Nouveau : :intitule', ['intitule' => $intitule]) : __('Modifier : :intitule', ['intitule' => $intitule])"
-            :fil="$fil">
-            <x-slot:actions>
-                <x-bascule-langue />
-            </x-slot:actions>
-        </x-admin.entete-page>
-    @endif
+    </div>
 
     @if ($traductionActive)
         <p class="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 dark:border-sky-800 dark:bg-sky-950 dark:text-sky-100">
@@ -173,15 +163,10 @@
                 class="inline-flex items-center rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
             {{ __('Enregistrer') }}
         </button>
-        {{-- Embarque, « Annuler » referme le formulaire sur place. Un lien vers
-             la liste aurait fait quitter la page d'accueil — exactement la
-             sortie que la refonte supprime. --}}
-        @if ($embarque ?? false)
-            <button type="button" wire:click="$dispatch('bloc-annule')"
-                    class="text-sm text-zinc-600 hover:underline dark:text-zinc-400">{{ __('Annuler') }}</button>
-        @else
-            <a href="{{ route($routeListe) }}" wire:navigate
-               class="text-sm text-zinc-600 hover:underline dark:text-zinc-400">{{ __('Annuler') }}</a>
-        @endif
+        {{-- « Annuler » referme le formulaire sur place. Un lien vers une liste
+             aurait fait quitter l'ecran de page — exactement la sortie que la
+             refonte supprime. --}}
+        <button type="button" wire:click="$dispatch('bloc-annule')"
+                class="text-sm text-zinc-600 hover:underline dark:text-zinc-400">{{ __('Annuler') }}</button>
     </div>
 </form>

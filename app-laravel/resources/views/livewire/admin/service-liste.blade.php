@@ -2,45 +2,27 @@
 
 <div class="space-y-6">
 
-    {{-- Cette liste a son propre balisage et ne passe pas par bloc-liste : les
-         adaptations faites la-bas ne l'atteignaient pas, et ses liens
-         renvoyaient encore vers l'ancien ecran. --}}
-    @if ($embarque ?? false)
-        @hasanyrole('administrateur|editeur')
-            <div class="flex justify-end">
-                <button type="button" wire:click="ouvrirCreation"
-                        class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-                    <x-admin.icone nom="plus" />
-                    {{ __('Nouveau service') }}
-                </button>
-            </div>
-        @endhasanyrole
+    {{-- Cette liste a son propre balisage et ne passe pas par bloc-liste. Elle
+         est rendue depuis « Pages du site → Services » et « → Accueil », qui
+         portent leur propre titre : elle n'en a pas a elle. --}}
+    @hasanyrole('administrateur|editeur')
+        <div class="flex justify-end">
+            <button type="button" wire:click="ouvrirCreation"
+                    class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                <x-admin.icone nom="plus" />
+                {{ __('Nouveau service') }}
+            </button>
+        </div>
+    @endhasanyrole
 
-        @if ($composantFormulaire && $formulaireOuvert !== null)
-            @include('livewire.admin.partials.formulaire-sur-place', [
-                'composant' => $composantFormulaire,
-                'parametres' => $elementEnEdition
-                    ? [$parametreDuFormulaire => $elementEnEdition, 'embarque' => true]
-                    : ['embarque' => true],
-                'cle' => $formulaireOuvert,
-            ])
-        @endif
-    @else
-        <x-admin.entete-page
-            :titre="__('Services')"
-            :fil="[__('Accueil') => route('dashboard'), __('Contenu') => null, __('Services') => null]"
-            :resume="trans_choice(':nombre service|:nombre services', $elements->count(), ['nombre' => $elements->count()])">
-            <x-slot:actions>
-                <x-bascule-langue />
-                @hasanyrole('administrateur|editeur')
-                    <a href="{{ route('admin.services.creation') }}" wire:navigate
-                       class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-                        <x-admin.icone nom="plus" />
-                        {{ __('Nouveau service') }}
-                    </a>
-                @endhasanyrole
-            </x-slot:actions>
-        </x-admin.entete-page>
+    @if ($composantFormulaire && $formulaireOuvert !== null)
+        @include('livewire.admin.partials.formulaire-sur-place', [
+            'composant' => $composantFormulaire,
+            'parametres' => $elementEnEdition
+                ? [$parametreDuFormulaire => $elementEnEdition, 'embarque' => true]
+                : ['embarque' => true],
+            'cle' => $formulaireOuvert,
+        ])
     @endif
 
     @if (session('message'))
@@ -96,16 +78,11 @@
                 </td>
 
                 <td class="px-4 py-3">
-                    @if ($peutEcrire && $composantFormulaire)
+                    @if ($peutEcrire)
                         <button type="button" wire:click="ouvrirEdition({{ $element->id }})"
                                 class="block text-left font-medium text-zinc-900 hover:underline dark:text-white">
                             {{ $element->nom($langue) }}
                         </button>
-                    @elseif ($peutEcrire)
-                        <a href="{{ route('admin.services.edition', $element) }}" wire:navigate
-                           class="block font-medium text-zinc-900 hover:underline dark:text-white">
-                            {{ $element->nom($langue) }}
-                        </a>
                     @else
                         <span class="block font-medium text-zinc-900 dark:text-white">{{ $element->nom($langue) }}</span>
                     @endif
@@ -136,20 +113,13 @@
 
                 <td class="whitespace-nowrap px-4 py-3">
                     <div class="flex items-center justify-end gap-1">
-                        @if ($peutEcrire && $composantFormulaire)
+                        @if ($peutEcrire)
                             <button type="button" wire:click="ouvrirEdition({{ $element->id }})"
                                     title="{{ __('Modifier') }}"
                                     aria-label="{{ __('Modifier :nom', ['nom' => $element->nom($langue)]) }}"
                                     class="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white">
                                 <x-admin.icone nom="crayon" />
                             </button>
-                        @elseif ($peutEcrire)
-                            <a href="{{ route('admin.services.edition', $element) }}" wire:navigate
-                               title="{{ __('Modifier') }}"
-                               aria-label="{{ __('Modifier :nom', ['nom' => $element->nom($langue)]) }}"
-                               class="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white">
-                                <x-admin.icone nom="crayon" />
-                            </a>
 
                             {{-- Confirmation obligatoire : la suppression est
                                  definitive, le service n'ayant pas de corbeille.

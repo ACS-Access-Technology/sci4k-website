@@ -162,8 +162,8 @@ it('ne renvoie vers aucun ancien ecran', function (string $module) {
         ->call('ouvrir', $module)
         ->html();
 
-    foreach ([route('admin.valeurs'), route('admin.equipe.liste')] as $adresse) {
-        expect($rendu)->not->toContain('href="'.$adresse.'"');
+    foreach (['/admin/valeurs', '/admin/equipe'] as $adresse) {
+        expect($rendu)->not->toContain('href="'.$adresse);
     }
 })->with(['banniere', 'presentation', 'directeur', 'valeurs', 'equipe']);
 
@@ -239,13 +239,24 @@ it('masque les reglages du bloc dans l editeur embarque', function () {
     expect($rendu)->not->toContain('Réglages du bloc');
 });
 
-/** Sur son propre ecran, le panneau reste : rien d'autre n'edite la section. */
-it('garde les reglages du bloc sur l ecran des valeurs', function () {
-    Valeur::factory()->create();
+/**
+ * L'editeur embarque n'ECRIT PAS l'en-tete de sa section : le module de la
+ * page l'edite sous le MEME slug — about.values. Il l'a lue a son montage ;
+ * la reposer a l'enregistrement ecraserait silencieusement une modification
+ * faite entre-temps dans le formulaire du dessus.
+ */
+it('n ecrase pas l en-tete de section depuis l editeur embarque', function () {
+    $valeur = Valeur::factory()->create();
 
-    $rendu = Livewire::actingAs($this->admin)
-        ->test(App\Livewire\Admin\ValeurEnsemble::class)
-        ->html();
+    ReglageDeSection::pour('about.values')->update(['titre_fr' => 'Nos engagements']);
 
-    expect($rendu)->toContain('Réglages du bloc');
+    Livewire::actingAs($this->admin)
+        ->test(App\Livewire\Admin\ValeurEnsemble::class, ['embarque' => true])
+        ->set('reglages.titre_fr', 'Un titre venu du navigateur')
+        ->set('lignes.'.$valeur->id.'.titre_fr', 'Rigueur')
+        ->call('enregistrer')
+        ->assertHasNoErrors();
+
+    expect(ReglageDeSection::where('slug', 'about.values')->value('titre_fr'))
+        ->toBe('Nos engagements');
 });

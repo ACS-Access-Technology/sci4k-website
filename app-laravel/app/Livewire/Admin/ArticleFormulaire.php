@@ -44,7 +44,7 @@ class ArticleFormulaire extends Component
      * qui referme, et enregistrement qui previent la liste au lieu de
      * rediriger. Voir BienFormulaire::$embarque.
      */
-    public bool $embarque = false;
+    public bool $embarque = true;
 
     public ?Article $article = null;
 
@@ -241,16 +241,11 @@ class ArticleFormulaire extends Component
 
         $this->dispatch('toast', message: __('Article enregistré.'), variant: 'success');
 
-        // Embarque dans une liste, on ne redirige pas : on previent la liste,
-        // qui se referme. Rediriger ferait quitter l'ecran de page au milieu
-        // d'une modification.
-        if ($this->embarque) {
-            $this->dispatch('bloc-enregistre');
-
-            return;
-        }
-
-        $this->redirectRoute('admin.articles.liste');
+        // On ne redirige pas : on previent la liste, qui se referme.
+        // Rediriger ferait quitter l'ecran de page au milieu d'une
+        // modification — et depuis le retrait des ecrans par type de
+        // contenu, il n'y a plus d'adresse a soi vers laquelle revenir.
+        $this->dispatch('bloc-enregistre');
     }
 
     /**

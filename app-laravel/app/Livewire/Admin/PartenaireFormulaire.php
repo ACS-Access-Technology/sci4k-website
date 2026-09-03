@@ -45,10 +45,6 @@ class PartenaireFormulaire extends FormulaireDeBloc
         return 'livewire.admin.partenaire-formulaire';
     }
 
-    protected function routeListe(): string
-    {
-        return 'admin.partenaires.liste';
-    }
 
     protected function intitule(): string
     {

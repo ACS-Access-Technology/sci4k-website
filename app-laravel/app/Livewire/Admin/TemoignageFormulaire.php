@@ -57,10 +57,6 @@ class TemoignageFormulaire extends FormulaireDeBloc
         return 'livewire.admin.temoignage-formulaire';
     }
 
-    protected function routeListe(): string
-    {
-        return 'admin.temoignages.liste';
-    }
 
     protected function intitule(): string
     {

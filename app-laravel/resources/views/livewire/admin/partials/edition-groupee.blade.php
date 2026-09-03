@@ -207,15 +207,24 @@
             @endforelse
         </div>
 
-        {{-- Masque quand l'editeur est embarque : l'ecran de page qui
-             l'accueille edite DEJA cette section, juste au-dessus. Deux
-             formulaires pour la meme donnee, c'est la porte ouverte a une
-             saisie qui en ecrase une autre selon l'ordre des clics. --}}
-        @if ($sectionReglee && ! ($embarque ?? false))
+        {{-- L'EN-TETE de la section est masquee : l'ecran de page qui accueille
+             cet editeur l'edite DEJA, juste au-dessus. Deux formulaires pour la
+             meme donnee, c'est la porte ouverte a une saisie qui en ecrase une
+             autre selon l'ordre des clics.
+
+             L'APPARENCE, elle, reste : la casse et le separateur de la
+             banderole, la duree d'animation des chiffres cles ne sont edites
+             nulle part ailleurs. Les masquer avec le reste les aurait rendus
+             inatteignables — c'est le piege deja rencontre sur la mise en page
+             du processus, que l'ecran de page a du reprendre a son compte. --}}
+        @php($enteteEditee = ($enteteAffichee ?? true) && ! ($embarque ?? false))
+        @php($panneauUtile = $enteteEditee || isset($reglagesSupplementaires))
+
+        @if ($sectionReglee && $panneauUtile)
             <aside class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
                 <h2 class="text-sm font-semibold text-zinc-900 dark:text-white">{{ __('Réglages du bloc') }}</h2>
                 <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                    {{ ($enteteAffichee ?? true)
+                    {{ $enteteEditee
                         ? __("En-tête de la section sur le site.")
                         : __("Apparence du bloc sur le site.") }}
                 </p>
@@ -227,7 +236,7 @@
                          c'est le defaut d'ecran menteur releve cinq fois sur ce
                          projet. Ils reglent alors leur apparence, et rien
                          d'autre. --}}
-                    @foreach (($enteteAffichee ?? true) ? ['titre' => __('Titre de la section'), 'chapo' => __('Chapô')] : [] as $nom => $intitule)
+                    @foreach ($enteteEditee ? ['titre' => __('Titre de la section'), 'chapo' => __('Chapô')] : [] as $nom => $intitule)
                         @foreach (['fr', 'en'] as $code)
                             <label class="block {{ $langueActive === $code ? '' : 'hidden' }}">
                                 <span class="text-sm font-medium">
