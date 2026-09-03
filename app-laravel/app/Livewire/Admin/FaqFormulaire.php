@@ -24,6 +24,16 @@ class FaqFormulaire extends Component
 {
     use RemplitParTraduction;
 
+    /**
+     * Le formulaire est-il rendu A L'INTERIEUR d'une liste ?
+     *
+     * Ce composant n'herite pas de FormulaireDeBloc : il porte donc lui-meme
+     * ce que la classe mere apporte aux autres — en-tete masquee, « Annuler »
+     * qui referme, et enregistrement qui previent la liste au lieu de
+     * rediriger. Voir ServiceFormulaire::$embarque.
+     */
+    public bool $embarque = false;
+
     public ?QuestionFaq $question = null;
 
     /** Identifiant de la rubrique choisie, ou NOUVELLE_RUBRIQUE. */
@@ -139,6 +149,16 @@ class FaqFormulaire extends Component
         }
 
         $this->dispatch('toast', message: __('Question enregistrée.'), variant: 'success');
+
+        // Embarque dans une liste, on ne redirige pas : on previent la liste,
+        // qui se referme. Rediriger ferait quitter l'ecran de page au milieu
+        // d'une modification.
+        if ($this->embarque) {
+            $this->dispatch('bloc-enregistre');
+
+            return;
+        }
+
         $this->redirectRoute('admin.faq.liste');
     }
 

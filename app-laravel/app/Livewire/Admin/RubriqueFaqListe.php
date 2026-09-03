@@ -26,6 +26,18 @@ class RubriqueFaqListe extends ListeOrdonnable
         return ['nom_fr', 'nom_en'];
     }
 
+    /** Ouvert sur place quand la liste est embarquee dans un ecran de page. */
+    protected function composantFormulaire(): ?string
+    {
+        return 'admin.rubrique-faq-formulaire';
+    }
+
+    /** RubriqueFaqFormulaire n'herite pas de FormulaireDeBloc : son modele s'appelle « rubrique ». */
+    protected function parametreDuFormulaire(): string
+    {
+        return 'rubrique';
+    }
+
     protected function vue(): string
     {
         return 'livewire.admin.rubrique-faq-liste';
