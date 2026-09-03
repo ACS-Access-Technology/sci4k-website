@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Livewire\Concerns\PorteDesTextesDeBloc;
 use App\Models\ImageDeFond;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
@@ -28,6 +29,8 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class PageFaq extends Component
 {
+    use PorteDesTextesDeBloc;
+
     /**
      * Les textes du formulaire « poser une question ».
      *
@@ -102,9 +105,6 @@ class PageFaq extends Component
 
     public array $entete = [];
 
-    /** Textes du bloc qui ne sont pas un en-tete, par cle suffixee de langue. */
-    public array $textes = [];
-
     public ?string $message = null;
 
     protected function peutEcrire(): bool
@@ -154,10 +154,7 @@ class PageFaq extends Component
             $this->entete[$champ.'_en'] = (string) ($section?->{$champ.'_en'} ?? '');
         }
 
-        foreach (array_keys($description['textes'] ?? []) as $nom) {
-            $this->textes[$nom.'_fr'] = (string) ($section?->option($nom.'_fr', '') ?? '');
-            $this->textes[$nom.'_en'] = (string) ($section?->option($nom.'_en', '') ?? '');
-        }
+        $this->chargerLesTextes($section);
     }
 
     protected function rules(): array
@@ -169,12 +166,7 @@ class PageFaq extends Component
             $regles['entete.'.$champ.'_en'] = ['nullable', 'string', 'max:500'];
         }
 
-        foreach (array_keys($this->moduleCourant()['textes'] ?? []) as $nom) {
-            $regles['textes.'.$nom.'_fr'] = ['nullable', 'string', 'max:500'];
-            $regles['textes.'.$nom.'_en'] = ['nullable', 'string', 'max:500'];
-        }
-
-        return $regles;
+        return $regles + $this->reglesDesTextes();
     }
 
     /**
@@ -183,14 +175,7 @@ class PageFaq extends Component
      */
     protected function validationAttributes(): array
     {
-        $intitules = [];
-
-        foreach ($this->moduleCourant()['textes'] ?? [] as $nom => $decrit) {
-            $intitules['textes.'.$nom.'_fr'] = __($decrit['intitule']).' ('.__('français').')';
-            $intitules['textes.'.$nom.'_en'] = __($decrit['intitule']).' ('.__('anglais').')';
-        }
-
-        return $intitules;
+        return $this->intitulesDesTextes();
     }
 
     public function enregistrer(): void
@@ -206,23 +191,10 @@ class PageFaq extends Component
         $section = ReglageDeSection::firstOrNew(['slug' => $slug]);
         $section->fill($this->entete);
 
-        // Seules les cles que le module DECLARE sont ecrites : `$this->textes`
-        // est une propriete publique, dont le navigateur fixe le contenu, cles
-        // comprises. Sans ce filtre, n'importe quelle option de la section
-        // serait ecrivable sans passer par aucune regle.
-        $declarees = [];
-
-        foreach (array_keys($description['textes'] ?? []) as $nom) {
-            foreach (['_fr', '_en'] as $suffixe) {
-                $declarees[$nom.$suffixe] = trim((string) ($this->textes[$nom.$suffixe] ?? ''));
-            }
-        }
-
-        if ($declarees !== []) {
-            // poserOptions() POSE les options sans enregistrer : le save() qui
-            // suit est ce qui les porte en base.
-            $section->poserOptions($declarees);
-        }
+        // poserLesTextes() ne retient que les cles declarees par le module et
+        // POSE sans enregistrer : le save() qui suit est ce qui les porte en
+        // base.
+        $this->poserLesTextes($section);
 
         $section->save();
 

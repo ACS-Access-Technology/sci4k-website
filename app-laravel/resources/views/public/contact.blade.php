@@ -49,7 +49,14 @@
       <div class="contact-card reveal">
         <h3 id="formTitle">{{ $enteteFormulaire?->titre($langue) ?: __('Envoyez-nous un message') }}</h3>
         <p class="sub" id="formSub">{{ $enteteFormulaire?->chapo($langue) ?: __('Remplissez le formulaire ci-dessous et notre équipe vous recontactera sous 24 heures ouvrées.') }}</p>
-        <div class="alert-success" id="successAlert">{{ __("Votre message est prêt : la conversation WhatsApp s'ouvre dans un nouvel onglet. Appuyez sur Envoyer pour le transmettre à SCI4K.") }}</div>
+        {{-- Les libelles du formulaire viennent du backoffice, comme le reste
+             du bloc : « Pages du site → Contact → Formulaire » les edite. Ce
+             qui suit chaque appel reste la VALEUR DE REPLI — une base muette
+             affiche donc exactement ce qu'affichait la page statique, et les
+             cles __() servent encore de version anglaise par defaut. --}}
+        @php($texte = fn (string $nom, string $defaut) => $enteteFormulaire?->texteBilingue($nom, $langue) ?: $defaut)
+
+        <div class="alert-success" id="successAlert">{{ $texte('confirmation', __("Votre message est prêt : la conversation WhatsApp s'ouvre dans un nouvel onglet. Appuyez sur Envoyer pour le transmettre à SCI4K.")) }}</div>
 
         <form id="contactForm" onsubmit="handleContactSubmit(event)">
           {{-- Champ piege : invisible et hors du parcours au clavier, un humain
@@ -62,44 +69,44 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label for="contactName">{{ __('Nom complet *') }}</label>
-              <input type="text" id="contactName" name="nom" required autocomplete="name" maxlength="80" placeholder="{{ __('Ex: Jean Kouassi') }}">
+              <label for="contactName">{{ $texte('libelle_nom', __('Nom complet *')) }}</label>
+              <input type="text" id="contactName" name="nom" required autocomplete="name" maxlength="80" placeholder="{{ $texte('exemple_nom', __('Ex: Jean Kouassi')) }}">
             </div>
             <div class="form-group">
-              <label for="contactPhone">{{ __('Téléphone *') }}</label>
-              <input type="tel" id="contactPhone" name="telephone" required autocomplete="tel" maxlength="30" placeholder="+225 07 00 00 00 00">
+              <label for="contactPhone">{{ $texte('libelle_telephone', __('Téléphone *')) }}</label>
+              <input type="tel" id="contactPhone" name="telephone" required autocomplete="tel" maxlength="30" placeholder="{{ $texte('exemple_telephone', '+225 07 00 00 00 00') }}">
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
-              <label for="contactEmail">{{ __('Adresse Email *') }}</label>
-              <input type="email" id="contactEmail" name="email" required autocomplete="email" maxlength="100" placeholder="j.kouassi@email.com">
+              <label for="contactEmail">{{ $texte('libelle_email', __('Adresse Email *')) }}</label>
+              <input type="email" id="contactEmail" name="email" required autocomplete="email" maxlength="100" placeholder="{{ $texte('exemple_email', 'j.kouassi@email.com') }}">
             </div>
             <div class="form-group">
-              <label for="contactSubject">{{ __('Sujet de votre demande') }}</label>
-              {{-- Les valeurs restent en francais : main.js les recopie telles
-                   quelles dans le message WhatsApp, et le referentiel des
-                   demandes les attend sous cette forme. Seul l'intitule
-                   affiche est traduit. --}}
-              <select id="contactSubject" aria-label="{{ __('Sujet de votre demande') }}">
-                <option value="Achat">{{ __('Achat de bien / terrain') }}</option>
-                <option value="Vente">{{ __("Vente / Estimation de bien") }}</option>
-                <option value="Location">{{ __("Location d'un bien") }}</option>
-                <option value="Gestion">{{ __('Gestion locative & Administration') }}</option>
-                <option value="Construction">{{ __('Projet de Construction') }}</option>
-                <option value="Foncier">{{ __('Question Foncier / ACD') }}</option>
-                <option value="Autre">{{ __('Autre demande') }}</option>
+              @php($libelleSujet = $texte('libelle_sujet', __('Sujet de votre demande')))
+              <label for="contactSubject">{{ $libelleSujet }}</label>
+
+              {{-- Les sujets viennent du backoffice, un par ligne. L'intitule
+                   EST la valeur : main.js recopie ce qui est choisi dans le
+                   message WhatsApp, et c'est aussi ce qui est enregistre comme
+                   sujet du message. Une valeur technique distincte aurait fait
+                   arriver « Gestion » dans la boite de reception la ou
+                   l'editeur avait ecrit « Gestion locative ». --}}
+              <select id="contactSubject" aria-label="{{ $libelleSujet }}">
+                @foreach ($sujets as $sujet)
+                  <option value="{{ $sujet }}">{{ $sujet }}</option>
+                @endforeach
               </select>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="messageTextarea">{{ __('Votre message *') }}</label>
-            <textarea id="messageTextarea" rows="5" required maxlength="900" placeholder="{{ __('Précisez les détails de votre projet, le quartier souhaité, le budget approximatif...') }}"></textarea>
+            <label for="messageTextarea">{{ $texte('libelle_message', __('Votre message *')) }}</label>
+            <textarea id="messageTextarea" rows="5" required maxlength="900" placeholder="{{ $texte('exemple_message', __('Précisez les détails de votre projet, le quartier souhaité, le budget approximatif...')) }}"></textarea>
           </div>
 
-          <button type="submit" class="submit-btn">{{ __('Envoyer mon message') }}</button>
+          <button type="submit" class="submit-btn">{{ $texte('libelle_bouton', __('Envoyer mon message')) }}</button>
         </form>
       </div>
 

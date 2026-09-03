@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Livewire\Admin\PageContact;
 use App\Models\Article;
 use App\Models\ChiffreCle;
 use App\Models\CommuneDuBandeau;
@@ -223,10 +224,26 @@ class PagePubliqueController extends Controller
         // saisis dans la configuration, au lieu d'un texte fige.
         $lignesAdresse = array_values(array_filter(array_map('trim', explode("\n", $adresse)), 'strlen'));
 
+        // Les sujets proposes viennent du backoffice, un par ligne, comme
+        // l'adresse et les horaires. La liste d'origine est celle que declare
+        // l'ecran de la page : elle n'est ecrite qu'a un seul endroit.
+        $formulaire = $enTetes->get('contact.form');
+        $sujetsSaisis = $formulaire?->texteBilingue('sujets', $langue) ?: '';
+
+        if (trim($sujetsSaisis) === '') {
+            $sujetsSaisis = __(PageContact::TEXTES_DU_FORMULAIRE['sujets']['defaut']);
+        }
+
+        $sujets = array_values(array_filter(
+            array_map('trim', preg_split('/\R/u', $sujetsSaisis) ?: []),
+            'strlen',
+        ));
+
         return view('public.contact', [
             'banniere' => $enTetes->get('contact.page'),
-            'enteteFormulaire' => $enTetes->get('contact.form'),
+            'enteteFormulaire' => $formulaire,
             'enteteCarte' => $enTetes->get('contact.map'),
+            'sujets' => $sujets,
             // Passe explicitement : le composer qui alimente le gabarit ne
             // porte pas jusqu'ici, Blade rendant la vue fille AVANT la mise en
             // page dont elle herite.
