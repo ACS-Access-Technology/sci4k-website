@@ -25,6 +25,7 @@ use App\Livewire\Admin\Frequentation;
 use App\Livewire\Admin\PageAccueil;
 use App\Livewire\Admin\PageActualites;
 use App\Livewire\Admin\PageBiens;
+use App\Livewire\Admin\PageContact;
 use App\Livewire\Admin\PageFaq;
 use App\Livewire\Admin\PageServices;
 use App\Livewire\Admin\PagePresentation;
@@ -161,6 +162,7 @@ Route::middleware(['auth', 'role:administrateur|editeur|redacteur|lecteur'])
         Route::get('/pages/services', PageServices::class)->name('pages.services');
         Route::get('/pages/actualites', PageActualites::class)->name('pages.actualites');
         Route::get('/pages/faq', PageFaq::class)->name('pages.faq');
+        Route::get('/pages/contact', PageContact::class)->name('pages.contact');
 
         Route::get('/articles', ArticleListe::class)->name('articles.liste');
         Route::get('/biens', BienListe::class)->name('biens.liste');
