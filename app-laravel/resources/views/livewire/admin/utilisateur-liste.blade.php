@@ -105,9 +105,12 @@
                     <tr wire:key="compte-{{ $compte->id }}" class="border-b border-zinc-100 last:border-0 dark:border-zinc-800">
                         <td class="px-4 py-3">
                             <span class="flex items-center gap-3">
-                                <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-xs font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-200">
-                                    {{ Str::of($compte->name)->explode(' ')->take(2)->map(fn ($m) => Str::upper(Str::substr($m, 0, 1)))->implode('') }}
-                                </span>
+                                {{-- Les initiales etaient recalculees ici, d'une
+                                     facon differente de User::initials(). Deux
+                                     regles pour la meme vignette : le composant
+                                     n'en porte plus qu'une, et il montre la
+                                     photo quand le compte en a une. --}}
+                                <x-admin.vignette-compte :compte="$compte" taille="size-9" />
                                 <span>
                                     <span class="block font-medium text-zinc-900 dark:text-white">
                                         {{ $compte->name }}

@@ -3,7 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\Encart;
-use App\Models\ImageDeFond;
+use App\Livewire\Concerns\PorteDesImagesDeFond;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
@@ -21,6 +21,8 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class PageServices extends Component
 {
+    use PorteDesImagesDeFond;
+
     /**
      * Les quatre modules de la page, dans l'ordre du site.
      *
@@ -41,6 +43,15 @@ class PageServices extends Component
                 // Pas d'en-tete : la page n'affiche rien au-dessus de la
                 // grille des services.
                 'section' => null,
+                // Le fond des six tuiles. Il ne vient PAS de la fiche du
+                // service mais de la table des images de fond, sous la classe
+                // .service-bg-{slug} : c'est elle qui l'emporte dans le
+                // gabarit. Ces six images n'etaient atteignables nulle part
+                // depuis le retrait de l'ecran « Images de fond ».
+                'fonds' => [
+                    'service-foncier', 'service-construction', 'service-gestion',
+                    'service-achat', 'service-vente', 'service-administration',
+                ],
             ],
             'processus' => [
                 'intitule' => __('Processus'),
@@ -204,12 +215,6 @@ class PageServices extends Component
         ][$this->module] ?? null;
     }
 
-    public function fondDuModule(): ?ImageDeFond
-    {
-        $slug = $this->moduleCourant()['fond'] ?? null;
-
-        return $slug ? ImageDeFond::where('slug', $slug)->first() : null;
-    }
 
     public function render(): View
     {
@@ -217,7 +222,7 @@ class PageServices extends Component
             'modules' => $this->modules(),
             'description' => $this->moduleCourant(),
             'ecranEmbarque' => $this->ecranEmbarque(),
-            'fond' => $this->fondDuModule(),
+            'images' => $this->imagesDuModule(),
             'peutEcrire' => $this->peutEcrire(),
         ])->title(__('Page Services'));
     }

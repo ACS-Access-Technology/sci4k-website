@@ -120,6 +120,34 @@ class Configuration extends Component
                     'horaires' => ['intitule' => __('Horaires'), 'type' => 'zone', 'regles' => ['nullable', 'string', 'max:300']],
                     'coordonnees_carte' => ['intitule' => __('Coordonnées de la carte'), 'type' => 'texte', 'regles' => ['nullable', 'string', 'max:60'],
                         'aide' => __('Latitude et longitude séparées par une virgule. Exemple : 5.3600, -3.9800')],
+                    'whatsapp_message_fr' => ['intitule' => __('Message WhatsApp pré-rempli (français)'), 'type' => 'zone', 'regles' => ['nullable', 'string', 'max:300'],
+                        'aide' => __('Texte déjà écrit quand un visiteur ouvre la conversation depuis le bouton flottant.')],
+                    'whatsapp_message_en' => ['intitule' => __('Message WhatsApp pré-rempli (anglais)'), 'type' => 'zone', 'regles' => ['nullable', 'string', 'max:300']],
+                    'chat_actif' => ['intitule' => __('Activer le chat en direct'), 'type' => 'case', 'regles' => ['nullable'],
+                        'aide' => __('Affiche la bulle de discussion Tawk sur tout le site.')],
+                    'tawk_identifiant' => ['intitule' => __('Identifiant Tawk'), 'type' => 'texte', 'regles' => ['nullable', 'string', 'max:120'],
+                        'aide' => __('Sans lui, le chat ne se charge pas même s’il est activé.')],
+                ],
+            ],
+
+            /*
+             * Ces sept reglages etaient LUS par le site et proposes nulle
+             * part : le pied de page, le bouton de l'en-tete et le chat
+             * restaient sur leur valeur par defaut, definitivement. L'audit du
+             * 3 septembre 2026 les a releves en comparant ce que les vues
+             * publiques lisent a ce que cet ecran declare.
+             */
+            'entete_pied' => [
+                'intitule' => __('En-tête et pied de page'),
+                'champs' => [
+                    'cta_header_actif' => ['intitule' => __('Afficher le bouton d’appel dans l’en-tête'), 'type' => 'case', 'regles' => ['nullable']],
+                    'cta_header_libelle_fr' => ['intitule' => __('Libellé du bouton (français)'), 'type' => 'texte', 'regles' => ['nullable', 'string', 'max:60']],
+                    'cta_header_libelle_en' => ['intitule' => __('Libellé du bouton (anglais)'), 'type' => 'texte', 'regles' => ['nullable', 'string', 'max:60']],
+                    'cta_header_url' => ['intitule' => __('Cible du bouton'), 'type' => 'texte', 'regles' => ['nullable', 'string', 'max:200'],
+                        'aide' => __('Une adresse du site, comme /contact, ou une adresse complète.')],
+                    'sous_titre_pied' => ['intitule' => __('Sous-titre du pied de page'), 'type' => 'texte', 'regles' => ['nullable', 'string', 'max:200']],
+                    'copyright' => ['intitule' => __('Mention de copyright'), 'type' => 'texte', 'regles' => ['nullable', 'string', 'max:200'],
+                        'aide' => __('« :annee » est remplacé par l’année en cours.')],
                 ],
             ],
 

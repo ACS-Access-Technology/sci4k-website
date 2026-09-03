@@ -20,6 +20,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property int $id
  * @property string $name
  * @property string $email
+ * @property string|null $photo
  * @property Carbon|null $email_verified_at
  * @property string $password
  * @property string|null $two_factor_secret
@@ -29,7 +30,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password', 'statut'])]
+#[Fillable(['name', 'email', 'password', 'statut', 'photo'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements PasskeyUser
 {
@@ -141,5 +142,19 @@ class User extends Authenticatable implements PasskeyUser
         return Str::length($initials) > 1
             ? Str::substr($initials, 0, 1).Str::substr($initials, -1)
             : $initials;
+    }
+
+    /** Dossier des photos de profil, tel qu'il figure dans `photo`. */
+    public const DOSSIER_PHOTOS = 'storage/comptes';
+
+    /**
+     * Adresse de la photo de profil, ou null si le compte n'en a pas.
+     *
+     * Meme forme que Article::urlCouverture() : un seul point d'appel pour les
+     * vues, et le repli sur les initiales teste une fois pour toutes.
+     */
+    public function urlPhoto(): ?string
+    {
+        return $this->photo ? asset($this->photo) : null;
     }
 }

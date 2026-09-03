@@ -3,6 +3,7 @@
 use App\Http\Controllers\AbonnementNewsletterController;
 use App\Http\Controllers\ActualiteController;
 use App\Http\Controllers\BienPublicController;
+use App\Http\Controllers\CommentaireController;
 use App\Http\Controllers\DemandeDeVisiteController;
 use App\Http\Controllers\LangueController;
 use App\Http\Controllers\MessageDeContactController;
@@ -90,6 +91,14 @@ Route::post('/messages', MessageDeContactController::class)
 Route::post('/newsletter', AbonnementNewsletterController::class)
     ->middleware('throttle:5,1')
     ->name('newsletter.inscription');
+
+// Commentaires sous un article. Memes protections que les trois ecritures
+// publiques ci-dessus, plus un filtre qui met de cote ce qui ressemble a du
+// courrier indesirable : le commentaire parait tout de suite, et « tout de
+// suite » vaut aussi pour la publicite si rien ne la retient.
+Route::post('/actualites/{article:slug}/commentaires', CommentaireController::class)
+    ->middleware('throttle:5,1')
+    ->name('commentaires.depot');
 
 // Demandes de visite depuis la fiche d'un bien. Memes protections.
 Route::post('/visites', DemandeDeVisiteController::class)

@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\ImageDeFond;
+use App\Livewire\Concerns\PorteDesImagesDeFond;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
@@ -28,6 +28,8 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class PageBiens extends Component
 {
+    use PorteDesImagesDeFond;
+
     /**
      * Les trois modules de la page, dans l'ordre du site.
      *
@@ -159,12 +161,6 @@ class PageBiens extends Component
         ][$this->module] ?? null;
     }
 
-    public function fondDuModule(): ?ImageDeFond
-    {
-        $slug = $this->moduleCourant()['fond'] ?? null;
-
-        return $slug ? ImageDeFond::where('slug', $slug)->first() : null;
-    }
 
     public function render(): View
     {
@@ -172,7 +168,7 @@ class PageBiens extends Component
             'modules' => $this->modules(),
             'description' => $this->moduleCourant(),
             'ecranEmbarque' => $this->ecranEmbarque(),
-            'fond' => $this->fondDuModule(),
+            'images' => $this->imagesDuModule(),
             'peutEcrire' => $this->peutEcrire(),
         ])->title(__('Page Biens immobiliers'));
     }

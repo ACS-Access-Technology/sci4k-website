@@ -17,9 +17,7 @@
         aria-haspopup="true"
         class="flex min-h-11 w-full cursor-pointer items-center gap-2 rounded-lg border border-zinc-200 bg-white p-2 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700"
     >
-        <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-xs font-medium text-white dark:bg-white dark:text-zinc-900">
-            {{ auth()->user()->initials() }}
-        </span>
+        <x-admin.vignette-compte :compte="auth()->user()" />
 
         @if ($showName)
             <span class="hidden text-start leading-tight sm:grid">
@@ -39,9 +37,7 @@
         class="absolute end-0 z-50 mt-2 w-56 rounded-lg border border-zinc-200 bg-white p-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
     >
         <div class="flex items-center gap-2 px-2 py-1.5 text-start text-sm">
-            <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-xs font-medium text-white dark:bg-white dark:text-zinc-900">
-                {{ auth()->user()->initials() }}
-            </span>
+            <x-admin.vignette-compte :compte="auth()->user()" />
             <span class="grid flex-1 text-start leading-tight">
                 <span class="truncate text-sm font-medium text-zinc-900 dark:text-white">{{ auth()->user()->name }}</span>
                 <span class="truncate text-xs text-zinc-500 dark:text-zinc-400">{{ auth()->user()->email }}</span>

@@ -1696,6 +1696,96 @@ body.page-biens .results-count{color:var(--navy-700);}
 .news-pagination .is-disabled{opacity:.42;pointer-events:none;}
 
 /* --- bloc de rappel ------------------------------------------------------ */
+/* ---------------------------------------------------------------
+   Commentaires d'article
+   La maquette n'en prevoyait pas : ce bloc est ecrit ici, avec les
+   memes variables de couleur que le reste, pour qu'il suive les deux
+   themes sans regle en double.
+   --------------------------------------------------------------- */
+.comments-section{ background:var(--paper); padding:70px 0; }
+.comments-section .wrap{ max-width:840px; }
+.comments-title{ font-size:clamp(22px,2.4vw,30px); color:var(--texte-titre); margin:0 0 26px; }
+.comments-empty, .comments-closed{ color:var(--navy-700); margin:0 0 28px; }
+
+.comment-alert{
+  background:rgba(52,168,83,0.12); border:1px solid rgba(52,168,83,0.35);
+  color:#1E6B33; border-radius:12px; padding:14px 18px; margin:0 0 24px;
+}
+
+.comment{
+  background:#fff; border:1px solid var(--line); border-radius:16px;
+  padding:20px 22px; margin-bottom:16px;
+}
+.comment-head{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.comment-avatar{
+  width:38px; height:38px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--navy-700); color:#fff; font-weight:700; font-size:15px;
+}
+.comment-author{ display:block; font-weight:700; color:var(--texte-titre); }
+.comment-date{ display:block; font-size:12.5px; color:var(--navy-600); }
+.comment-body{ margin:0; color:var(--navy-800); white-space:pre-line; }
+
+/* La reponse est DANS son commentaire parent : le trait a gauche dit le
+   rattachement sans avoir a le repeter en mots. */
+.comment-reply{ margin:16px 0 0 24px; border-left:3px solid var(--gold-500); background:var(--paper); }
+
+.comment-reply-btn{
+  margin-top:12px; background:none; border:0; padding:0; cursor:pointer;
+  font:inherit; font-size:13px; font-weight:700; color:var(--gold-600);
+}
+.comment-reply-btn:hover{ text-decoration:underline; }
+
+.comment-form{
+  background:#fff; border:1px solid var(--line); border-radius:20px;
+  padding:26px 24px; margin-top:32px;
+}
+.comment-form h3{ margin:0 0 18px; font-size:19px; color:var(--texte-titre); }
+.comment-form-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.comment-form-group{ margin-bottom:16px; }
+.comment-form-group label{ display:block; font-size:13px; font-weight:700; color:var(--navy-800); margin-bottom:6px; }
+.comment-form-group input, .comment-form-group textarea{
+  width:100%; border:1px solid var(--line); border-radius:10px;
+  padding:11px 13px; font:inherit; color:var(--ink); background:#fff;
+}
+.comment-form-group input:focus, .comment-form-group textarea:focus{
+  outline:2px solid var(--gold-500); outline-offset:1px; border-color:transparent;
+}
+.comment-hint{ display:block; margin-top:5px; font-size:12px; color:var(--navy-600); }
+.comment-error{ display:block; margin-top:5px; font-size:12.5px; color:#B3261E; font-weight:700; }
+
+.comment-replying{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  background:var(--cream); border-radius:10px; padding:10px 14px; margin:0 0 16px;
+  font-size:13.5px; color:var(--navy-800);
+}
+.comment-replying button{
+  background:none; border:0; padding:0; cursor:pointer; font:inherit;
+  font-size:13px; font-weight:700; color:var(--gold-600);
+}
+
+@media (max-width:720px){
+  .comment-form-row{ grid-template-columns:1fr; }
+  .comment-reply{ margin-left:12px; }
+}
+
+[data-theme="dark"] .comments-section{ background:var(--dark-bg); }
+[data-theme="dark"] .comment,
+[data-theme="dark"] .comment-form{ background:var(--dark-surface); border-color:var(--dark-border); }
+[data-theme="dark"] .comment-reply{ background:var(--dark-surface-2); }
+[data-theme="dark"] .comment-body,
+[data-theme="dark"] .comments-empty,
+[data-theme="dark"] .comments-closed,
+[data-theme="dark"] .comment-replying{ color:var(--dark-text-muted); }
+[data-theme="dark"] .comment-replying{ background:var(--dark-surface-2); }
+[data-theme="dark"] .comment-date{ color:var(--dark-text-muted); }
+[data-theme="dark"] .comment-form-group label{ color:var(--dark-text); }
+[data-theme="dark"] .comment-form-group input,
+[data-theme="dark"] .comment-form-group textarea{
+  background:var(--dark-surface-2); border-color:var(--dark-border); color:var(--dark-text);
+}
+[data-theme="dark"] .comment-alert{ background:rgba(52,168,83,0.18); color:#8FD9A4; }
+
 .news-cta{background:var(--cream-2);padding:70px 0;text-align:center;}
 .news-cta h2{font-size:clamp(22px,2.4vw,30px);color:var(--navy-950);margin:0 0 12px;}
 .news-cta p{max-width:640px;margin:0 auto 26px;color:var(--navy-700);}

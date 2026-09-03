@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\ImageDeFond;
+use App\Livewire\Concerns\PorteDesImagesDeFond;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
@@ -24,6 +24,8 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class PageActualites extends Component
 {
+    use PorteDesImagesDeFond;
+
     /**
      * Les quatre modules de la page, dans l'ordre du site.
      *
@@ -50,6 +52,15 @@ class PageActualites extends Component
                 'intitule' => __('Articles'),
                 'resume' => __('Les articles publiés, leurs couvertures et leurs fiches.'),
                 // La grille n'a pas davantage d'en-tete de section.
+                'section' => null,
+            ],
+            'commentaires' => [
+                'intitule' => __('Commentaires'),
+                'resume' => __('Ce que les lecteurs écrivent sous les articles.'),
+                // Les commentaires ne sont pas un bloc de la page Actualités
+                // mais de chaque article. Ils sont ici parce que c'est ou
+                // l'editeur les cherchera, et parce qu'aucun autre ecran ne
+                // porte les articles.
                 'section' => null,
             ],
             'appel' => [
@@ -160,15 +171,10 @@ class PageActualites extends Component
         return [
             'filtres' => ['composant' => 'admin.categorie-ensemble', 'intitule' => __("Catégories d'articles")],
             'articles' => ['composant' => 'admin.article-liste', 'intitule' => __('Articles')],
+            'commentaires' => ['composant' => 'admin.commentaire-liste', 'intitule' => __('Commentaires')],
         ][$this->module] ?? null;
     }
 
-    public function fondDuModule(): ?ImageDeFond
-    {
-        $slug = $this->moduleCourant()['fond'] ?? null;
-
-        return $slug ? ImageDeFond::where('slug', $slug)->first() : null;
-    }
 
     public function render(): View
     {
@@ -176,7 +182,7 @@ class PageActualites extends Component
             'modules' => $this->modules(),
             'description' => $this->moduleCourant(),
             'ecranEmbarque' => $this->ecranEmbarque(),
-            'fond' => $this->fondDuModule(),
+            'images' => $this->imagesDuModule(),
             'peutEcrire' => $this->peutEcrire(),
         ])->title(__('Page Actualités'));
     }

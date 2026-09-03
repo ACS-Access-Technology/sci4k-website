@@ -4,6 +4,14 @@
         :fil="[__('Accueil') => route('dashboard'), __('Médiathèque') => null]">
     </x-admin.entete-page>
 
+    {{-- Les deux fonds qui n'appartiennent a aucune page : le pied, present
+         partout, et les pages d'erreur, presentes nulle part. Les sept ecrans
+         de page se partagent tous les autres. --}}
+    @include('livewire.admin.partials.images-du-module', [
+        'images' => $fondsGlobaux,
+        'module' => 'globales',
+    ])
+
     <div class="flex flex-wrap items-end gap-3">
         <label class="min-w-64 flex-1">
             <span class="text-sm font-medium">{{ __('Rechercher une image') }}</span>

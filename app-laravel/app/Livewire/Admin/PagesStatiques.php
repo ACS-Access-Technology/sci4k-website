@@ -10,7 +10,19 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class PagesStatiques extends Component
 {
-    public string $page = 'contact';
+    /**
+     * La page ouverte au chargement : la PREMIERE des pages editables.
+     *
+     * Elle valait « contact » en dur. Or « contact » a quitte la liste quand
+     * la page est devenue une vraie page rendue par son controleur : le
+     * charger() du montage tombait donc sur son propre abort(404), et l'ecran
+     * repondait 404 a tout le monde, toujours. Mentions legales et politique
+     * de confidentialite n'etaient plus modifiables nulle part.
+     *
+     * La valeur suit desormais la liste : en retirer une n'emporte plus
+     * l'ecran entier.
+     */
+    public string $page = '';
     public string $titreFr = '';
     public string $titreEn = '';
     public string $contenuFr = '';
@@ -19,6 +31,8 @@ class PagesStatiques extends Component
 
     public function mount(): void
     {
+        $this->page = PageStatique::slugsEditables()[0];
+
         $this->charger();
     }
 
