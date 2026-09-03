@@ -15,17 +15,14 @@
             </div>
         @endif
 
-        {{-- wire:key porte l'identifiant edite : sans lui, Livewire
-             reutiliserait l'instance d'une ligne a l'autre et afficherait les
-             valeurs de la precedente. --}}
         @if ($formulaireOuvert !== null)
-            <div class="rounded-xl border border-zinc-300 bg-white p-5 dark:border-zinc-600 dark:bg-zinc-900">
-                @livewire('admin.article-formulaire',
-                    $articleEnEdition
-                        ? ['article' => $articleEnEdition, 'embarque' => true]
-                        : ['embarque' => true],
-                    key('formulaire-'.$formulaireOuvert))
-            </div>
+            @include('livewire.admin.partials.formulaire-sur-place', [
+                'composant' => 'admin.article-formulaire',
+                'parametres' => $articleEnEdition
+                    ? ['article' => $articleEnEdition, 'embarque' => true]
+                    : ['embarque' => true],
+                'cle' => $formulaireOuvert,
+            ])
         @endif
     @else
         <x-admin.entete-page
