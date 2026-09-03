@@ -10,56 +10,31 @@
     $titre, $fil, $intitulePluriel
     $colonnes      [cle => intitule] des colonnes de contenu
     $cellule       fermeture (element, cle) => texte de la cellule
-    $routeEdition, $routeCreation (facultative)
+    $creationPermise  vrai si la collection accepte ajout et retrait
     $libelleCreation, $placeholder, $messageVide
     $nomLisible    fermeture (element) => texte cite dans les confirmations
 --}}
 @php($classeChamp = 'w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950')
-@php($routeCreation = $routeCreation ?? null)
+@php($creationPermise = $creationPermise ?? false)
 @php($ordonnable = $peutEcrire && $recherche === '' && $visibilite === '')
 
 <div class="space-y-6">
 
-    {{-- Embarque dans un ecran de page, ce bloc n'a pas de titre a lui : la
-         page qui l'accueille porte deja le sien. Le bouton de creation, lui,
-         reste indispensable — sans quoi la liste ne servirait qu'a consulter. --}}
-    @unless ($embarque ?? false)
-        <x-admin.entete-page :titre="$titre" :fil="$fil"
-            :resume="trans_choice(':nombre élément|:nombre éléments', $elements->count(), ['nombre' => $elements->count()])">
-            <x-slot:actions>
-                <x-bascule-langue />
-                @if ($routeCreation)
-                    @hasanyrole('administrateur|editeur')
-                        <a href="{{ route($routeCreation) }}" wire:navigate
-                           class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-                            <x-admin.icone nom="plus" />
-                            {{ $libelleCreation }}
-                        </a>
-                    @endhasanyrole
-                @endif
-            </x-slot:actions>
-        </x-admin.entete-page>
-    @else
-        @if ($routeCreation)
-            @hasanyrole('administrateur|editeur')
-                <div class="flex justify-end">
-                    @if ($composantFormulaire)
-                        <button type="button" wire:click="ouvrirCreation"
-                                class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-                            <x-admin.icone nom="plus" />
-                            {{ $libelleCreation }}
-                        </button>
-                    @else
-                        <a href="{{ route($routeCreation) }}" wire:navigate
-                           class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-                            <x-admin.icone nom="plus" />
-                            {{ $libelleCreation }}
-                        </a>
-                    @endif
-                </div>
-            @endhasanyrole
-        @endif
-    @endunless
+    {{-- Ce bloc n'a pas de titre a lui : la page qui l'accueille porte deja le
+         sien — c'est le seul endroit d'ou il est rendu depuis le retrait des
+         ecrans par type de contenu. Le bouton de creation, lui, reste
+         indispensable : sans lui la liste ne servirait qu'a consulter. --}}
+    @if ($creationPermise)
+        @hasanyrole('administrateur|editeur')
+            <div class="flex justify-end">
+                <button type="button" wire:click="ouvrirCreation"
+                        class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                    <x-admin.icone nom="plus" />
+                    {{ $libelleCreation }}
+                </button>
+            </div>
+        @endhasanyrole
+    @endif
 
     @if ($composantFormulaire && $formulaireOuvert !== null)
         @include('livewire.admin.partials.formulaire-sur-place', [
@@ -123,16 +98,11 @@
                      colonne seulement aurait affiche ses balises en clair. --}}
                 @foreach ($colonnes as $cle => $intitule)
                     <td class="px-4 py-3 text-zinc-700 dark:text-zinc-200">
-                        @if ($loop->first && $peutEcrire && $composantFormulaire)
+                        @if ($loop->first && $peutEcrire)
                             <button type="button" wire:click="ouvrirEdition({{ $element->id }})"
                                     class="text-left font-medium text-zinc-900 hover:underline dark:text-white">
                                 {!! $cellule($element, $cle) !!}
                             </button>
-                        @elseif ($loop->first && $peutEcrire)
-                            <a href="{{ route($routeEdition, $element) }}" wire:navigate
-                               class="font-medium text-zinc-900 hover:underline dark:text-white">
-                                {!! $cellule($element, $cle) !!}
-                            </a>
                         @else
                             {!! $cellule($element, $cle) !!}
                         @endif
@@ -149,26 +119,24 @@
 
                 <td class="whitespace-nowrap px-4 py-3">
                     <div class="flex items-center justify-end gap-1">
-                        @if ($peutEcrire && $composantFormulaire)
+                        @if ($peutEcrire)
                             <button type="button" wire:click="ouvrirEdition({{ $element->id }})"
                                     title="{{ __('Modifier') }}"
                                     aria-label="{{ __('Modifier :nom', ['nom' => $nomLisible($element)]) }}"
                                     class="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white">
                                 <x-admin.icone nom="crayon" />
                             </button>
-                        @elseif ($peutEcrire)
-                            <a href="{{ route($routeEdition, $element) }}" wire:navigate
-                               title="{{ __('Modifier') }}"
-                               aria-label="{{ __('Modifier :nom', ['nom' => $nomLisible($element)]) }}"
-                               class="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white">
-                                <x-admin.icone nom="crayon" />
-                            </a>
 
-                            @if ($routeCreation)
-                                {{-- Le bouton de suppression suit celui de
-                                     creation : une collection dont le slug
-                                     designe un emplacement du site ne se
-                                     supprime pas davantage qu'elle ne se cree. --}}
+                            {{-- Le bouton de suppression suit celui de creation :
+                                 une collection dont le slug designe un
+                                 emplacement du site ne se supprime pas davantage
+                                 qu'elle ne se cree.
+
+                                 Il vivait dans la branche NON embarquee, et
+                                 disparaissait donc des que la liste etait
+                                 ouverte depuis un ecran de page — c'est-a-dire
+                                 partout, desormais. --}}
+                            @if ($creationPermise)
                                 <button type="button"
                                         wire:click="supprimer({{ $element->id }})"
                                         wire:confirm="{{ __('Supprimer définitivement « :nom » ? Cette action est irréversible.', ['nom' => $nomLisible($element)]) }}"

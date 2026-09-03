@@ -181,8 +181,9 @@ it('refuse un pictogramme qui ne vient pas de la liste', function () {
 });
 
 it('interdit la creation a un lecteur', function () {
-    $this->actingAs($this->lecteur)
-        ->get(route('admin.services.creation'))
+    Livewire::actingAs($this->lecteur)
+        ->test(ServiceFormulaire::class)
+        ->call('enregistrer')
         ->assertForbidden();
 });
 

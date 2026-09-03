@@ -299,7 +299,7 @@ it('ne renvoie vers aucun ancien ecran', function (string $module) {
         ->html();
 
     foreach ([route('admin.configuration'), route('admin.messages')] as $adresse) {
-        expect($rendu)->not->toContain('href="'.$adresse.'"');
+        expect($rendu)->not->toContain('href="'.$adresse);
     }
 })->with(['banniere', 'formulaire', 'coordonnees', 'carte', 'messages']);
 

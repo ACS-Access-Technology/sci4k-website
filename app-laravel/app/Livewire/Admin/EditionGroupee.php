@@ -38,7 +38,7 @@ abstract class EditionGroupee extends Component
      * l'en-tete de page disparait, un titre et un fil d'Ariane n'ayant pas de
      * sens au milieu d'une autre page. Voir ListeOrdonnable::$embarque.
      */
-    public bool $embarque = false;
+    public bool $embarque = true;
 
     /**
      * Les lignes en cours d'edition, indexees par identifiant.
@@ -368,13 +368,22 @@ abstract class EditionGroupee extends Component
 
         $section = ReglageDeSection::pour($slug);
 
-        [$titreFr, $titreEn] = $this->completerCouple($this->reglages['titre_fr'] ?? '', $this->reglages['titre_en'] ?? '');
-        [$chapoFr, $chapoEn] = $this->completerCouple($this->reglages['chapo_fr'] ?? '', $this->reglages['chapo_en'] ?? '');
+        // Embarque, cet editeur n'ECRIT PAS l'en-tete : l'ecran de page qui
+        // l'accueille edite la meme section, juste au-dessus, et souvent sous
+        // le meme slug — home.hero pour les chiffres cles, about.values pour
+        // les valeurs. Il l'a lue a son montage ; la reposer ici ecraserait
+        // silencieusement une modification faite entre-temps dans le
+        // formulaire du dessus. Ses OPTIONS, elles, ne sont editees nulle part
+        // ailleurs : elles restent.
+        if (! $this->embarque) {
+            [$titreFr, $titreEn] = $this->completerCouple($this->reglages['titre_fr'] ?? '', $this->reglages['titre_en'] ?? '');
+            [$chapoFr, $chapoEn] = $this->completerCouple($this->reglages['chapo_fr'] ?? '', $this->reglages['chapo_en'] ?? '');
 
-        $section->fill([
-            'titre_fr' => $titreFr, 'titre_en' => $titreEn,
-            'chapo_fr' => $chapoFr, 'chapo_en' => $chapoEn,
-        ]);
+            $section->fill([
+                'titre_fr' => $titreFr, 'titre_en' => $titreEn,
+                'chapo_fr' => $chapoFr, 'chapo_en' => $chapoEn,
+            ]);
+        }
 
         $options = [];
 

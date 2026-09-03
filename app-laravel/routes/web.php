@@ -9,18 +9,8 @@ use App\Http\Controllers\MessageDeContactController;
 use App\Http\Controllers\PagePubliqueController;
 use App\Http\Controllers\PlanDuSiteController;
 use App\Livewire\Admin\AbonneNewsletterListe;
-use App\Livewire\Admin\ArticleFormulaire;
-use App\Livewire\Admin\ArticleListe;
-use App\Livewire\Admin\BienFormulaire;
-use App\Livewire\Admin\BienListe;
-use App\Livewire\Admin\ChiffreCleEnsemble;
-use App\Livewire\Admin\CommuneBandeauEnsemble;
 use App\Livewire\Admin\Configuration;
 use App\Livewire\Admin\DemandeDeVisiteListe;
-use App\Livewire\Admin\EncartFormulaire;
-use App\Livewire\Admin\EncartListe;
-use App\Livewire\Admin\EtapeProcessusEnsemble;
-use App\Livewire\Admin\FaqFormulaire;
 use App\Livewire\Admin\Frequentation;
 use App\Livewire\Admin\PageAccueil;
 use App\Livewire\Admin\PageActualites;
@@ -30,29 +20,13 @@ use App\Livewire\Admin\PageFaq;
 use App\Livewire\Admin\PageServices;
 use App\Livewire\Admin\PagePresentation;
 use App\Livewire\Admin\PagesStatiques;
-use App\Livewire\Admin\FaqListe;
-use App\Livewire\Admin\ImageDeFondFormulaire;
-use App\Livewire\Admin\ImageDeFondListe;
 use App\Livewire\Admin\JournalActivite;
-use App\Livewire\Admin\MembreEquipeFormulaire;
-use App\Livewire\Admin\MembreEquipeListe;
 use App\Livewire\Admin\Menus;
 use App\Livewire\Admin\Mediatheque;
 use App\Livewire\Admin\MessageListe;
-use App\Livewire\Admin\PartenaireFormulaire;
-use App\Livewire\Admin\PartenaireListe;
 use App\Livewire\Admin\Referentiels;
-use App\Livewire\Admin\ReglageDeSectionFormulaire;
-use App\Livewire\Admin\ReglageDeSectionListe;
-use App\Livewire\Admin\RubriqueFaqFormulaire;
-use App\Livewire\Admin\RubriqueFaqListe;
-use App\Livewire\Admin\ServiceFormulaire;
-use App\Livewire\Admin\ServiceListe;
 use App\Livewire\Admin\TableauDeBord;
-use App\Livewire\Admin\TemoignageFormulaire;
-use App\Livewire\Admin\TemoignageListe;
 use App\Livewire\Admin\UtilisateurListe;
-use App\Livewire\Admin\ValeurEnsemble;
 use App\Livewire\Public\CatalogueDesBiens;
 use Illuminate\Support\Facades\Route;
 
@@ -164,12 +138,6 @@ Route::middleware(['auth', 'role:administrateur|editeur|redacteur|lecteur'])
         Route::get('/pages/faq', PageFaq::class)->name('pages.faq');
         Route::get('/pages/contact', PageContact::class)->name('pages.contact');
 
-        Route::get('/articles', ArticleListe::class)->name('articles.liste');
-        Route::get('/biens', BienListe::class)->name('biens.liste');
-        Route::get('/services', ServiceListe::class)->name('services.liste');
-        Route::get('/faq', FaqListe::class)->name('faq.liste');
-        Route::get('/rubriques-faq', RubriqueFaqListe::class)->name('rubriques-faq.liste');
-
         // Journal en lecture seule, ouvert a tous les roles qui entrent dans
         // l'administration : savoir qui a touche a quoi n'est pas un privilege.
         Route::get('/journal', JournalActivite::class)->name('journal');
@@ -181,70 +149,12 @@ Route::middleware(['auth', 'role:administrateur|editeur|redacteur|lecteur'])
         Route::get('/mediatheque', Mediatheque::class)->name('mediatheque');
         Route::get('/frequentation', Frequentation::class)->name('frequentation');
 
-        // Petits ensembles edites d'un bloc : un seul ecran chacun, ni liste ni
-        // formulaire separes. Un lecteur peut les consulter, le composant
-        // refusant l'enregistrement.
-        // Les six collections de blocs. Trois d'entre elles n'ont pas de route
-        // de creation : leur slug designe un emplacement du site, si bien
-        // qu'un element cree ne s'afficherait nulle part.
-        Route::get('/temoignages', TemoignageListe::class)->name('temoignages.liste');
-        Route::get('/partenaires', PartenaireListe::class)->name('partenaires.liste');
-        Route::get('/equipe', MembreEquipeListe::class)->name('equipe.liste');
-        Route::get('/encarts', EncartListe::class)->name('encarts.liste');
-        Route::get('/images-de-fond', ImageDeFondListe::class)->name('images-de-fond.liste');
-        Route::get('/reglages-de-section', ReglageDeSectionListe::class)->name('reglages-de-section.liste');
-
-        Route::get('/valeurs', ValeurEnsemble::class)->name('valeurs');
-        Route::get('/chiffres-cles', ChiffreCleEnsemble::class)->name('chiffres-cles');
-        Route::get('/etapes-processus', EtapeProcessusEnsemble::class)->name('etapes-processus');
-        Route::get('/banderole', CommuneBandeauEnsemble::class)->name('banderole');
-
-        // Un lecteur consulte la liste mais n'ecrit pas : la restriction est
-        // posee ici, et non sur le groupe entier.
-        // Le redacteur ecrit des ARTICLES, et rien d'autre : ses deux routes
-        // sont donc ouvertes a part, hors du groupe qui donne acces aux
-        // services, a la FAQ et aux blocs. Le composant refuse ensuite qu'il
-        // publie, et qu'il touche aux articles d'un autre.
-        Route::middleware('role:administrateur|editeur|redacteur')->group(function () {
-            Route::get('/articles/creation', ArticleFormulaire::class)->name('articles.creation');
-            Route::get('/articles/{article}/edition', ArticleFormulaire::class)->name('articles.edition');
-        });
-
-        Route::middleware('role:administrateur|editeur')->group(function () {
-            // « creation » avant « {bien} » : sinon le mot serait capture comme
-            // identifiant de bien.
-            Route::get('/biens/creation', BienFormulaire::class)->name('biens.creation');
-            Route::get('/biens/{bien}/edition', BienFormulaire::class)->name('biens.edition');
-        });
-
-        Route::middleware('role:administrateur|editeur')->group(function () {
-            Route::get('/services/creation', ServiceFormulaire::class)->name('services.creation');
-            Route::get('/services/{service}/edition', ServiceFormulaire::class)->name('services.edition');
-
-            // /faq/creation doit precede /faq/{question}/edition : sinon
-            // « creation » serait capture comme identifiant de question.
-            Route::get('/faq/creation', FaqFormulaire::class)->name('faq.creation');
-            Route::get('/faq/{question}/edition', FaqFormulaire::class)->name('faq.edition');
-
-            Route::get('/rubriques-faq/creation', RubriqueFaqFormulaire::class)->name('rubriques-faq.creation');
-            Route::get('/rubriques-faq/{rubrique}/edition', RubriqueFaqFormulaire::class)->name('rubriques-faq.edition');
-
-            // Formulaires des blocs. Les trois collections a slug fige n'ont
-            // pas de route de creation : leur formulaire la refuse aussi, la
-            // route absente ne suffisant pas — Livewire monte le composant.
-            Route::get('/temoignages/creation', TemoignageFormulaire::class)->name('temoignages.creation');
-            Route::get('/temoignages/{element}/edition', TemoignageFormulaire::class)->name('temoignages.edition');
-
-            Route::get('/partenaires/creation', PartenaireFormulaire::class)->name('partenaires.creation');
-            Route::get('/partenaires/{element}/edition', PartenaireFormulaire::class)->name('partenaires.edition');
-
-            Route::get('/equipe/creation', MembreEquipeFormulaire::class)->name('equipe.creation');
-            Route::get('/equipe/{element}/edition', MembreEquipeFormulaire::class)->name('equipe.edition');
-
-            Route::get('/encarts/{element}/edition', EncartFormulaire::class)->name('encarts.edition');
-            Route::get('/images-de-fond/{element}/edition', ImageDeFondFormulaire::class)->name('images-de-fond.edition');
-            Route::get('/reglages-de-section/{element}/edition', ReglageDeSectionFormulaire::class)->name('reglages-de-section.edition');
-        });
+        // Les ecrans par TYPE de contenu ont ete retires : chaque collection
+        // s'edite depuis l'ecran de la page qui l'affiche, ou elle est
+        // embarquee avec son formulaire. Leurs composants vivent toujours —
+        // ce sont eux que les ecrans de page embarquent — mais ils n'ont plus
+        // d'adresse a eux. Deux adresses pour une meme table, c'etait deux
+        // endroits ou corriger le meme defaut.
 
         // La configuration touche au referencement, au mode maintenance et aux
         // identifiants d'envoi : elle est reservee aux administrateurs, la ou

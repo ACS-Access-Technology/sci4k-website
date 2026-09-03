@@ -98,7 +98,7 @@ it('interdit l enregistrement a un lecteur', function () {
 });
 
 it('laisse un lecteur consulter l ecran', function () {
-    $this->actingAs($this->lecteur)->get(route('admin.valeurs'))->assertOk();
+    Livewire::actingAs($this->lecteur)->test(ValeurEnsemble::class)->assertOk();
 });
 
 it('valide le nombre d un chiffre cle', function () {
@@ -125,11 +125,22 @@ it('accepte un nombre valide', function () {
     expect($chiffre->fresh()->valeur)->toBe(150);
 });
 
-it('sert les trois ecrans d ensembles', function () {
+/**
+ * Les trois ensembles n'ont plus d'ecran a eux : ils sont rendus depuis les
+ * ecrans de page qui les embarquent — Présentation pour les valeurs, Accueil
+ * pour les chiffres cles, Services pour le processus.
+ */
+it('sert les trois ensembles depuis leur ecran de page', function () {
     EtapeProcessus::factory()->create(['ordre' => 1]);
 
-    foreach (['admin.valeurs', 'admin.chiffres-cles', 'admin.etapes-processus'] as $route) {
-        $this->actingAs($this->editeur)->get(route($route))->assertOk();
+    foreach (['/admin/pages/presentation', '/admin/pages/accueil', '/admin/pages/services'] as $adresse) {
+        $this->actingAs($this->editeur)->get($adresse)->assertOk();
+    }
+});
+
+it('ne sert plus les anciens ecrans d ensembles', function () {
+    foreach (['/admin/valeurs', '/admin/chiffres-cles', '/admin/etapes-processus'] as $adresse) {
+        $this->actingAs($this->editeur)->get($adresse)->assertNotFound();
     }
 });
 

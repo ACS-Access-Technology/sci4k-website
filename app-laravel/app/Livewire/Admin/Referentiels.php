@@ -30,7 +30,7 @@ class Referentiels extends Component
      * disparait, un titre et un fil d'Ariane n'ayant pas de sens au milieu
      * d'une autre page.
      */
-    public bool $embarque = false;
+    public bool $embarque = true;
 
     /**
      * Les lignes en cours d'edition, par famille puis par cle.

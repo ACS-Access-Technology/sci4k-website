@@ -2,52 +2,28 @@
 
 <div class="space-y-6">
 
-    {{-- Cette liste a son propre balisage et ne passe pas par bloc-liste : les
-         adaptations faites la-bas ne l'atteignent pas. Embarquee, elle perd son
-         en-tete, et son bouton d'ajout ouvre le formulaire SUR PLACE.
+    {{-- Cette liste a son propre balisage et ne passe pas par bloc-liste. Elle
+         est rendue depuis « Pages du site → FAQ », qui porte son titre et son
+         fil d'Ariane, et qui porte aussi les rubriques dans son propre module :
+         elle n'a donc ni en-tete ni renvoi a elle. --}}
+    @if ($peutEcrire)
+        <div class="flex justify-end">
+            <button type="button" wire:click="ouvrirCreation"
+                    class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                <x-admin.icone nom="plus" />
+                {{ __('Nouvelle question') }}
+            </button>
+        </div>
+    @endif
 
-         Le renvoi vers les rubriques disparait aussi : l'ecran de page les
-         porte dans son propre module. --}}
-    @if ($embarque ?? false)
-        @if ($peutEcrire)
-            <div class="flex justify-end">
-                <button type="button" wire:click="ouvrirCreation"
-                        class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-                    <x-admin.icone nom="plus" />
-                    {{ __('Nouvelle question') }}
-                </button>
-            </div>
-        @endif
-
-        @if ($composantFormulaire && $formulaireOuvert !== null)
-            @include('livewire.admin.partials.formulaire-sur-place', [
-                'composant' => $composantFormulaire,
-                'parametres' => $elementEnEdition
-                    ? [$parametreDuFormulaire => $elementEnEdition, 'embarque' => true]
-                    : ['embarque' => true],
-                'cle' => $formulaireOuvert,
-            ])
-        @endif
-    @else
-        <x-admin.entete-page
-            :titre="__('FAQ')"
-            :fil="[__('Accueil') => route('dashboard'), __('Contenu') => null, __('FAQ') => null]"
-            :resume="trans_choice(':nombre question|:nombre questions', $elements->count(), ['nombre' => $elements->count()])">
-            <x-slot:actions>
-                <x-bascule-langue />
-                <a href="{{ route('admin.rubriques-faq.liste') }}" wire:navigate
-                   class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800">
-                    {{ __('Rubriques') }}
-                </a>
-                @hasanyrole('administrateur|editeur')
-                    <a href="{{ route('admin.faq.creation') }}" wire:navigate
-                       class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-                        <x-admin.icone nom="plus" />
-                        {{ __('Nouvelle question') }}
-                    </a>
-                @endhasanyrole
-            </x-slot:actions>
-        </x-admin.entete-page>
+    @if ($composantFormulaire && $formulaireOuvert !== null)
+        @include('livewire.admin.partials.formulaire-sur-place', [
+            'composant' => $composantFormulaire,
+            'parametres' => $elementEnEdition
+                ? [$parametreDuFormulaire => $elementEnEdition, 'embarque' => true]
+                : ['embarque' => true],
+            'cle' => $formulaireOuvert,
+        ])
     @endif
 
     @if (session('message'))
@@ -99,16 +75,11 @@
                 </td>
 
                 <td class="px-4 py-3">
-                    @if ($peutEcrire && $composantFormulaire)
+                    @if ($peutEcrire)
                         <button type="button" wire:click="ouvrirEdition({{ $element->id }})"
                                 class="block text-left font-medium text-zinc-900 hover:underline dark:text-white">
                             {{ $element->question($langue) }}
                         </button>
-                    @elseif ($peutEcrire)
-                        <a href="{{ route('admin.faq.edition', $element) }}" wire:navigate
-                           class="block font-medium text-zinc-900 hover:underline dark:text-white">
-                            {{ $element->question($langue) }}
-                        </a>
                     @else
                         <span class="block font-medium text-zinc-900 dark:text-white">{{ $element->question($langue) }}</span>
                     @endif
@@ -131,24 +102,13 @@
 
                 <td class="whitespace-nowrap px-4 py-3">
                     <div class="flex items-center justify-end gap-1">
-                        @if ($peutEcrire && $composantFormulaire)
+                        @if ($peutEcrire)
                             <button type="button" wire:click="ouvrirEdition({{ $element->id }})"
                                     title="{{ __('Modifier') }}"
                                     aria-label="{{ __('Modifier :nom', ['nom' => $element->question($langue)]) }}"
                                     class="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white">
                                 <x-admin.icone nom="crayon" />
                             </button>
-                        @endif
-
-                        @if ($peutEcrire)
-                            @unless ($composantFormulaire)
-                                <a href="{{ route('admin.faq.edition', $element) }}" wire:navigate
-                                   title="{{ __('Modifier') }}"
-                                   aria-label="{{ __('Modifier :nom', ['nom' => $element->question($langue)]) }}"
-                                   class="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white">
-                                    <x-admin.icone nom="crayon" />
-                                </a>
-                            @endunless
 
                             {{-- Suppression definitive, sans corbeille intermediaire :
                                  confirmation obligatoire avant l'appel Livewire. --}}

@@ -110,7 +110,7 @@ class ServiceFormulaire extends Component
      * qui referme, et enregistrement qui previent la liste au lieu de
      * rediriger.
      */
-    public bool $embarque = false;
+    public bool $embarque = true;
 
     public function mount(?Service $service = null): void
     {
@@ -264,16 +264,11 @@ class ServiceFormulaire extends Component
 
         $this->dispatch('toast', message: __('Service enregistré.'), variant: 'success');
 
-        // Embarque dans une liste, on ne redirige pas : on previent la liste,
-        // qui se referme. Rediriger ferait quitter la page d'accueil au milieu
-        // d'une modification.
-        if ($this->embarque) {
-            $this->dispatch('bloc-enregistre');
-
-            return;
-        }
-
-        $this->redirectRoute('admin.services.liste');
+        // On ne redirige pas : on previent la liste, qui se referme. Rediriger
+        // ferait quitter l'ecran de page au milieu d'une modification — et
+        // depuis le retrait des ecrans par type de contenu, il n'y a plus
+        // d'adresse a soi vers laquelle revenir.
+        $this->dispatch('bloc-enregistre');
     }
 
     /**

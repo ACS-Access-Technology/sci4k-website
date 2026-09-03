@@ -186,8 +186,9 @@ it('supprime une rubrique vide', function () {
 });
 
 it('interdit a un lecteur de creer ou de supprimer une rubrique', function () {
-    $this->actingAs($this->lecteur)
-        ->get(route('admin.rubriques-faq.creation'))
+    Livewire::actingAs($this->lecteur)
+        ->test(RubriqueFaqFormulaire::class)
+        ->call('enregistrer')
         ->assertForbidden();
 
     Livewire::actingAs($this->lecteur)

@@ -144,33 +144,40 @@ it('ouvre l onglet de la langue de l interface', function () {
         ->assertSet('langueActive', 'en');
 });
 
+/*
+ * Le formulaire n'a plus d'adresse a lui : il s'ouvre DANS la liste, elle-meme
+ * rendue par « Pages du site → Actualités ». Le controle de role se verifie
+ * donc sur l'action, la ou il a toujours ete pose — la route ne protegeait que
+ * l'ecran, et Livewire ne rejoue pas ses middlewares sur /livewire/update.
+ */
 it('interdit a un lecteur d enregistrer', function () {
     $lecteur = User::factory()->create();
     $lecteur->assignRole('lecteur');
 
-    $this->actingAs($lecteur)
-        ->get(route('admin.articles.creation'))
+    Livewire::actingAs($lecteur)
+        ->test(ArticleFormulaire::class)
+        ->call('enregistrer')
         ->assertForbidden();
 });
 
 it('laisse un editeur ouvrir le formulaire', function () {
-    $this->actingAs($this->editeur)
-        ->get(route('admin.articles.creation'))
+    Livewire::actingAs($this->editeur)
+        ->test(ArticleFormulaire::class)
         ->assertOk()
         ->assertSee(__('Enregistrer'));
 });
 
-it('depuis le tableau, chaque titre mene a son edition', function () {
+it('depuis le tableau, chaque titre ouvre son edition sur place', function () {
     $article = Article::factory()->create([
         'categorie_id' => $this->categorie->id,
         'slug' => 'article-editable',
         'titre_fr' => 'Article éditable',
     ]);
 
-    $this->actingAs($this->editeur)
-        ->get('/admin/articles')
+    Livewire::actingAs($this->editeur)
+        ->test(App\Livewire\Admin\ArticleListe::class)
         ->assertOk()
-        ->assertSee(route('admin.articles.edition', $article), false);
+        ->assertSee('ouvrirEdition('.$article->id.')', false);
 });
 
 /*

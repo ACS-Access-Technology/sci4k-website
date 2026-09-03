@@ -183,19 +183,24 @@
                 @endif
             </div>
 
-            {{-- IMAGE DE FOND DU MODULE --}}
+            {{-- IMAGE DE FOND DU MODULE
+
+                 Le formulaire est EMBARQUE, comme sur les autres ecrans de
+                 page. Ce bloc se contentait d'un lien « Remplacer l'image »
+                 vers l'ecran des images de fond : il faisait sortir l'editeur,
+                 et cet ecran n'existe plus. --}}
             @if ($fond)
                 <div class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900">
                     <h3 class="text-sm font-semibold">{{ __('Image de fond') }}</h3>
-                    <div class="mt-3 flex items-center gap-4">
+                    <div class="mt-3 flex items-start gap-4">
                         @if ($fond->fichier)
                             <img src="{{ asset($fond->fichier) }}" alt=""
-                                 class="h-16 w-28 rounded object-cover">
+                                 class="h-16 w-28 shrink-0 rounded object-cover">
                         @endif
-                        <div class="min-w-0 text-sm">
-                            <p class="truncate text-zinc-600 dark:text-zinc-400">{{ $fond->fichier }}</p>
-                            <a href="{{ route('admin.images-de-fond.edition', $fond) }}"
-                               class="font-medium underline underline-offset-4">{{ __("Remplacer l'image") }}</a>
+                        <div class="min-w-0 flex-1">
+                            @livewire('admin.image-de-fond-formulaire',
+                                ['element' => $fond, 'embarque' => true],
+                                key('image-'.$module))
                         </div>
                     </div>
                 </div>

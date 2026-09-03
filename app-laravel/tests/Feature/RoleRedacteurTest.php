@@ -34,13 +34,19 @@ beforeEach(function () {
 });
 
 it('laisse un redacteur entrer dans l administration', function () {
-    $this->actingAs($this->redacteur)->get('/admin/articles')->assertOk();
+    $this->actingAs($this->redacteur)->get('/admin/pages/actualites')->assertOk();
 });
 
 it('lui refuse les ecrans qui ne sont pas les articles', function () {
-    // Son role porte sur les articles, et rien d'autre.
-    $this->actingAs($this->redacteur)->get('/admin/services/creation')->assertForbidden();
+    // Son role porte sur les articles, et rien d'autre. Les ecrans par type de
+    // contenu ayant ete retires, la garde se lit sur l'ACTION des composants —
+    // la ou elle a toujours ete posee.
     $this->actingAs($this->redacteur)->get('/admin/configuration')->assertForbidden();
+
+    Livewire::actingAs($this->redacteur)
+        ->test(App\Livewire\Admin\ServiceFormulaire::class)
+        ->call('enregistrer')
+        ->assertForbidden();
 });
 
 /* ------------------------------------------------ ses propres articles */
@@ -65,16 +71,16 @@ it('montre a un editeur les articles de tout le monde', function () {
 it('refuse a un redacteur d ouvrir l article d un autre', function () {
     $article = Article::factory()->create(['auteur_id' => $this->autreRedacteur->id, 'categorie_id' => $this->categorie->id]);
 
-    $this->actingAs($this->redacteur)
-        ->get(route('admin.articles.edition', $article))
+    Livewire::actingAs($this->redacteur)
+        ->test(ArticleFormulaire::class, ['article' => $article])
         ->assertForbidden();
 });
 
 it('laisse un redacteur ouvrir son propre article', function () {
     $article = Article::factory()->create(['auteur_id' => $this->redacteur->id, 'categorie_id' => $this->categorie->id]);
 
-    $this->actingAs($this->redacteur)
-        ->get(route('admin.articles.edition', $article))
+    Livewire::actingAs($this->redacteur)
+        ->test(ArticleFormulaire::class, ['article' => $article])
         ->assertOk();
 });
 

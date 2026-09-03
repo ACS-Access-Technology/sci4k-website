@@ -224,8 +224,8 @@ it('ne renvoie vers aucun ancien ecran', function (string $module) {
         ->call('ouvrir', $module)
         ->html();
 
-    foreach ([route('admin.faq.liste'), route('admin.rubriques-faq.liste')] as $adresse) {
-        expect($rendu)->not->toContain('href="'.$adresse.'"');
+    foreach (['/admin/faq', '/admin/rubriques-faq'] as $adresse) {
+        expect($rendu)->not->toContain('href="'.$adresse);
     }
 })->with(['banniere', 'rubriques', 'questions', 'demande']);
 
@@ -277,40 +277,8 @@ it('interdit l ouverture a un lecteur', function () {
         ->assertForbidden();
 });
 
-/** Embarquees, les listes ne proposent plus aucun lien de sortie. */
-it('ne propose plus de lien vers l ecran des questions', function () {
-    $question = uneQuestion();
 
-    $rendu = Livewire::actingAs($this->admin)
-        ->test(FaqListe::class, ['embarque' => true])
-        ->html();
 
-    expect($rendu)->not->toContain(route('admin.faq.edition', $question))
-        ->and($rendu)->not->toContain(route('admin.faq.creation'))
-        // Le renvoi vers les rubriques disparait aussi : l'ecran de page les
-        // porte dans son propre module.
-        ->and($rendu)->not->toContain(route('admin.rubriques-faq.liste'));
-});
-
-it('ne propose plus de lien vers l ecran des rubriques', function () {
-    $rendu = Livewire::actingAs($this->admin)
-        ->test(RubriqueFaqListe::class, ['embarque' => true])
-        ->html();
-
-    expect($rendu)->not->toContain(route('admin.rubriques-faq.edition', $this->rubrique))
-        ->and($rendu)->not->toContain(route('admin.rubriques-faq.creation'));
-});
-
-/** Sur leur propre ecran, en revanche, les liens restent. */
-it('garde ses liens quand elle n est pas embarquee', function () {
-    $question = uneQuestion();
-
-    expect(Livewire::actingAs($this->admin)->test(FaqListe::class)->html())
-        ->toContain(route('admin.faq.edition', $question));
-
-    expect(Livewire::actingAs($this->admin)->test(RubriqueFaqListe::class)->html())
-        ->toContain(route('admin.rubriques-faq.edition', $this->rubrique));
-});
 
 /**
  * Enregistres depuis une liste, les formulaires ne redirigent pas : ils

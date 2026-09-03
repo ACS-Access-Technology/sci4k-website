@@ -174,21 +174,23 @@ it('enregistre les options d animation sur l en-tete de section', function () {
 
 /* ---------------------------------------------------------- processus */
 
-it('edite l en-tete de section depuis l ecran du processus', function () {
+/**
+ * L'en-tete n'est plus ecrite par cet editeur : « Pages du site → Services »
+ * l'edite sous le meme slug, et deux formulaires pour une meme donnee
+ * s'ecraseraient. La mise en page, elle, n'est editee nulle part ailleurs
+ * depuis cet ecran — elle reste donc ecrite ici.
+ */
+it('edite la mise en page depuis l ecran du processus', function () {
     EtapeProcessus::factory()->create(['ordre' => 1]);
 
     Livewire::actingAs($this->editeur)
         ->test(EtapeProcessusEnsemble::class)
-        ->set('reglages.titre_fr', 'Comment nous travaillons avec vous')
-        ->set('reglages.titre_en', 'How we work with you')
         ->set('reglages.mise_en_page', 'liste')
         ->call('enregistrer')
         ->assertHasNoErrors();
 
-    $section = ReglageDeSection::where('slug', 'services.process')->first();
-
-    expect($section->titre_fr)->toBe('Comment nous travaillons avec vous');
-    expect($section->option('mise_en_page'))->toBe('liste');
+    expect(ReglageDeSection::where('slug', 'services.process')->first()->option('mise_en_page'))
+        ->toBe('liste');
 });
 
 it('ne perd pas les options qu on ne touche pas', function () {

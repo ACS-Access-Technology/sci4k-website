@@ -32,7 +32,7 @@ class ArticleListe extends Component
      * Ce composant n'herite pas de ListeOrdonnable : il porte donc lui-meme
      * ce que la classe mere apporte aux autres, comme BienListe.
      */
-    public bool $embarque = false;
+    public bool $embarque = true;
 
     /** Formulaire ouvert sur place : null, 'creation', ou l'identifiant edite. */
     public null|int|string $formulaireOuvert = null;

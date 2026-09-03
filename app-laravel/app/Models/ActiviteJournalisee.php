@@ -177,7 +177,12 @@ class ActiviteJournalisee extends Model
     }
 
     /**
-     * Route d'edition du sujet, si elle existe encore et si le sujet aussi.
+     * Adresse ou retrouver le sujet, si elle existe et si le sujet aussi.
+     *
+     * Elle mene desormais a l'ECRAN DE PAGE qui porte ce contenu, et non plus
+     * a une fiche d'edition : les ecrans par type de contenu ont ete retires,
+     * et chaque collection s'edite depuis la page qui l'affiche. Le lien perd
+     * donc la ligne exacte — il ouvre la page, a charge de l'y retrouver.
      *
      * Rend null pour un element supprime : la ligne du journal reste lisible,
      * mais elle ne propose pas d'ouvrir ce qui n'existe plus.
@@ -189,17 +194,17 @@ class ActiviteJournalisee extends Model
         }
 
         $route = match ($this->sujet_type) {
-            Article::class => 'admin.articles.edition',
-            Bien::class => 'admin.biens.edition',
-            Service::class => 'admin.services.edition',
-            QuestionFaq::class => 'admin.faq.edition',
-            RubriqueFaq::class => 'admin.rubriques-faq.edition',
-            Temoignage::class => 'admin.temoignages.edition',
-            MembreEquipe::class => 'admin.equipe.edition',
-            Partenaire::class => 'admin.partenaires.edition',
-            Encart::class => 'admin.encarts.edition',
-            ImageDeFond::class => 'admin.images-de-fond.edition',
-            ReglageDeSection::class => 'admin.reglages-de-section.edition',
+            Article::class => 'admin.pages.actualites',
+            Bien::class => 'admin.pages.biens',
+            Service::class => 'admin.pages.services',
+            QuestionFaq::class, RubriqueFaq::class => 'admin.pages.faq',
+            Temoignage::class, Partenaire::class => 'admin.pages.accueil',
+            MembreEquipe::class => 'admin.pages.presentation',
+            // Un encart, une image de fond ou un en-tete de section appartient
+            // a la page qui l'affiche, que son slug seul ne dit pas de facon
+            // fiable. Le journal renvoie donc a l'accueil, d'ou les autres
+            // pages sont a un clic.
+            Encart::class, ImageDeFond::class, ReglageDeSection::class => 'admin.pages.accueil',
             default => null,
         };
 
@@ -208,10 +213,10 @@ class ActiviteJournalisee extends Model
         }
 
         // Le sujet a pu disparaitre sans passer par l'ecran — un import, une
-        // suppression en cascade. Un lien vers une ligne absente rendrait une
-        // page d'erreur au clic.
+        // suppression en cascade. Un lien vers une ligne absente annoncerait un
+        // contenu que la page n'affichera pas.
         return $this->sujet_type::query()->whereKey($this->sujet_id)->exists()
-            ? route($route, $this->sujet_id)
+            ? route($route)
             : null;
     }
 }

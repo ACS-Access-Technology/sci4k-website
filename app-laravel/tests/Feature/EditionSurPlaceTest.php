@@ -48,28 +48,30 @@ it('ouvre la creation sur place', function () {
         ->assertSee('wire:name="admin.temoignage-formulaire"', false);
 });
 
-/** Embarquee, la liste ne doit plus proposer AUCUN lien de sortie. */
+/** La liste ne doit proposer AUCUN lien de sortie. */
 it('ne propose plus de lien vers les ecrans d edition', function () {
-    $temoignage = Temoignage::factory()->create();
+    Temoignage::factory()->create();
 
     $rendu = Livewire::actingAs($this->admin)
         ->test(TemoignageListe::class, ['embarque' => true])
         ->html();
 
-    expect($rendu)->not->toContain(route('admin.temoignages.edition', $temoignage))
-        ->and($rendu)->not->toContain(route('admin.temoignages.creation'));
+    expect($rendu)->not->toContain('/admin/temoignages');
 });
 
-/** Sur son propre ecran, en revanche, les liens restent. */
-it('garde ses liens quand elle n est pas embarquee', function () {
+/**
+ * Le bouton de suppression vivait dans la branche NON embarquee du gabarit
+ * commun : il disparaissait des que la liste etait ouverte depuis un ecran de
+ * page — c'est-a-dire partout, depuis le retrait des ecrans par type.
+ */
+it('propose la suppression sur une collection qui accepte le retrait', function () {
     $temoignage = Temoignage::factory()->create();
 
-    $rendu = Livewire::actingAs($this->admin)
-        ->test(TemoignageListe::class)
-        ->html();
-
-    expect($rendu)->toContain(route('admin.temoignages.edition', $temoignage));
+    Livewire::actingAs($this->admin)
+        ->test(TemoignageListe::class, ['embarque' => true])
+        ->assertSee('supprimer('.$temoignage->id.')', false);
 });
+
 
 it('refuse un identifiant qui n appartient pas au bloc', function () {
     Livewire::actingAs($this->admin)
@@ -113,16 +115,6 @@ it('ne redirige pas quand il est embarque', function () {
     expect($temoignage->fresh()->auteur)->toBe('Awa K.');
 });
 
-/** Hors embarquement, il redirige vers sa liste, comme avant. */
-it('redirige toujours quand il n est pas embarque', function () {
-    $temoignage = Temoignage::factory()->create();
-
-    Livewire::actingAs($this->admin)
-        ->test(TemoignageFormulaire::class, ['element' => $temoignage])
-        ->set('valeurs.auteur', 'Awa K.')
-        ->call('enregistrer')
-        ->assertRedirect(route('admin.temoignages.liste'));
-});
 
 it('se referme sur l evenement d enregistrement', function () {
     $temoignage = Temoignage::factory()->create();
@@ -184,5 +176,5 @@ it('n offre aucune sortie depuis le formulaire de service embarque', function ()
         ->test(ServiceFormulaire::class, ['service' => $service, 'embarque' => true])
         ->html();
 
-    expect($rendu)->not->toContain(route('admin.services.liste'));
+    expect($rendu)->not->toContain('/admin/services');
 });

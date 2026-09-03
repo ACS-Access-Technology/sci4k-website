@@ -26,7 +26,7 @@
                 <ul class="max-h-96 divide-y divide-zinc-200 overflow-y-auto dark:divide-zinc-700">
                     @foreach ($resultats as $resultat)
                         <li>
-                            <a href="{{ route($resultat['route'], $resultat['element']) }}" wire:navigate
+                            <a href="{{ route($resultat['route']) }}" wire:navigate
                                wire:click="vider" x-on:click="ouvert = false"
                                class="flex items-center gap-3 px-4 py-2.5 hover:bg-zinc-50 dark:hover:bg-zinc-800">
                                 <span class="flex size-8 shrink-0 items-center justify-center rounded-md bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">

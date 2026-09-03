@@ -149,8 +149,15 @@ it('ne defait pas le travail editorial a la reimportation', function () {
 /* ------------------------------------------------ ecrans */
 
 it('ouvre la liste a un lecteur et la refuse en ecriture', function () {
-    $this->actingAs($this->lecteur)->get('/admin/biens')->assertOk();
-    $this->actingAs($this->lecteur)->get('/admin/biens/creation')->assertForbidden();
+    // Le catalogue s'ouvre depuis l'ecran de la page, les ecrans par type de
+    // contenu ayant ete retires. La garde d'ecriture se lit sur l'ACTION du
+    // composant, la ou elle a toujours ete posee.
+    $this->actingAs($this->lecteur)->get('/admin/pages/biens')->assertOk();
+
+    Livewire::actingAs($this->lecteur)
+        ->test(BienFormulaire::class)
+        ->call('enregistrer')
+        ->assertForbidden();
 });
 
 it('cree un bien', function () {
@@ -275,10 +282,15 @@ it('inscrit les biens au journal des activites', function () {
         // Le journal doit NOMMER la famille. « Contenu » etait le repli des
         // familles non declarees, et un bien en est une.
         ->and($ligne->famille())->toBe(__('Bien'))
-        ->and($ligne->lienDEdition())->toContain('/admin/biens/');
+        // Le journal mene desormais a l'ECRAN DE PAGE : les fiches n'ont
+        // plus d'adresse a elles.
+        ->and($ligne->lienDEdition())->toContain('/admin/pages/biens');
 });
 
 it('propose les biens dans la barre laterale', function () {
     expect($this->actingAs($this->editeur)->get('/dashboard')->getContent())
-        ->toContain('/admin/biens');
+        ->toContain('/admin/pages/biens')
+        // L'ancienne entree a disparu avec son ecran.
+        ->and($this->actingAs($this->editeur)->get('/dashboard')->getContent())
+        ->not->toContain('href="http://localhost:8000/admin/biens"');
 });

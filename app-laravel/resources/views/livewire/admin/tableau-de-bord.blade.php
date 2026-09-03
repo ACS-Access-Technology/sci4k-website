@@ -27,7 +27,9 @@
                 {{ __('Voir le site') }}
             </a>
             @if ($peutEcrire)
-                <a href="{{ route('admin.articles.creation') }}" wire:navigate
+                {{-- Vers l'ecran de la page Actualités : c'est de la qu'un
+                     article se cree depuis le retrait des ecrans par type. --}}
+                <a href="{{ route('admin.pages.actualites') }}" wire:navigate
                    class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
                     <x-admin.icone nom="plus" />
                     {{ __('Nouvel article') }}
