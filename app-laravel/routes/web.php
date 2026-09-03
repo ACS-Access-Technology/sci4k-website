@@ -23,6 +23,7 @@ use App\Livewire\Admin\EtapeProcessusEnsemble;
 use App\Livewire\Admin\FaqFormulaire;
 use App\Livewire\Admin\Frequentation;
 use App\Livewire\Admin\PageAccueil;
+use App\Livewire\Admin\PageActualites;
 use App\Livewire\Admin\PageBiens;
 use App\Livewire\Admin\PageServices;
 use App\Livewire\Admin\PagePresentation;
@@ -157,6 +158,7 @@ Route::middleware(['auth', 'role:administrateur|editeur|redacteur|lecteur'])
         Route::get('/pages/presentation', PagePresentation::class)->name('pages.presentation');
         Route::get('/pages/biens', PageBiens::class)->name('pages.biens');
         Route::get('/pages/services', PageServices::class)->name('pages.services');
+        Route::get('/pages/actualites', PageActualites::class)->name('pages.actualites');
 
         Route::get('/articles', ArticleListe::class)->name('articles.liste');
         Route::get('/biens', BienListe::class)->name('biens.liste');
