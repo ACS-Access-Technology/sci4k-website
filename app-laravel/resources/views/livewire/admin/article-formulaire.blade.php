@@ -70,6 +70,21 @@
                 {{ __('Cet article restera un brouillon : un éditeur le relira avant publication.') }}
             </div>
         @endif
+
+        {{-- L'interrupteur des commentaires, article par article : un sujet
+             sensible peut se passer d'une discussion publique. Ferme, le
+             formulaire disparait de la page ET le depot est refuse cote
+             serveur — un formulaire absent n'empeche personne de poster a la
+             main. --}}
+        <label class="flex items-start gap-2 sm:col-span-2">
+            <input type="checkbox" wire:model="commentairesOuverts" class="mt-0.5 rounded border-zinc-300">
+            <span>
+                <span class="text-sm font-medium">{{ __('Autoriser les commentaires') }}</span>
+                <span class="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
+                    {{ __('Décoché, les commentaires déjà publiés restent visibles mais personne ne peut en ajouter.') }}
+                </span>
+            </span>
+        </label>
     </div>
 
     {{--

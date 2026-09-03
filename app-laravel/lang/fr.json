@@ -7,6 +7,8 @@
     ":nombre article publié|:nombre articles publiés": ":nombre article publié|:nombre articles publiés",
     ":nombre bien disponible|:nombre biens disponibles": ":nombre bien disponible|:nombre biens disponibles",
     ":nombre chambre|:nombre chambres": ":nombre chambre|:nombre chambres",
+    ":nombre commentaire attend une vérification.|:nombre commentaires attendent une vérification.": ":nombre commentaire attend une vérification.|:nombre commentaires attendent une vérification.",
+    ":nombre commentaire|:nombre commentaires": ":nombre commentaire|:nombre commentaires",
     ":nombre compte|:nombre comptes": ":nombre compte|:nombre comptes",
     ":nombre entrée|:nombre entrées": ":nombre entrée|:nombre entrées",
     ":nombre image disponible|:nombre images disponibles": ":nombre image disponible|:nombre images disponibles",

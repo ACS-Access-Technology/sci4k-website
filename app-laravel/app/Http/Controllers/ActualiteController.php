@@ -78,6 +78,15 @@ class ActualiteController extends Controller
             'langue' => $langue,
             'cta' => ReglageDeSection::where('slug', 'news.cta')->first(),
             'partageActif' => Parametre::actif('boutons_partage', false),
+            // Seuls les commentaires PUBLIES, et seulement ceux de premier
+            // niveau : les reponses sont chargees avec leur parent, ce qui
+            // evite une requete par commentaire a l'affichage.
+            'commentaires' => $article->commentaires()
+                ->publies()
+                ->whereNull('parent_id')
+                ->with(['reponses' => fn ($r) => $r->publies()])
+                ->oldest()
+                ->get(),
             'noeudPage' => $noeud,
         ]);
     }

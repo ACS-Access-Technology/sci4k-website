@@ -30,15 +30,20 @@ class Article extends Model
         'meta_titre_fr', 'meta_titre_en',
         'meta_description_fr', 'meta_description_en',
         'vues',
+        'commentaires_ouverts',
     ];
 
-    protected $casts = ['date_publication' => 'date', 'vues' => 'integer'];
+    protected $casts = [
+        'date_publication' => 'date',
+        'vues' => 'integer',
+        'commentaires_ouverts' => 'boolean',
+    ];
 
     /**
      * La base pose deja ce defaut, mais pas l'objet : un article tout juste
      * cree renvoyait null plutot que 0 tant qu'on ne l'avait pas relu.
      */
-    protected $attributes = ['vues' => 0];
+    protected $attributes = ['vues' => 0, 'commentaires_ouverts' => true];
 
     /** Les trois etats possibles d'un article, dans l'ordre du cycle de vie. */
     public const STATUTS = ['brouillon', 'publie', 'archive'];
@@ -113,6 +118,18 @@ class Article extends Model
     public function couvertureTeleversee(): bool
     {
         return str_starts_with((string) $this->image_source, self::DOSSIER_COUVERTURES.'/');
+    }
+
+    /** Tous les commentaires, quel que soit leur statut. */
+    public function commentaires()
+    {
+        return $this->hasMany(Commentaire::class);
+    }
+
+    /** Les commentaires en ligne, reponses comprises. */
+    public function commentairesPublies()
+    {
+        return $this->commentaires()->publies();
     }
 
     public function categorie()

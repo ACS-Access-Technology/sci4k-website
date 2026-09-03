@@ -54,6 +54,15 @@ class PageActualites extends Component
                 // La grille n'a pas davantage d'en-tete de section.
                 'section' => null,
             ],
+            'commentaires' => [
+                'intitule' => __('Commentaires'),
+                'resume' => __('Ce que les lecteurs écrivent sous les articles.'),
+                // Les commentaires ne sont pas un bloc de la page Actualités
+                // mais de chaque article. Ils sont ici parce que c'est ou
+                // l'editeur les cherchera, et parce qu'aucun autre ecran ne
+                // porte les articles.
+                'section' => null,
+            ],
             'appel' => [
                 'intitule' => __('Appel à l’action'),
                 'resume' => __('Le bloc de contact placé sous la liste.'),
@@ -162,6 +171,7 @@ class PageActualites extends Component
         return [
             'filtres' => ['composant' => 'admin.categorie-ensemble', 'intitule' => __("Catégories d'articles")],
             'articles' => ['composant' => 'admin.article-liste', 'intitule' => __('Articles')],
+            'commentaires' => ['composant' => 'admin.commentaire-liste', 'intitule' => __('Commentaires')],
         ][$this->module] ?? null;
     }
 

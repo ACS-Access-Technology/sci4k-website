@@ -70,6 +70,9 @@ class ArticleFormulaire extends Component
 
     public string $statut = 'brouillon';
 
+    /** Les commentaires sont-ils ouverts sous cet article ? */
+    public bool $commentairesOuverts = true;
+
     public string $titreFr = '';
 
     public string $titreEn = '';
@@ -118,6 +121,7 @@ class ArticleFormulaire extends Component
         $this->categorieId = (string) $article->categorie_id;
         $this->datePublication = $article->date_publication->format('Y-m-d');
         $this->statut = $article->statut;
+        $this->commentairesOuverts = (bool) $article->commentaires_ouverts;
         $this->titreFr = $article->titre_fr;
         $this->titreEn = $article->titre_en;
         $this->resumeFr = $article->resume_fr;
@@ -143,6 +147,7 @@ class ArticleFormulaire extends Component
             'categorieId' => ['required', 'exists:categories,id'],
             'datePublication' => ['required', 'date'],
             'statut' => ['required', 'in:brouillon,publie'],
+            'commentairesOuverts' => ['boolean'],
             'titreFr' => ['required', 'string', 'max:190'],
             'titreEn' => ['required', 'string', 'max:190'],
             'resumeFr' => ['required', 'string'],
@@ -231,6 +236,7 @@ class ArticleFormulaire extends Component
             'meta_titre_en' => $this->metaTitreEn ?: null,
             'meta_description_fr' => $this->metaDescriptionFr ?: null,
             'meta_description_en' => $this->metaDescriptionEn ?: null,
+            'commentaires_ouverts' => $this->commentairesOuverts,
         ];
 
         if ($this->article) {
