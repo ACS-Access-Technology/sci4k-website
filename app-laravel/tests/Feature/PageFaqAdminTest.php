@@ -5,6 +5,7 @@ use App\Livewire\Admin\FaqListe;
 use App\Livewire\Admin\PageFaq;
 use App\Livewire\Admin\RubriqueFaqFormulaire;
 use App\Livewire\Admin\RubriqueFaqListe;
+use App\Models\Parametre;
 use App\Models\QuestionFaq;
 use App\Models\ReglageDeSection;
 use App\Models\RubriqueFaq;
@@ -75,11 +76,8 @@ it('enregistre le bloc de demande et le sert sur le site', function () {
     $this->get(route('faq.index'))->assertSee('Une autre question ?', false);
 });
 
-/**
- * Le bloc de demande n'affiche ni etiquette ni image : le formulaire ouvre une
- * conversation WhatsApp et n'ecrit rien en base.
- */
-it('ne propose que le titre et l accroche sur le module Poser une question', function () {
+/** Le bloc de demande n'affiche pas d'etiquette : le champ serait sans effet. */
+it('ne propose pas d etiquette sur le module Poser une question', function () {
     $rendu = Livewire::actingAs($this->admin)->test(PageFaq::class)
         ->call('ouvrir', 'demande')
         ->html();
@@ -87,6 +85,106 @@ it('ne propose que le titre et l accroche sur le module Poser une question', fun
     expect($rendu)->toContain('wire:model="entete.titre_fr"')
         ->and($rendu)->toContain('wire:model="entete.chapo_fr"')
         ->and($rendu)->not->toContain('wire:model="entete.etiquette_fr"');
+});
+
+/* ------------------------------------------------------------------ */
+/* Les textes du formulaire « poser une question »                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Les huit libelles etaient ecrits en dur dans la vue publique et traduits par
+ * __() : aucun ecran du backoffice ne les exposait. Le module les porte tous,
+ * sans quoi une partie du bloc resterait hors de portee de l'editeur.
+ */
+it('propose tous les textes du formulaire', function () {
+    $rendu = Livewire::actingAs($this->admin)->test(PageFaq::class)
+        ->call('ouvrir', 'demande')
+        ->html();
+
+    foreach (array_keys(PageFaq::TEXTES_DU_FORMULAIRE) as $nom) {
+        expect($rendu)->toContain('wire:model="textes.'.$nom.'_fr"');
+    }
+});
+
+it('n affiche ces textes que sur le module Poser une question', function (string $module) {
+    $rendu = Livewire::actingAs($this->admin)->test(PageFaq::class)
+        ->call('ouvrir', $module)
+        ->html();
+
+    expect($rendu)->not->toContain('wire:model="textes.libelle_bouton_fr"');
+})->with(['banniere', 'rubriques', 'questions']);
+
+it('enregistre un libelle et le sert sur le site', function () {
+    Livewire::actingAs($this->admin)->test(PageFaq::class)
+        ->call('ouvrir', 'demande')
+        ->set('textes.libelle_bouton_fr', 'Envoyer sur WhatsApp')
+        ->set('textes.libelle_nom_fr', 'Votre nom')
+        ->call('enregistrer')
+        ->assertHasNoErrors();
+
+    expect(ReglageDeSection::where('slug', 'faq.ask')->first()->option('libelle_bouton_fr'))
+        ->toBe('Envoyer sur WhatsApp');
+
+    $this->get(route('faq.index'))
+        ->assertSee('Envoyer sur WhatsApp', false)
+        ->assertSee('Votre nom', false);
+});
+
+/** Laisse vide, un texte retombe sur celui d'origine, comme avant la refonte. */
+it('retombe sur le texte d origine quand le champ est vide', function () {
+    Livewire::actingAs($this->admin)->test(PageFaq::class)
+        ->call('ouvrir', 'demande')
+        ->call('enregistrer')
+        ->assertHasNoErrors();
+
+    $this->get(route('faq.index'))->assertSee('Envoyer ma question', false);
+});
+
+/**
+ * Repli sur l'autre langue : mieux vaut un libelle dans la mauvaise langue
+ * qu'un champ sans nom sur un bloc a demi traduit.
+ */
+it('replie sur l autre langue quand une seule est saisie', function () {
+    $section = ReglageDeSection::pour('faq.ask');
+    $section->poserOptions(['libelle_bouton_fr' => 'Envoyer sur WhatsApp']);
+    $section->save();
+
+    expect($section->texteBilingue('libelle_bouton', 'en'))->toBe('Envoyer sur WhatsApp')
+        ->and($section->texteBilingue('libelle_bouton', 'fr'))->toBe('Envoyer sur WhatsApp');
+});
+
+/**
+ * `$textes` est une propriete publique : le navigateur en fixe le contenu,
+ * CLES COMPRISES. Sans filtre sur les cles declarees, n'importe quelle option
+ * de la section serait ecrivable sans passer par aucune regle — la mise en
+ * page du processus, par exemple.
+ */
+it('n ecrit que les textes que le module declare', function () {
+    Livewire::actingAs($this->admin)->test(PageFaq::class)
+        ->call('ouvrir', 'demande')
+        ->set('textes.mise_en_page', 'liste')
+        ->set('textes.libelle_bouton_fr', 'Envoyer')
+        ->call('enregistrer')
+        ->assertHasNoErrors();
+
+    $options = ReglageDeSection::where('slug', 'faq.ask')->first()->options;
+
+    expect($options)->not->toHaveKey('mise_en_page')
+        ->and($options['libelle_bouton_fr'])->toBe('Envoyer');
+});
+
+/**
+ * Le formulaire ouvre une conversation WhatsApp depuis assets/main.js, qui lit
+ * window.SCI4K_WHATSAPP. Cette ligne n'existait que sur la page Contact : ici,
+ * main.js retombait sur le numero qu'il porte en dur, et le reglage du
+ * backoffice restait sans effet sur ce seul formulaire.
+ */
+it('sert le numero WhatsApp regle dans le backoffice', function () {
+    Parametre::poser('whatsapp', '+225 01 02 03 04 05');
+
+    $this->get(route('faq.index'))
+        ->assertOk()
+        ->assertSee('window.SCI4K_WHATSAPP = "2250102030405"', false);
 });
 
 it('n affiche pas de formulaire sur les modules sans en-tete', function (string $module) {
