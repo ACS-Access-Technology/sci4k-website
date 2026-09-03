@@ -267,6 +267,38 @@ section{padding:110px 0;}
 
 .biens-cta-content p{font-size:17px;color:rgba(255,255,255,0.8);max-width:540px;margin:0;}
 
+/* ---------------------------------------------------------------
+   Annonce de la page Services
+   La banniere d'appel a l'action ecrit son texte en blanc. Sur
+   l'accueil elle repose sur le bandeau sombre .city-cta-section ; la
+   page Services, elle, n'a pas de bandeau : sa section etait sans
+   fond et le texte blanc se perdait sur le fond clair.
+   Le fond est donc donne a la CARTE et non a la section : ce qu'il y
+   a derriere ne decide plus de sa lisibilite, dans les deux themes.
+   --------------------------------------------------------------- */
+.services-cta-section{ padding:100px 0; }
+
+.services-cta-section .biens-cta-banner{
+  background:linear-gradient(135deg,var(--navy-950) 0%,var(--navy-700) 100%);
+  border-color:rgba(255,255,255,0.12);
+  box-shadow:var(--shadow);
+}
+
+.services-cta-section .biens-cta-banner:hover{
+  background:linear-gradient(135deg,var(--navy-900) 0%,var(--navy-600) 100%);
+  border-color:rgba(211,182,172,0.45);
+}
+
+html[data-theme="dark"] .services-cta-section .biens-cta-banner{
+  background:linear-gradient(135deg,var(--dark-surface) 0%,var(--dark-surface-2) 100%);
+  border-color:var(--dark-border);
+}
+
+html[data-theme="dark"] .services-cta-section .biens-cta-banner:hover{
+  background:linear-gradient(135deg,var(--dark-surface-2) 0%,var(--navy-800) 100%);
+  border-color:rgba(211,182,172,0.45);
+}
+
 .articles-section{ background:var(--paper); }
 
 .articles-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:26px; margin-top:20px; }
