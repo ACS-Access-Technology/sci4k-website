@@ -72,4 +72,27 @@ class Encart extends Model
     {
         return $this->texteDansLaLangue('libelle_bouton', $langue);
     }
+
+    /**
+     * Adresse du visuel, ou null si l'encart n'en a pas.
+     *
+     * Meme forme que Article::urlCouverture() et Service::urlImage() : deux
+     * origines cohabitent dans `image_source` — un chemin `images/…` pour les
+     * visuels repris du site statique, `storage/encarts/…` pour ceux
+     * televerses depuis l'administration — et les vues n'ont qu'un point
+     * d'appel.
+     *
+     * Il manquait, et avec lui tout rendu : le formulaire acceptait une image,
+     * la stockait et l'affichait en apercu, mais aucune page publique ne la
+     * lisait. L'accueil montrait un visuel FIGE par une classe CSS, la page
+     * Services n'en montrait aucun.
+     */
+    public function urlImage(): ?string
+    {
+        if (! $this->image_source) {
+            return null;
+        }
+
+        return asset($this->image_source);
+    }
 }

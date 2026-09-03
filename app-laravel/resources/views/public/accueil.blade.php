@@ -155,7 +155,16 @@
         <span class="ad-label">{{ __('Annonce') }}</span>
 
         <article class="ad-house">
-          <div class="ad-house-media service-bg-foncier"></div>
+          {{-- Le visuel de l'encart, et non plus la classe service-bg-foncier
+               ecrite en dur : celle-ci affichait l'image du service « foncier »
+               quoi qu'on televerse, si bien que le champ Image du backoffice
+               ne changeait rien. Elle reste le repli quand l'encart n'a pas
+               de visuel a lui. --}}
+          @if ($url = $annonce->urlImage())
+            <div class="ad-house-media" style="background-image:url('{{ $url }}')"></div>
+          @else
+            <div class="ad-house-media service-bg-foncier"></div>
+          @endif
           <div class="ad-house-body">
             @if ($annonce->etiquette($langue))
               <div class="tag tag-home">{{ $annonce->etiquette($langue) }}</div>

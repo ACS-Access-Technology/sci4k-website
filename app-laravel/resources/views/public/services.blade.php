@@ -104,24 +104,46 @@
   La section disparait si l'encart n'est pas diffuse.
 --}}
 @if ($annonce)
-  <section class="services-cta-section">
+  {{-- Meme presentation que l'annonce de l'accueil : carte .ad-house, visuel
+       en colonne a gauche, corps a droite.
+
+       Le bloc portait jusqu'ici .biens-cta-banner, la banderole pleine
+       largeur — sans emplacement d'image, et ecrite en blanc sur une section
+       que le CSS ne teintait pas, d'ou son illisibilite en theme clair. La
+       carte .ad-house resout les deux : elle a sa colonne d'image, et son
+       fond comme ses couleurs de texte sont deja definis dans les deux
+       themes. --}}
+  <section class="ad-section" id="encart-services">
     <div class="wrap">
-      <div class="biens-cta-banner reveal">
-        <div class="biens-cta-content">
-          @if ($annonce->etiquette($langue))
-            <div class="tag">{{ $annonce->etiquette($langue) }}</div>
+      <div class="ad-slot reveal">
+        <span class="ad-label">{{ __('Annonce') }}</span>
+
+        <article class="ad-house">
+          {{-- Sans visuel, la carte garde l'image du service « foncier » :
+               .ad-house est une grille a deux colonnes, et une colonne vide
+               laisserait un trou. --}}
+          @if ($url = $annonce->urlImage())
+            <div class="ad-house-media" style="background-image:url('{{ $url }}')"></div>
+          @else
+            <div class="ad-house-media service-bg-foncier"></div>
           @endif
-          <h3>{{ $annonce->titre($langue) }}</h3>
-          @if ($annonce->texte($langue))
-            <p>{{ $annonce->texte($langue) }}</p>
-          @endif
-        </div>
-        @if ($annonce->libelleBouton($langue))
-          <a href="{{ $annonce->cible_bouton ?: '/contact' }}" class="cta-btn">
-            <span>{{ $annonce->libelleBouton($langue) }}</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
-          </a>
-        @endif
+
+          <div class="ad-house-body">
+            @if ($annonce->etiquette($langue))
+              <div class="tag tag-home">{{ $annonce->etiquette($langue) }}</div>
+            @endif
+            <h3>{{ $annonce->titre($langue) }}</h3>
+            @if ($annonce->texte($langue))
+              <p>{{ $annonce->texte($langue) }}</p>
+            @endif
+            @if ($annonce->libelleBouton($langue))
+              <a href="{{ $annonce->cible_bouton ?: '/contact' }}" class="cta-btn">
+                <span>{{ $annonce->libelleBouton($langue) }}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+              </a>
+            @endif
+          </div>
+        </article>
       </div>
     </div>
   </section>
