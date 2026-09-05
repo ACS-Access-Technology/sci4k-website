@@ -42,6 +42,7 @@ class RubriqueFaq extends Model
         return $this->texteDansLaLangue('nom', $langue);
     }
 
+    /** @return HasMany<QuestionFaq, $this> */
     public function questions(): HasMany
     {
         return $this->hasMany(QuestionFaq::class, 'rubrique_id');

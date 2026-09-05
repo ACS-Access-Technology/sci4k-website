@@ -37,6 +37,7 @@ class QuestionFaq extends Model
         return $this->texteDansLaLangue('reponse', $langue);
     }
 
+    /** @return BelongsTo<RubriqueFaq, $this> */
     public function rubrique(): BelongsTo
     {
         return $this->belongsTo(RubriqueFaq::class, 'rubrique_id');

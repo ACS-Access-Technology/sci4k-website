@@ -103,7 +103,7 @@ class MessageListe extends Component
 
         // abort() plutot que firstOrFail() : la reponse doit etre un 404 clair
         // et non une exception de modele qui remonte jusqu'a l'ecran.
-        abort_unless($compte, 404);
+        abort_unless($compte !== null, 404);
 
         $message->assigne_a = $compte->id;
         $message->save();

@@ -80,7 +80,7 @@ class ReglageDeSection extends Model
 
         return array_values(array_filter(
             array_map('trim', preg_split('/\R{2,}/u', $texte) ?: []),
-            'strlen',
+            static fn (string $ligne): bool => $ligne !== '',
         ));
     }
 
@@ -104,7 +104,7 @@ class ReglageDeSection extends Model
 
         $lignes = preg_split('/\R/u', trim(strip_tags((string) $titre))) ?: [];
 
-        return array_values(array_filter(array_map('trim', $lignes), 'strlen'));
+        return array_values(array_filter(array_map('trim', $lignes), static fn (string $ligne): bool => $ligne !== ''));
     }
 
     /**

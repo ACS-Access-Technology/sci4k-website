@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\TraduitParColonnes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class Categorie extends Model
@@ -60,12 +61,14 @@ class Categorie extends Model
         return $this->texteDansLaLangue('nom', $langue);
     }
 
-    public function articles()
+    /** @return HasMany<Article, $this> */
+    public function articles(): HasMany
     {
         return $this->hasMany(Article::class, 'categorie_id');
     }
 
-    public function services()
+    /** @return HasMany<Service, $this> */
+    public function services(): HasMany
     {
         return $this->hasMany(Service::class, 'categorie_id');
     }

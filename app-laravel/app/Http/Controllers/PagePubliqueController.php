@@ -63,7 +63,15 @@ class PagePubliqueController extends Controller
             //
             // Sans cache : le jour ou l'editeur saisit le contenu, la page doit
             // basculer sans attendre l'expiration d'un en-tete.
-            return response(file_get_contents($fichier), 200, [
+            // file_get_contents rend FALSE si le fichier devient illisible
+            // entre le is_file() ci-dessus et cette ligne — droits changes,
+            // disque plein. Une reponse 200 au corps vide ferait croire a une
+            // page blanche ; un 404 dit ce qui se passe.
+            $contenu = file_get_contents($fichier);
+
+            abort_if($contenu === false, 404);
+
+            return response($contenu, 200, [
                 'Content-Type' => 'text/html; charset=UTF-8',
                 'Cache-Control' => 'no-cache, must-revalidate',
             ]);
@@ -235,7 +243,7 @@ class PagePubliqueController extends Controller
         // Le bandeau de la carte annonce l'adresse en deux temps : la ligne de
         // rue, puis le reste. Le decoupage suit donc les retours a la ligne
         // saisis dans la configuration, au lieu d'un texte fige.
-        $lignesAdresse = array_values(array_filter(array_map('trim', explode("\n", $adresse)), 'strlen'));
+        $lignesAdresse = array_values(array_filter(array_map('trim', explode("\n", $adresse)), static fn (string $ligne): bool => $ligne !== ''));
 
         // Les sujets proposes viennent du backoffice, un par ligne, comme
         // l'adresse et les horaires. La liste d'origine est celle que declare
@@ -249,7 +257,7 @@ class PagePubliqueController extends Controller
 
         $sujets = array_values(array_filter(
             array_map('trim', preg_split('/\R/u', $sujetsSaisis) ?: []),
-            'strlen',
+            static fn (string $ligne): bool => $ligne !== '',
         ));
 
         return view('public.contact', [

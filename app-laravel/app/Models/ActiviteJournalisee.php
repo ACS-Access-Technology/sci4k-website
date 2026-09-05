@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Une action faite depuis l'administration.
@@ -26,7 +27,8 @@ class ActiviteJournalisee extends Model
 
     public const SUPPRESSION = 'suppression';
 
-    public function auteur()
+    /** @return BelongsTo<User, $this> */
+    public function auteur(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }

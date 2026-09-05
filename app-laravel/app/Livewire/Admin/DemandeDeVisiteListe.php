@@ -72,7 +72,7 @@ class DemandeDeVisiteListe extends Component
             ->whereHas('roles', fn ($r) => $r->whereIn('name', ['administrateur', 'editeur', 'redacteur']))
             ->first();
 
-        abort_unless($compte, 404);
+        abort_unless($compte !== null, 404);
 
         $demande->assigne_a = $compte->id;
         $demande->save();

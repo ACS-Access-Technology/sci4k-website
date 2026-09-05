@@ -364,7 +364,7 @@ class BienFormulaire extends Component
     /** Chaque ligne non vide devient un equipement. */
     protected function enLignes(string $texte): array
     {
-        return array_values(array_filter(array_map('trim', preg_split('/\R/u', $texte) ?: []), 'strlen'));
+        return array_values(array_filter(array_map('trim', preg_split('/\R/u', $texte) ?: []), static fn (string $ligne): bool => $ligne !== ''));
     }
 
     /**

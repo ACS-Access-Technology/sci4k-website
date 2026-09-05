@@ -33,6 +33,7 @@ class Tache extends Model
 
     protected $attributes = ['terminee' => false, 'ordre' => 0];
 
+    /** @return BelongsTo<User, $this> */
     public function auteur(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

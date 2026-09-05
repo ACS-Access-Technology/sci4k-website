@@ -7,6 +7,8 @@ use App\Models\Concerns\TraduitParColonnes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Article extends Model
 {
@@ -144,7 +146,8 @@ class Article extends Model
     }
 
     /** Tous les commentaires, quel que soit leur statut. */
-    public function commentaires()
+    /** @return HasMany<Commentaire, $this> */
+    public function commentaires(): HasMany
     {
         return $this->hasMany(Commentaire::class);
     }
@@ -155,7 +158,8 @@ class Article extends Model
         return $this->commentaires()->publies();
     }
 
-    public function categorie()
+    /** @return BelongsTo<Categorie, $this> */
+    public function categorie(): BelongsTo
     {
         return $this->belongsTo(Categorie::class, 'categorie_id');
     }
@@ -168,7 +172,8 @@ class Article extends Model
      * ecrit. Nul aussi quand l'auteur a quitte l'entreprise — supprimer son
      * compte ne retire pas ses articles du site.
      */
-    public function auteur()
+    /** @return BelongsTo<User, $this> */
+    public function auteur(): BelongsTo
     {
         return $this->belongsTo(User::class, 'auteur_id');
     }

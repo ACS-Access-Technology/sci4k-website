@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Un rendez-vous demande depuis la fiche d'un bien.
@@ -53,12 +54,14 @@ class DemandeDeVisite extends Model
         return array_key_exists($statut, static::statuts());
     }
 
-    public function bien()
+    /** @return BelongsTo<Bien, $this> */
+    public function bien(): BelongsTo
     {
         return $this->belongsTo(Bien::class);
     }
 
-    public function assigne()
+    /** @return BelongsTo<User, $this> */
+    public function assigne(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigne_a');
     }

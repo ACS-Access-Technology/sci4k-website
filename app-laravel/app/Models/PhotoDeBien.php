@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Une photo de la galerie d'un bien.
@@ -23,7 +24,8 @@ class PhotoDeBien extends Model
     /** Dossier de stockage des photos de biens. */
     public const DOSSIER = 'storage/biens';
 
-    public function bien()
+    /** @return BelongsTo<Bien, $this> */
+    public function bien(): BelongsTo
     {
         return $this->belongsTo(Bien::class);
     }

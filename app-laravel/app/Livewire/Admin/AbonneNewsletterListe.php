@@ -162,6 +162,15 @@ class AbonneNewsletterListe extends Component
 
         return Response::streamDownload(function () use ($abonnes) {
             $sortie = fopen('php://output', 'w');
+
+            // fopen rend FALSE en cas d'echec, et fputcsv sur un false produit
+            // une erreur au milieu d'un telechargement deja commence : le
+            // navigateur recoit un fichier tronque, sans qu'on sache qu'il
+            // l'est. Mieux vaut ne rien envoyer du tout.
+            if ($sortie === false) {
+                return;
+            }
+
             fputcsv($sortie, ['email', 'lien_desinscription']);
 
             foreach ($abonnes as $abonne) {

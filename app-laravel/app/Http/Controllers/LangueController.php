@@ -43,7 +43,10 @@ class LangueController extends Controller
      */
     public static function traduireLeChemin(string $chemin, string $vers): string
     {
-        $chemin = '/'.trim(parse_url($chemin, PHP_URL_PATH) ?? '', '/');
+        // `?:` et non `??` : parse_url rend FALSE sur une adresse malformee, et
+        // non null. Le chemin vient d'un en-tete « referer », que n'importe qui
+        // peut forger — c'est exactement la ou une valeur inattendue arrive.
+        $chemin = '/'.trim((string) (parse_url($chemin, PHP_URL_PATH) ?: ''), '/');
 
         // Le prefixe existant est retire, quelle qu'ait ete la langue de
         // depart : on repart toujours du chemin francais.
@@ -73,7 +76,7 @@ class LangueController extends Controller
     protected function memePageDansLaLangue(string $code, Request $requete): string
     {
         $precedente = url()->previous();
-        $chemin = parse_url($precedente, PHP_URL_PATH) ?? '/';
+        $chemin = (string) (parse_url($precedente, PHP_URL_PATH) ?: '/');
 
         if (str_contains($chemin, '/langue/')) {
             $chemin = '/';

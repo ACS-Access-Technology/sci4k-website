@@ -7,6 +7,8 @@ use App\Models\Concerns\TraduitParColonnes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Un bien du catalogue.
@@ -82,12 +84,14 @@ class Bien extends Model
 
     /* --------------------------------------------------- relations */
 
-    public function photos()
+    /** @return HasMany<PhotoDeBien, $this> */
+    public function photos(): HasMany
     {
         return $this->hasMany(PhotoDeBien::class)->orderBy('ordre')->orderBy('id');
     }
 
-    public function auteur()
+    /** @return BelongsTo<User, $this> */
+    public function auteur(): BelongsTo
     {
         return $this->belongsTo(User::class, 'auteur_id');
     }

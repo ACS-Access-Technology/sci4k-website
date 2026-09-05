@@ -173,6 +173,7 @@ class Service extends Model
             : null;
     }
 
+    /** @return BelongsTo<Categorie, $this> */
     public function categorie(): BelongsTo
     {
         return $this->belongsTo(Categorie::class, 'categorie_id');

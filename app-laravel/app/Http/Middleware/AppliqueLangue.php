@@ -89,10 +89,7 @@ class AppliqueLangue
         // Le test est fait sur l'existence de la route jumelle plutot que sur
         // une liste de noms : une page ajoutee au groupe bilingue est prise en
         // compte sans que personne n'ait a l'inscrire ici.
-        return $request->route()?->getName() !== null
-            && app('router')->getRoutes()->hasNamedRoute('en.'.$nom)
-                ? 'fr'
-                : null;
+        return app('router')->getRoutes()->hasNamedRoute('en.'.$nom) ? 'fr' : null;
     }
 
     /**

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 /**
@@ -58,19 +60,22 @@ class Commentaire extends Model
 
     /* ------------------------------------------------------- relations */
 
-    public function article()
+    /** @return BelongsTo<Article, $this> */
+    public function article(): BelongsTo
     {
         return $this->belongsTo(Article::class);
     }
 
     /** Le commentaire auquel celui-ci repond, s'il en est une reponse. */
-    public function parent()
+    /** @return BelongsTo<self, $this> */
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
     }
 
     /** Les reponses, sur un seul niveau. */
-    public function reponses()
+    /** @return HasMany<self, $this> */
+    public function reponses(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id')->oldest();
     }
