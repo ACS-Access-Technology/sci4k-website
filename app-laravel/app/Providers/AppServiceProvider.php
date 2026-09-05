@@ -130,9 +130,18 @@ class AppServiceProvider extends ServiceProvider
      */
     protected function composerLePiedDePage(): void
     {
+        // Les textes de l'habillage sont poses sur TOUTE vue publique, et non
+        // sur la seule mise en page. Blade evalue le corps d'une @section
+        // pendant le rendu de la vue ENFANT, avant que la mise en page ne
+        // rende : une variable posee sur celle-ci n'y est pas encore. Les mots
+        // communs — « Fermer », « Annonce » — se lisent depuis le corps des
+        // pages, il fallait donc les y porter.
+        View::composer('public.*', function ($vue) {
+            $vue->with('chrome', $this->textesDeLHabillage());
+        });
+
         View::composer('public.partials.pied', function ($vue) {
             $vue->with([
-                'chrome' => $this->textesDeLHabillage(),
                 'servicesDuPied' => Service::visibles()->ordonnees()->get(),
                 'menuPiedNavigation' => $this->entreesDeMenu('pied_navigation'),
                 'menuPiedLegal' => $this->entreesDeMenu('pied_legal'),
@@ -164,7 +173,6 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('public.partials.entete', function ($vue) {
             $vue->with([
-                'chrome' => $this->textesDeLHabillage(),
                 'menuPrincipal' => $this->entreesDeMenu('principal'),
                 'nomDuSite' => $this->parametre('nom_du_site', 'SCI4K'),
                 'logoPublic' => $this->parametre('logo', 'images/image (3).png'),
@@ -190,6 +198,9 @@ class AppServiceProvider extends ServiceProvider
             $descriptionCourte = $this->parametre('description_courte', __("Société Civile Immobilière à Abidjan : achat, vente, location, construction et gestion de patrimoine immobilier."));
 
             $vue->with([
+                // L'habillage est pose sur la MISE EN PAGE et non sur les seuls
+                // partiels : les mots communs a plusieurs pages — « Fermer »,
+                // « Annonce » — se lisent depuis le corps de chaque vue.
                 'nomDuSite' => $this->parametre('nom_du_site', 'SCI4K'),
                 'descriptionSite' => $this->parametre('meta_description') ?: $descriptionCourte,
                 // Le titre que porte une page sans titre a elle. Le gabarit
@@ -207,15 +218,12 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('public.partials.flottants', function ($vue) {
-            $chrome = $this->textesDeLHabillage();
-
             $numero = preg_replace('/\D+/', '', (string) $this->parametre('whatsapp', '2250706165029'));
 
             $vue->with([
                 'whatsappPublic' => $numero ?: '2250706165029',
                 'whatsappMessage' => $this->parametre('whatsapp_message_'.app()->getLocale(), __('Bonjour SCI4K, je souhaite avoir des informations.')),
                 'chatActif' => $this->parametreActif('chat_actif', false),
-                'chrome' => $chrome,
             ]);
         });
 

@@ -9,6 +9,22 @@
 @section('contenu')
 
 {{--
+  Les textes de cette page qui ne sont ni un titre ni une accroche etaient
+  ecrits en dur et traduits par __() : aucun ecran ne les exposait. Chacun
+  vient desormais du module de SON bloc, dans « Pages du site → Accueil ».
+
+  `$tSite` fait exception : « Fermer » et « Annonce » reviennent sur trois
+  pages, et sont donc dits une seule fois, sur l'ecran « Menus », avec le reste
+  de l'habillage. Trois champs pour un meme mot auraient ete corriges un par
+  un — ou pas.
+--}}
+@php($tSite = fn (string $nom, string $defaut) => $chrome?->texteBilingue($nom, $langue) ?: $defaut)
+@php($tHero = fn (string $nom, string $defaut) => $hero?->texteBilingue($nom, $langue) ?: $defaut)
+@php($tArticles = fn (string $nom, string $defaut) => $enteteArticles?->texteBilingue($nom, $langue) ?: $defaut)
+@php($tAvis = fn (string $nom, string $defaut) => $enteteTemoignages?->texteBilingue($nom, $langue) ?: $defaut)
+@php($tPartenaires = fn (string $nom, string $defaut) => $entetePartenaires?->texteBilingue($nom, $langue) ?: $defaut)
+
+{{--
   Page d'accueil, portee depuis frontoffice/index.html.
 
   Balisage repris tel quel — memes classes, memes attributs data-svc lus par
@@ -79,8 +95,8 @@
     @endif
   </div>
 
-  <a class="scroll-cue" href="#services" aria-label="{{ __('Faire défiler vers le contenu') }}">
-    <span class="scroll-cue-label">{{ __('Défilez') }}</span>
+  <a class="scroll-cue" href="#services" aria-label="{{ $tHero('aria_defilement', __('Faire défiler vers le contenu')) }}">
+    <span class="scroll-cue-label">{{ $tHero('libelle_defilement', __('Défilez')) }}</span>
     <span class="scroll-cue-mouse"><span class="scroll-cue-wheel"></span></span>
   </a>
 </section>
@@ -152,7 +168,7 @@
   <section class="ad-section" id="encart-accueil" data-slot="accueil-apres-services" data-mode="maison">
     <div class="wrap">
       <div class="ad-slot reveal">
-        <span class="ad-label">{{ __('Annonce') }}</span>
+        <span class="ad-label">{{ $tSite('libelle_annonce', __('Annonce')) }}</span>
 
         <article class="ad-house">
           {{-- Le visuel de l'encart, et non plus la classe service-bg-foncier
@@ -230,7 +246,7 @@
               <h4>{{ $article->titre($langue) }}</h4>
               <p>{{ $article->resume($langue) }}</p>
               <span class="link-arrow">
-                <span>{{ __("Lire l'article") }}</span>
+                <span>{{ $tArticles('libelle_lien', __("Lire l'article")) }}</span>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
               </span>
             </div>
@@ -260,7 +276,7 @@
           <div class="testimonial-card reveal" style="--i:{{ $loop->index }}">
             {{-- La note est annoncee aux lecteurs d'ecran : une suite d'etoiles
                  ne se lit pas, elle se voit. --}}
-            <div class="testimonial-stars" aria-label="{{ __(':note sur 5', ['note' => $temoignage->note]) }}">{{ str_repeat('★', $temoignage->note) }}</div>
+            <div class="testimonial-stars" aria-label="{{ str_replace(':note', (string) $temoignage->note, $tAvis('aria_note', __(':note sur 5', ['note' => ':note']))) }}">{{ str_repeat('★', $temoignage->note) }}</div>
             <p class="testimonial-quote">{{ $temoignage->citation($langue) }}</p>
             <div class="testimonial-author">
               <div class="testimonial-avatar">{{ $temoignage->initiales }}</div>
@@ -296,7 +312,7 @@
                element focalisable qui ne mene nulle part. --}}
           @if ($partenaire->aUnSite())
             <a class="partner-logo-card" href="{{ $partenaire->site }}" target="_blank" rel="noopener noreferrer"
-               title="{{ __('Ouvrir le site de :nom', ['nom' => $partenaire->nom]) }}">
+               title="{{ str_replace(':nom', $partenaire->nom, $tPartenaires('titre_lien', __('Ouvrir le site de :nom', ['nom' => ':nom']))) }}">
               <img src="{{ asset($partenaire->logo) }}" alt="{{ $partenaire->nom }}" class="partner-logo-img" loading="lazy">
               <span class="p-name">{{ $partenaire->nom }}</span>
             </a>
@@ -318,7 +334,7 @@
   <div class="svc-modal" id="svcModal" role="dialog" aria-modal="true" aria-labelledby="svcModalTitle" hidden>
     <div class="svc-modal-backdrop" data-svc-close></div>
     <div class="svc-modal-box">
-      <button type="button" class="svc-modal-close" data-svc-close aria-label="{{ __('Fermer') }}">&times;</button>
+      <button type="button" class="svc-modal-close" data-svc-close aria-label="{{ $tSite('libelle_fermer', __('Fermer')) }}">&times;</button>
       <div class="svc-modal-body" id="svcModalBody"></div>
     </div>
   </div>

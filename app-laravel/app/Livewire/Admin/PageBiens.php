@@ -55,7 +55,13 @@ class PageBiens extends Component
         'onglet_tous' => ['intitule' => 'Onglet « tous »', 'defaut' => 'Tous'],
     ];
 
-    /** Les textes de la grille de resultats. */
+    /**
+     * Les textes de la grille de resultats.
+     *
+     * « Fermer » n'y figure PAS : il ferme aussi la fenetre d'un service sur la
+     * page Services. Il est dit une seule fois, sur l'ecran « Menus », avec le
+     * reste de l'habillage du site.
+     */
     public const TEXTES_DU_CATALOGUE = [
         'pastille_vendu' => ['intitule' => 'Pastille « vendu »', 'defaut' => 'Vendu'],
         'libelle_fiche' => ['intitule' => 'Lien vers la fiche', 'defaut' => 'Voir la fiche'],
@@ -64,7 +70,6 @@ class PageBiens extends Component
             'defaut' => 'Aucun bien ne correspond à votre recherche.',
             'long' => true,
         ],
-        'libelle_fermer' => ['intitule' => 'Libellé du bouton de fermeture', 'defaut' => 'Fermer'],
         'titre_description' => ['intitule' => 'Titre du bloc de description', 'defaut' => 'Description intégrale du bien'],
     ];
 

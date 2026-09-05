@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use App\Models\CommuneDuBandeau;
 use App\Models\Encart;
 use App\Livewire\Concerns\PorteDesImagesDeFond;
+use App\Livewire\Concerns\PorteDesTextesDeBloc;
 use App\Livewire\Concerns\PorteUnEnteteDeSection;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
@@ -35,6 +36,7 @@ use Livewire\Component;
 class PageAccueil extends Component
 {
     use PorteDesImagesDeFond;
+    use PorteDesTextesDeBloc;
     use PorteUnEnteteDeSection;
 
     /**
@@ -45,6 +47,27 @@ class PageAccueil extends Component
      *
      * @return array<string, array<string, mixed>>
      */
+    /** Les textes du hero qui ne sont ni un titre ni un bouton. */
+    public const TEXTES_DU_HERO = [
+        'aria_defilement' => ['intitule' => 'Flèche de défilement — description', 'defaut' => 'Faire défiler vers le contenu'],
+        'libelle_defilement' => ['intitule' => 'Mot affiché sous la flèche', 'defaut' => 'Défilez'],
+    ];
+
+    /** Le lien de chaque carte d'article. */
+    public const TEXTES_DES_ARTICLES = [
+        'libelle_lien' => ['intitule' => 'Lien sous chaque article', 'defaut' => "Lire l'article"],
+    ];
+
+    /** La note d'un avis, lue par les lecteurs d'ecran. */
+    public const TEXTES_DES_TEMOIGNAGES = [
+        'aria_note' => ['intitule' => 'Note d’un avis (:note sera remplacé)', 'defaut' => ':note sur 5'],
+    ];
+
+    /** La bulle d'aide d'un logo de partenaire. */
+    public const TEXTES_DES_PARTENAIRES = [
+        'titre_lien' => ['intitule' => 'Bulle d’aide d’un logo (:nom sera remplacé)', 'defaut' => 'Ouvrir le site de :nom'],
+    ];
+
     public function modules(): array
     {
         return [
@@ -54,6 +77,7 @@ class PageAccueil extends Component
                 'section' => 'home.hero',
                 'fond' => 'accueil-hero',
                 'ancre' => '#accueil',
+                'textes' => self::TEXTES_DU_HERO,
             ],
             'bandeau' => [
                 'intitule' => __('Bande déroulante'),
@@ -89,6 +113,7 @@ class PageAccueil extends Component
                 'resume' => __('En-tête du bloc. Les trois articles affichés sont les plus récents publiés.'),
                 'section' => 'home.articles',
                 'ancre' => '#articles',
+                'textes' => self::TEXTES_DES_ARTICLES,
             ],
             'temoignages' => [
                 'intitule' => __('Avis clients'),
@@ -96,12 +121,14 @@ class PageAccueil extends Component
                 'section' => 'home.testimonials',
                 'fond' => 'temoignages',
                 'ancre' => null,
+                'textes' => self::TEXTES_DES_TEMOIGNAGES,
             ],
             'partenaires' => [
                 'intitule' => __('Partenaires'),
                 'resume' => __('En-tête du bloc et logos affichés.'),
                 'section' => 'home.partners',
                 'ancre' => null,
+                'textes' => self::TEXTES_DES_PARTENAIRES,
             ],
         ];
     }
@@ -182,9 +209,12 @@ class PageAccueil extends Component
         $this->entete = [];
         $this->bandeau = [];
         $this->boutons = [];
+        $this->textes = [];
 
         if ($slug = $description['section'] ?? null) {
             $section = ReglageDeSection::where('slug', $slug)->first();
+
+            $this->chargerLesTextes($section);
 
             foreach (['etiquette', 'titre', 'chapo'] as $champ) {
                 $this->entete[$champ.'_fr'] = (string) ($section?->{$champ.'_fr'} ?? '');
@@ -231,7 +261,16 @@ class PageAccueil extends Component
         $regles['bandeau.separateur'] = ['nullable', 'string', 'max:5'];
         $regles['bandeau.casse'] = ['nullable', 'in:majuscules,normale'];
 
-        return $regles;
+        return $regles + $this->reglesDesTextes();
+    }
+
+    /**
+     * Intitules lisibles, pour que le message de validation ne cite pas
+     * « textes.libelle_lien_fr ».
+     */
+    protected function validationAttributes(): array
+    {
+        return $this->intitulesDesTextes();
     }
 
     public function enregistrer(): void
@@ -247,6 +286,11 @@ class PageAccueil extends Component
             // Les cles viennent du navigateur : seules celles que
         // l'ecran declare sont ecrites. Voir le trait.
         $section->fill($this->enteteFiltree());
+
+            // poserLesTextes() ne retient que les cles declarees par le module
+            // et POSE sans enregistrer : le save() qui suit les porte en base.
+            $this->poserLesTextes($section);
+
             $section->save();
 
             // poserOptions() ne fait que POSER les valeurs sur le modele : il

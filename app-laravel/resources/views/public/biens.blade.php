@@ -17,6 +17,7 @@
   sur le texte d'origine tant que rien n'est saisi : une base vierge rend
   exactement ce que cette page rendait avant.
 --}}
+@php($tSite = fn (string $nom, string $defaut) => $chrome?->texteBilingue($nom, $langue) ?: $defaut)
 @php($tFiltre = fn (string $nom, string $defaut) => $filtres?->texteBilingue($nom, $langue) ?: $defaut)
 @php($tGrille = fn (string $nom, string $defaut) => $sectionCatalogue?->texteBilingue($nom, $langue) ?: $defaut)
 @php($tFiche = fn (string $nom, string $defaut) => $sectionFiche?->texteBilingue($nom, $langue) ?: $defaut)
@@ -197,7 +198,7 @@
 @if ($bienOuvert)
   <div class="modal-overlay active" role="presentation" wire:click.self="fermerBien">
     <div class="modal-container" role="dialog" aria-modal="true" aria-labelledby="bien-modal-titre" tabindex="-1">
-      <button type="button" class="modal-close" wire:click="fermerBien" aria-label="{{ $tGrille('libelle_fermer', __('Fermer')) }}">×</button>
+      <button type="button" class="modal-close" wire:click="fermerBien" aria-label="{{ $tSite('libelle_fermer', __('Fermer')) }}">×</button>
       <div class="modal-header-badge">{{ $bienOuvert->statut_juridique ?: __('Fiche du bien') }}</div>
       <h2 class="modal-title" id="bien-modal-titre">{{ $bienOuvert->titre($langue) }}</h2>
       <div class="modal-loc">{{ $bienOuvert->quartier }}@if ($bienOuvert->quartier && $zones->firstWhere('valeur', $bienOuvert->zone)), @endif{{ $zones->firstWhere('valeur', $bienOuvert->zone)?->libelle($langue) }}</div>

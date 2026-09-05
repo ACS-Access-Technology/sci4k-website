@@ -57,6 +57,13 @@ class Menus extends Component
         'titre_contact' => ['intitule' => 'Titre de la colonne « Contact »', 'defaut' => 'Nous contacter'],
         'libelle_telephone' => ['intitule' => 'Mention devant le téléphone', 'defaut' => 'Tél:'],
         'libelle_email' => ['intitule' => 'Mention devant l’e-mail', 'defaut' => 'Email:'],
+        // --- mots communs a plusieurs pages ---
+        // « Fermer » ferme la fiche d'un bien ET la fenetre d'un service ;
+        // « Annonce » coiffe l'encart de l'accueil ET celui des services. Les
+        // declarer page par page aurait cree trois champs pour un meme mot,
+        // qu'un editeur aurait corriges un par un — ou pas.
+        'libelle_fermer' => ['intitule' => 'Libellé des boutons de fermeture', 'defaut' => 'Fermer'],
+        'libelle_annonce' => ['intitule' => 'Mention au-dessus des encarts publicitaires', 'defaut' => 'Annonce'],
         // --- boutons flottants ---
         'aria_whatsapp' => ['intitule' => 'Bouton WhatsApp — description', 'defaut' => 'Discuter sur WhatsApp'],
         'aria_chat' => ['intitule' => 'Bouton de chat — description', 'defaut' => 'Ouvrir le chat en ligne'],

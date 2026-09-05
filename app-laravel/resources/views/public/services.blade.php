@@ -6,6 +6,11 @@
 
 @section('contenu')
 
+{{-- « Fermer » et « Annonce » sont dits une seule fois pour tout le site,
+     sur l'ecran « Menus » : trois champs pour un meme mot auraient ete
+     corriges un par un — ou pas. --}}
+@php($tSite = fn (string $nom, string $defaut) => $chrome?->texteBilingue($nom, $langue) ?: $defaut)
+
 {{--
   Bandeau : balisage et textes copies tels quels de frontoffice/services.html,
   section .page-banner.pb-services. Ces textes ne viennent pas de la base et
@@ -116,7 +121,7 @@
   <section class="ad-section" id="encart-services">
     <div class="wrap">
       <div class="ad-slot reveal">
-        <span class="ad-label">{{ __('Annonce') }}</span>
+        <span class="ad-label">{{ $tSite('libelle_annonce', __('Annonce')) }}</span>
 
         <article class="ad-house">
           {{-- Sans visuel, la carte garde l'image du service « foncier » :
@@ -167,7 +172,7 @@
 <div class="svc-modal" id="svcModal" role="dialog" aria-modal="true" aria-labelledby="svcModalTitle" hidden>
   <div class="svc-modal-backdrop" data-svc-close></div>
   <div class="svc-modal-box">
-    <button type="button" class="svc-modal-close" data-svc-close aria-label="{{ __('Fermer') }}">&times;</button>
+    <button type="button" class="svc-modal-close" data-svc-close aria-label="{{ $tSite('libelle_fermer', __('Fermer')) }}">&times;</button>
     <div class="svc-modal-body" id="svcModalBody"></div>
   </div>
 </div>
