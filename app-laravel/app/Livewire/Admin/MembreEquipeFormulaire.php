@@ -67,7 +67,6 @@ class MembreEquipeFormulaire extends FormulaireDeBloc
         return 'livewire.admin.membre-equipe-formulaire';
     }
 
-
     protected function intitule(): string
     {
         return __('Membre');

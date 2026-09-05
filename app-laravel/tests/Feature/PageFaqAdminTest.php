@@ -88,7 +88,7 @@ it('ne propose pas d etiquette sur le module Poser une question', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Les textes du formulaire « poser une question »                     */
+/* Les textes du formulaire « poser une question » */
 /* ------------------------------------------------------------------ */
 
 /**
@@ -201,7 +201,7 @@ it('refuse d enregistrer un module sans section', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Les ecrans embarques                                                */
+/* Les ecrans embarques */
 /* ------------------------------------------------------------------ */
 
 it('embarque la liste des rubriques dans le module Rubriques', function () {
@@ -230,7 +230,7 @@ it('ne renvoie vers aucun ancien ecran', function (string $module) {
 })->with(['banniere', 'rubriques', 'questions', 'demande']);
 
 /* ------------------------------------------------------------------ */
-/* L'edition sur place                                                 */
+/* L'edition sur place */
 /* ------------------------------------------------------------------ */
 
 it('ouvre une question sur place', function () {
@@ -276,9 +276,6 @@ it('interdit l ouverture a un lecteur', function () {
         ->call('ouvrirEdition', $question->id)
         ->assertForbidden();
 });
-
-
-
 
 /**
  * Enregistres depuis une liste, les formulaires ne redirigent pas : ils
@@ -328,7 +325,7 @@ it('cree encore une rubrique a la volee depuis le formulaire embarque', function
 });
 
 /* ------------------------------------------------------------------ */
-/* L'ecran complet, rendu de bout en bout                              */
+/* L'ecran complet, rendu de bout en bout */
 /* ------------------------------------------------------------------ */
 
 /**
@@ -349,7 +346,7 @@ it('rend l ecran de page et ses composants imbriques', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Droits et acces                                                     */
+/* Droits et acces */
 /* ------------------------------------------------------------------ */
 
 it('interdit toute ecriture a un lecteur sur l ecran de page', function () {

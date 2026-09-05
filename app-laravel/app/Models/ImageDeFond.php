@@ -7,6 +7,7 @@ use App\Models\Concerns\JournaliseSesChangements;
 use App\Models\Concerns\TraduitParColonnes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 /**
  * Image de fond d'une section du site.
@@ -60,9 +61,9 @@ class ImageDeFond extends Model
      * migration. Une page sans illustration se lit ; une exception non.
      *
      * @param  list<string>  $slugs
-     * @return \Illuminate\Support\Collection<string, self>
+     * @return Collection<string, self>
      */
-    public static function parSlugs(array $slugs): \Illuminate\Support\Collection
+    public static function parSlugs(array $slugs): Collection
     {
         try {
             // Pas de garde sur « fichier » : la colonne est NOT NULL. Un

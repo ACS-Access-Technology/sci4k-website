@@ -36,7 +36,7 @@ function clesDeTraductionDesVues(): array
 {
     $cles = [];
 
-    $fichiers = new AppendIterator();
+    $fichiers = new AppendIterator;
     foreach ([resource_path('views'), app_path()] as $racine) {
         $fichiers->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($racine)));
     }

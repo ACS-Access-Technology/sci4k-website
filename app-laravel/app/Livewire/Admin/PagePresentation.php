@@ -314,7 +314,6 @@ class PagePresentation extends Component
     }
 
     /** Le fond du module ouvert, s'il en a un. */
-
     public function render(): View
     {
         return view('livewire.admin.page-presentation', [

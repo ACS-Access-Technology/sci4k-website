@@ -292,7 +292,6 @@ class PageActualites extends Component
         ][$this->module] ?? null;
     }
 
-
     public function render(): View
     {
         return view('livewire.admin.page-actualites', [

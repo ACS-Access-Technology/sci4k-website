@@ -7,5 +7,5 @@ return [
     'sent' => 'Le lien de réinitialisation vous a été envoyé par email.',
     'throttled' => 'Patientez avant de faire une nouvelle demande.',
     'token' => 'Ce lien de réinitialisation est invalide ou expiré.',
-    'user' => "Aucun compte ne correspond à cette adresse email.",
+    'user' => 'Aucun compte ne correspond à cette adresse email.',
 ];

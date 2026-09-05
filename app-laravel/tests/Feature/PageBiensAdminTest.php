@@ -98,7 +98,7 @@ it('enregistre les textes du catalogue', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Les ecrans embarques                                                */
+/* Les ecrans embarques */
 /* ------------------------------------------------------------------ */
 
 it('embarque l ecran des referentiels dans le module Filtres', function () {
@@ -127,7 +127,7 @@ it('ne renvoie vers aucun ancien ecran', function (string $module) {
 })->with(['banniere', 'filtres', 'catalogue']);
 
 /* ------------------------------------------------------------------ */
-/* L'edition d'un bien, sur place                                      */
+/* L'edition d'un bien, sur place */
 /* ------------------------------------------------------------------ */
 
 it('ouvre la fiche d un bien sur place', function () {
@@ -166,8 +166,6 @@ it('interdit l ouverture a un lecteur', function () {
         ->assertForbidden();
 });
 
-
-
 /**
  * Enregistre depuis la liste, le formulaire ne redirige pas : il previent la
  * liste, qui se referme. Une redirection ferait quitter l'ecran de page au
@@ -192,7 +190,7 @@ it('ne redirige pas quand le formulaire de bien est embarque', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Droits et acces                                                     */
+/* Droits et acces */
 /* ------------------------------------------------------------------ */
 
 it('interdit toute ecriture a un lecteur sur l ecran de page', function () {

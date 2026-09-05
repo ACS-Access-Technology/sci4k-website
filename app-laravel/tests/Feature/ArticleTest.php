@@ -2,6 +2,7 @@
 
 use App\Models\Article;
 use App\Models\Categorie;
+use Illuminate\Database\QueryException;
 
 beforeEach(function () {
     $this->categorie = Categorie::create([
@@ -24,7 +25,7 @@ it('refuse un article sans titre francais', function () {
     expect(fn () => Article::factory()->create([
         'categorie_id' => $this->categorie->id,
         'titre_fr' => null,
-    ]))->toThrow(Illuminate\Database\QueryException::class);
+    ]))->toThrow(QueryException::class);
 });
 
 it('refuse deux articles de meme slug', function () {
@@ -32,7 +33,7 @@ it('refuse deux articles de meme slug', function () {
 
     expect(fn () => Article::factory()->create([
         'categorie_id' => $this->categorie->id, 'slug' => 'acd-securiser-terrain',
-    ]))->toThrow(Illuminate\Database\QueryException::class);
+    ]))->toThrow(QueryException::class);
 });
 
 it('ne compte pas les brouillons parmi les articles publies', function () {

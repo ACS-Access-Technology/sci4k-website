@@ -3,6 +3,7 @@
 use App\Livewire\Admin\ArticleFormulaire;
 use App\Livewire\Admin\ArticleListe;
 use App\Livewire\Admin\RechercheGlobale;
+use App\Livewire\Admin\ServiceFormulaire;
 use App\Models\Article;
 use App\Models\Categorie;
 use App\Models\User;
@@ -45,7 +46,7 @@ it('lui refuse les ecrans qui ne sont pas les articles', function () {
     $this->actingAs($this->redacteur)->get('/admin/configuration')->assertForbidden();
 
     Livewire::actingAs($this->redacteur)
-        ->test(App\Livewire\Admin\ServiceFormulaire::class)
+        ->test(ServiceFormulaire::class)
         ->call('enregistrer')
         ->assertForbidden();
 });

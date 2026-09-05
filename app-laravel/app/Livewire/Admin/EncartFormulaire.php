@@ -71,7 +71,6 @@ class EncartFormulaire extends FormulaireDeBloc
         return 'livewire.admin.encart-formulaire';
     }
 
-
     protected function intitule(): string
     {
         return __('Encart');

@@ -5,6 +5,7 @@ use App\Models\ActiviteJournalisee;
 use App\Models\Article;
 use App\Models\Categorie;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
 
@@ -171,19 +172,19 @@ it('interdit a un lecteur de supprimer', function () {
 });
 
 it('efface le fichier de couverture televerse avec l article', function () {
-    Illuminate\Support\Facades\Storage::fake('public');
+    Storage::fake('public');
 
     $article = Article::factory()->create([
         'categorie_id' => $this->categorie->id,
         'image_source' => 'storage/actualites/photo.jpg',
     ]);
-    Illuminate\Support\Facades\Storage::disk('public')->put('actualites/photo.jpg', 'contenu');
+    Storage::disk('public')->put('actualites/photo.jpg', 'contenu');
 
     Livewire::actingAs($this->editeur)
         ->test(ArticleListe::class)
         ->call('supprimer', $article->id);
 
-    Illuminate\Support\Facades\Storage::disk('public')->assertMissing('actualites/photo.jpg');
+    Storage::disk('public')->assertMissing('actualites/photo.jpg');
 });
 
 it('ne touche jamais aux couvertures du site statique', function () {

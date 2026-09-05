@@ -51,7 +51,7 @@ it('enregistre l en-tete de la banniere et le sert sur le site', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* La mise en page du processus                                        */
+/* La mise en page du processus */
 /* ------------------------------------------------------------------ */
 
 it('enregistre la mise en page du processus et l applique sur le site', function () {
@@ -94,7 +94,7 @@ it('n affiche le choix de mise en page que sur le processus', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Modules sans en-tete                                                */
+/* Modules sans en-tete */
 /* ------------------------------------------------------------------ */
 
 it('n affiche pas de formulaire sur les modules sans en-tete', function (string $module) {
@@ -111,7 +111,7 @@ it('refuse d enregistrer un module sans section', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Les ecrans embarques                                                */
+/* Les ecrans embarques */
 /* ------------------------------------------------------------------ */
 
 it('embarque la liste des services', function () {
@@ -155,7 +155,7 @@ it('ne renvoie vers aucun ancien ecran', function (string $module) {
 })->with(['banniere', 'services', 'processus', 'annonce']);
 
 /* ------------------------------------------------------------------ */
-/* Droits et acces                                                     */
+/* Droits et acces */
 /* ------------------------------------------------------------------ */
 
 it('interdit toute ecriture a un lecteur', function () {

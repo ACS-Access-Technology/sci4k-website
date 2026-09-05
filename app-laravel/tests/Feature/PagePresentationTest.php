@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\Categorie;
 use App\Models\MembreEquipe;
 use App\Models\ReglageDeSection;
+use App\Models\Service;
 use App\Models\Valeur;
 
 /*
@@ -137,7 +139,6 @@ it('sert la page en anglais quand la langue est basculee', function () {
     ]);
     Valeur::factory()->create(['ordre' => 1, 'visible' => true]);
 
-
     $reponse = $this->get('/en/presentation')->assertOk();
 
     $reponse->assertSee('Chief Executive Officer');
@@ -157,11 +158,11 @@ it('n a plus aucun attribut data-i18n', function () {
 it('tire les liens de service du pied de page depuis la base', function () {
     // Constat I9 de la relecture : la page statique annonçait les six services
     // en dur. Portée, elle hérite du composer de vue.
-    $categorie = App\Models\Categorie::create([
+    $categorie = Categorie::create([
         'slug' => 'foncier', 'nom_fr' => 'Foncier', 'nom_en' => 'Land', 'ordre' => 1,
     ]);
 
-    App\Models\Service::factory()->create([
+    Service::factory()->create([
         'categorie_id' => $categorie->id, 'slug' => 'expertise',
         'nom_fr' => 'Expertise', 'visible' => true,
     ]);

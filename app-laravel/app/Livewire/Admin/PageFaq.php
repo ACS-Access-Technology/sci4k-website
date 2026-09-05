@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Admin;
 
-use App\Livewire\Concerns\PorteDesTextesDeBloc;
 use App\Livewire\Concerns\PorteDesImagesDeFond;
+use App\Livewire\Concerns\PorteDesTextesDeBloc;
 use App\Livewire\Concerns\PorteUnEnteteDeSection;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
@@ -31,8 +31,8 @@ use Livewire\Component;
 class PageFaq extends Component
 {
     use PorteDesImagesDeFond;
-    use PorteUnEnteteDeSection;
     use PorteDesTextesDeBloc;
+    use PorteUnEnteteDeSection;
 
     /**
      * Les textes du formulaire « poser une question ».
@@ -228,7 +228,6 @@ class PageFaq extends Component
             'questions' => ['composant' => 'admin.faq-liste', 'intitule' => __('Questions')],
         ][$this->module] ?? null;
     }
-
 
     public function render(): View
     {

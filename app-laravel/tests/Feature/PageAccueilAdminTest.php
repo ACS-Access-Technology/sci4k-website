@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Admin\EncartFormulaire;
 use App\Livewire\Admin\PageAccueil;
 use App\Models\CommuneDuBandeau;
 use App\Models\Encart;
@@ -149,7 +150,7 @@ it('permet de gerer l image de l encart', function () {
     $encart = Encart::firstOrCreate(['slug' => 'accueil.annonce']);
 
     $rendu = Livewire::actingAs($this->admin)
-        ->test(App\Livewire\Admin\EncartFormulaire::class, ['element' => $encart, 'embarque' => true])
+        ->test(EncartFormulaire::class, ['element' => $encart, 'embarque' => true])
         ->html();
 
     expect($rendu)->toContain('type="file"');
@@ -203,7 +204,7 @@ it('n offre aucune sortie depuis le formulaire embarque', function () {
     $encart = Encart::firstOrCreate(['slug' => 'accueil.annonce']);
 
     $rendu = Livewire::actingAs($this->admin)
-        ->test(App\Livewire\Admin\EncartFormulaire::class, ['element' => $encart, 'embarque' => true])
+        ->test(EncartFormulaire::class, ['element' => $encart, 'embarque' => true])
         ->html();
 
     expect($rendu)->not->toContain('/admin/encarts');

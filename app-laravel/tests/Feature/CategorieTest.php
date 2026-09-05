@@ -2,6 +2,7 @@
 
 use App\Models\Categorie;
 use Database\Seeders\CategorieSeeder;
+use Illuminate\Database\QueryException;
 
 it('cree les sept categories du site', function () {
     $this->seed(CategorieSeeder::class);
@@ -23,7 +24,7 @@ it('refuse deux categories de meme slug', function () {
 
     expect(fn () => Categorie::create([
         'slug' => 'foncier', 'nom_fr' => 'Autre', 'nom_en' => 'Other', 'ordre' => 2,
-    ]))->toThrow(Illuminate\Database\QueryException::class);
+    ]))->toThrow(QueryException::class);
 });
 
 it('replie sur le francais quand la langue est inconnue', function () {

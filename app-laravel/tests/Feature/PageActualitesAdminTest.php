@@ -116,7 +116,7 @@ it('enregistre les textes de la page d un article', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Les ecrans embarques                                                */
+/* Les ecrans embarques */
 /* ------------------------------------------------------------------ */
 
 it('embarque l editeur des categories dans le module Filtres', function () {
@@ -145,7 +145,7 @@ it('ne renvoie vers aucun ancien ecran', function (string $module) {
 })->with(['banniere', 'filtres', 'articles', 'appel']);
 
 /* ------------------------------------------------------------------ */
-/* L'edition d'un article, sur place                                   */
+/* L'edition d'un article, sur place */
 /* ------------------------------------------------------------------ */
 
 it('ouvre la fiche d un article sur place', function () {
@@ -184,8 +184,6 @@ it('interdit l ouverture a un lecteur', function () {
         ->assertForbidden();
 });
 
-
-
 /**
  * Enregistre depuis la liste, le formulaire ne redirige pas : il previent la
  * liste, qui se referme. Une redirection ferait quitter l'ecran de page au
@@ -203,7 +201,7 @@ it('ne redirige pas quand le formulaire d article est embarque', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Les categories : le trou que la refonte comble                      */
+/* Les categories : le trou que la refonte comble */
 /* ------------------------------------------------------------------ */
 
 it('cree une categorie et son slug sans le demander a l editeur', function () {
@@ -305,7 +303,7 @@ it('interdit l edition des categories a un lecteur', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* L'ecran complet, rendu de bout en bout                              */
+/* L'ecran complet, rendu de bout en bout */
 /* ------------------------------------------------------------------ */
 
 /**
@@ -331,7 +329,7 @@ it('rend l ecran de page et ses composants imbriques', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Droits et acces                                                     */
+/* Droits et acces */
 /* ------------------------------------------------------------------ */
 
 it('interdit toute ecriture a un lecteur sur l ecran de page', function () {

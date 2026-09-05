@@ -46,7 +46,7 @@ function unCommentaire(array $champs = []): array
 }
 
 /* ------------------------------------------------------------------ */
-/* Le depot                                                            */
+/* Le depot */
 /* ------------------------------------------------------------------ */
 
 it('publie immediatement un commentaire ordinaire', function () {
@@ -129,7 +129,7 @@ it('ne montre plus le formulaire quand les commentaires sont fermes', function (
 });
 
 /* ------------------------------------------------------------------ */
-/* Les reponses                                                        */
+/* Les reponses */
 /* ------------------------------------------------------------------ */
 
 it('rattache une reponse a son commentaire', function () {
@@ -180,7 +180,7 @@ it('supprime les reponses avec leur commentaire', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* La notification                                                     */
+/* La notification */
 /* ------------------------------------------------------------------ */
 
 it('previent l agence a chaque depot', function () {
@@ -203,7 +203,7 @@ it('n envoie rien quand aucun destinataire n est configure', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* L'ecran de moderation                                               */
+/* L'ecran de moderation */
 /* ------------------------------------------------------------------ */
 
 it('ouvre sur les commentaires mis de cote', function () {
@@ -281,7 +281,7 @@ it('embarque la moderation dans l ecran de la page Actualites', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* L'interrupteur par article                                          */
+/* L'interrupteur par article */
 /* ------------------------------------------------------------------ */
 
 it('ferme les commentaires depuis la fiche de l article', function () {

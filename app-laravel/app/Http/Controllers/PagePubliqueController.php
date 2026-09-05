@@ -78,6 +78,7 @@ class PagePubliqueController extends Controller
             'gabarit' => ReglageDeSection::where('slug', PagesStatiques::SECTION)->first(),
         ]);
     }
+
     /**
      * Page d'accueil.
      *

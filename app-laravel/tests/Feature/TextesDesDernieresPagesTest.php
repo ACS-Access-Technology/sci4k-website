@@ -1,6 +1,8 @@
 <?php
 
 use App\Livewire\Admin\PageAccueil;
+use App\Livewire\Admin\PageActualites;
+use App\Livewire\Admin\PageBiens;
 use App\Livewire\Admin\PageContact;
 use App\Livewire\Admin\PageFaq;
 use App\Livewire\Admin\PagePresentation;
@@ -104,8 +106,8 @@ it('declare le referencement sur les sept ecrans de page', function () {
         PageFaq::class => 'banniere',
         PagePresentation::class => 'banniere',
         PageServices::class => 'banniere',
-        App\Livewire\Admin\PageActualites::class => 'banniere',
-        App\Livewire\Admin\PageBiens::class => 'banniere',
+        PageActualites::class => 'banniere',
+        PageBiens::class => 'banniere',
     ];
 
     $manquants = [];

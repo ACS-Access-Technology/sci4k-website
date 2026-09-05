@@ -22,12 +22,12 @@ it('renvoie l adresse du visuel televerse', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* L'accueil                                                           */
+/* L'accueil */
 /* ------------------------------------------------------------------ */
 
 it('affiche le visuel de l annonce sur l accueil', function () {
     Encart::updateOrCreate(['slug' => 'accueil.annonce'], [
-        
+
         'visible' => true,
         'titre_fr' => 'Parcelles viabilisées',
         'image_source' => 'storage/encarts/promo.jpg',
@@ -44,7 +44,7 @@ it('affiche le visuel de l annonce sur l accueil', function () {
  */
 it('retombe sur le visuel d origine quand l annonce n en a pas', function () {
     Encart::updateOrCreate(['slug' => 'accueil.annonce'], [
-        
+
         'visible' => true,
         'titre_fr' => 'Parcelles viabilisées',
         'image_source' => null,
@@ -58,7 +58,7 @@ it('retombe sur le visuel d origine quand l annonce n en a pas', function () {
 /** Le visuel televerse remplace la classe figee, il ne s'y ajoute pas. */
 it('n affiche plus le visuel fige quand l annonce a le sien', function () {
     Encart::updateOrCreate(['slug' => 'accueil.annonce'], [
-        
+
         'visible' => true,
         'titre_fr' => 'Parcelles viabilisées',
         'image_source' => 'storage/encarts/promo.jpg',
@@ -68,7 +68,7 @@ it('n affiche plus le visuel fige quand l annonce a le sien', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* La page Services                                                    */
+/* La page Services */
 /* ------------------------------------------------------------------ */
 
 it('affiche le visuel de l annonce sur la page Services', function () {

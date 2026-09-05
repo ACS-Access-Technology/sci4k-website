@@ -2,6 +2,8 @@
 
 use App\Livewire\Admin\Menus;
 use App\Livewire\Admin\PageAccueil;
+use App\Livewire\Admin\PageBiens;
+use App\Livewire\Public\CatalogueDesBiens;
 use App\Models\Article;
 use App\Models\Bien;
 use App\Models\Categorie;
@@ -110,7 +112,7 @@ it('applique les mots communs a toutes les pages qui les emploient', function ()
 
     // Dans le catalogue, la fenetre n'existe qu'un bien ouvert : la demander
     // sur la page nue mesurerait le vide.
-    Livewire::test(App\Livewire\Public\CatalogueDesBiens::class)
+    Livewire::test(CatalogueDesBiens::class)
         ->call('ouvrirBien', Bien::factory()->create(['statut' => Bien::PUBLIE])->id)
         ->assertSee('Refermer');
 });
@@ -149,5 +151,5 @@ it("n'ecrit que les cles que le module declare", function () {
 
 function PageBiensTextesDuCatalogue(): array
 {
-    return App\Livewire\Admin\PageBiens::TEXTES_DU_CATALOGUE;
+    return PageBiens::TEXTES_DU_CATALOGUE;
 }

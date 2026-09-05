@@ -4,7 +4,9 @@ use App\Livewire\Admin\Configuration;
 use App\Models\Bien;
 use App\Models\Parametre;
 use App\Models\User;
+use App\Providers\AppServiceProvider;
 use Spatie\Permission\Models\Role;
+use Symfony\Component\Finder\Finder;
 
 /*
  * Les reglages doivent FAIRE quelque chose.
@@ -45,7 +47,7 @@ it('ne declare aucun reglage que personne ne lit', function () {
     $sources = '';
 
     foreach (['app', 'resources/views', 'routes'] as $dossier) {
-        foreach (\Symfony\Component\Finder\Finder::create()->files()->in(base_path($dossier))->name('*.php') as $fichier) {
+        foreach (Finder::create()->files()->in(base_path($dossier))->name('*.php') as $fichier) {
             // La declaration elle-meme ne compte pas : c'est precisement ce
             // qu'on veut confronter au reste du code.
             if (! str_ends_with($fichier->getPathname(), 'Admin/Configuration.php')) {
@@ -136,8 +138,8 @@ it('laisse l adresse primer sur la langue par defaut, sur le site public', funct
  */
 function rejouerLeFuseau(): void
 {
-    $methode = new ReflectionMethod(App\Providers\AppServiceProvider::class, 'appliquerLeFuseauHoraire');
-    $methode->invoke(app()->getProvider(App\Providers\AppServiceProvider::class));
+    $methode = new ReflectionMethod(AppServiceProvider::class, 'appliquerLeFuseauHoraire');
+    $methode->invoke(app()->getProvider(AppServiceProvider::class));
 }
 
 it('applique le fuseau horaire', function () {

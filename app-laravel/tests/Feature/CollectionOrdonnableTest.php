@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Service;
 use App\Models\Categorie;
+use App\Models\Service;
 
 beforeEach(function () {
     $this->categorie = Categorie::create([

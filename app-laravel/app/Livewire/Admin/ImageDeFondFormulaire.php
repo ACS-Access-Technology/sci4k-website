@@ -63,7 +63,6 @@ class ImageDeFondFormulaire extends FormulaireDeBloc
         return 'livewire.admin.image-de-fond-formulaire';
     }
 
-
     protected function intitule(): string
     {
         return __('Image de fond');
@@ -108,7 +107,7 @@ class ImageDeFondFormulaire extends FormulaireDeBloc
         if ($this->visuelEnLigne()) {
             return [
                 'intitule' => __('Illustration'),
-                'aide' => __("Affichée telle quelle dans la page, sans voile ni recadrage. 1200 px de large suffisent."),
+                'aide' => __('Affichée telle quelle dans la page, sans voile ni recadrage. 1200 px de large suffisent.'),
                 'forme' => 'rectangle',
             ];
         }

@@ -9,6 +9,7 @@ use App\Models\Parametre;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 
 /**
  * Depot d'un commentaire sous un article.
@@ -43,7 +44,7 @@ class CommentaireController extends Controller
             'parent_id' => [
                 'nullable',
                 'integer',
-                \Illuminate\Validation\Rule::exists('commentaires', 'id')
+                Rule::exists('commentaires', 'id')
                     ->where('article_id', $article->id)
                     ->whereNull('parent_id'),
             ],

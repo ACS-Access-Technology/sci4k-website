@@ -3,19 +3,18 @@
 namespace App\Providers;
 
 use App\Livewire\Admin\Menus;
-use App\Routing\GenerateurDUrlBilingue;
 use App\Models\EntreeDeMenu;
 use App\Models\ImageDeFond;
 use App\Models\Parametre;
 use App\Models\ReglageDeSection;
 use App\Models\Service;
+use App\Routing\GenerateurDUrlBilingue;
 use App\Services\Traduction\Traducteur;
 use App\Services\Traduction\TraducteurDeepL;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -239,7 +238,7 @@ class AppServiceProvider extends ServiceProvider
             // Il PRIME desormais, et retombe sur la description courte quand
             // l'editeur n'en a pas saisi : une installation qui n'a rempli
             // qu'un champ garde le comportement qu'elle avait.
-            $descriptionCourte = $this->parametre('description_courte', __("Société Civile Immobilière à Abidjan : achat, vente, location, construction et gestion de patrimoine immobilier."));
+            $descriptionCourte = $this->parametre('description_courte', __('Société Civile Immobilière à Abidjan : achat, vente, location, construction et gestion de patrimoine immobilier.'));
 
             $vue->with([
                 // L'habillage est pose sur la MISE EN PAGE et non sur les seuls

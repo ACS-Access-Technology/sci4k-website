@@ -2,6 +2,7 @@
 
 use App\Models\Categorie;
 use App\Models\Service;
+use Illuminate\Database\QueryException;
 
 beforeEach(function () {
     $this->categorie = Categorie::create([
@@ -45,7 +46,7 @@ it('refuse deux services de meme slug', function () {
     Service::factory()->create(['slug' => 'foncier', 'categorie_id' => $this->categorie->id]);
 
     expect(fn () => Service::factory()->create(['slug' => 'foncier', 'categorie_id' => $this->categorie->id]))
-        ->toThrow(Illuminate\Database\QueryException::class);
+        ->toThrow(QueryException::class);
 });
 
 it('se retrouve par son slug dans une adresse', function () {

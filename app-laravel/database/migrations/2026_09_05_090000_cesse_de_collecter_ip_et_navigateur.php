@@ -37,12 +37,10 @@ return new class extends Migration
      */
     private const CORRECTIONS = [
         'contenu_fr' => [
-            "la date et l'heure, le type de navigateur, et un identifiant de session"
-                => "la date et l'heure, et un identifiant de session",
+            "la date et l'heure, le type de navigateur, et un identifiant de session" => "la date et l'heure, et un identifiant de session",
         ],
         'contenu_en' => [
-            'the date and time, the browser type, and a session identifier'
-                => 'the date and time, and a session identifier',
+            'the date and time, the browser type, and a session identifier' => 'the date and time, and a session identifier',
         ],
     ];
 

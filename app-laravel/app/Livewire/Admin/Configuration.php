@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Admin;
 
-use App\Mail\EssaiDeMessagerie;
 use App\Livewire\Concerns\PorteDesTextesDeBloc;
+use App\Mail\EssaiDeMessagerie;
 use App\Models\Parametre;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;

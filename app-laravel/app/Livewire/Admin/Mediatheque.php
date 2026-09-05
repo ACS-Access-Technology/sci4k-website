@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Admin;
 
+use App\Models\ImageDeFond;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -39,13 +41,13 @@ class Mediatheque extends Component
      * aucune page, et il reste ouvert aux editeurs, la ou la configuration est
      * reservee aux administrateurs.
      *
-     * @return \Illuminate\Support\Collection<int, \App\Models\ImageDeFond>
+     * @return Collection<int, ImageDeFond>
      */
     public const FONDS_SANS_PAGE = ['footer', 'erreur'];
 
-    protected function fondsGlobaux(): \Illuminate\Support\Collection
+    protected function fondsGlobaux(): Collection
     {
-        $trouvees = \App\Models\ImageDeFond::whereIn('slug', self::FONDS_SANS_PAGE)
+        $trouvees = ImageDeFond::whereIn('slug', self::FONDS_SANS_PAGE)
             ->get()
             ->keyBy('slug');
 
@@ -76,6 +78,7 @@ class Mediatheque extends Component
                 ->map(function ($fichier) use ($racine, $prefixe) {
                     $cheminRelatif = str_replace(DIRECTORY_SEPARATOR, '/', ltrim(str_replace($racine, '', $fichier->getPathname()), DIRECTORY_SEPARATOR));
                     $cheminPublic = $prefixe === 'storage' ? 'storage/'.$cheminRelatif : 'images/'.$cheminRelatif;
+
                     return [
                         'chemin' => $cheminPublic,
                         'nom' => $fichier->getFilename(),

@@ -2,6 +2,7 @@
 
 use App\Models\QuestionFaq;
 use App\Models\RubriqueFaq;
+use Illuminate\Database\QueryException;
 
 beforeEach(function () {
     $this->rubrique = RubriqueFaq::factory()->create([
@@ -60,7 +61,7 @@ it('refuse de supprimer une rubrique qui porte des questions', function () {
     // supprime son classement doit etre un refus explicite, pas un effet de
     // bord. L'ecran d'administration attrape ce refus et l'explique.
     expect(fn () => $this->rubrique->delete())
-        ->toThrow(Illuminate\Database\QueryException::class);
+        ->toThrow(QueryException::class);
 
     expect(QuestionFaq::count())->toBe(1);
 });

@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Admin\PageBiens;
+use App\Livewire\Public\CatalogueDesBiens;
 use App\Models\Bien;
 use App\Models\ReglageDeSection;
 use App\Models\User;
@@ -85,7 +86,7 @@ it('applique une meme saisie a la fenetre du catalogue et a la fiche', function 
     // Ces textes n'apparaissent dans le catalogue que la FENETRE OUVERTE : la
     // grille ne montre ni caracteristiques ni formulaire. On ouvre donc un
     // bien, comme le visiteur qui clique sur une carte.
-    Livewire::test(App\Livewire\Public\CatalogueDesBiens::class)
+    Livewire::test(CatalogueDesBiens::class)
         ->call('ouvrirBien', $this->bien->id)
         ->assertSee('Nombre de pièces habitables')
         ->assertSee('Je veux visiter');

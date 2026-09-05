@@ -96,7 +96,7 @@ it('refuse d enregistrer un module sans section ni reglage', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Les textes du formulaire                                            */
+/* Les textes du formulaire */
 /* ------------------------------------------------------------------ */
 
 it('propose tous les textes du formulaire', function () {
@@ -151,7 +151,7 @@ it('n ecrit que les textes que le module declare', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Les sujets proposes                                                 */
+/* Les sujets proposes */
 /* ------------------------------------------------------------------ */
 
 it('sert les sept sujets d origine quand rien n est saisi', function () {
@@ -195,7 +195,7 @@ it('donne au sujet la meme valeur que son intitule', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Les reglages : coordonnees et carte                                 */
+/* Les reglages : coordonnees et carte */
 /* ------------------------------------------------------------------ */
 
 it('enregistre les coordonnees et les sert sur le site', function () {
@@ -248,7 +248,7 @@ it('n affiche les reglages que sur les modules qui en portent', function (string
 })->with(['banniere', 'formulaire', 'carte', 'messages']);
 
 /* ------------------------------------------------------------------ */
-/* Les reglages restent reserves aux administrateurs                   */
+/* Les reglages restent reserves aux administrateurs */
 /* ------------------------------------------------------------------ */
 
 /**
@@ -281,7 +281,7 @@ it('previent l editeur que les reglages lui sont fermes', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* L'ecran embarque                                                    */
+/* L'ecran embarque */
 /* ------------------------------------------------------------------ */
 
 it('embarque la liste des messages', function () {
@@ -304,7 +304,7 @@ it('ne renvoie vers aucun ancien ecran', function (string $module) {
 })->with(['banniere', 'formulaire', 'coordonnees', 'carte', 'messages']);
 
 /* ------------------------------------------------------------------ */
-/* Droits et acces                                                     */
+/* Droits et acces */
 /* ------------------------------------------------------------------ */
 
 it('interdit toute ecriture a un lecteur', function () {

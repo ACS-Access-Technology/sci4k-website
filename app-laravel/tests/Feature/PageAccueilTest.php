@@ -207,7 +207,6 @@ it('sert l accueil en anglais quand la langue est basculee', function () {
         'citation_fr' => 'Un vrai sérieux.', 'citation_en' => 'Genuinely thorough.',
     ]);
 
-
     $this->get('/en')->assertOk()->assertSee('Genuinely thorough.');
 });
 

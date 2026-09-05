@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Admin\ListeOrdonnable;
 use App\Livewire\Admin\ServiceListe;
 use App\Models\Categorie;
 use App\Models\Service;
@@ -15,11 +16,11 @@ use Spatie\Permission\Models\Role;
  * seule implementation concrete. Sans ce double, le chemin nominal de
  * supprimer() n'aurait plus ete couvert par aucun test.
  */
-class CollectionDeTest extends \App\Livewire\Admin\ListeOrdonnable
+class CollectionDeTest extends ListeOrdonnable
 {
     protected function modele(): string
     {
-        return \App\Models\Service::class;
+        return Service::class;
     }
 
     protected function colonnesRecherchees(): array

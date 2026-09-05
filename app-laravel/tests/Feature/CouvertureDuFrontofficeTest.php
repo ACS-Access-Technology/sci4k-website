@@ -2,7 +2,13 @@
 
 use App\Livewire\Admin\Configuration;
 use App\Livewire\Admin\Mediatheque;
-use App\Models\ImageDeFond;
+use App\Livewire\Admin\PageAccueil;
+use App\Livewire\Admin\PageActualites;
+use App\Livewire\Admin\PageBiens;
+use App\Livewire\Admin\PageContact;
+use App\Livewire\Admin\PageFaq;
+use App\Livewire\Admin\PagePresentation;
+use App\Livewire\Admin\PageServices;
 
 /**
  * Tout ce que le site public LIT doit etre modifiable quelque part.
@@ -25,13 +31,13 @@ use App\Models\ImageDeFond;
 function slugsDeFondCouverts(): array
 {
     $ecrans = [
-        \App\Livewire\Admin\PageAccueil::class,
-        \App\Livewire\Admin\PagePresentation::class,
-        \App\Livewire\Admin\PageBiens::class,
-        \App\Livewire\Admin\PageServices::class,
-        \App\Livewire\Admin\PageActualites::class,
-        \App\Livewire\Admin\PageFaq::class,
-        \App\Livewire\Admin\PageContact::class,
+        PageAccueil::class,
+        PagePresentation::class,
+        PageBiens::class,
+        PageServices::class,
+        PageActualites::class,
+        PageFaq::class,
+        PageContact::class,
     ];
 
     $couverts = Mediatheque::FONDS_SANS_PAGE;

@@ -11,6 +11,7 @@ use App\Models\Partenaire;
 use App\Models\ReglageDeSection;
 use App\Models\Temoignage;
 use App\Models\Valeur;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 
 /**
@@ -58,7 +59,7 @@ class BlocsDeContenuSeeder extends Seeder
     }
 
     /**
-     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $modele
+     * @param  class-string<Model>  $modele
      */
     protected function semer(string $modele, string $fichier, string $cle): void
     {

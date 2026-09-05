@@ -60,10 +60,15 @@ class PagesStatiques extends Component
      * l'ecran entier.
      */
     public string $page = '';
+
     public string $titreFr = '';
+
     public string $titreEn = '';
+
     public string $contenuFr = '';
+
     public string $contenuEn = '';
+
     public bool $publie = true;
 
     public function mount(): void

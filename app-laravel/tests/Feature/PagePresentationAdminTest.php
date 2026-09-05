@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Admin\PagePresentation;
+use App\Livewire\Admin\ValeurEnsemble;
 use App\Models\MembreEquipe;
 use App\Models\ReglageDeSection;
 use App\Models\User;
@@ -44,7 +45,7 @@ it('refuse un module inconnu', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Le corps de texte a enfin son champ                                 */
+/* Le corps de texte a enfin son champ */
 /* ------------------------------------------------------------------ */
 
 it('enregistre le corps de texte et le sert en paragraphes', function () {
@@ -82,7 +83,7 @@ it('retombe sur l accroche tant que le contenu est vide', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Les deux atouts, jusqu'ici ecrits en dur                            */
+/* Les deux atouts, jusqu'ici ecrits en dur */
 /* ------------------------------------------------------------------ */
 
 it('enregistre les deux atouts et les sert sur le site', function () {
@@ -107,7 +108,7 @@ it('garde les atouts d origine quand rien n est saisi', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Le compteur, jusqu'ici ecrit en dur                                 */
+/* Le compteur, jusqu'ici ecrit en dur */
 /* ------------------------------------------------------------------ */
 
 it('enregistre le compteur et le sert sur le site', function () {
@@ -137,7 +138,7 @@ it('garde le compteur d origine quand rien n est saisi', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Les collections, embarquees entieres                                */
+/* Les collections, embarquees entieres */
 /* ------------------------------------------------------------------ */
 
 it('embarque l ecran complet des membres de l equipe', function () {
@@ -168,7 +169,7 @@ it('ne renvoie vers aucun ancien ecran', function (string $module) {
 })->with(['banniere', 'presentation', 'directeur', 'valeurs', 'equipe']);
 
 /* ------------------------------------------------------------------ */
-/* Droits                                                             */
+/* Droits */
 /* ------------------------------------------------------------------ */
 
 it('interdit toute ecriture a un lecteur', function () {
@@ -199,7 +200,6 @@ it('ne propose pas de reordonner les modules', function () {
     Livewire::actingAs($this->admin)->test(PagePresentation::class)
         ->assertDontSee('wire:sortable', false);
 });
-
 
 /**
  * Le mot du directeur n'affiche pas d'accroche sur le site : le champ
@@ -251,7 +251,7 @@ it('n ecrase pas l en-tete de section depuis l editeur embarque', function () {
     ReglageDeSection::pour('about.values')->update(['titre_fr' => 'Nos engagements']);
 
     Livewire::actingAs($this->admin)
-        ->test(App\Livewire\Admin\ValeurEnsemble::class, ['embarque' => true])
+        ->test(ValeurEnsemble::class, ['embarque' => true])
         ->set('reglages.titre_fr', 'Un titre venu du navigateur')
         ->set('lignes.'.$valeur->id.'.titre_fr', 'Rigueur')
         ->call('enregistrer')

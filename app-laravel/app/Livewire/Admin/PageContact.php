@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Admin;
 
-use App\Livewire\Concerns\PorteDesTextesDeBloc;
 use App\Livewire\Concerns\PorteDesImagesDeFond;
+use App\Livewire\Concerns\PorteDesTextesDeBloc;
 use App\Livewire\Concerns\PorteUnEnteteDeSection;
 use App\Models\Parametre;
 use App\Models\ReglageDeSection;
@@ -35,8 +35,8 @@ use Livewire\Component;
 class PageContact extends Component
 {
     use PorteDesImagesDeFond;
-    use PorteUnEnteteDeSection;
     use PorteDesTextesDeBloc;
+    use PorteUnEnteteDeSection;
 
     /**
      * Les textes du formulaire de contact.
@@ -306,8 +306,8 @@ class PageContact extends Component
         if ($slug !== null) {
             $section = ReglageDeSection::firstOrNew(['slug' => $slug]);
             // Les cles viennent du navigateur : seules celles que
-        // l'ecran declare sont ecrites. Voir le trait.
-        $section->fill($this->enteteFiltree());
+            // l'ecran declare sont ecrites. Voir le trait.
+            $section->fill($this->enteteFiltree());
 
             // poserLesTextes() ne retient que les cles declarees par le module
             // et POSE sans enregistrer : le save() qui suit les porte en base.
@@ -338,7 +338,6 @@ class PageContact extends Component
             'messages' => ['composant' => 'admin.message-liste', 'intitule' => __('Messages de contact')],
         ][$this->module] ?? null;
     }
-
 
     public function render(): View
     {

@@ -35,7 +35,7 @@ class ActualiteController extends Controller
                 '@id' => route('actualites.index').'#page',
                 'url' => route('actualites.index'),
                 'name' => __('Actualités').' — SCI4K',
-                'description' => __("Conseils et actualités immobilières à Abidjan : foncier, marché, gestion locative. Les actualités de SCI4K."),
+                'description' => __('Conseils et actualités immobilières à Abidjan : foncier, marché, gestion locative. Les actualités de SCI4K.'),
                 'inLanguage' => $langue,
                 'isPartOf' => ['@id' => rtrim(url('/'), '/').'/#site'],
                 'about' => ['@id' => rtrim(url('/'), '/').'/#organisation'],

@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Admin\UtilisateurListe;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -121,6 +122,6 @@ it('montre la photo dans la liste des utilisateurs', function () {
     $this->compte->update(['photo' => 'storage/comptes/awa.jpg']);
 
     Livewire::actingAs($this->compte->fresh())
-        ->test(App\Livewire\Admin\UtilisateurListe::class)
+        ->test(UtilisateurListe::class)
         ->assertSee(asset('storage/comptes/awa.jpg'), false);
 });

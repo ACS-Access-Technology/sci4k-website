@@ -1,9 +1,14 @@
 <?php
 
+use App\Http\Middleware\AppliqueLangue;
+use App\Http\Middleware\EnregistreVisite;
+use App\Http\Middleware\FermeLeSitePublic;
+use App\Http\Middleware\RefuseLesComptesDesactives;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Spatie\Permission\Middleware\RoleMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,20 +18,20 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'role' => RoleMiddleware::class,
         ]);
 
         $middleware->web(append: [
-            \App\Http\Middleware\AppliqueLangue::class,
+            AppliqueLangue::class,
             // La case « Activer le mode maintenance » de l'ecran Configuration
             // existait depuis le debut et ne fermait rien. Voir le middleware
             // pour les trois chemins qui restent ouverts, site ferme.
-            \App\Http\Middleware\FermeLeSitePublic::class,
-            \App\Http\Middleware\EnregistreVisite::class,
+            FermeLeSitePublic::class,
+            EnregistreVisite::class,
             // Un compte desactive perd sa session EN COURS, et pas seulement
             // le droit de se reconnecter. On desactive un compte parce qu'il
             // se passe quelque chose maintenant.
-            \App\Http\Middleware\RefuseLesComptesDesactives::class,
+            RefuseLesComptesDesactives::class,
         ]);
 
         // Les trois points d'ecriture ouverts au public sortent du controle

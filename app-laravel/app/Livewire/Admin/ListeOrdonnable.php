@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 /**
@@ -86,8 +87,8 @@ abstract class ListeOrdonnable extends Component
         $this->formulaireOuvert = $id;
     }
 
-    #[\Livewire\Attributes\On('bloc-enregistre')]
-    #[\Livewire\Attributes\On('bloc-annule')]
+    #[On('bloc-enregistre')]
+    #[On('bloc-annule')]
     public function fermerFormulaire(): void
     {
         $this->formulaireOuvert = null;
@@ -145,6 +146,7 @@ abstract class ListeOrdonnable extends Component
 
         if ($recus !== ($this->modele())::query()->count()) {
             $this->dispatch('toast', message: __('Le tri n’a pas été enregistré : rechargez la liste complète.'), variant: 'error');
+
             return;
         }
 

@@ -1,15 +1,18 @@
 <?php
 
+use App\Livewire\Admin\EncartFormulaire;
+use App\Livewire\Admin\EncartListe;
 use App\Livewire\Admin\ImageDeFondFormulaire;
+use App\Livewire\Admin\ImageDeFondListe;
+use App\Livewire\Admin\MembreEquipeFormulaire;
+use App\Livewire\Admin\MembreEquipeListe;
 use App\Livewire\Admin\PartenaireFormulaire;
 use App\Livewire\Admin\PartenaireListe;
 use App\Livewire\Admin\TemoignageFormulaire;
 use App\Livewire\Admin\TemoignageListe;
 use App\Models\Encart;
-use App\Models\ImageDeFond;
 use App\Models\MembreEquipe;
 use App\Models\Partenaire;
-use App\Models\ReglageDeSection;
 use App\Models\Temoignage;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -53,7 +56,7 @@ it('rend les trois listes de blocs', function () {
     foreach ([
         TemoignageListe::class,
         PartenaireListe::class,
-        \App\Livewire\Admin\MembreEquipeListe::class,
+        MembreEquipeListe::class,
     ] as $composant) {
         Livewire::actingAs($this->editeur)->test($composant, ['embarque' => true])->assertOk();
     }
@@ -142,7 +145,7 @@ it('refuse de creer un encart, une image de fond ou un en-tete', function () {
     // seulement dans l'absence de route — Livewire monte le composant sur
     // simple demande du navigateur.
     foreach ([
-        \App\Livewire\Admin\EncartFormulaire::class,
+        EncartFormulaire::class,
         ImageDeFondFormulaire::class,
     ] as $composant) {
         Livewire::actingAs($this->editeur)->test($composant)->assertNotFound();
@@ -155,7 +158,7 @@ it('laisse creer un temoignage, un partenaire et un membre', function () {
     foreach ([
         TemoignageFormulaire::class,
         PartenaireFormulaire::class,
-        \App\Livewire\Admin\MembreEquipeFormulaire::class,
+        MembreEquipeFormulaire::class,
     ] as $composant) {
         Livewire::actingAs($this->editeur)->test($composant)->assertOk();
     }
@@ -168,15 +171,15 @@ it('laisse creer un temoignage, un partenaire et un membre', function () {
  * l'absence de tout point d'appel — plus a une garde dans une liste.
  */
 it('ne propose plus aucune liste des encarts ni des images de fond', function () {
-    expect(class_exists(\App\Livewire\Admin\EncartListe::class))->toBeFalse()
-        ->and(class_exists(\App\Livewire\Admin\ImageDeFondListe::class))->toBeFalse();
+    expect(class_exists(EncartListe::class))->toBeFalse()
+        ->and(class_exists(ImageDeFondListe::class))->toBeFalse();
 });
 
 it('ne laisse pas modifier le slug d un encart', function () {
     $encart = Encart::factory()->create(['slug' => 'accueil-banderole']);
 
     Livewire::actingAs($this->editeur)
-        ->test(\App\Livewire\Admin\EncartFormulaire::class, ['element' => $encart])
+        ->test(EncartFormulaire::class, ['element' => $encart])
         ->set('valeurs.slug', 'autre-emplacement')
         ->set('valeurs.titre_fr', 'Titre')->set('valeurs.titre_en', 'Title')
         ->call('enregistrer')
@@ -249,5 +252,3 @@ it('ne touche jamais a un fichier du site statique', function () {
 });
 
 /* ------------------------------------------------- en-tete de section */
-
-

@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\Encart;
 use App\Livewire\Concerns\PorteDesImagesDeFond;
 use App\Livewire\Concerns\PorteDesTextesDeBloc;
 use App\Livewire\Concerns\PorteUnEnteteDeSection;
+use App\Models\Encart;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
@@ -65,7 +65,7 @@ class PageServices extends Component
             ],
             'processus' => [
                 'intitule' => __('Processus'),
-                'resume' => __("En-tête du bloc, étapes et mise en page."),
+                'resume' => __('En-tête du bloc, étapes et mise en page.'),
                 'section' => 'services.process',
                 'fond' => 'processus',
                 // La mise en page vit dans les options de la section. Elle
@@ -251,7 +251,6 @@ class PageServices extends Component
             'processus' => ['composant' => 'admin.etape-processus-ensemble', 'intitule' => __('Étapes du processus')],
         ][$this->module] ?? null;
     }
-
 
     public function render(): View
     {

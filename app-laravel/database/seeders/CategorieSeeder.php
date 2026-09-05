@@ -16,7 +16,7 @@ class CategorieSeeder extends Seeder
             ['slug' => 'gestion',        'nom_fr' => 'Gestion / Location',       'nom_en' => 'Rental Management',      'ordre' => 3],
             ['slug' => 'achat',          'nom_fr' => 'Achat',                    'nom_en' => 'Buying',                 'ordre' => 4],
             ['slug' => 'vente',          'nom_fr' => 'Vente',                    'nom_en' => 'Selling',                'ordre' => 5],
-            ['slug' => 'administration', 'nom_fr' => 'Administration de biens',  'nom_en' => 'Property Administration','ordre' => 6],
+            ['slug' => 'administration', 'nom_fr' => 'Administration de biens',  'nom_en' => 'Property Administration', 'ordre' => 6],
             ['slug' => 'marche',         'nom_fr' => 'Marché',                   'nom_en' => 'Market',                 'ordre' => 7],
         ];
 

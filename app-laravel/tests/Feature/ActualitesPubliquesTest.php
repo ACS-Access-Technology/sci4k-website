@@ -87,7 +87,6 @@ it('rend la page entiere dans la langue choisie, pas seulement les articles', fu
         'statut' => 'publie',
     ]);
 
-
     $this->get('/en/actualites')
         ->assertOk()
         ->assertSee('<html lang="en"', false)

@@ -7,6 +7,7 @@ use App\Models\Categorie;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -96,8 +97,8 @@ class ArticleListe extends Component
         $this->formulaireOuvert = $id;
     }
 
-    #[\Livewire\Attributes\On('bloc-enregistre')]
-    #[\Livewire\Attributes\On('bloc-annule')]
+    #[On('bloc-enregistre')]
+    #[On('bloc-annule')]
     public function fermerFormulaire(): void
     {
         $this->formulaireOuvert = null;

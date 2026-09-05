@@ -2,11 +2,12 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\CommuneDuBandeau;
-use App\Models\Encart;
 use App\Livewire\Concerns\PorteDesImagesDeFond;
 use App\Livewire\Concerns\PorteDesTextesDeBloc;
 use App\Livewire\Concerns\PorteUnEnteteDeSection;
+use App\Models\Article;
+use App\Models\CommuneDuBandeau;
+use App\Models\Encart;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
@@ -291,8 +292,8 @@ class PageAccueil extends Component
         if ($slug = $description['section'] ?? null) {
             $section = ReglageDeSection::firstOrNew(['slug' => $slug]);
             // Les cles viennent du navigateur : seules celles que
-        // l'ecran declare sont ecrites. Voir le trait.
-        $section->fill($this->enteteFiltree());
+            // l'ecran declare sont ecrites. Voir le trait.
+            $section->fill($this->enteteFiltree());
 
             // poserLesTextes() ne retient que les cles declarees par le module
             // et POSE sans enregistrer : le save() qui suit les porte en base.
@@ -381,7 +382,7 @@ class PageAccueil extends Component
             // que l'editeur sache ce qui sortira, sans laisser croire qu'il
             // peut les selectionner ici.
             'articles' => $this->module === 'articles'
-                ? \App\Models\Article::publies()->latest('date_publication')->limit(3)->get()
+                ? Article::publies()->latest('date_publication')->limit(3)->get()
                 : collect(),
             'peutEcrire' => $this->peutEcrire(),
         ])->title(__("Page d'accueil"));

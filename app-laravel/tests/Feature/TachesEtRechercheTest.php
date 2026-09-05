@@ -8,6 +8,7 @@ use App\Models\MembreEquipe;
 use App\Models\Service;
 use App\Models\Tache;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
 
@@ -89,7 +90,7 @@ it('ne laisse pas toucher a la tache d un autre', function () {
     expect(fn () => Livewire::actingAs($this->editeur)
         ->test(TableauDeBord::class)
         ->call('basculerTache', $tache->id)
-    )->toThrow(Illuminate\Database\Eloquent\ModelNotFoundException::class);
+    )->toThrow(ModelNotFoundException::class);
 
     expect($tache->fresh()->terminee)->toBeFalse();
 });

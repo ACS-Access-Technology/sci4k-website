@@ -45,7 +45,6 @@ class PartenaireFormulaire extends FormulaireDeBloc
         return 'livewire.admin.partenaire-formulaire';
     }
 
-
     protected function intitule(): string
     {
         return __('Partenaire');

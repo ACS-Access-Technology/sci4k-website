@@ -72,7 +72,6 @@ it('propose la suppression sur une collection qui accepte le retrait', function 
         ->assertSee('supprimer('.$temoignage->id.')', false);
 });
 
-
 it('refuse un identifiant qui n appartient pas au bloc', function () {
     Livewire::actingAs($this->admin)
         ->test(TemoignageListe::class, ['embarque' => true])
@@ -115,7 +114,6 @@ it('ne redirige pas quand il est embarque', function () {
     expect($temoignage->fresh()->auteur)->toBe('Awa K.');
 });
 
-
 it('se referme sur l evenement d enregistrement', function () {
     $temoignage = Temoignage::factory()->create();
 
@@ -138,7 +136,6 @@ it('n affiche pas le fil d Ariane quand il est embarque', function () {
     expect($rendu)->not->toContain('aria-label="Fil d’Ariane"')
         ->and($rendu)->toContain('Annuler');
 });
-
 
 /**
  * ServiceFormulaire n'herite pas de FormulaireDeBloc : son modele s'appelle

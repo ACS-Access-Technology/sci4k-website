@@ -44,7 +44,7 @@ it('refuse un slug hors de la liste', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* Contenu verse par la migration                                      */
+/* Contenu verse par la migration */
 /* ------------------------------------------------------------------ */
 
 /**

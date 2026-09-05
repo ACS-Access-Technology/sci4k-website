@@ -5,6 +5,7 @@ use App\Models\Categorie;
 use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
@@ -247,8 +248,8 @@ it('renseigne l image des six services repris du site', function () {
     // statique et laisserait le fichier orphelin sur le disque.
     $this->service->delete();
 
-    Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorieSeeder', '--force' => true]);
-    Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ServiceFaqSeeder', '--force' => true]);
+    Artisan::call('db:seed', ['--class' => 'CategorieSeeder', '--force' => true]);
+    Artisan::call('db:seed', ['--class' => 'ServiceFaqSeeder', '--force' => true]);
 
     $sansImage = Service::whereNull('image_source')->orWhere('image_source', '')->pluck('slug')->all();
 

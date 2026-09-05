@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Admin\ArticleFormulaire;
+use App\Livewire\Admin\ArticleListe;
 use App\Models\Article;
 use App\Models\Categorie;
 use App\Models\User;
@@ -175,7 +176,7 @@ it('depuis le tableau, chaque titre ouvre son edition sur place', function () {
     ]);
 
     Livewire::actingAs($this->editeur)
-        ->test(App\Livewire\Admin\ArticleListe::class)
+        ->test(ArticleListe::class)
         ->assertOk()
         ->assertSee('ouvrirEdition('.$article->id.')', false);
 });

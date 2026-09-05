@@ -1,5 +1,39 @@
 <?php
 
+use App\Livewire\Admin\ArticleFormulaire;
+use App\Livewire\Admin\ArticleListe;
+use App\Livewire\Admin\BienFormulaire;
+use App\Livewire\Admin\BienListe;
+use App\Livewire\Admin\CategorieEnsemble;
+use App\Livewire\Admin\ChiffreCleEnsemble;
+use App\Livewire\Admin\CommuneBandeauEnsemble;
+use App\Livewire\Admin\EncartFormulaire;
+use App\Livewire\Admin\EtapeProcessusEnsemble;
+use App\Livewire\Admin\FaqFormulaire;
+use App\Livewire\Admin\FaqListe;
+use App\Livewire\Admin\ImageDeFondFormulaire;
+use App\Livewire\Admin\MembreEquipeFormulaire;
+use App\Livewire\Admin\MembreEquipeListe;
+use App\Livewire\Admin\MessageListe;
+use App\Livewire\Admin\PageAccueil;
+use App\Livewire\Admin\PageActualites;
+use App\Livewire\Admin\PageBiens;
+use App\Livewire\Admin\PageContact;
+use App\Livewire\Admin\PageFaq;
+use App\Livewire\Admin\PagePresentation;
+use App\Livewire\Admin\PageServices;
+use App\Livewire\Admin\PartenaireFormulaire;
+use App\Livewire\Admin\PartenaireListe;
+use App\Livewire\Admin\Referentiels;
+use App\Livewire\Admin\RubriqueFaqFormulaire;
+use App\Livewire\Admin\RubriqueFaqListe;
+use App\Livewire\Admin\ServiceFormulaire;
+use App\Livewire\Admin\ServiceListe;
+use App\Livewire\Admin\TemoignageFormulaire;
+use App\Livewire\Admin\TemoignageListe;
+use App\Livewire\Admin\ValeurEnsemble;
+use App\Models\Encart;
+use App\Models\ImageDeFond;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Role;
@@ -66,29 +100,29 @@ it('sert aussi le tableau de bord et les pages editables', function () {
  */
 it('monte chaque composant embarque', function () {
     $sansModele = [
-        \App\Livewire\Admin\ArticleListe::class,
-        \App\Livewire\Admin\BienListe::class,
-        \App\Livewire\Admin\ServiceListe::class,
-        \App\Livewire\Admin\FaqListe::class,
-        \App\Livewire\Admin\RubriqueFaqListe::class,
-        \App\Livewire\Admin\TemoignageListe::class,
-        \App\Livewire\Admin\PartenaireListe::class,
-        \App\Livewire\Admin\MembreEquipeListe::class,
-        \App\Livewire\Admin\MessageListe::class,
-        \App\Livewire\Admin\CategorieEnsemble::class,
-        \App\Livewire\Admin\ValeurEnsemble::class,
-        \App\Livewire\Admin\ChiffreCleEnsemble::class,
-        \App\Livewire\Admin\EtapeProcessusEnsemble::class,
-        \App\Livewire\Admin\CommuneBandeauEnsemble::class,
-        \App\Livewire\Admin\Referentiels::class,
-        \App\Livewire\Admin\ArticleFormulaire::class,
-        \App\Livewire\Admin\BienFormulaire::class,
-        \App\Livewire\Admin\ServiceFormulaire::class,
-        \App\Livewire\Admin\FaqFormulaire::class,
-        \App\Livewire\Admin\RubriqueFaqFormulaire::class,
-        \App\Livewire\Admin\TemoignageFormulaire::class,
-        \App\Livewire\Admin\PartenaireFormulaire::class,
-        \App\Livewire\Admin\MembreEquipeFormulaire::class,
+        ArticleListe::class,
+        BienListe::class,
+        ServiceListe::class,
+        FaqListe::class,
+        RubriqueFaqListe::class,
+        TemoignageListe::class,
+        PartenaireListe::class,
+        MembreEquipeListe::class,
+        MessageListe::class,
+        CategorieEnsemble::class,
+        ValeurEnsemble::class,
+        ChiffreCleEnsemble::class,
+        EtapeProcessusEnsemble::class,
+        CommuneBandeauEnsemble::class,
+        Referentiels::class,
+        ArticleFormulaire::class,
+        BienFormulaire::class,
+        ServiceFormulaire::class,
+        FaqFormulaire::class,
+        RubriqueFaqFormulaire::class,
+        TemoignageFormulaire::class,
+        PartenaireFormulaire::class,
+        MembreEquipeFormulaire::class,
     ];
 
     $echecs = [];
@@ -105,7 +139,7 @@ it('monte chaque composant embarque', function () {
     // avec leur ligne.
     try {
         Livewire\Livewire::actingAs($this->admin)
-            ->test(\App\Livewire\Admin\EncartFormulaire::class, ['element' => \App\Models\Encart::factory()->create()])
+            ->test(EncartFormulaire::class, ['element' => Encart::factory()->create()])
             ->assertOk();
     } catch (Throwable $e) {
         $echecs[] = 'EncartFormulaire → '.mb_substr($e->getMessage(), 0, 120);
@@ -113,7 +147,7 @@ it('monte chaque composant embarque', function () {
 
     try {
         Livewire\Livewire::actingAs($this->admin)
-            ->test(\App\Livewire\Admin\ImageDeFondFormulaire::class, ['element' => \App\Models\ImageDeFond::factory()->create()])
+            ->test(ImageDeFondFormulaire::class, ['element' => ImageDeFond::factory()->create()])
             ->assertOk();
     } catch (Throwable $e) {
         $echecs[] = 'ImageDeFondFormulaire → '.mb_substr($e->getMessage(), 0, 120);
@@ -129,13 +163,13 @@ it('monte chaque composant embarque', function () {
  */
 it('ouvre chaque module de chaque ecran de page', function () {
     $ecrans = [
-        \App\Livewire\Admin\PageAccueil::class,
-        \App\Livewire\Admin\PagePresentation::class,
-        \App\Livewire\Admin\PageBiens::class,
-        \App\Livewire\Admin\PageServices::class,
-        \App\Livewire\Admin\PageActualites::class,
-        \App\Livewire\Admin\PageFaq::class,
-        \App\Livewire\Admin\PageContact::class,
+        PageAccueil::class,
+        PagePresentation::class,
+        PageBiens::class,
+        PageServices::class,
+        PageActualites::class,
+        PageFaq::class,
+        PageContact::class,
     ];
 
     $echecs = [];
