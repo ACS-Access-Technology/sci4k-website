@@ -115,6 +115,12 @@ class PageActualites extends Component
                 'resume' => __('Étiquette, titre, accroche et image de fond.'),
                 'section' => 'news.page',
                 'fond' => 'banniere-actualites',
+                // Ce que la page annonce d'elle-meme aux moteurs. C'etait
+                // ecrit en dur en tete de la vue.
+                'textes' => self::referencement(
+                    'Actualités',
+                    'Conseils et actualités immobilières à Abidjan : foncier, marché, gestion locative. Les actualités de SCI4K.',
+                ),
             ],
             'filtres' => [
                 'intitule' => __('Filtres'),

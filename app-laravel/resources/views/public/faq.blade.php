@@ -1,7 +1,7 @@
 @extends('public.layout')
 
-@section('titre', __('Questions fréquentes'))
-@section('description', __("Toutes les réponses à vos questions sur le foncier, la construction, la gestion locative, l'achat et la vente immobilière à Abidjan."))
+@section('titre', $banniere?->texteBilingue('meta_titre', $langue) ?: __('Questions fréquentes'))
+@section('description', $banniere?->texteBilingue('meta_description', $langue) ?: __("Toutes les réponses à vos questions sur le foncier, la construction, la gestion locative, l'achat et la vente immobilière à Abidjan."))
 @section('classe-page', 'page-faq')
 
 @section('contenu')

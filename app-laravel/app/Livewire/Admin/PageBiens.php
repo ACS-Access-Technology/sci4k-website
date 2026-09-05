@@ -133,6 +133,12 @@ class PageBiens extends Component
                 'resume' => __('Étiquette, titre, accroche et image de fond.'),
                 'section' => 'biens.page',
                 'fond' => 'banniere-biens',
+                // Ce que la page annonce d'elle-meme aux moteurs. C'etait
+                // ecrit en dur en tete de la vue.
+                'textes' => self::referencement(
+                    'Biens Immobiliers',
+                    "Trouvez le bien idéal à l'achat ou à la location à Abidjan : villas, appartements, terrains et locaux.",
+                ),
             ],
             'filtres' => [
                 'intitule' => __('Filtres'),

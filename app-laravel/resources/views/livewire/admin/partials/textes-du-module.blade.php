@@ -32,6 +32,9 @@
                            placeholder="{{ $langueActive === 'fr' ? $decrit['defaut'] : __($decrit['defaut'], [], 'en') }}"
                            class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950">
                 @endif
+                @if ($decrit['aide'] ?? false)
+                    <span class="mt-1 block text-xs text-zinc-500 dark:text-zinc-400">{{ __($decrit['aide']) }}</span>
+                @endif
                 @error('textes.'.$nom.'_'.$langueActive)
                     <span class="text-sm text-red-600">{{ $message }}</span>
                 @enderror

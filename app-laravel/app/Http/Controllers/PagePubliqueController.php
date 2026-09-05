@@ -210,7 +210,11 @@ class PagePubliqueController extends Controller
     {
         $langue = app()->getLocale();
 
-        $enTetes = ReglageDeSection::whereIn('slug', ['contact.page', 'contact.form', 'contact.map'])
+        // `contact.info` ne porte aucun en-tete : elle ne transporte que les
+        // INTITULES au-dessus de chaque coordonnee — « Siège Social »,
+        // « Horaires d'ouverture » — ecrits en dur dans la vue jusqu'ici. Les
+        // valeurs, elles, venaient deja de la configuration.
+        $enTetes = ReglageDeSection::whereIn('slug', ['contact.page', 'contact.form', 'contact.map', 'contact.info'])
             ->get()->keyBy('slug');
 
         $adresse = Parametre::lire('adresse_postale', implode("\n", [
@@ -243,6 +247,7 @@ class PagePubliqueController extends Controller
             'banniere' => $enTetes->get('contact.page'),
             'enteteFormulaire' => $formulaire,
             'enteteCarte' => $enTetes->get('contact.map'),
+            'sectionCoordonnees' => $enTetes->get('contact.info'),
             'sujets' => $sujets,
             // Passe explicitement : le composer qui alimente le gabarit ne
             // porte pas jusqu'ici, Blade rendant la vue fille AVANT la mise en

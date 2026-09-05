@@ -24,6 +24,38 @@ use App\Models\ReglageDeSection;
  */
 trait PorteDesTextesDeBloc
 {
+    /**
+     * Le titre et la description que les moteurs reprennent, pour une page.
+     *
+     * Ils etaient ecrits en dur en tete de CHAQUE vue publique — deux lignes
+     * de Blade par page — et l'ecran « Configuration » ne proposait que des
+     * valeurs par DEFAUT, employees quand la page n'annonce rien. Aucune page
+     * n'etant dans ce cas, ces defauts ne servaient jamais et les vrais textes
+     * n'etaient modifiables nulle part.
+     *
+     * Ils vivent sur la banniere de chaque page : c'est le module que
+     * l'editeur ouvre pour changer ce que la page annonce d'elle-meme.
+     *
+     * Les longueurs sont celles de l'ecran Configuration, et pour la meme
+     * raison : au-dela, Google tronque.
+     */
+    protected static function referencement(string $titre, string $description): array
+    {
+        return [
+            'meta_titre' => [
+                'intitule' => 'Titre dans les résultats de recherche',
+                'defaut' => $titre,
+                'aide' => 'Au-delà de 70 caractères, Google tronque le titre.',
+            ],
+            'meta_description' => [
+                'intitule' => 'Description dans les résultats de recherche',
+                'defaut' => $description,
+                'long' => true,
+                'aide' => '160 caractères au plus, pour la même raison.',
+            ],
+        ];
+    }
+
     /** Textes du bloc ouvert, par cle suffixee de langue. */
     public array $textes = [];
 

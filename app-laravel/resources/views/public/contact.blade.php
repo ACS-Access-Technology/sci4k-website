@@ -1,10 +1,22 @@
 @extends('public.layout')
 
-@section('titre', __('Contact'))
-@section('description', __("Contactez SCI4K à Abidjan : achat, vente, location, construction et gestion de patrimoine immobilier."))
+@section('titre', $banniere?->texteBilingue('meta_titre', $langue) ?: __('Contact'))
+@section('description', $banniere?->texteBilingue('meta_description', $langue) ?: __("Contactez SCI4K à Abidjan : achat, vente, location, construction et gestion de patrimoine immobilier."))
 @section('classe-page', 'page-contact')
 
 @section('contenu')
+
+{{--
+  Les INTITULES au-dessus de chaque coordonnee et les textes de la carte
+  etaient ecrits en dur et traduits par __() : aucun ecran ne les exposait.
+  Les VALEURS — adresse, telephone, horaires — venaient deja de la
+  configuration ; les titres qui les coiffent, non.
+
+  « Site web » n'est pas branche : c'est l'etiquette du champ piege, placee
+  hors de l'ecran et jamais montree.
+--}}
+@php($tCoordonnees = fn (string $nom, string $defaut) => $sectionCoordonnees?->texteBilingue($nom, $langue) ?: $defaut)
+@php($tCarte = fn (string $nom, string $defaut) => $enteteCarte?->texteBilingue($nom, $langue) ?: $defaut)
 
 {{--
   Page de contact, portee depuis maquettes-frontoffice/contact.html.
@@ -114,22 +126,22 @@
       <div class="info-sidebar reveal">
         <div class="info-box">
           <div class="info-item">
-            <h4>{{ __('Siège Social') }}</h4>
+            <h4>{{ $tCoordonnees('titre_adresse', __('Siège Social')) }}</h4>
             <p>{!! nl2br(e($adressePostale)) !!}</p>
           </div>
           <div class="divider"></div>
           <div class="info-item">
-            <h4>{{ __('Téléphone & WhatsApp') }}</h4>
+            <h4>{{ $tCoordonnees('titre_telephone', __('Téléphone & WhatsApp')) }}</h4>
             <p>{{ $telephonePublic }}</p>
           </div>
           <div class="divider"></div>
           <div class="info-item">
-            <h4>{{ __('Email') }}</h4>
+            <h4>{{ $tCoordonnees('titre_email', __('Email')) }}</h4>
             <p>{{ $emailPublic }}</p>
           </div>
           <div class="divider"></div>
           <div class="info-item">
-            <h4>{{ __("Horaires d'ouverture") }}</h4>
+            <h4>{{ $tCoordonnees('titre_horaires', __("Horaires d'ouverture")) }}</h4>
             <p>{!! nl2br(e($horaires)) !!}</p>
           </div>
         </div>
@@ -159,11 +171,11 @@
              « −4.0083 » ecrit avec un signe moins typographique, que Google ne
              sait pas lire. --}}
         <a class="map-open-link" href="https://www.google.com/maps/search/?api=1&query={{ urlencode($coordonneesCarte) }}" target="_blank" rel="noopener noreferrer">
-          <span>{{ __('Ouvrir dans Google Maps') }}</span>
+          <span>{{ $tCarte('libelle_lien', __('Ouvrir dans Google Maps')) }}</span>
         </a>
       </div>
       <iframe
-        title="{{ __('Localisation de :nom', ['nom' => $nomDuSite]) }}"
+        title="{{ str_replace(':nom', $nomDuSite, $tCarte('titre_cadre', __('Localisation de :nom', ['nom' => ':nom']))) }}"
         src="https://www.google.com/maps?q={{ urlencode($coordonneesCarte) }}&z=15&hl={{ $langue }}&output=embed"
         allowfullscreen=""
         loading="lazy"

@@ -77,6 +77,26 @@ class PageContact extends Component
     ];
 
     /**
+     * Les intitules du cadre de coordonnees.
+     *
+     * Ils etaient ecrits en dur dans la vue et traduits par __() : les
+     * VALEURS — adresse, telephone, horaires — etaient bien modifiables depuis
+     * la configuration, mais pas les titres qui les coiffent.
+     */
+    public const TEXTES_DES_COORDONNEES = [
+        'titre_adresse' => ['intitule' => 'Titre au-dessus de l’adresse', 'defaut' => 'Siège Social'],
+        'titre_telephone' => ['intitule' => 'Titre au-dessus du téléphone', 'defaut' => 'Téléphone & WhatsApp'],
+        'titre_email' => ['intitule' => 'Titre au-dessus de l’e-mail', 'defaut' => 'Email'],
+        'titre_horaires' => ['intitule' => 'Titre au-dessus des horaires', 'defaut' => "Horaires d'ouverture"],
+    ];
+
+    /** Les textes du bloc de la carte. */
+    public const TEXTES_DE_LA_CARTE = [
+        'libelle_lien' => ['intitule' => 'Lien vers Google Maps', 'defaut' => 'Ouvrir dans Google Maps'],
+        'titre_cadre' => ['intitule' => 'Description de la carte (:nom sera remplacé)', 'defaut' => 'Localisation de :nom'],
+    ];
+
+    /**
      * Les cinq modules de la page, dans l'ordre du site.
      *
      * @return array<string, array<string, mixed>>
@@ -89,6 +109,12 @@ class PageContact extends Component
                 'resume' => __('Étiquette, titre, accroche et image de fond.'),
                 'section' => 'contact.page',
                 'fond' => 'banniere-contact',
+                // Ce que la page annonce d'elle-meme aux moteurs. C'etait
+                // ecrit en dur en tete de la vue.
+                'textes' => self::referencement(
+                    'Contact',
+                    'Contactez SCI4K à Abidjan : achat, vente, location, construction et gestion de patrimoine immobilier.',
+                ),
             ],
             'formulaire' => [
                 'intitule' => __('Formulaire'),
@@ -101,8 +127,13 @@ class PageContact extends Component
             'coordonnees' => [
                 'intitule' => __('Coordonnées'),
                 'resume' => __('Adresse, téléphone, e-mail et horaires affichés à côté du formulaire.'),
-                'section' => null,
+                // Le cadre n'affiche pas d'en-tete, mais il porte les
+                // INTITULES au-dessus de chaque coordonnee : il lui faut donc
+                // une section, et c'est son absence qui les laissait figes.
+                'section' => 'contact.info',
+                'champsEntete' => [],
                 'reglages' => ['adresse_postale', 'telephone', 'email_public', 'horaires'],
+                'textes' => self::TEXTES_DES_COORDONNEES,
                 // Le fond du cadre : .info-box le pose sous son voile sombre.
                 'fond' => 'info-box',
             ],
@@ -114,6 +145,7 @@ class PageContact extends Component
                 // n'ont d'emplacement sur le site.
                 'champsEntete' => ['titre'],
                 'reglages' => ['coordonnees_carte'],
+                'textes' => self::TEXTES_DE_LA_CARTE,
             ],
             'messages' => [
                 'intitule' => __('Messages reçus'),
@@ -195,6 +227,19 @@ class PageContact extends Component
         return $this->modules()[$this->module] ?? $this->modules()['banniere'];
     }
 
+    /**
+     * Les champs d'en-tete que porte le module ouvert.
+     *
+     * La declaration des modules l'annonçait — « champsEntete » — sans que
+     * personne ne la lise : les trois champs etaient ecrits en dur plus bas.
+     *
+     * @return list<string>
+     */
+    protected function champsDeLEntete(): array
+    {
+        return $this->moduleCourant()['champsEntete'] ?? self::CHAMPS_ENTETE;
+    }
+
     protected function charger(): void
     {
         $this->entete = [];
@@ -213,7 +258,7 @@ class PageContact extends Component
             return;
         }
 
-        foreach (['etiquette', 'titre', 'chapo'] as $champ) {
+        foreach ($this->champsDeLEntete() as $champ) {
             $this->entete[$champ.'_fr'] = (string) ($section?->{$champ.'_fr'} ?? '');
             $this->entete[$champ.'_en'] = (string) ($section?->{$champ.'_en'} ?? '');
         }
@@ -221,12 +266,7 @@ class PageContact extends Component
 
     protected function rules(): array
     {
-        $regles = [];
-
-        foreach (['etiquette', 'titre', 'chapo'] as $champ) {
-            $regles['entete.'.$champ.'_fr'] = ['nullable', 'string', 'max:500'];
-            $regles['entete.'.$champ.'_en'] = ['nullable', 'string', 'max:500'];
-        }
+        $regles = $this->reglesDeLEntete();
 
         foreach ($this->reglagesDuModule() as $cle => $decrit) {
             $regles['reglages.'.$cle] = $decrit['regles'] ?? ['nullable', 'string', 'max:300'];

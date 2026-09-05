@@ -1,10 +1,20 @@
 @extends('public.layout')
 
-@section('titre', __('Présentation'))
-@section('description', __("Société Civile Immobilière basée à Abidjan : découvrez la vision, les engagements et l'équipe de SCI4K."))
+@section('titre', $banniere?->texteBilingue('meta_titre', $langue) ?: __('Présentation'))
+@section('description', $banniere?->texteBilingue('meta_description', $langue) ?: __("Société Civile Immobilière basée à Abidjan : découvrez la vision, les engagements et l'équipe de SCI4K."))
 @section('classe-page', 'page-presentation')
 
 @section('contenu')
+
+{{--
+  La signature sous le mot du directeur etait ecrite en dur : une agence qui
+  change de directeur general devait rouvrir le code.
+
+  « Fermer » vient de l'habillage du site, sur l'ecran « Menus » : il ferme
+  aussi la fiche d'un bien et la fenetre d'un service.
+--}}
+@php($tDirecteur = fn (string $nom, string $defaut) => $motDuDirecteur?->texteBilingue($nom, $langue) ?: $defaut)
+@php($tSite = fn (string $nom, string $defaut) => $chrome?->texteBilingue($nom, $langue) ?: $defaut)
 
 {{--
   Page de presentation, portee depuis frontoffice/presentation.html.
@@ -104,8 +114,8 @@
       <div class="signature reveal">
         <div>
           <div class="sig-hand">TIEMOKO Regis</div>
-          <div class="sig-name">{{ __('Le Directeur Général') }}</div>
-          <div class="sig-role">{{ __('SCI4K — Société Civile Immobilière Abidjan') }}</div>
+          <div class="sig-name">{{ $tDirecteur('signature_nom', __('Le Directeur Général')) }}</div>
+          <div class="sig-role">{{ $tDirecteur('signature_role', __('SCI4K — Société Civile Immobilière Abidjan')) }}</div>
         </div>
       </div>
     </div>
@@ -194,7 +204,7 @@
 
 <div class="modal-overlay" id="teamModalOverlay" role="presentation" hidden>
   <div class="modal-container team-modal" role="dialog" aria-modal="true" aria-labelledby="teamModalTitle">
-    <button type="button" class="modal-close" id="teamModalClose" aria-label="{{ __('Fermer') }}">&times;</button>
+    <button type="button" class="modal-close" id="teamModalClose" aria-label="{{ $tSite('libelle_fermer', __('Fermer')) }}">&times;</button>
     <div class="team-modal-head">
       <div class="team-avatar" id="teamModalAvatar"></div>
       <div><h2 class="modal-title" id="teamModalTitle"></h2><p class="team-role" id="teamModalRole"></p></div>

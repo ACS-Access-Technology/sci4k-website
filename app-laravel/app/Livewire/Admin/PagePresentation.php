@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\PorteDesImagesDeFond;
+use App\Livewire\Concerns\PorteDesTextesDeBloc;
 use App\Livewire\Concerns\PorteUnEnteteDeSection;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
@@ -25,7 +26,20 @@ use Livewire\Component;
 class PagePresentation extends Component
 {
     use PorteDesImagesDeFond;
+    use PorteDesTextesDeBloc;
     use PorteUnEnteteDeSection;
+
+    /**
+     * La signature sous le mot du directeur.
+     *
+     * Le nom du dirigeant vit dans le contenu du bloc, saisi par l'editeur ;
+     * ces deux lignes, elles, etaient ecrites en dur sous sa signature. Une
+     * agence qui change de directeur general devait rouvrir le code.
+     */
+    public const TEXTES_DE_LA_SIGNATURE = [
+        'signature_nom' => ['intitule' => 'Ligne de signature', 'defaut' => 'Le Directeur Général'],
+        'signature_role' => ['intitule' => 'Ligne sous la signature', 'defaut' => 'SCI4K — Société Civile Immobilière Abidjan'],
+    ];
 
     /**
      * Les cinq modules de la page, dans l'ordre du site.
@@ -40,6 +54,12 @@ class PagePresentation extends Component
                 'resume' => __('Étiquette, titre, accroche et image de fond.'),
                 'section' => 'about.page',
                 'fond' => 'banniere-presentation',
+                // Ce que la page annonce d'elle-meme aux moteurs. C'etait
+                // ecrit en dur en tete de la vue.
+                'textes' => self::referencement(
+                    'Présentation',
+                    "Société Civile Immobilière basée à Abidjan : découvrez la vision, les engagements et l'équipe de SCI4K.",
+                ),
             ],
             'presentation' => [
                 'intitule' => __('Présentation générale'),
@@ -56,6 +76,7 @@ class PagePresentation extends Component
             'directeur' => [
                 'intitule' => __('Mot du Directeur'),
                 'resume' => __('Texte, portrait et compteur mis en avant.'),
+                'textes' => self::TEXTES_DE_LA_SIGNATURE,
                 'section' => 'about.dg',
                 'fond' => 'presentation-directeur',
                 'contenu' => true,
@@ -74,6 +95,10 @@ class PagePresentation extends Component
             'equipe' => [
                 'intitule' => __('Équipe'),
                 'resume' => __("En-tête du bloc et membres de l'équipe."),
+                // « Fermer », qui ferme la fiche d'un membre, n'est pas
+                // declare ici : il ferme aussi la fiche d'un bien et la fenetre
+                // d'un service. Il est dit une seule fois, sur l'ecran
+                // « Menus », avec le reste de l'habillage du site.
                 'section' => 'about.team',
             ],
         ];
@@ -141,7 +166,11 @@ class PagePresentation extends Component
         $this->atouts = [];
         $this->compteur = [];
 
+        $this->textes = [];
+
         $section = ReglageDeSection::where('slug', $description['section'])->first();
+
+        $this->chargerLesTextes($section);
 
         foreach (['etiquette', 'titre', 'chapo', 'contenu'] as $champ) {
             $this->entete[$champ.'_fr'] = (string) ($section?->{$champ.'_fr'} ?? '');
@@ -214,12 +243,12 @@ class PagePresentation extends Component
         $regles['compteur.libelle_fr'] = ['nullable', 'string', 'max:190'];
         $regles['compteur.libelle_en'] = ['nullable', 'string', 'max:190'];
 
-        return $regles;
+        return $regles + $this->reglesDesTextes();
     }
 
     protected function validationAttributes(): array
     {
-        return ['compteur.valeur' => __('la valeur du compteur')];
+        return $this->intitulesDesTextes() + ['compteur.valeur' => __('la valeur du compteur')];
     }
 
     public function enregistrer(): void
@@ -233,6 +262,11 @@ class PagePresentation extends Component
         // Les cles viennent du navigateur : seules celles que
         // l'ecran declare sont ecrites. Voir le trait.
         $section->fill($this->enteteFiltree());
+
+        // poserLesTextes() ne retient que les cles declarees par le module et
+        // POSE sans enregistrer : le save() qui suit les porte en base.
+        $this->poserLesTextes($section);
+
         $section->save();
 
         // poserOptions() POSE les options sur le modele mais n'enregistre pas :

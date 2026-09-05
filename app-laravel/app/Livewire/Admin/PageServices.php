@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Models\Encart;
 use App\Livewire\Concerns\PorteDesImagesDeFond;
+use App\Livewire\Concerns\PorteDesTextesDeBloc;
 use App\Livewire\Concerns\PorteUnEnteteDeSection;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
@@ -23,6 +24,7 @@ use Livewire\Component;
 class PageServices extends Component
 {
     use PorteDesImagesDeFond;
+    use PorteDesTextesDeBloc;
     use PorteUnEnteteDeSection;
 
     /**
@@ -38,6 +40,12 @@ class PageServices extends Component
                 'resume' => __('Étiquette, titre, accroche et image de fond.'),
                 'section' => 'services.page',
                 'fond' => 'banniere-services',
+                // Ce que la page annonce d'elle-meme aux moteurs. C'etait
+                // ecrit en dur en tete de la vue.
+                'textes' => self::referencement(
+                    'Nos services',
+                    'Foncier, construction, gestion locative, achat, vente, administration de biens : découvrez tous les services immobiliers de SCI4K à Abidjan.',
+                ),
             ],
             'services' => [
                 'intitule' => __('Services'),
@@ -124,6 +132,7 @@ class PageServices extends Component
     {
         $this->entete = [];
         $this->options = [];
+        $this->textes = [];
 
         $description = $this->moduleCourant();
         $slug = $description['section'] ?? null;
@@ -133,6 +142,8 @@ class PageServices extends Component
         }
 
         $section = ReglageDeSection::where('slug', $slug)->first();
+
+        $this->chargerLesTextes($section);
 
         foreach (['etiquette', 'titre', 'chapo'] as $champ) {
             $this->entete[$champ.'_fr'] = (string) ($section?->{$champ.'_fr'} ?? '');
@@ -160,7 +171,16 @@ class PageServices extends Component
             $regles['options.'.$nom] = ['required', Rule::in(array_keys($decrit['choix']))];
         }
 
-        return $regles;
+        return $regles + $this->reglesDesTextes();
+    }
+
+    /**
+     * Intitules lisibles, pour que le message de validation ne cite pas
+     * « textes.meta_titre_fr ».
+     */
+    protected function validationAttributes(): array
+    {
+        return $this->intitulesDesTextes();
     }
 
     public function enregistrer(): void
@@ -177,6 +197,11 @@ class PageServices extends Component
         // Les cles viennent du navigateur : seules celles que
         // l'ecran declare sont ecrites. Voir le trait.
         $section->fill($this->enteteFiltree());
+
+        // poserLesTextes() ne retient que les cles declarees par le module et
+        // POSE sans enregistrer : le save() qui suit les porte en base.
+        $this->poserLesTextes($section);
+
         $section->save();
 
         // poserOptions() POSE les options mais n'enregistre pas : sans ce

@@ -1,7 +1,7 @@
 @extends('public.layout')
 
-@section('titre', __('Actualités'))
-@section('description', __("Conseils et actualités immobilières à Abidjan : foncier, marché, gestion locative. Les actualités de SCI4K."))
+@section('titre', $banniere?->texteBilingue('meta_titre', $langue) ?: __('Actualités'))
+@section('description', $banniere?->texteBilingue('meta_description', $langue) ?: __("Conseils et actualités immobilières à Abidjan : foncier, marché, gestion locative. Les actualités de SCI4K."))
 @section('classe-page', 'page-actualites')
 
 @section('contenu')

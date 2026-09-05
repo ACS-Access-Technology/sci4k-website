@@ -39,14 +39,6 @@ class PageAccueil extends Component
     use PorteDesTextesDeBloc;
     use PorteUnEnteteDeSection;
 
-    /**
-     * Les huit modules de l'accueil, dans l'ordre ou le visiteur les voit.
-     *
-     * Chaque entree decrit ce que le module pilote, et d'ou vient la donnee —
-     * l'ecran l'affiche, pour qu'un editeur sache ce qu'il touche.
-     *
-     * @return array<string, array<string, mixed>>
-     */
     /** Les textes du hero qui ne sont ni un titre ni un bouton. */
     public const TEXTES_DU_HERO = [
         'aria_defilement' => ['intitule' => 'Flèche de défilement — description', 'defaut' => 'Faire défiler vers le contenu'],
@@ -68,6 +60,14 @@ class PageAccueil extends Component
         'titre_lien' => ['intitule' => 'Bulle d’aide d’un logo (:nom sera remplacé)', 'defaut' => 'Ouvrir le site de :nom'],
     ];
 
+    /**
+     * Les huit modules de l'accueil, dans l'ordre ou le visiteur les voit.
+     *
+     * Chaque entree decrit ce que le module pilote, et d'ou vient la donnee —
+     * l'ecran l'affiche, pour qu'un editeur sache ce qu'il touche.
+     *
+     * @return array<string, array<string, mixed>>
+     */
     public function modules(): array
     {
         return [
@@ -77,7 +77,14 @@ class PageAccueil extends Component
                 'section' => 'home.hero',
                 'fond' => 'accueil-hero',
                 'ancre' => '#accueil',
-                'textes' => self::TEXTES_DU_HERO,
+                // Les textes propres au hero, ET ce que la page annonce
+                // d'elle-meme aux moteurs — deux lignes ecrites en dur en tete
+                // de la vue. Une seule cle « textes » par module : deux
+                // ecraseraient l'une l'autre en silence.
+                'textes' => self::TEXTES_DU_HERO + self::referencement(
+                    'Votre propriété, notre priorité',
+                    'Société Civile Immobilière à Abidjan : achat, vente, location, construction et gestion de patrimoine immobilier.',
+                ),
             ],
             'bandeau' => [
                 'intitule' => __('Bande déroulante'),

@@ -112,10 +112,17 @@ class CatalogueDesBiens extends Component
             'biens.page', 'biens.filters', 'biens.catalog', 'biens.detail', 'biens.visit',
         ])->get()->keyBy('slug');
 
+        $banniere = $sections->get('biens.page');
+
         return view('public.biens', [
             'biens' => $biens,
             'langue' => $langue,
-            'banniere' => $sections->get('biens.page'),
+            // Ce que la page annonce d'elle-meme aux moteurs. La mise en page
+            // retombe sur « Biens Immobiliers » quand rien n'est saisi, comme
+            // avant.
+            'titre' => $banniere?->texteBilingue('meta_titre', $langue) ?: null,
+            'description' => $banniere?->texteBilingue('meta_description', $langue) ?: null,
+            'banniere' => $banniere,
             'filtres' => $sections->get('biens.filters'),
             'sectionCatalogue' => $sections->get('biens.catalog'),
             'sectionFiche' => $sections->get('biens.detail'),

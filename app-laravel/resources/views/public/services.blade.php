@@ -1,7 +1,7 @@
 @extends('public.layout')
 
-@section('titre', __('Nos services'))
-@section('description', __('Foncier, construction, gestion locative, achat, vente, administration de biens : découvrez tous les services immobiliers de SCI4K à Abidjan.'))
+@section('titre', $banniere?->texteBilingue('meta_titre', $langue) ?: __('Nos services'))
+@section('description', $banniere?->texteBilingue('meta_description', $langue) ?: __('Foncier, construction, gestion locative, achat, vente, administration de biens : découvrez tous les services immobiliers de SCI4K à Abidjan.'))
 @section('classe-page', 'page-services')
 
 @section('contenu')

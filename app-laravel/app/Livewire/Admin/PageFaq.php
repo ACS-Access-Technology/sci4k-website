@@ -72,6 +72,12 @@ class PageFaq extends Component
                 'resume' => __('Étiquette, titre, accroche et image de fond.'),
                 'section' => 'faq.page',
                 'fond' => 'banniere-faq',
+                // Ce que la page annonce d'elle-meme aux moteurs. C'etait
+                // ecrit en dur en tete de la vue.
+                'textes' => self::referencement(
+                    'Questions fréquentes',
+                    "Toutes les réponses à vos questions sur le foncier, la construction, la gestion locative, l'achat et la vente immobilière à Abidjan.",
+                ),
             ],
             'rubriques' => [
                 'intitule' => __('Rubriques'),

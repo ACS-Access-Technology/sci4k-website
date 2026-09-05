@@ -2,8 +2,8 @@
 
 {{-- La mise en page ajoute déjà « — SCI4K » : le répéter ici donnait
      « SCI4K — … — SCI4K » dans l'onglet. --}}
-@section('titre', __('Votre propriété, notre priorité'))
-@section('description', __("Société Civile Immobilière à Abidjan : achat, vente, location, construction et gestion de patrimoine immobilier."))
+@section('titre', $hero?->texteBilingue('meta_titre', $langue) ?: __('Votre propriété, notre priorité'))
+@section('description', $hero?->texteBilingue('meta_description', $langue) ?: __("Société Civile Immobilière à Abidjan : achat, vente, location, construction et gestion de patrimoine immobilier."))
 @section('classe-page', 'page-accueil')
 
 @section('contenu')
