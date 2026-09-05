@@ -96,11 +96,23 @@ it('n affiche pas de formulaire sur les modules sans en-tete', function (string 
         ->assertDontSee('wire:model="entete.titre_fr"', false);
 })->with(['filtres', 'articles']);
 
-it('refuse d enregistrer un module sans section', function () {
+/*
+ * Ce test exigeait auparavant que le module « Articles » REFUSE
+ * l'enregistrement, faute de section. Il n'en avait pas parce que la grille
+ * n'affiche pas d'en-tete — et c'est precisement ce qui laissait le lien de
+ * retour et les boutons de partage de la PAGE d'un article figes dans la vue,
+ * modifiables nulle part. Le module porte desormais une section, et le test dit
+ * ce qui est vrai maintenant.
+ */
+it('enregistre les textes de la page d un article', function () {
     Livewire::actingAs($this->admin)->test(PageActualites::class)
         ->call('ouvrir', 'articles')
+        ->set('textes.lien_retour_fr', 'Revenir aux actualités')
         ->call('enregistrer')
-        ->assertNotFound();
+        ->assertHasNoErrors();
+
+    expect(ReglageDeSection::where('slug', 'news.article')->first()?->texteBilingue('lien_retour', 'fr'))
+        ->toBe('Revenir aux actualités');
 });
 
 /* ------------------------------------------------------------------ */

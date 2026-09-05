@@ -201,5 +201,9 @@
     "Fiche d’un bien": "Fiche d’un bien",
     "Libellés des caractéristiques, communs à la fenêtre du catalogue et à la fiche.": "Libellés des caractéristiques, communs à la fenêtre du catalogue et à la fiche.",
     "Demande de visite": "Demande de visite",
-    "Tous les textes du formulaire de rendez-vous.": "Tous les textes du formulaire de rendez-vous."
+    "Tous les textes du formulaire de rendez-vous.": "Tous les textes du formulaire de rendez-vous.",
+    "Les catégories proposées, et les libellés du formulaire de recherche.": "Les catégories proposées, et les libellés du formulaire de recherche.",
+    "Les articles publiés, et les textes de la page d’un article.": "Les articles publiés, et les textes de la page d’un article.",
+    "Ce que les lecteurs écrivent, et les textes du bloc sous l’article.": "Ce que les lecteurs écrivent, et les textes du bloc sous l’article.",
+    "Le bloc de contact placé sous la liste et sous chaque article.": "Le bloc de contact placé sous la liste et sous chaque article."
 }

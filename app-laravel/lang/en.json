@@ -1182,5 +1182,9 @@
     "Fiche d’un bien": "Property page",
     "Libellés des caractéristiques, communs à la fenêtre du catalogue et à la fiche.": "Feature labels, shared by the catalogue window and the property page.",
     "Demande de visite": "Visit request",
-    "Tous les textes du formulaire de rendez-vous.": "All the texts of the appointment form."
+    "Tous les textes du formulaire de rendez-vous.": "All the texts of the appointment form.",
+    "Les catégories proposées, et les libellés du formulaire de recherche.": "The categories on offer, and the labels of the search form.",
+    "Les articles publiés, et les textes de la page d’un article.": "Published articles, and the texts of an article page.",
+    "Ce que les lecteurs écrivent, et les textes du bloc sous l’article.": "What readers write, and the texts of the block under the article.",
+    "Le bloc de contact placé sous la liste et sous chaque article.": "The contact block placed under the list and under each article."
 }

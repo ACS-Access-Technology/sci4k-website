@@ -6,6 +6,23 @@
 
 @section('contenu')
 
+{{--
+  Le lien de retour, les boutons de partage et tout le bloc de commentaires
+  etaient ecrits en dur et traduits par __() : aucun ecran ne les exposait.
+  L'ecran des commentaires pilotait leur moderation, mais pas un seul des mots
+  que le LECTEUR voit autour d'eux.
+
+  Ils viennent maintenant de « Pages du site → Actualités », modules
+  « Articles », « Commentaires » et « Appel à l'action ».
+
+  « Site web » n'y figure pas : c'est l'etiquette du champ piege, place hors de
+  l'ecran et jamais montre. Le rendre modifiable aurait ajoute un champ dont
+  personne ne peut voir l'effet.
+--}}
+@php($tArticle = fn (string $nom, string $defaut) => $sectionArticle?->texteBilingue($nom, $langue) ?: $defaut)
+@php($tCommentaire = fn (string $nom, string $defaut) => $sectionCommentaires?->texteBilingue($nom, $langue) ?: $defaut)
+@php($tAppel = fn (string $nom, string $defaut) => $cta?->texteBilingue($nom, $langue) ?: $defaut)
+
 <section class="page-banner pb-actualites">
   <div class="wrap">
     <div class="tag reveal">{{ $article->categorie->nom($langue) }}</div>
@@ -16,7 +33,7 @@
       adresse propre.
     --}}
     <p class="reveal">
-      <a class="article-back" href="{{ route('actualites.index') }}">&larr; {{ __('Retour aux actualités') }}</a>
+      <a class="article-back" href="{{ route('actualites.index') }}">&larr; {{ $tArticle('lien_retour', __('Retour aux actualités')) }}</a>
     </p>
   </div>
 </section>
@@ -40,11 +57,11 @@
         @if ($partageActif)
           @php($urlArticle = route('actualites.detail', $article))
           <div class="article-share">
-            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($urlArticle) }}" target="_blank" rel="noopener noreferrer">{{ __('Facebook') }}</a>
-            <a href="https://wa.me/?text={{ urlencode($article->titre($langue).' '.$urlArticle) }}" target="_blank" rel="noopener noreferrer">{{ __('WhatsApp') }}</a>
-            <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode($urlArticle) }}" target="_blank" rel="noopener noreferrer">{{ __('LinkedIn') }}</a>
-            <a href="https://twitter.com/intent/tweet?url={{ urlencode($urlArticle) }}&text={{ urlencode($article->titre($langue)) }}" target="_blank" rel="noopener noreferrer">{{ __('X/Twitter') }}</a>
-            <button type="button" onclick="navigator.clipboard && navigator.clipboard.writeText('{{ $urlArticle }}')">{{ __('Copier le lien') }}</button>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($urlArticle) }}" target="_blank" rel="noopener noreferrer">{{ $tArticle('partage_facebook', __('Facebook')) }}</a>
+            <a href="https://wa.me/?text={{ urlencode($article->titre($langue).' '.$urlArticle) }}" target="_blank" rel="noopener noreferrer">{{ $tArticle('partage_whatsapp', __('WhatsApp')) }}</a>
+            <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode($urlArticle) }}" target="_blank" rel="noopener noreferrer">{{ $tArticle('partage_linkedin', __('LinkedIn')) }}</a>
+            <a href="https://twitter.com/intent/tweet?url={{ urlencode($urlArticle) }}&text={{ urlencode($article->titre($langue)) }}" target="_blank" rel="noopener noreferrer">{{ $tArticle('partage_x', __('X/Twitter')) }}</a>
+            <button type="button" onclick="navigator.clipboard && navigator.clipboard.writeText('{{ $urlArticle }}')">{{ $tArticle('partage_lien', __('Copier le lien')) }}</button>
           </div>
         @endif
       </div>
@@ -109,18 +126,18 @@
                un geste rare. --}}
           <button type="button" class="comment-reply-btn"
                   data-repondre-a="{{ $commentaire->id }}"
-                  data-repondre-nom="{{ $commentaire->auteur }}">{{ __('Répondre') }}</button>
+                  data-repondre-nom="{{ $commentaire->auteur }}">{{ $tCommentaire('libelle_repondre', __('Répondre')) }}</button>
         @endif
       </article>
     @empty
-      <p class="comments-empty">{{ __('Aucun commentaire pour le moment. Soyez le premier à réagir.') }}</p>
+      <p class="comments-empty">{{ $tCommentaire('aucun_commentaire', __('Aucun commentaire pour le moment. Soyez le premier à réagir.')) }}</p>
     @endforelse
 
     @if ($article->commentaires_ouverts)
       <form class="comment-form" method="POST" action="{{ route('commentaires.depot', $article) }}">
         @csrf
 
-        <h3 id="comment-form-title">{{ __('Laisser un commentaire') }}</h3>
+        <h3 id="comment-form-title">{{ $tCommentaire('titre_formulaire', __('Laisser un commentaire')) }}</h3>
 
         {{-- Cible de la reponse. Vide par defaut ; le bouton « Répondre » la
              remplit, et « Annuler » la vide. --}}
@@ -128,7 +145,7 @@
 
         <p class="comment-replying" id="commentReplying" hidden>
           <span></span>
-          <button type="button" id="commentCancelReply">{{ __('Annuler la réponse') }}</button>
+          <button type="button" id="commentCancelReply">{{ $tCommentaire('libelle_annuler_reponse', __('Annuler la réponse')) }}</button>
         </p>
 
         {{-- Champ piege : invisible et hors du parcours au clavier, un humain
@@ -141,27 +158,27 @@
 
         <div class="comment-form-row">
           <div class="comment-form-group">
-            <label for="commentAuteur">{{ __('Votre nom *') }}</label>
+            <label for="commentAuteur">{{ $tCommentaire('libelle_nom', __('Votre nom *')) }}</label>
             <input type="text" id="commentAuteur" name="auteur" required maxlength="120"
                    autocomplete="name" value="{{ old('auteur') }}">
             @error('auteur') <span class="comment-error">{{ $message }}</span> @enderror
           </div>
           <div class="comment-form-group">
-            <label for="commentEmail">{{ __('Votre e-mail *') }}</label>
+            <label for="commentEmail">{{ $tCommentaire('libelle_email', __('Votre e-mail *')) }}</label>
             <input type="email" id="commentEmail" name="email" required maxlength="160"
                    autocomplete="email" value="{{ old('email') }}">
-            <span class="comment-hint">{{ __('Il ne sera pas affiché.') }}</span>
+            <span class="comment-hint">{{ $tCommentaire('aide_email', __('Il ne sera pas affiché.')) }}</span>
             @error('email') <span class="comment-error">{{ $message }}</span> @enderror
           </div>
         </div>
 
         <div class="comment-form-group">
-          <label for="commentMessage">{{ __('Votre commentaire *') }}</label>
+          <label for="commentMessage">{{ $tCommentaire('libelle_message', __('Votre commentaire *')) }}</label>
           <textarea id="commentMessage" name="message" rows="4" required maxlength="3000">{{ old('message') }}</textarea>
           @error('message') <span class="comment-error">{{ $message }}</span> @enderror
         </div>
 
-        <button type="submit" class="cta-btn">{{ __('Publier mon commentaire') }}</button>
+        <button type="submit" class="cta-btn">{{ $tCommentaire('libelle_bouton', __('Publier mon commentaire')) }}</button>
       </form>
 
       {{-- « Répondre » ne fait que remplir le champ cache et amener le regard
@@ -173,7 +190,12 @@
           var parent = document.getElementById('commentParent');
           var bandeau = document.getElementById('commentReplying');
           var libelle = bandeau.querySelector('span');
-          var modele = @json(__('En réponse à :nom', ['nom' => '__NOM__']));
+          {{-- Le modele est calcule AVANT d'entrer dans @json : la directive
+               lit ses arguments en comptant les parentheses, et un appel
+               imbrique a deux niveaux l'egare — elle coupait l'expression au
+               milieu, produisant une vue qui ne compilait plus. --}}
+          @php($modeleReponse = str_replace(':nom', '__NOM__', $tCommentaire('en_reponse_a', __('En réponse à :nom', ['nom' => ':nom']))))
+          var modele = @json($modeleReponse);
 
           document.querySelectorAll('[data-repondre-a]').forEach(function (bouton) {
             bouton.addEventListener('click', function () {
@@ -195,7 +217,7 @@
         })();
       </script>
     @else
-      <p class="comments-closed">{{ __('Les commentaires sont fermés sur cet article.') }}</p>
+      <p class="comments-closed">{{ $tCommentaire('commentaires_fermes', __('Les commentaires sont fermés sur cet article.')) }}</p>
     @endif
   </div>
 </section>
@@ -204,7 +226,7 @@
   <div class="wrap">
     <h2>{{ $cta?->titre($langue) ?: __("Une question sur l'un de ces sujets ?") }}</h2>
     <p>{{ $cta?->chapo($langue) ?: __("Nos conseillers répondent à vos questions sur le foncier, l'achat, la location et la gestion de votre patrimoine à Abidjan.") }}</p>
-    <a href="{{ route('contact.index') }}" class="cta-btn">{{ __('Contacter SCI4K') }}</a>
+    <a href="{{ route('contact.index') }}" class="cta-btn">{{ $tAppel('libelle_bouton', __('Contacter SCI4K')) }}</a>
   </div>
 </section>
 

@@ -90,10 +90,10 @@ it('applique une meme saisie a la fenetre du catalogue et a la fiche', function 
         ->assertSee('Nombre de pièces habitables')
         ->assertSee('Je veux visiter');
 
-    $fiche = $this->get(route('biens.detail', $this->bien->slug))->assertOk()->getContent();
-
-    expect($fiche)->toContain('Nombre de pièces habitables')
-        ->and($fiche)->toContain('Je veux visiter');
+    $this->get(route('biens.detail', $this->bien->slug))
+        ->assertOk()
+        ->assertSee('Nombre de pièces habitables', false)
+        ->assertSee('Je veux visiter', false);
 });
 
 it('applique les libelles propres a la fiche', function () {

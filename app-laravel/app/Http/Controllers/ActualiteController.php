@@ -16,13 +16,19 @@ class ActualiteController extends Controller
     public function index(): View
     {
         $langue = app()->getLocale();
-        $enTetes = ReglageDeSection::whereIn('slug', ['news.page', 'news.cta'])->get()->keyBy('slug');
+        // Les sections de la page, chargees d'une seule requete. `news.filters`
+        // ne porte aucun en-tete : elle ne transporte que les libelles du
+        // formulaire de recherche, ecrits en dur dans la vue jusqu'ici.
+        $enTetes = ReglageDeSection::whereIn('slug', ['news.page', 'news.cta', 'news.filters'])
+            ->get()
+            ->keyBy('slug');
 
         return view('public.actualites.index', [
             'articles' => Article::publies()->with('categorie')->latest('date_publication')->paginate(9),
             'categories' => Categorie::orderBy('ordre')->get(),
             'banniere' => $enTetes->get('news.page'),
             'cta' => $enTetes->get('news.cta'),
+            'sectionFiltres' => $enTetes->get('news.filters'),
             'langue' => $langue,
             'noeudPage' => [
                 '@type' => 'CollectionPage',
@@ -77,10 +83,20 @@ class ActualiteController extends Controller
             $noeud['image'] = $url;
         }
 
+        // Trois sections pour cette page, chargees d'une seule requete. Aucune
+        // ne porte d'en-tete hormis l'appel a l'action : elles transportent les
+        // textes du lien de retour, des boutons de partage et du bloc de
+        // commentaires, tous ecrits en dur dans la vue jusqu'ici.
+        $sections = ReglageDeSection::whereIn('slug', ['news.cta', 'news.article', 'news.comments'])
+            ->get()
+            ->keyBy('slug');
+
         return view('public.actualites.detail', [
             'article' => $article,
             'langue' => $langue,
-            'cta' => ReglageDeSection::where('slug', 'news.cta')->first(),
+            'cta' => $sections->get('news.cta'),
+            'sectionArticle' => $sections->get('news.article'),
+            'sectionCommentaires' => $sections->get('news.comments'),
             'partageActif' => Parametre::actif('boutons_partage', false),
             // Seuls les commentaires PUBLIES, et seulement ceux de premier
             // niveau : les reponses sont chargees avec leur parent, ce qui
