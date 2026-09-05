@@ -173,8 +173,8 @@ class PagePresentation extends Component
         $this->chargerLesTextes($section);
 
         foreach (['etiquette', 'titre', 'chapo', 'contenu'] as $champ) {
-            $this->entete[$champ.'_fr'] = (string) ($section?->{$champ.'_fr'} ?? '');
-            $this->entete[$champ.'_en'] = (string) ($section?->{$champ.'_en'} ?? '');
+            $this->entete[$champ.'_fr'] = (string) ($section->{$champ.'_fr'} ?? '');
+            $this->entete[$champ.'_en'] = (string) ($section->{$champ.'_en'} ?? '');
         }
 
         // Le corps de texte a longtemps loge dans « chapo ». Sur une base ou la

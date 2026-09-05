@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\CollectionOrdonnable;
 use App\Models\Concerns\JournaliseSesChangements;
 use App\Models\Concerns\TraduitParColonnes;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -61,9 +62,12 @@ class ImageDeFond extends Model
      * migration. Une page sans illustration se lit ; une exception non.
      *
      * @param  list<string>  $slugs
-     * @return Collection<string, self>
+     *                               Le type de retour est celui d'Eloquent et non celui du support : c'est
+     *                               ce que `get()->keyBy()` produit reellement, et l'annoncer autrement
+     *                               obligeait a une conversion que personne ne faisait.
+     * @return EloquentCollection<string, static>
      */
-    public static function parSlugs(array $slugs): Collection
+    public static function parSlugs(array $slugs): EloquentCollection
     {
         try {
             // Pas de garde sur « fichier » : la colonne est NOT NULL. Un
@@ -75,7 +79,9 @@ class ImageDeFond extends Model
                 ->get()
                 ->keyBy('slug');
         } catch (\Throwable) {
-            return collect();
+            // Une collection VIDE du meme type : `collect()` en rend une du
+            // support, que la signature refuse.
+            return new EloquentCollection;
         }
     }
 

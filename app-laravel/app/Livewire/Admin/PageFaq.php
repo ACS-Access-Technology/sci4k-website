@@ -159,8 +159,8 @@ class PageFaq extends Component
         $section = ReglageDeSection::where('slug', $slug)->first();
 
         foreach (['etiquette', 'titre', 'chapo'] as $champ) {
-            $this->entete[$champ.'_fr'] = (string) ($section?->{$champ.'_fr'} ?? '');
-            $this->entete[$champ.'_en'] = (string) ($section?->{$champ.'_en'} ?? '');
+            $this->entete[$champ.'_fr'] = (string) ($section->{$champ.'_fr'} ?? '');
+            $this->entete[$champ.'_en'] = (string) ($section->{$champ.'_en'} ?? '');
         }
 
         $this->chargerLesTextes($section);

@@ -54,7 +54,7 @@ class DemandeDeVisiteController extends Controller
             'bien_id' => $bien?->id,
             // Recopie : la ligne doit rester lisible quand le bien sera vendu
             // puis retire du catalogue.
-            'bien_intitule' => $bien?->titre_fr ?? ($valide['bien'] ?? null),
+            'bien_intitule' => $bien->titre_fr ?? ($valide['bien'] ?? null),
             'creneau_souhaite' => $valide['creneau_souhaite'] ?? null,
         ]);
 

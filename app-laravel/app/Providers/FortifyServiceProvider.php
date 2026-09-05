@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
+use Laravel\Passkeys\Contracts\PasskeyUser;
+use Laravel\Passkeys\Passkey;
 use Laravel\Passkeys\Passkeys;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -77,8 +79,14 @@ class FortifyServiceProvider extends ServiceProvider
      */
     private function refuserLesComptesInactifsParPasskey(): void
     {
+        // La signature suit celle que le paquet appelle : requete, utilisateur,
+        // cle. PHP tolere qu'une fermeture en declare moins — les arguments en
+        // trop sont ignores — mais l'ecrire au complet dit ce qui arrive
+        // vraiment, et le type de l'utilisateur est celui du CONTRAT et non le
+        // notre : c'est le paquet qui choisit ce qu'il passe.
         Passkeys::authorizeLoginUsing(
-            fn (Request $requete, User $utilisateur) => $utilisateur->peutSeConnecter(),
+            fn (Request $requete, PasskeyUser $utilisateur, Passkey $cle): bool => $utilisateur instanceof User
+                && $utilisateur->peutSeConnecter(),
         );
     }
 

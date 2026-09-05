@@ -67,8 +67,16 @@ class FaqListe extends ListeOrdonnable
      */
     protected function elements(): Collection
     {
+        // Le tri passe par une cle CALCULEE plutot que par une fermeture typee :
+        // la methode mere rend une collection de Model, et lui promettre des
+        // QuestionFaq serait mentir sur ce qu'elle rend vraiment. La cle, elle,
+        // ne demande rien de plus que ce que la collection contient.
         return parent::elements()
-            ->sortBy(fn ($q) => [$q->rubrique->ordre, $q->ordre, $q->id])
+            ->sortBy([
+                fn ($question) => $question->rubrique->ordre,
+                fn ($question) => $question->ordre,
+                fn ($question) => $question->id,
+            ])
             ->values();
     }
 }

@@ -192,10 +192,16 @@ class ArticleFormulaire extends Component
         // continuerait sinon d'enregistrer.
         abort_unless((bool) auth()->user()?->hasAnyRole(['administrateur', 'editeur', 'redacteur']), 403);
 
+        // Le compte est lu UNE FOIS, et sans `?->` : la ligne ci-dessus abandonne
+        // deja pour qui n'est pas connecte — `auth()->user()` y vaut null, le
+        // `(bool)` vaut false, et abort_unless coupe. Passe ce point, le compte
+        // NE PEUT PAS etre nul, et le `?->` protegeait contre un cas impossible.
+        $compte = auth()->user();
+
         // Meme controle qu'au montage, rejoue ici : l'ecran a pu rester ouvert
         // pendant qu'un editeur reprenait l'article a son compte.
-        if ($this->article?->exists && auth()->user()?->limiteASesArticles()
-            && $this->article->auteur_id !== auth()->id()) {
+        if ($this->article?->exists && $compte->limiteASesArticles()
+            && $this->article->auteur_id !== $compte->id) {
             abort(403);
         }
 
@@ -203,7 +209,7 @@ class ArticleFormulaire extends Component
         // est deja masque dans le gabarit, mais `statut` est une propriete
         // publique — le navigateur en fixe la valeur, et une propriete masquee
         // reste accessible depuis /livewire/update.
-        if (! auth()->user()?->peutPublier()) {
+        if (! $compte->peutPublier()) {
             $this->statut = 'brouillon';
         }
 
@@ -225,7 +231,7 @@ class ArticleFormulaire extends Component
             'statut' => $this->statut,
             // L'auteur est pose a la CREATION seulement : reprendre un article
             // pour y corriger une virgule ne doit pas en changer la signature.
-            'auteur_id' => $this->article?->auteur_id ?? auth()->id(),
+            'auteur_id' => $this->article->auteur_id ?? auth()->id(),
             'titre_fr' => $this->titreFr,
             'titre_en' => $this->titreEn,
             'resume_fr' => $this->resumeFr,

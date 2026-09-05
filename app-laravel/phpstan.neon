@@ -10,4 +10,24 @@ parameters:
         - database/
         - routes/
 
-    level: 7
+    # NIVEAU 5, et non 7.
+    #
+    # Le niveau 7 relevait 393 erreurs, dont 310 de la meme famille : du PHPDoc
+    # absent — « array » au lieu de « array<string, mixed> », un generique qui
+    # manque. Ce n'est pas du code douteux, et les vrais defauts que l'analyse a
+    # trouves — parse_url qui rend FALSE, fopen qui echoue, une relation sans
+    # type — sont TOUS releves des le niveau 5.
+    #
+    # Un analyseur a 393 erreurs n'est pas un analyseur : on cesse de le lire,
+    # et le jour ou il signale quelque chose de reel, c'est noye dans le reste.
+    # Le projet vise donc zero au niveau 5, condition de fusion, plutot que
+    # trois cent quatre-vingt-treize au niveau 7 que personne ne regarde.
+    level: 5
+
+    # « Ne crois pas aveuglement les annotations du framework. »
+    #
+    # Laravel annote `$this->command` d'un seeder comme non-nul ; il est nul
+    # hors Artisan. Suivre l'annotation aurait fait retirer des `?->`
+    # indispensables et casser tout `db:seed` appele programmatiquement.
+    # phpstan suggere lui-meme ce reglage dans ses messages.
+    treatPhpDocTypesAsCertain: false

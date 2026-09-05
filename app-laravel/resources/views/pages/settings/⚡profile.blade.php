@@ -1,8 +1,9 @@
 <?php
 
-use App\Concerns\ProfileValidationRules;
+use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
@@ -10,7 +11,6 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 
 new #[Title('Profile settings')] class extends Component {
-    use ProfileValidationRules;
     use WithFileUploads;
 
     public string $name = '';
@@ -38,7 +38,11 @@ new #[Title('Profile settings')] class extends Component {
     {
         $user = Auth::user();
 
-        $validated = $this->validate($this->profileRules($user->id) + ['photo' => $this->reglesDeLaPhoto()]);
+        $validated = $this->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'photo' => $this->reglesDeLaPhoto(),
+        ]);
 
         // La photo n'est pas une colonne remplie par fill() : elle passe par
         // televerserLaPhoto(), qui gere aussi l'effacement de l'ancienne.
