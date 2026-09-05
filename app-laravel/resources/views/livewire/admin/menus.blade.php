@@ -141,6 +141,21 @@
         </div>
     </section>
 
+    {{-- Les textes de l'habillage : ceux de l'en-tete, du pied et des boutons
+         flottants. Ils etaient ecrits en dur dans les trois partiels et
+         apparaissent sur TOUTES les pages. Beaucoup ne se lisent qu'a la souris
+         ou au lecteur d'ecran, mais un texte qu'un visiteur peut entendre est un
+         texte que l'agence doit pouvoir changer.
+
+         La declaration vient du composant, comme sur les ecrans de page : le
+         partiel attend `$description['textes']`. --}}
+    <section class="rounded-xl border border-zinc-200 p-5 dark:border-zinc-700">
+        @include('livewire.admin.partials.textes-du-module', [
+            'description' => ['textes' => \App\Livewire\Admin\Menus::TEXTES_DU_SITE],
+            'legendeDesTextes' => __('Textes de l’en-tête, du pied et des boutons flottants'),
+        ])
+    </section>
+
     <div class="flex justify-end border-t border-zinc-200 pt-4 dark:border-zinc-700">
         <button type="submit" class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
             {{ __('Enregistrer les menus') }}

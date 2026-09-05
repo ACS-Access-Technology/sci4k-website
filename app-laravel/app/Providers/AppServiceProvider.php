@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Livewire\Admin\Menus;
 use App\Models\EntreeDeMenu;
 use App\Models\ImageDeFond;
 use App\Models\Parametre;
+use App\Models\ReglageDeSection;
 use App\Models\Service;
 use App\Services\Traduction\Traducteur;
 use App\Services\Traduction\TraducteurDeepL;
@@ -130,6 +132,7 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('public.partials.pied', function ($vue) {
             $vue->with([
+                'chrome' => $this->textesDeLHabillage(),
                 'servicesDuPied' => Service::visibles()->ordonnees()->get(),
                 'menuPiedNavigation' => $this->entreesDeMenu('pied_navigation'),
                 'menuPiedLegal' => $this->entreesDeMenu('pied_legal'),
@@ -161,6 +164,7 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('public.partials.entete', function ($vue) {
             $vue->with([
+                'chrome' => $this->textesDeLHabillage(),
                 'menuPrincipal' => $this->entreesDeMenu('principal'),
                 'nomDuSite' => $this->parametre('nom_du_site', 'SCI4K'),
                 'logoPublic' => $this->parametre('logo', 'images/image (3).png'),
@@ -203,12 +207,15 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('public.partials.flottants', function ($vue) {
+            $chrome = $this->textesDeLHabillage();
+
             $numero = preg_replace('/\D+/', '', (string) $this->parametre('whatsapp', '2250706165029'));
 
             $vue->with([
                 'whatsappPublic' => $numero ?: '2250706165029',
                 'whatsappMessage' => $this->parametre('whatsapp_message_'.app()->getLocale(), __('Bonjour SCI4K, je souhaite avoir des informations.')),
                 'chatActif' => $this->parametreActif('chat_actif', false),
+                'chrome' => $chrome,
             ]);
         });
 
@@ -247,6 +254,30 @@ class AppServiceProvider extends ServiceProvider
             return Schema::hasTable('parametres') ? Parametre::lire($cle, $defaut) : $defaut;
         } catch (\Throwable) {
             return $defaut;
+        }
+    }
+
+    /**
+     * La section qui porte les textes de l'en-tete, du pied et des boutons
+     * flottants, editee depuis l'ecran « Menus ».
+     *
+     * Elle est lue une fois par requete et non une fois par partiel : les trois
+     * l'emploient, et trois requetes pour une meme ligne n'auraient rien
+     * apporte.
+     */
+    protected function textesDeLHabillage(): ?ReglageDeSection
+    {
+        // PAS de memoisation statique ici. Une variable `static` vit aussi
+        // longtemps que le processus, pas que la requete : elle figeait la
+        // premiere lecture — un `null` sur une base encore vide — et l'editeur
+        // ne voyait plus jamais ses textes apparaitre. Trois lectures d'une
+        // ligne indexee coutent moins cher qu'un cache qui ment.
+        try {
+            return Schema::hasTable('reglages_de_section')
+                ? ReglageDeSection::where('slug', Menus::SECTION)->first()
+                : null;
+        } catch (\Throwable) {
+            return null;
         }
     }
 

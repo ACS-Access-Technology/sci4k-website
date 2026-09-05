@@ -1,3 +1,5 @@
+@php($t = fn (string $nom, string $defaut) => $chrome?->texteBilingue($nom, $langueDuSite ?? app()->getLocale()) ?: $defaut)
+@php($t = fn (string $nom, string $defaut) => $chrome?->texteBilingue($nom, $langueDuSite ?? app()->getLocale()) ?: $defaut)
 {{--
   En-tete des pages publiques.
 
@@ -27,36 +29,36 @@
 
 <header id="siteHeader">
   <div class="wrap nav">
-    <a href="{{ route('home') }}" class="logo"><span class="mark"><img src="{{ asset($logoPublic) }}" alt="{{ __('Logo :site', ['site' => $nomDuSite]) }}"></span> {{ $nomDuSite }}</a>
+    <a href="{{ route('home') }}" class="logo"><span class="mark"><img src="{{ asset($logoPublic) }}" alt="{{ $t('aria_logo', $t('aria_logo', __('Logo :site', ['site' => $nomDuSite]))) }}"></span> {{ $nomDuSite }}</a>
     <nav class="links">
       @foreach ($menuPrincipal as $entree)
         <a href="{{ $entree->lien() }}" @class(['active' => $entree->estCourante()])>{{ $entree->libelle($langue) }}</a>
       @endforeach
     </nav>
     <div class="util-switches">
-      <button class="theme-toggle" aria-label="{{ __('Basculer mode sombre / clair') }}" title="{{ __('Mode sombre / clair') }}">
+      <button class="theme-toggle" aria-label="{{ $t('aria_theme', $t('aria_theme', __('Basculer mode sombre / clair'))) }}" title="{{ $t('titre_theme', $t('titre_theme', __('Mode sombre / clair'))) }}">
         <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
         <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
       </button>
       <a class="lang-toggle" href="{{ route('langue.basculer', $autreLangue) }}"
-         aria-label="{{ __('Changer de langue') }}" title="Français / English">{{ strtoupper($autreLangue) }}</a>
+         aria-label="{{ $t('aria_langue', $t('aria_langue', __('Changer de langue'))) }}" title="Français / English">{{ strtoupper($autreLangue) }}</a>
     </div>
     @if ($ctaHeaderActif)
       <a href="{{ $ctaHeaderUrl }}" class="cta-btn">{{ $ctaHeaderLibelle }}</a>
     @endif
-    <button class="burger" id="burgerBtn" aria-label="{{ __('Menu Mobile') }}">☰</button>
+    <button class="burger" id="burgerBtn" aria-label="{{ $t('aria_menu_mobile', $t('aria_menu_mobile', __('Menu Mobile'))) }}">☰</button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
     @foreach ($menuPrincipal as $entree)
       <a href="{{ $entree->lien() }}" @class(['active' => $entree->estCourante()])>{{ $entree->libelle($langue) }}</a>
     @endforeach
     <div class="util-switches">
-      <button class="theme-toggle" aria-label="{{ __('Basculer mode sombre / clair') }}" title="{{ __('Mode sombre / clair') }}">
+      <button class="theme-toggle" aria-label="{{ $t('aria_theme', $t('aria_theme', __('Basculer mode sombre / clair'))) }}" title="{{ $t('titre_theme', $t('titre_theme', __('Mode sombre / clair'))) }}">
         <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
         <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
       </button>
       <a class="lang-toggle" href="{{ route('langue.basculer', $autreLangue) }}"
-         aria-label="{{ __('Changer de langue') }}" title="Français / English">{{ strtoupper($autreLangue) }}</a>
+         aria-label="{{ $t('aria_langue', $t('aria_langue', __('Changer de langue'))) }}" title="Français / English">{{ strtoupper($autreLangue) }}</a>
     </div>
     @if ($ctaHeaderActif)
       <a href="{{ $ctaHeaderUrl }}" class="cta-btn">{{ $ctaHeaderLibelle }}</a>

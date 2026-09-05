@@ -1,3 +1,4 @@
+@php($t = fn (string $nom, string $defaut) => $chrome?->texteBilingue($nom, $langueDuSite ?? app()->getLocale()) ?: $defaut)
 {{--
   Pied des pages publiques.
 
@@ -13,7 +14,7 @@
  <div class="wrap">
   <div class="footer-top">
     <div>
-      <div class="foot-logo"><img src="{{ asset($logoPublic) }}" alt="{{ __('Logo :site', ['site' => $nomDuSite]) }}" style="height:36px;width:auto;" loading="lazy"> {{ $nomDuSite }}</div>
+      <div class="foot-logo"><img src="{{ asset($logoPublic) }}" alt="{{ $t('aria_logo', __('Logo :site', ['site' => $nomDuSite])) }}" style="height:36px;width:auto;" loading="lazy"> {{ $nomDuSite }}</div>
       <p>{{ $descriptionCourte }}</p>
       @if ($liensSociaux)
         <div class="social-links">
@@ -22,10 +23,10 @@
           @endforeach
         </div>
       @endif
-      <div class="newsletter"><input type="email" aria-label="{{ __('Votre adresse email') }}" placeholder="{{ __('Votre adresse email') }}"><button type="button" class="newsletter-btn" aria-label="{{ __("S'inscrire à la newsletter") }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></button></div>
+      <div class="newsletter"><input type="email" aria-label="{{ $t('exemple_newsletter', __('Votre adresse email')) }}" placeholder="{{ $t('exemple_newsletter', __('Votre adresse email')) }}"><button type="button" class="newsletter-btn" aria-label="{{ $t('aria_newsletter', __("S'inscrire à la newsletter")) }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></button></div>
     </div>
     <div>
-      <h5>{{ __('Navigation') }}</h5>
+      <h5>{{ $t('titre_navigation', __('Navigation')) }}</h5>
       {{-- Meme raison que pour la barre du haut : ces sept liens etaient
            recopies a la main a cote de ceux de l'en-tete, et les deux listes
            divergeaient des qu'on oubliait l'une des deux. --}}
@@ -34,7 +35,7 @@
       @endforeach
     </div>
     <div>
-      <h5>{{ __('Nos Services') }}</h5>
+      <h5>{{ $t('titre_services', __('Nos Services')) }}</h5>
       {{--
         Liste tiree de la base, et non plus des six liens ecrits en dur :
         depuis que l'administration cree et supprime des services, une liste
@@ -49,7 +50,7 @@
       @endforeach
     </div>
     <div>
-      <h5>{{ __('Nous contacter') }}</h5>
+      <h5>{{ $t('titre_contact', __('Nous contacter')) }}</h5>
       {{-- Trois lignes distinctes plutot qu'une chaine a sauts de ligne : le
            contrôle des traductions lit le texte source, ou « \n » compte pour
            deux caracteres, et ne retrouverait jamais la cle resolue. --}}
@@ -59,10 +60,10 @@
            le texte d'origine couvre la base pas encore renseignee. --}}
       <p>{!! nl2br(e($adressePostale)) !!}</p>
       @if ($telephonePublic)
-        <p><strong>{{ __('Tél:') }}</strong> {{ $telephonePublic }}</p>
+        <p><strong>{{ $t('libelle_telephone', __('Tél:')) }}</strong> {{ $telephonePublic }}</p>
       @endif
       @if ($emailPublic)
-        <p><strong>{{ __('Email:') }}</strong> {{ $emailPublic }}</p>
+        <p><strong>{{ $t('libelle_email', __('Email:')) }}</strong> {{ $emailPublic }}</p>
       @endif
     </div>
   </div>

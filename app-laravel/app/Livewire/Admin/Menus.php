@@ -2,8 +2,10 @@
 
 namespace App\Livewire\Admin;
 
+use App\Livewire\Concerns\PorteDesTextesDeBloc;
 use App\Models\EntreeDeMenu;
 use App\Models\Parametre;
+use App\Models\ReglageDeSection;
 use App\Models\Service;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
@@ -19,6 +21,58 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class Menus extends Component
 {
+    use PorteDesTextesDeBloc;
+
+    /**
+     * La section ou vivent les textes de l'en-tete, du pied et des boutons
+     * flottants. Ils apparaissent sur TOUTES les pages du site.
+     */
+    public const SECTION = 'site.chrome';
+
+    /**
+     * Les textes de l'habillage du site.
+     *
+     * Ils etaient ecrits en dur dans les trois partiels et traduits par __() :
+     * aucun ecran ne les exposait. Beaucoup ne se lisent qu'a la souris ou au
+     * lecteur d'ecran — un intitule de bouton, une bulle d'aide — mais un
+     * texte qu'un visiteur peut entendre est un texte que l'agence doit
+     * pouvoir changer.
+     *
+     * Ils sont ici et non dans « Configuration » : cet ecran gouverne deja
+     * l'en-tete et le pied, et ces mots s'affichent a cote des menus qu'il
+     * edite. Les mettre ailleurs aurait oblige a chercher.
+     */
+    public const TEXTES_DU_SITE = [
+        // --- en-tete ---
+        'aria_logo' => ['intitule' => 'Description du logo (lecteurs d’écran, :site sera remplacé)', 'defaut' => 'Logo :site'],
+        'aria_theme' => ['intitule' => 'Bouton de thème — description', 'defaut' => 'Basculer mode sombre / clair'],
+        'titre_theme' => ['intitule' => 'Bouton de thème — bulle d’aide', 'defaut' => 'Mode sombre / clair'],
+        'aria_langue' => ['intitule' => 'Bouton de langue — description', 'defaut' => 'Changer de langue'],
+        'aria_menu_mobile' => ['intitule' => 'Bouton du menu mobile — description', 'defaut' => 'Menu Mobile'],
+        // --- pied de page ---
+        'exemple_newsletter' => ['intitule' => 'Exemple dans le champ de la lettre d’information', 'defaut' => 'Votre adresse email'],
+        'aria_newsletter' => ['intitule' => 'Bouton d’inscription — description', 'defaut' => "S'inscrire à la newsletter"],
+        'titre_navigation' => ['intitule' => 'Titre de la colonne « Navigation »', 'defaut' => 'Navigation'],
+        'titre_services' => ['intitule' => 'Titre de la colonne « Services »', 'defaut' => 'Nos Services'],
+        'titre_contact' => ['intitule' => 'Titre de la colonne « Contact »', 'defaut' => 'Nous contacter'],
+        'libelle_telephone' => ['intitule' => 'Mention devant le téléphone', 'defaut' => 'Tél:'],
+        'libelle_email' => ['intitule' => 'Mention devant l’e-mail', 'defaut' => 'Email:'],
+        // --- boutons flottants ---
+        'aria_whatsapp' => ['intitule' => 'Bouton WhatsApp — description', 'defaut' => 'Discuter sur WhatsApp'],
+        'aria_chat' => ['intitule' => 'Bouton de chat — description', 'defaut' => 'Ouvrir le chat en ligne'],
+        'titre_chat' => ['intitule' => 'Bouton de chat — bulle d’aide', 'defaut' => 'Chat en ligne'],
+        'aria_joindre' => ['intitule' => 'Bouton « nous joindre » — description', 'defaut' => 'Nous joindre'],
+    ];
+
+    /**
+     * Le trait interroge d'ordinaire le module ouvert. Cet ecran n'a pas de
+     * modules : il porte une seule liste de textes.
+     */
+    protected function textesDeclares(): array
+    {
+        return self::TEXTES_DU_SITE;
+    }
+
     /**
      * Les entrees en cours d'edition, par menu puis par cle.
      *
@@ -48,9 +102,11 @@ class Menus extends Component
         $this->charger();
     }
 
-    /** (Re)lit les trois menus depuis la base. */
+    /** (Re)lit les trois menus et les textes du site depuis la base. */
     protected function charger(): void
     {
+        $this->chargerLesTextes(ReglageDeSection::where('slug', self::SECTION)->first());
+
         foreach (array_keys(EntreeDeMenu::menus()) as $menu) {
             $this->entrees[$menu] = [];
             $this->compteurNeuf[$menu] = 0;
@@ -119,12 +175,12 @@ class Menus extends Component
             }
         }
 
-        return $regles;
+        return $regles + $this->reglesDesTextes();
     }
 
     protected function validationAttributes(): array
     {
-        $intitules = [];
+        $intitules = $this->intitulesDesTextes();
         $menus = EntreeDeMenu::menus();
 
         foreach ($this->entrees as $menu => $entrees) {
@@ -190,6 +246,12 @@ class Menus extends Component
             EntreeDeMenu::query()->whereIn('id', $this->aSupprimer)->delete();
             $this->aSupprimer = [];
         }
+
+        // poserLesTextes() ne retient que les cles declarees et POSE sans
+        // enregistrer : le save() qui suit les porte en base.
+        $section = ReglageDeSection::firstOrNew(['slug' => self::SECTION]);
+        $this->poserLesTextes($section);
+        $section->save();
 
         $this->charger();
 
