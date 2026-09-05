@@ -60,7 +60,6 @@ class CommentaireController extends Controller
             'article_id' => $article->id,
             'statut' => $motif ? Commentaire::EN_ATTENTE : Commentaire::PUBLIE,
             'motif_de_mise_en_attente' => $motif,
-            'adresse_ip' => $requete->ip(),
         ]);
 
         $this->notifierLAgence($commentaire);

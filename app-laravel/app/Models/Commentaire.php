@@ -21,9 +21,16 @@ class Commentaire extends Model
 
     protected $table = 'commentaires';
 
+    /**
+     * Pas d'adresse IP.
+     *
+     * La politique de confidentialite l'annonce en gras — « Aucune adresse IP
+     * n'est conservee » — et personne ne la lisait : la mise en attente juge le
+     * CONTENU du message, jamais son origine.
+     */
     protected $fillable = [
         'article_id', 'parent_id', 'auteur', 'email', 'message',
-        'statut', 'motif_de_mise_en_attente', 'adresse_ip',
+        'statut', 'motif_de_mise_en_attente',
     ];
 
     /* --------------------------------------------------------- statuts */

@@ -10,7 +10,7 @@ class Visite extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['chemin', 'session_hash', 'user_agent', 'visitee_le'];
+    protected $fillable = ['chemin', 'session_hash', 'visitee_le'];
 
     protected $casts = ['visitee_le' => 'datetime'];
 }

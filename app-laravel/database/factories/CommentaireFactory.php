@@ -24,7 +24,6 @@ class CommentaireFactory extends Factory
             'message' => $this->faker->sentence(12),
             'statut' => Commentaire::PUBLIE,
             'motif_de_mise_en_attente' => null,
-            'adresse_ip' => $this->faker->ipv4(),
         ];
     }
 
