@@ -207,9 +207,8 @@ it('sert l accueil en anglais quand la langue est basculee', function () {
         'citation_fr' => 'Un vrai sérieux.', 'citation_en' => 'Genuinely thorough.',
     ]);
 
-    $this->get(route('langue.basculer', 'en'));
 
-    $this->get('/')->assertOk()->assertSee('Genuinely thorough.');
+    $this->get('/en')->assertOk()->assertSee('Genuinely thorough.');
 });
 
 it('n a plus aucun attribut data-i18n', function () {

@@ -199,8 +199,7 @@ it('publie sur le site public un article cree dans l administration', function (
         ->assertSee('Titre français')
         ->assertSee('Contenu français');
 
-    $this->get('/langue/en');
-    $this->get('/actualites/ecrit-au-backoffice')
+    $this->get('/en/actualites/ecrit-au-backoffice')
         ->assertOk()
         ->assertSee('English title')
         ->assertSee('English content');

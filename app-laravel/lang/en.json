@@ -1195,5 +1195,7 @@
     "Textes de la page": "Page texts",
     "Commun à toutes ces pages": "Shared by all these pages",
     "Textes du gabarit": "Template texts",
-    "Textes enregistrés.": "Texts saved."
+    "Textes enregistrés.": "Texts saved.",
+    "Langue du backoffice": "Backoffice language",
+    "Langue au premier passage dans l’administration. Le site public, lui, prend sa langue dans l’adresse.": "Language on a first visit to the administration. The public site takes its language from the address."
 }

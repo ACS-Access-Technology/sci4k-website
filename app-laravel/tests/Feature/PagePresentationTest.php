@@ -137,9 +137,8 @@ it('sert la page en anglais quand la langue est basculee', function () {
     ]);
     Valeur::factory()->create(['ordre' => 1, 'visible' => true]);
 
-    $this->get(route('langue.basculer', 'en'));
 
-    $reponse = $this->get('/presentation')->assertOk();
+    $reponse = $this->get('/en/presentation')->assertOk();
 
     $reponse->assertSee('Chief Executive Officer');
     // Sans echappement du terme cherche, l'apostrophe ne correspondrait pas :

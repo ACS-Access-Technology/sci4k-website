@@ -39,6 +39,13 @@
      filtree de six facons ne doit pas compter pour six pages aux yeux d'un
      moteur de recherche. --}}
 <link rel="canonical" href="{{ url()->current() }}">
+{{-- Voir public/layout.blade.php : les deux versions d'une meme page se
+     declarent l'une l'autre, sans quoi un moteur en choisit une et ignore
+     l'autre. --}}
+@php($adresseFr = \App\Http\Controllers\LangueController::traduireLeChemin(request()->path(), 'fr'))
+<link rel="alternate" hreflang="fr" href="{{ $adresseFr }}">
+<link rel="alternate" hreflang="en" href="{{ \App\Http\Controllers\LangueController::traduireLeChemin(request()->path(), 'en') }}">
+<link rel="alternate" hreflang="x-default" href="{{ $adresseFr }}">
 <script>(function(){try{var t=localStorage.getItem('sci4k-theme')||'light';
 var sombre=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
 document.documentElement.setAttribute('data-theme',sombre?'dark':'light');}catch(e){}})();</script>

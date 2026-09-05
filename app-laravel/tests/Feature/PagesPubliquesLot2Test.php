@@ -37,9 +37,8 @@ it('respecte l ordre d affichage', function () {
 });
 
 it('sert les services en anglais', function () {
-    $this->get('/langue/en');
 
-    $this->get('/services')->assertOk()->assertSee('Land &amp; Title', false)->assertSee('Secure your land');
+    $this->get('/en/services')->assertOk()->assertSee('Land &amp; Title', false)->assertSee('Secure your land');
 });
 
 it('affiche la FAQ groupee par rubrique', function () {

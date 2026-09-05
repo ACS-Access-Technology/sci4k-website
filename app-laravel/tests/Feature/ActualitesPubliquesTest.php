@@ -74,9 +74,8 @@ it('affiche le titre anglais quand la langue est anglaise', function () {
     // App::setLocale() : le middleware AppliqueLangue la relit a chaque requete
     // et ecraserait une locale posee dans le test. Cette ligne est le seul
     // point a reprendre le jour ou le mecanisme public sera arbitre (ruling O).
-    $this->get('/langue/en');
 
-    $this->get('/actualites')
+    $this->get('/en/actualites')
         ->assertOk()
         ->assertSee('Securing a plot in Abidjan')
         ->assertDontSee('Sécuriser un terrain à Abidjan');
@@ -88,9 +87,8 @@ it('rend la page entiere dans la langue choisie, pas seulement les articles', fu
         'statut' => 'publie',
     ]);
 
-    $this->get('/langue/en');
 
-    $this->get('/actualites')
+    $this->get('/en/actualites')
         ->assertOk()
         ->assertSee('<html lang="en"', false)
         ->assertSee('Land &amp; Title', false)   // la categorie, depuis la base

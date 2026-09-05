@@ -214,5 +214,7 @@
     "Textes de la page": "Textes de la page",
     "Commun à toutes ces pages": "Commun à toutes ces pages",
     "Textes du gabarit": "Textes du gabarit",
-    "Textes enregistrés.": "Textes enregistrés."
+    "Textes enregistrés.": "Textes enregistrés.",
+    "Langue du backoffice": "Langue du backoffice",
+    "Langue au premier passage dans l’administration. Le site public, lui, prend sa langue dans l’adresse.": "Langue au premier passage dans l’administration. Le site public, lui, prend sa langue dans l’adresse."
 }

@@ -22,11 +22,14 @@ beforeEach(function () {
     RubriqueFaq::factory()->create(['slug' => 'foncier', 'nom_fr' => 'Foncier', 'ordre' => 1]);
 });
 
-it('renvoie vers la page d ou vient le visiteur', function () {
+it('renvoie vers la meme page, dans la langue demandee', function () {
+    // La bascule ne ramene plus a l'adresse d'ou l'on vient : elle mene a sa
+    // TRADUCTION. La langue vit dans l'adresse, changer de langue c'est donc
+    // changer d'adresse.
     $this->get('/services');
 
     $this->get(route('langue.basculer', 'en'))
-        ->assertRedirect('/services');
+        ->assertRedirect('/en/services');
 });
 
 it('ne se renvoie jamais a une adresse de bascule', function () {
@@ -60,5 +63,6 @@ it('applique bien la langue demandee malgre l enchainement', function () {
 });
 
 it('retombe sur l accueil sans page precedente', function () {
-    $this->get(route('langue.basculer', 'en'))->assertRedirect('/');
+    // L'accueil de la langue demandee, et non celui du francais.
+    $this->get(route('langue.basculer', 'en'))->assertRedirect('/en');
 });

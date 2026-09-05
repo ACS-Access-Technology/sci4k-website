@@ -26,6 +26,11 @@
 --}}
 @php($langue = app()->getLocale())
 @php($autreLangue = $langue === 'fr' ? 'en' : 'fr')
+{{-- La bascule mene desormais a la MEME PAGE dans l'autre langue, et non a une
+     route qui reecrivait la session. La langue vit dans l'adresse : basculer,
+     c'est changer d'adresse. Un visiteur qui lisait « Nos services » en anglais
+     et bascule arrive sur « Nos services » en francais, et non sur l'accueil. --}}
+@php($adresseAutreLangue = \App\Http\Controllers\LangueController::traduireLeChemin(request()->path(), $autreLangue))
 
 <header id="siteHeader">
   <div class="wrap nav">
@@ -40,7 +45,7 @@
         <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
         <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
       </button>
-      <a class="lang-toggle" href="{{ route('langue.basculer', $autreLangue) }}"
+      <a class="lang-toggle" href="{{ $adresseAutreLangue }}"
          aria-label="{{ $t('aria_langue', $t('aria_langue', __('Changer de langue'))) }}" title="Français / English">{{ strtoupper($autreLangue) }}</a>
     </div>
     @if ($ctaHeaderActif)
@@ -57,7 +62,7 @@
         <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
         <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
       </button>
-      <a class="lang-toggle" href="{{ route('langue.basculer', $autreLangue) }}"
+      <a class="lang-toggle" href="{{ $adresseAutreLangue }}"
          aria-label="{{ $t('aria_langue', $t('aria_langue', __('Changer de langue'))) }}" title="Français / English">{{ strtoupper($autreLangue) }}</a>
     </div>
     @if ($ctaHeaderActif)

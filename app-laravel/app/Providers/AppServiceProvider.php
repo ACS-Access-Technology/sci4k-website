@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Livewire\Admin\Menus;
+use App\Routing\GenerateurDUrlBilingue;
 use App\Models\EntreeDeMenu;
 use App\Models\ImageDeFond;
 use App\Models\Parametre;
@@ -14,6 +15,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -29,6 +31,48 @@ class AppServiceProvider extends ServiceProvider
             Traducteur::class,
             fn () => new TraducteurDeepL(config('services.deepl.key')),
         );
+
+        $this->remplacerLeGenerateurDUrl();
+    }
+
+    /**
+     * Les appels a route() suivent la langue en cours.
+     *
+     * Les pages publiques sont enregistrees deux fois — nues pour le francais,
+     * sous « /en » pour l'anglais — et sans ce remplacement chaque vue aurait
+     * du savoir dans quelle langue elle est rendue. Voir
+     * GenerateurDUrlBilingue.
+     *
+     * Le generateur est reconstruit a l'identique de celui de Laravel, avec le
+     * meme resolveur de requete : sans lui, url()->current() et les URL
+     * signees cesseraient de fonctionner.
+     */
+    protected function remplacerLeGenerateurDUrl(): void
+    {
+        // On REMPLACE la liaison, on ne l'etend pas : `extend('url')` se
+        // declenche a la resolution de « url », et la fabrique de Laravel y
+        // resout « url » a son tour. La pile explosait avant le premier
+        // affichage.
+        //
+        // La construction reprend celle de RoutingServiceProvider a
+        // l'identique, resolveurs compris : sans eux, url()->current(),
+        // url()->previous() et les adresses signees cesseraient de
+        // fonctionner.
+        $this->app->singleton('url', function ($app) {
+            $routes = $app['router']->getRoutes();
+            $app->instance('routes', $routes);
+
+            $generateur = new GenerateurDUrlBilingue(
+                $routes,
+                $app->rebinding('request', fn ($app, $request) => $app['url']->setRequest($request)),
+                $app['config']['app.asset_url'],
+            );
+
+            $generateur->setSessionResolver(fn () => $app['session'] ?? null);
+            $generateur->setKeyResolver(fn () => $app->make('config')->get('app.key'));
+
+            return $generateur;
+        });
     }
 
     /**

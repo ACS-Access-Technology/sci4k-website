@@ -32,6 +32,17 @@
 <link rel="icon" href="{{ asset($faviconPublic) }}">
 <link rel="apple-touch-icon" href="{{ asset($faviconPublic) }}">
 <link rel="canonical" href="{{ url()->current() }}">
+{{-- Les deux versions d'une meme page se declarent l'une l'autre. Sans ces
+     lignes, un moteur voit deux adresses au contenu proche sans aucun moyen de
+     savoir qu'il s'agit de la meme page en deux langues : il en choisit une et
+     ignore l'autre, ou penalise les deux pour duplication.
+
+     `x-default` designe la version servie a qui ne demande aucune langue
+     particuliere — le francais, marche principal de l'agence. --}}
+@php($adresseFr = \App\Http\Controllers\LangueController::traduireLeChemin(request()->path(), 'fr'))
+<link rel="alternate" hreflang="fr" href="{{ $adresseFr }}">
+<link rel="alternate" hreflang="en" href="{{ \App\Http\Controllers\LangueController::traduireLeChemin(request()->path(), 'en') }}">
+<link rel="alternate" hreflang="x-default" href="{{ $adresseFr }}">
 {{-- Applique le theme sombre avant le premier rendu, pour eviter le flash clair. --}}
 {{-- Apparence posee avant le premier rendu, pour eviter le clignotement.
      Trois valeurs possibles depuis que le backoffice et le site partagent la

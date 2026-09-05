@@ -133,8 +133,14 @@ class Configuration extends Component
                     // n'auraient produit que des questions.
                     'description_courte' => ['intitule' => __('Description courte'), 'type' => 'zone', 'regles' => ['nullable', 'string', 'max:400'],
                         'aide' => __("Sert de description par défaut quand une page n'en fournit pas.")],
-                    'langue_par_defaut' => ['intitule' => __('Langue'), 'type' => 'liste', 'regles' => ['required', 'in:fr,en'],
-                        'choix' => ['fr' => __('Français'), 'en' => __('Anglais')], 'defaut' => 'fr'],
+                    'langue_par_defaut' => ['intitule' => __('Langue du backoffice'), 'type' => 'liste', 'regles' => ['required', 'in:fr,en'],
+                        'choix' => ['fr' => __('Français'), 'en' => __('Anglais')], 'defaut' => 'fr',
+                        // Le SITE PUBLIC ne la lit plus : sa langue est dans
+                        // l'adresse — /services et /en/services — depuis que la
+                        // session ne pouvait ni se partager ni etre vue d'un
+                        // moteur de recherche. Ce reglage decide de la langue
+                        // d'un compte qui n'a pas encore choisi la sienne.
+                        'aide' => __('Langue au premier passage dans l’administration. Le site public, lui, prend sa langue dans l’adresse.')],
                     'fuseau_horaire' => ['intitule' => __('Fuseau horaire'), 'type' => 'liste', 'regles' => ['required', 'timezone'],
                         'choix' => ['Africa/Abidjan' => 'Africa/Abidjan (UTC+0)', 'Europe/Paris' => 'Europe/Paris (UTC+1)'], 'defaut' => 'Africa/Abidjan'],
                     'devise' => ['intitule' => __('Devise'), 'type' => 'liste', 'regles' => ['required', 'in:XOF,EUR,USD'],

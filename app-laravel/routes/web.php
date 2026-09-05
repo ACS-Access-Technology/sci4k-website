@@ -33,45 +33,88 @@ use App\Livewire\Admin\UtilisateurListe;
 use App\Livewire\Public\CatalogueDesBiens;
 use Illuminate\Support\Facades\Route;
 
+/*
+ * LA LANGUE EST DANS L'ADRESSE
+ *
+ * Elle vivait en session : la MEME adresse servait deux contenus. Un moteur de
+ * recherche n'a pas de session — il ne voyait donc que le francais, et tout le
+ * site anglais lui etait invisible. Un lien anglais partage s'ouvrait de meme
+ * en francais chez le destinataire.
+ *
+ * Le francais garde ses adresses, l'anglais prend un prefixe : /services et
+ * /en/services. C'est la forme que Google recommande, et le marche principal
+ * n'a pas a porter un prefixe qui ne lui apprend rien.
+ *
+ * Le segment est FACULTATIF et contraint a « en » : une seule declaration par
+ * page sert les deux langues, et aucun appel a route() n'a eu a changer.
+ * `URL::defaults()` — pose par le middleware AppliqueLangue — decide lequel des
+ * deux est produit.
+ *
+ * Les POST n'en portent pas : un formulaire n'est pas une page, il n'est pas
+ * indexe, et le dupliquer aurait double des routes limitees en debit.
+ */
+
 // La racine est servie depuis la base depuis le lot 2b. Les pages non encore
 // portees — biens, contact, mentions legales, politique de confidentialite —
 // vivent dans public/, deposees par tools/sync-frontoffice.sh, et le serveur
 // les sert directement sans passer par une route.
-Route::get('/', [PagePubliqueController::class, 'accueil'])->name('home');
+/**
+ * Les pages publiques, enregistrees DEUX FOIS : nues pour le francais, sous
+ * « /en » pour l'anglais.
+ *
+ * Une seule declaration avec un segment facultatif ne fonctionne pas : Laravel
+ * ne rend facultatif qu'un parametre FINAL, et « {langue?}/services » compile
+ * en « /en/services » obligatoire. Verifie, et c'est ce qui a fait tomber cent
+ * cinquante et un tests d'un coup.
+ *
+ * Les noms de route anglais portent le prefixe « en. ». Aucune vue n'a eu a le
+ * savoir : GenerateurDUrlBilingue traduit les appels a route() selon la langue
+ * en cours. Voir cette classe pour le raisonnement.
+ *
+ * Les POST n'y sont pas : un formulaire n'est pas une page, il n'est pas
+ * indexe, et le dupliquer aurait double des routes limitees en debit.
+ */
+$pagesPubliques = function () {
+    Route::get('/', [PagePubliqueController::class, 'accueil'])->name('home');
 
-// L'ancienne adresse de l'accueil, que le site s'ecrivait a lui-meme dans ses
-// propres liens. La page statique du meme nom est exclue de la synchronisation.
+    // L'ancienne adresse de l'accueil, que le site s'ecrivait a lui-meme dans ses
+    // propres liens. La page statique du meme nom est exclue de la synchronisation.
+
+    Route::get('/actualites', [ActualiteController::class, 'index'])->name('actualites.index');
+    Route::get('/actualites/{article:slug}', [ActualiteController::class, 'detail'])->name('actualites.detail');
+
+    // Les douze articles partageaient cette adresse unique, distingues par ?id=.
+    // Declaree avant que le fichier statique du meme nom ne soit servi — il est
+    // d'ailleurs exclu de tools/sync-frontoffice.sh.
+
+    // L'ancienne adresse de la liste n'est plus servie : la page statique du meme
+    // nom est exclue de la synchronisation, pour qu'il n'existe jamais deux
+    // adresses rendant deux versions divergentes des memes actualites.
+
+    // Le catalogue est un COMPOSANT et non une vue : ses cinq filtres tournent sur
+    // le serveur, la ou le site rendait ses biens d'un bloc puis les masquait en
+    // JavaScript. Voir CatalogueDesBiens pour le raisonnement.
+    Route::get('/biens', CatalogueDesBiens::class)->name('biens.index');
+    Route::get('/biens/{slug}', BienPublicController::class)->name('biens.detail');
+
+    // L'ancienne adresse statique. La page du meme nom est exclue de la
+    // synchronisation, sans quoi elle masquerait ces routes.
+
+    Route::get('/services', [PagePubliqueController::class, 'services'])->name('services.index');
+    Route::get('/faq', [PagePubliqueController::class, 'faq'])->name('faq.index');
+    Route::get('/presentation', [PagePubliqueController::class, 'presentation'])->name('presentation.index');
+    Route::get('/contact', [PagePubliqueController::class, 'contact'])->name('contact.index');
+    Route::get('/mentions-legales', fn () => app(PagePubliqueController::class)->pageStatique('mentions-legales'))->name('mentions-legales.index');
+    Route::get('/politique-confidentialite', fn () => app(PagePubliqueController::class)->pageStatique('politique-confidentialite'))->name('politique-confidentialite.index');
+};
+
+Route::group([], $pagesPubliques);
+Route::prefix('en')->name('en.')->group($pagesPubliques);
+
 Route::permanentRedirect('/index.html', '/');
-
-Route::get('/actualites', [ActualiteController::class, 'index'])->name('actualites.index');
-Route::get('/actualites/{article:slug}', [ActualiteController::class, 'detail'])->name('actualites.detail');
-
-// Les douze articles partageaient cette adresse unique, distingues par ?id=.
-// Declaree avant que le fichier statique du meme nom ne soit servi — il est
-// d'ailleurs exclu de tools/sync-frontoffice.sh.
 Route::get('/actualite-detail.html', [ActualiteController::class, 'ancienneAdresse']);
-
-// L'ancienne adresse de la liste n'est plus servie : la page statique du meme
-// nom est exclue de la synchronisation, pour qu'il n'existe jamais deux
-// adresses rendant deux versions divergentes des memes actualites.
 Route::permanentRedirect('/actualites.html', '/actualites');
-
-// Le catalogue est un COMPOSANT et non une vue : ses cinq filtres tournent sur
-// le serveur, la ou le site rendait ses biens d'un bloc puis les masquait en
-// JavaScript. Voir CatalogueDesBiens pour le raisonnement.
-Route::get('/biens', CatalogueDesBiens::class)->name('biens.index');
-Route::get('/biens/{slug}', BienPublicController::class)->name('biens.detail');
-
-// L'ancienne adresse statique. La page du meme nom est exclue de la
-// synchronisation, sans quoi elle masquerait ces routes.
 Route::permanentRedirect('/biens.html', '/biens');
-
-Route::get('/services', [PagePubliqueController::class, 'services'])->name('services.index');
-Route::get('/faq', [PagePubliqueController::class, 'faq'])->name('faq.index');
-Route::get('/presentation', [PagePubliqueController::class, 'presentation'])->name('presentation.index');
-Route::get('/contact', [PagePubliqueController::class, 'contact'])->name('contact.index');
-Route::get('/mentions-legales', fn () => app(PagePubliqueController::class)->pageStatique('mentions-legales'))->name('mentions-legales.index');
-Route::get('/politique-confidentialite', fn () => app(PagePubliqueController::class)->pageStatique('politique-confidentialite'))->name('politique-confidentialite.index');
 
 // Memes raisons que pour /actualites.html ci-dessus : les pages statiques du
 // meme nom sont exclues de tools/sync-frontoffice.sh.

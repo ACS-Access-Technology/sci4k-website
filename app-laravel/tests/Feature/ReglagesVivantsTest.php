@@ -98,19 +98,30 @@ it('applique la devise aux prix', function () {
     expect($bien->fresh()->prixFormate())->toStartWith('$');
 });
 
-it('applique la langue par defaut au premier visiteur', function () {
+/*
+ * La langue par defaut a CHANGE DE PORTEE.
+ *
+ * Le site public prend desormais sa langue dans l'adresse — /services et
+ * /en/services — parce qu'une session ne se partage pas et qu'un moteur de
+ * recherche n'en a pas. Ce reglage decide donc de la langue d'un compte qui
+ * n'a pas encore choisi la sienne, dans le backoffice ; son intitule le dit.
+ */
+it('applique la langue par defaut a qui n a rien choisi', function () {
     Parametre::poser('langue_par_defaut', 'en', 'general');
 
-    // Sans session : c'est exactement le cas d'un visiteur qui arrive.
-    $this->get('/')->assertOk();
+    // Une route sans version anglaise : le backoffice, ou la session decide.
+    $this->actingAs($this->admin)->get('/dashboard')->assertOk();
 
     expect(app()->getLocale())->toBe('en');
 });
 
-it('laisse le choix du visiteur primer sur la langue par defaut', function () {
+it('laisse l adresse primer sur la langue par defaut, sur le site public', function () {
     Parametre::poser('langue_par_defaut', 'en', 'general');
 
-    $this->withSession(['langue' => 'fr'])->get('/')->assertOk();
+    // Une page publique NUE est francaise, quoi qu'en dise le reglage ou la
+    // session : sans cela, l'adresse ne voudrait plus rien dire et les deux
+    // versions serviraient le meme contenu.
+    $this->withSession(['langue' => 'en'])->get('/')->assertOk();
 
     expect(app()->getLocale())->toBe('fr');
 });

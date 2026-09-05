@@ -88,8 +88,7 @@ it('decrit l article aux moteurs dans la langue courante', function () {
         'meta_description_en' => 'English description.',
     ]);
 
-    $this->get('/langue/en');
-    $reponse = $this->get('/actualites/meta-bilingue')->assertOk();
+    $reponse = $this->get('/en/actualites/meta-bilingue')->assertOk();
 
     $reponse->assertSee('English description.', false)
         ->assertDontSee('Description française.', false);

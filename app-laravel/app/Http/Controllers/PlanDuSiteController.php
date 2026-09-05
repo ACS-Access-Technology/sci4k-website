@@ -49,6 +49,28 @@ class PlanDuSiteController extends Controller
         ['politique-confidentialite.index', '0.3', 'yearly'],
     ];
 
+    /**
+     * Double chaque entree : sa version francaise, puis l'anglaise.
+     *
+     * Les deux se declarent l'une l'autre par `hreflang` dans l'en-tete des
+     * pages ; le plan du site, lui, doit simplement les CONNAITRE toutes les
+     * deux.
+     *
+     * @param  list<array<string, string>>  $entrees
+     * @return list<array<string, string>>
+     */
+    protected function dansLesDeuxLangues(array $entrees): array
+    {
+        $toutes = [];
+
+        foreach ($entrees as $entree) {
+            $toutes[] = $entree;
+            $toutes[] = ['url' => LangueController::traduireLeChemin($entree['url'], 'en')] + $entree;
+        }
+
+        return $toutes;
+    }
+
     public function __invoke(): Response
     {
         $entrees = [];
@@ -102,6 +124,13 @@ class PlanDuSiteController extends Controller
                 'priorite' => $bien->statut === Bien::VENDU ? '0.4' : '0.7',
             ];
         }
+
+        // Chaque adresse est annoncee DANS LES DEUX LANGUES. Le site est
+        // bilingue depuis toujours, mais la langue vivait en session : une
+        // seule adresse par page, et l'anglais invisible pour les moteurs. Un
+        // plan qui ne listerait que le francais laisserait la moitie du site
+        // hors des resultats de recherche.
+        $entrees = $this->dansLesDeuxLangues($entrees);
 
         return response()
             ->view('public.plan-du-site', ['entrees' => $entrees])
