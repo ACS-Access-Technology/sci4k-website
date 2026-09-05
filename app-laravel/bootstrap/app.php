@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\AppliqueLangue::class,
             \App\Http\Middleware\EnregistreVisite::class,
+            // Un compte desactive perd sa session EN COURS, et pas seulement
+            // le droit de se reconnecter. On desactive un compte parce qu'il
+            // se passe quelque chose maintenant.
+            \App\Http\Middleware\RefuseLesComptesDesactives::class,
         ]);
 
         // Les trois points d'ecriture ouverts au public sortent du controle

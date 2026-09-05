@@ -103,7 +103,7 @@ class PagePubliqueController extends Controller
             if (($de && $de->isFuture()) || ($a && $a->isPast())) {
                 $annonce = null;
             } else {
-                $annonce->increment('impressions');
+                $annonce->incrementQuietly('impressions');
             }
         }
 
@@ -118,7 +118,7 @@ class PagePubliqueController extends Controller
             if (($de && $de->isFuture()) || ($a && $a->isPast())) {
                 $banderole = null;
             } else {
-                $banderole->increment('impressions');
+                $banderole->incrementQuietly('impressions');
             }
         }
 
@@ -172,7 +172,7 @@ class PagePubliqueController extends Controller
             if (($de && $de->isFuture()) || ($a && $a->isPast())) {
                 $annonce = null;
             } else {
-                $annonce->increment('impressions');
+                $annonce->incrementQuietly('impressions');
             }
         }
 

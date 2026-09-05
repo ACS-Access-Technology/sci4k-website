@@ -67,8 +67,12 @@
 --}}
 <section class="comments-section" id="commentaires">
   <div class="wrap">
+    {{-- Les reponses comptent : elles sont affichees comme des commentaires,
+         et n'en pas tenir compte annonçait « 2 commentaires » au-dessus de
+         cinq messages. --}}
+    @php($nombreDeCommentaires = $commentaires->count() + $commentaires->sum(fn ($c) => $c->reponses->count()))
     <h2 class="comments-title">
-      {{ trans_choice(':nombre commentaire|:nombre commentaires', $commentaires->count(), ['nombre' => $commentaires->count()]) }}
+      {{ trans_choice(':nombre commentaire|:nombre commentaires', $nombreDeCommentaires, ['nombre' => $nombreDeCommentaires]) }}
     </h2>
 
     @if (session('commentaire'))

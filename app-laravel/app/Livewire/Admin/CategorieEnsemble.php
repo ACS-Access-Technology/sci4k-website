@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\Categorie;
+use Illuminate\Validation\ValidationException;
 
 /*
  * Les categories d'articles.
@@ -76,5 +77,39 @@ class CategorieEnsemble extends EditionGroupee
         }
 
         parent::retirer($cle);
+    }
+
+    /**
+     * Le meme refus, refait a l'instant de l'effacement.
+     *
+     * Celui de `retirer()` ne tient que si le retrait est passe par la : la
+     * liste des identifiants a effacer est une propriete publique, que le
+     * navigateur fixe. Sans ce second controle, une categorie encore rattachee
+     * a des articles arrivait jusqu'au DELETE, la contrainte de cle etrangere
+     * la refusait, et l'editeur recevait une erreur 500 apres que le reste de
+     * l'ecran avait deja ete enregistre.
+     *
+     * @param  list<int>  $ids
+     */
+    protected function verifierLesSuppressions(array $ids): void
+    {
+        if ($ids === []) {
+            return;
+        }
+
+        $messages = [];
+
+        foreach (Categorie::query()->whereIn('id', $ids)->get() as $categorie) {
+            if (($contenus = $categorie->nombreDeContenus()) > 0) {
+                $messages[] = __(
+                    'Impossible de retirer « :nom » : :nombre contenu(s) y sont rattachés. Déplacez-les d’abord vers une autre catégorie.',
+                    ['nom' => $categorie->nom(app()->getLocale()), 'nombre' => $contenus],
+                );
+            }
+        }
+
+        if ($messages !== []) {
+            throw ValidationException::withMessages(['aSupprimer' => $messages]);
+        }
     }
 }

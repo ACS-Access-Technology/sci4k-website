@@ -43,7 +43,28 @@ class ArticleListe extends Component
 
     public string $statut = '';
 
+    /**
+     * Qui peut ecrire un article ?
+     *
+     * Le redacteur en fait partie : c'est la definition meme de son role, que
+     * ArticleFormulaire porte deja — il ecrit ses articles, ne touche pas a
+     * ceux des autres et ne publie pas. Cette liste l'excluait, et la refonte
+     * a fait de cet ecran le SEUL chemin vers le formulaire : les routes qui
+     * y menaient directement ont ete retirees. Le role etait donc devenu
+     * inatteignable, sans qu'aucune decision ne l'ait retire.
+     */
     protected function peutEcrire(): bool
+    {
+        return (bool) auth()->user()?->hasAnyRole(['administrateur', 'editeur', 'redacteur']);
+    }
+
+    /**
+     * La suppression, elle, reste aux editeurs.
+     *
+     * Elle est definitive — les articles n'ont pas de corbeille — et le
+     * redacteur n'est pas responsable de ce qui reste en ligne.
+     */
+    protected function peutSupprimer(): bool
     {
         return (bool) auth()->user()?->hasAnyRole(['administrateur', 'editeur']);
     }
@@ -61,7 +82,16 @@ class ArticleListe extends Component
 
         // L'identifiant vient du navigateur : on verifie qu'il designe bien un
         // article avant de le passer au formulaire.
-        abort_unless(Article::whereKey($id)->exists(), 404);
+        $article = Article::whereKey($id)->first();
+        abort_unless($article !== null, 404);
+
+        // Un redacteur n'ouvre que ses propres articles. ArticleFormulaire le
+        // refuse deja a son montage ; le dire ici evite d'ouvrir un panneau qui
+        // ne rendrait qu'une page 403.
+        abort_if(
+            auth()->user()?->limiteASesArticles() && $article->auteur_id !== auth()->id(),
+            403,
+        );
 
         $this->formulaireOuvert = $id;
     }
@@ -90,7 +120,7 @@ class ArticleListe extends Component
      */
     public function supprimer(int $id): void
     {
-        abort_unless(auth()->user()?->hasAnyRole(['administrateur', 'editeur']), 403);
+        abort_unless($this->peutSupprimer(), 403);
 
         $article = Article::findOrFail($id);
 
@@ -131,6 +161,9 @@ class ArticleListe extends Component
         // filtree : une carte qui changerait au gre des filtres ne mesurerait
         // plus rien.
         $parStatut = Article::query()
+            // Meme restriction que la liste : un redacteur qui ne voit que ses
+            // articles ne doit pas les compter parmi ceux des autres.
+            ->when(auth()->user()?->limiteASesArticles(), fn ($r) => $r->where('auteur_id', auth()->id()))
             ->selectRaw('statut, COUNT(*) as nombre')
             ->groupBy('statut')
             ->pluck('nombre', 'statut');
@@ -140,6 +173,7 @@ class ArticleListe extends Component
             'categories' => Categorie::orderBy('ordre')->get(),
             'langue' => $langue,
             'peutEcrire' => $this->peutEcrire(),
+            'peutSupprimer' => $this->peutSupprimer(),
             // Le MODELE et non l'identifiant : ArticleFormulaire attend un
             // Article dans son mount(), et le liage de route ne joue que pour
             // un composant de pleine page.
@@ -148,7 +182,9 @@ class ArticleListe extends Component
                 'publies' => (int) ($parStatut['publie'] ?? 0),
                 'brouillons' => (int) ($parStatut['brouillon'] ?? 0),
                 'archives' => (int) ($parStatut['archive'] ?? 0),
-                'vues' => (int) Article::sum('vues'),
+                'vues' => (int) Article::query()
+                    ->when(auth()->user()?->limiteASesArticles(), fn ($r) => $r->where('auteur_id', auth()->id()))
+                    ->sum('vues'),
             ],
         ])->title(__('Articles'));
     }

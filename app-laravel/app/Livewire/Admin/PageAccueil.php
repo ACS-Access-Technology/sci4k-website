@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use App\Models\CommuneDuBandeau;
 use App\Models\Encart;
 use App\Livewire\Concerns\PorteDesImagesDeFond;
+use App\Livewire\Concerns\PorteUnEnteteDeSection;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
@@ -34,6 +35,7 @@ use Livewire\Component;
 class PageAccueil extends Component
 {
     use PorteDesImagesDeFond;
+    use PorteUnEnteteDeSection;
 
     /**
      * Les huit modules de l'accueil, dans l'ordre ou le visiteur les voit.
@@ -115,6 +117,23 @@ class PageAccueil extends Component
 
     /** Reglages d'apparence de la bande deroulante. */
     public array $bandeau = [];
+
+    /**
+     * Les cles d'apparence de la banderole, et celles des deux boutons du hero.
+     *
+     * Elles sont ecrites ICI, a cote du filtre qui s'en sert : une liste
+     * entretenue loin de son filtre finit par diverger, et c'est la divergence
+     * qui rouvre le trou.
+     *
+     * @var list<string>
+     */
+    public const CLES_DU_BANDEAU = ['fond', 'separateur', 'casse'];
+
+    /** @var list<string> */
+    public const CLES_DES_BOUTONS = [
+        'bouton1_libelle_fr', 'bouton1_libelle_en', 'bouton1_cible',
+        'bouton2_libelle_fr', 'bouton2_libelle_en', 'bouton2_cible',
+    ];
 
     /** Libelles et cibles des deux boutons du hero. */
     public array $boutons = [];
@@ -225,20 +244,34 @@ class PageAccueil extends Component
 
         if ($slug = $description['section'] ?? null) {
             $section = ReglageDeSection::firstOrNew(['slug' => $slug]);
-            $section->fill($this->entete);
+            // Les cles viennent du navigateur : seules celles que
+        // l'ecran declare sont ecrites. Voir le trait.
+        $section->fill($this->enteteFiltree());
             $section->save();
 
-            if ($this->module === 'bandeau' && $this->bandeau !== []) {
-                // poserOptions() ne fait que POSER les valeurs sur le modele :
-                // il n'enregistre pas. Sans ce second save(), l'apparence de
-                // la banderole se perdait sans un mot.
-                $section->poserOptions($this->bandeau);
-                $section->save();
+            // poserOptions() ne fait que POSER les valeurs sur le modele : il
+            // n'enregistre pas. Sans ce second save(), l'apparence de la
+            // banderole se perdait sans un mot.
+            //
+            // `$bandeau` et `$boutons` sont des proprietes publiques, dont le
+            // navigateur fixe le contenu CLES COMPRISES : seules celles que
+            // l'ecran declare sont versees dans le sac JSON.
+            if ($this->module === 'bandeau') {
+                $declarees = $this->optionsFiltrees($this->bandeau, self::CLES_DU_BANDEAU);
+
+                if ($declarees !== []) {
+                    $section->poserOptions($declarees);
+                    $section->save();
+                }
             }
 
-            if ($this->module === 'hero' && $this->boutons !== []) {
-                $section->poserOptions($this->boutons);
-                $section->save();
+            if ($this->module === 'hero') {
+                $declarees = $this->optionsFiltrees($this->boutons, self::CLES_DES_BOUTONS);
+
+                if ($declarees !== []) {
+                    $section->poserOptions($declarees);
+                    $section->save();
+                }
             }
         }
 

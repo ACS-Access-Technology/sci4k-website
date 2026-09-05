@@ -2,6 +2,7 @@
 
 use App\Livewire\Admin\ArticleFormulaire;
 use App\Livewire\Admin\ArticleListe;
+use App\Livewire\Admin\RechercheGlobale;
 use App\Models\Article;
 use App\Models\Categorie;
 use App\Models\User;
@@ -161,6 +162,111 @@ it('ne change pas l auteur quand un editeur corrige un article', function () {
         ->assertHasNoErrors();
 
     expect($article->fresh()->auteur_id)->toBe($this->redacteur->id);
+});
+
+/* -------------------------------------------- le role est ATTEIGNABLE */
+
+/*
+ * Tout ce qui precede decrit un role que personne ne pouvait exercer.
+ *
+ * ArticleListe excluait le redacteur de `peutEcrire()`, et la refonte a fait
+ * de cette liste le SEUL chemin vers le formulaire — les routes qui y menaient
+ * directement ont ete retirees. Les tests ci-dessus montaient ArticleFormulaire
+ * a la main : ils ne pouvaient donc pas voir que la porte etait murée.
+ */
+it('laisse un redacteur ouvrir le formulaire de creation depuis la liste', function () {
+    Livewire::actingAs($this->redacteur)
+        ->test(ArticleListe::class)
+        ->call('ouvrirCreation')
+        ->assertSet('formulaireOuvert', 'creation');
+});
+
+it('laisse un redacteur ouvrir son article depuis la liste', function () {
+    $sien = Article::factory()->create([
+        'auteur_id' => $this->redacteur->id,
+        'categorie_id' => $this->categorie->id,
+    ]);
+
+    Livewire::actingAs($this->redacteur)
+        ->test(ArticleListe::class)
+        ->call('ouvrirEdition', $sien->id)
+        ->assertSet('formulaireOuvert', $sien->id);
+});
+
+it("refuse d'ouvrir depuis la liste l'article d'un autre", function () {
+    $autre = Article::factory()->create([
+        'auteur_id' => $this->autreRedacteur->id,
+        'categorie_id' => $this->categorie->id,
+    ]);
+
+    // ArticleFormulaire le refuse deja a son montage ; la liste le dit avant,
+    // pour ne pas ouvrir un panneau qui ne rendrait qu'une page 403.
+    Livewire::actingAs($this->redacteur)
+        ->test(ArticleListe::class)
+        ->call('ouvrirEdition', $autre->id)
+        ->assertForbidden();
+});
+
+it('ne laisse pas un redacteur supprimer un article, meme le sien', function () {
+    // Ecrire n'est pas effacer : la suppression est definitive — les articles
+    // n'ont pas de corbeille — et elle reste aux editeurs.
+    $sien = Article::factory()->create([
+        'auteur_id' => $this->redacteur->id,
+        'categorie_id' => $this->categorie->id,
+    ]);
+
+    Livewire::actingAs($this->redacteur)
+        ->test(ArticleListe::class)
+        ->call('supprimer', $sien->id)
+        ->assertForbidden();
+
+    expect(Article::whereKey($sien->id)->exists())->toBeTrue();
+});
+
+it('ne compte pas les articles des autres dans les indicateurs', function () {
+    Article::factory()->create([
+        'auteur_id' => $this->autreRedacteur->id,
+        'categorie_id' => $this->categorie->id,
+        'statut' => 'publie',
+        'vues' => 500,
+    ]);
+    Article::factory()->create([
+        'auteur_id' => $this->redacteur->id,
+        'categorie_id' => $this->categorie->id,
+        'statut' => 'brouillon',
+        'vues' => 7,
+    ]);
+
+    $indicateurs = Livewire::actingAs($this->redacteur)
+        ->test(ArticleListe::class)
+        ->viewData('indicateurs');
+
+    // Les cartes du haut de liste comptaient TOUS les articles, y compris ceux
+    // que le redacteur n'a pas le droit de voir juste en dessous.
+    expect($indicateurs['publies'])->toBe(0)
+        ->and($indicateurs['brouillons'])->toBe(1)
+        ->and($indicateurs['vues'])->toBe(7);
+});
+
+it('ne trouve pas les brouillons des autres dans la recherche globale', function () {
+    Article::factory()->create([
+        'auteur_id' => $this->autreRedacteur->id,
+        'categorie_id' => $this->categorie->id,
+        'titre_fr' => 'Brouillon confidentiel',
+        'statut' => 'brouillon',
+    ]);
+    Article::factory()->create([
+        'auteur_id' => $this->redacteur->id,
+        'categorie_id' => $this->categorie->id,
+        'titre_fr' => 'Brouillon personnel',
+        'statut' => 'brouillon',
+    ]);
+
+    Livewire::actingAs($this->redacteur)
+        ->test(RechercheGlobale::class)
+        ->set('terme', 'Brouillon')
+        ->assertSee('Brouillon personnel')
+        ->assertDontSee('Brouillon confidentiel');
 });
 
 it('decrit les quatre roles a cote de la regle qui les applique', function () {

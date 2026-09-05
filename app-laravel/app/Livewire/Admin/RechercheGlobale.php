@@ -69,6 +69,15 @@ class RechercheGlobale extends Component
 
         foreach ($this->famillesCherchees() as [$modele, $colonnes, $affiche, $famille, $route, $icone]) {
             $elements = $modele::query()
+                // Un redacteur ne voit que ses propres articles partout
+                // ailleurs — dans la liste comme dans les indicateurs. La
+                // recherche transverse ne le savait pas, et rendait les
+                // brouillons des autres, titre compris, a qui tapait deux
+                // lettres. Meme restriction, meme endroit : sur la requete.
+                ->when(
+                    $modele === Article::class && auth()->user()?->limiteASesArticles(),
+                    fn ($requete) => $requete->where('auteur_id', auth()->id()),
+                )
                 ->where(function ($requete) use ($colonnes, $motif) {
                     foreach ($colonnes as $colonne) {
                         $requete->orWhere($colonne, 'like', $motif);

@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\PorteDesImagesDeFond;
+use App\Livewire\Concerns\PorteUnEnteteDeSection;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
@@ -24,6 +25,7 @@ use Livewire\Component;
 class PagePresentation extends Component
 {
     use PorteDesImagesDeFond;
+    use PorteUnEnteteDeSection;
 
     /**
      * Les cinq modules de la page, dans l'ordre du site.
@@ -88,6 +90,16 @@ class PagePresentation extends Component
 
     /** Les deux atouts de la presentation generale. */
     public array $atouts = [];
+
+    /**
+     * Les cles des deux atouts, ecrites a cote du filtre qui s'en sert.
+     *
+     * @var list<string>
+     */
+    public const CLES_DES_ATOUTS = [
+        'atout1_titre_fr', 'atout1_titre_en', 'atout1_texte_fr', 'atout1_texte_en',
+        'atout2_titre_fr', 'atout2_titre_en', 'atout2_texte_fr', 'atout2_texte_en',
+    ];
 
     /** Le compteur du mot du directeur. */
     public array $compteur = [];
@@ -162,6 +174,21 @@ class PagePresentation extends Component
         }
     }
 
+    /**
+     * Deux modules portent un corps de texte long, en plus de l'en-tete.
+     *
+     * Il vit dans les memes colonnes que le reste — `contenu_fr` /
+     * `contenu_en` — et la page publique l'affiche a la place du chapo. Sans
+     * cette surcharge, le filtre du trait l'effacerait a chaque
+     * enregistrement.
+     */
+    protected function champsDeLEntete(): array
+    {
+        return ($this->moduleCourant()['contenu'] ?? false)
+            ? [...self::CHAMPS_ENTETE, 'contenu']
+            : self::CHAMPS_ENTETE;
+    }
+
     protected function rules(): array
     {
         $regles = [];
@@ -203,7 +230,9 @@ class PagePresentation extends Component
 
         $description = $this->moduleCourant();
         $section = ReglageDeSection::firstOrNew(['slug' => $description['section']]);
-        $section->fill($this->entete);
+        // Les cles viennent du navigateur : seules celles que
+        // l'ecran declare sont ecrites. Voir le trait.
+        $section->fill($this->enteteFiltree());
         $section->save();
 
         // poserOptions() POSE les options sur le modele mais n'enregistre pas :
@@ -211,8 +240,10 @@ class PagePresentation extends Component
         // mot. Meme piege que sur l'apparence de la banderole.
         $options = [];
 
+        // `$atouts` est une propriete publique : le navigateur en fixe les
+        // cles. Seules celles que l'ecran declare rejoignent le sac JSON.
         if ($description['atouts'] ?? false) {
-            $options += $this->atouts;
+            $options += $this->optionsFiltrees($this->atouts, self::CLES_DES_ATOUTS);
         }
 
         if ($description['compteur'] ?? false) {

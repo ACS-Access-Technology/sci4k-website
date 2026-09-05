@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
+use Laravel\Passkeys\Passkeys;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -33,6 +34,7 @@ class FortifyServiceProvider extends ServiceProvider
         $this->configureViews();
         $this->configureRateLimiting();
         $this->refuserLesComptesInactifs();
+        $this->refuserLesComptesInactifsParPasskey();
         $this->noterLaDerniereConnexion();
     }
 
@@ -59,6 +61,25 @@ class FortifyServiceProvider extends ServiceProvider
 
             return $utilisateur->peutSeConnecter() ? $utilisateur : null;
         });
+    }
+
+    /**
+     * Le meme refus, pour la connexion par passkey.
+     *
+     * Fortify::authenticateUsing() ne couvre QUE la connexion par mot de
+     * passe : le controleur de passkey appelle $guard->login() directement,
+     * sans jamais le traverser. Un employe parti, dont le compte etait passe
+     * en inactif, entrait donc encore dans le backoffice avec son role intact
+     * — le contraire exact de ce que promet le commentaire ci-dessus.
+     *
+     * Passkeys::allowsLogin() rend vrai par defaut : c'est le seul point
+     * d'accroche, et il faut le poser explicitement.
+     */
+    private function refuserLesComptesInactifsParPasskey(): void
+    {
+        Passkeys::authorizeLoginUsing(
+            fn (Request $requete, User $utilisateur) => $utilisateur->peutSeConnecter(),
+        );
     }
 
     /**

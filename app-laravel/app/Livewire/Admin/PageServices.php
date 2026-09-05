@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Models\Encart;
 use App\Livewire\Concerns\PorteDesImagesDeFond;
+use App\Livewire\Concerns\PorteUnEnteteDeSection;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
@@ -22,6 +23,7 @@ use Livewire\Component;
 class PageServices extends Component
 {
     use PorteDesImagesDeFond;
+    use PorteUnEnteteDeSection;
 
     /**
      * Les quatre modules de la page, dans l'ordre du site.
@@ -172,13 +174,23 @@ class PageServices extends Component
         $this->validate();
 
         $section = ReglageDeSection::firstOrNew(['slug' => $slug]);
-        $section->fill($this->entete);
+        // Les cles viennent du navigateur : seules celles que
+        // l'ecran declare sont ecrites. Voir le trait.
+        $section->fill($this->enteteFiltree());
         $section->save();
 
         // poserOptions() POSE les options mais n'enregistre pas : sans ce
         // second save(), la mise en page se perdrait sans un mot.
-        if ($this->options !== []) {
-            $section->poserOptions($this->options);
+        // Meme raison que l'en-tete : `$options` est une propriete publique,
+        // et poserOptions() verse ce qu'on lui donne dans le sac JSON. Sans ce
+        // filtre, une cle forgee contournait les `Rule::in` ci-dessus.
+        $declarees = $this->optionsFiltrees(
+            $this->options,
+            array_keys($description['options'] ?? []),
+        );
+
+        if ($declarees !== []) {
+            $section->poserOptions($declarees);
             $section->save();
         }
 

@@ -88,7 +88,11 @@
                         @endif
 
                         <div class="min-w-0">
-                            @hasanyrole('administrateur|editeur')
+                            {{-- Le droit vient du COMPOSANT, et non d'un test de
+                                 role recopie dans la vue : la liste des roles
+                                 qui ecrivent etait dite a quatre endroits, et
+                                 elle avait deja diverge. --}}
+                            @if ($peutEcrire)
                                 {{-- Le titre est lui aussi un raccourci vers la
                                      fiche : il ouvre le formulaire sur place au
                                      lieu de faire sortir l'editeur. --}}
@@ -98,7 +102,7 @@
                                 </a>
                             @else
                                 <span class="block truncate font-medium text-zinc-900 dark:text-white">{{ $article->titre($langue) }}</span>
-                            @endhasanyrole
+                            @endif
                             {{-- dark:text-zinc-400 et non zinc-500 : sur fond
                                  sombre, zinc-500 tombe a 3,8 de contraste, sous
                                  le seuil de 4,5 exige pour du petit texte. --}}
@@ -121,13 +125,13 @@
 
                 <td class="whitespace-nowrap px-4 py-3">
                     <div class="flex items-center justify-end gap-1">
-                        @hasanyrole('administrateur|editeur')
+                        @if ($peutEcrire)
                             <a href="#" wire:click.prevent="ouvrirEdition({{ $article->id }})"
                                title="{{ __('Modifier') }}" aria-label="{{ __('Modifier :titre', ['titre' => $article->titre($langue)]) }}"
                                class="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-white">
                                 <x-admin.icone nom="crayon" />
                             </a>
-                        @endhasanyrole
+                        @endif
 
                         @if ($article->statut === 'publie')
                             <a href="{{ route('actualites.detail', $article) }}" target="_blank" rel="noopener"
@@ -137,7 +141,9 @@
                             </a>
                         @endif
 
-                        @hasanyrole('administrateur|editeur')
+                        {{-- Supprimer n'est pas ecrire : le redacteur ouvre le
+                             formulaire, mais n'efface rien. --}}
+                        @if ($peutSupprimer)
                             {{-- Confirmation obligatoire : la suppression est
                                  definitive, l'article n'ayant pas de corbeille. --}}
                             <button type="button"
@@ -147,7 +153,7 @@
                                     class="rounded-md p-2 text-zinc-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400">
                                 <x-admin.icone nom="corbeille" />
                             </button>
-                        @endhasanyrole
+                        @endif
                     </div>
                 </td>
             </tr>

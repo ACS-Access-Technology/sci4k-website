@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\PorteDesTextesDeBloc;
 use App\Livewire\Concerns\PorteDesImagesDeFond;
+use App\Livewire\Concerns\PorteUnEnteteDeSection;
 use App\Models\Parametre;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
@@ -34,6 +35,7 @@ use Livewire\Component;
 class PageContact extends Component
 {
     use PorteDesImagesDeFond;
+    use PorteUnEnteteDeSection;
     use PorteDesTextesDeBloc;
 
     /**
@@ -263,7 +265,9 @@ class PageContact extends Component
 
         if ($slug !== null) {
             $section = ReglageDeSection::firstOrNew(['slug' => $slug]);
-            $section->fill($this->entete);
+            // Les cles viennent du navigateur : seules celles que
+        // l'ecran declare sont ecrites. Voir le trait.
+        $section->fill($this->enteteFiltree());
 
             // poserLesTextes() ne retient que les cles declarees par le module
             // et POSE sans enregistrer : le save() qui suit les porte en base.

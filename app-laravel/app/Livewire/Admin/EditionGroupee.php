@@ -6,6 +6,7 @@ use App\Livewire\Concerns\RemplitParTraduction;
 use App\Models\ReglageDeSection;
 use App\Services\Traduction\Traducteur;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -117,6 +118,19 @@ abstract class EditionGroupee extends Component
     {
         return true;
     }
+
+    /**
+     * Les retraits demandes sont-ils recevables ?
+     *
+     * A rejeter en levant une ValidationException. Le controle est refait ici,
+     * a l'instant ou l'effacement a lieu, et non seulement dans `retirer()` :
+     * `$aSupprimer` est une propriete PUBLIQUE, dont le navigateur fixe le
+     * contenu. Un identifiant peut donc y arriver sans etre jamais passe par
+     * `retirer()`, et le refus pose la-bas ne vaut alors rien.
+     *
+     * @param  list<int>  $ids
+     */
+    protected function verifierLesSuppressions(array $ids): void {}
 
     /** Regles appliquees a chaque champ bilingue. */
     protected function reglesDuChamp(string $champ): array
@@ -293,15 +307,15 @@ abstract class EditionGroupee extends Component
             $this->validate();
         }
 
-        // Les elements sont relus depuis la base : les identifiants viennent du
-        // navigateur, et l'un d'eux pourrait designer une ligne d'une autre
-        // table ou une ligne disparue depuis l'ouverture de l'ecran.
-        $connus = ($this->modele())::query()
-            ->whereIn('id', array_filter(array_keys($this->lignes), 'is_numeric'))
-            ->get()
-            ->keyBy('id');
+        // Les identifiants a effacer viennent du navigateur comme le reste :
+        // on les ramene a des entiers, sans doublon, avant de les soumettre au
+        // controle de l'ecran. Rejete, il leve avant la moindre ecriture.
+        $this->aSupprimer = array_values(array_unique(array_map(
+            'intval',
+            array_filter($this->aSupprimer, 'is_numeric'),
+        )));
 
-        $rang = 0;
+        $this->verifierLesSuppressions($this->aSupprimer);
 
         // Seules les colonnes que l'ecran declare sont ecrites. `$this->lignes`
         // est une propriete publique : le navigateur en fixe le contenu, cles
@@ -321,31 +335,48 @@ abstract class EditionGroupee extends Component
 
         $declarees = array_merge($declarees, array_keys($this->champsSimples()));
 
-        foreach ($this->lignes as $cle => $ligne) {
-            $donnees = array_intersect_key($ligne, array_flip($declarees));
-            $donnees['visible'] = (bool) ($ligne['visible'] ?? false);
-            // Le rang suit l'ordre d'affichage a l'ecran : l'editeur voit ce
-            // qu'il obtiendra, sans avoir a saisir un numero.
-            $donnees['ordre'] = ++$rang;
+        // Un seul bouton, un seul enregistrement : l'ecran edite tout le bloc
+        // d'un coup, et rien ne justifie qu'il n'en retienne que la moitie. Une
+        // contrainte de cle etrangere ou une panne au milieu de la boucle
+        // laissait la page publique dans un etat que personne n'avait voulu —
+        // des rangs renumerotes, une ligne effacee, les suivantes intactes.
+        DB::transaction(function () use ($declarees) {
+            // Les elements sont relus depuis la base : les identifiants viennent
+            // du navigateur, et l'un d'eux pourrait designer une ligne d'une
+            // autre table ou une ligne disparue depuis l'ouverture de l'ecran.
+            $connus = ($this->modele())::query()
+                ->whereIn('id', array_filter(array_keys($this->lignes), 'is_numeric'))
+                ->get()
+                ->keyBy('id');
 
-            if (isset($connus[$cle])) {
-                $connus[$cle]->update($donnees);
+            $rang = 0;
 
-                continue;
+            foreach ($this->lignes as $cle => $ligne) {
+                $donnees = array_intersect_key($ligne, array_flip($declarees));
+                $donnees['visible'] = (bool) ($ligne['visible'] ?? false);
+                // Le rang suit l'ordre d'affichage a l'ecran : l'editeur voit ce
+                // qu'il obtiendra, sans avoir a saisir un numero.
+                $donnees['ordre'] = ++$rang;
+
+                if (isset($connus[$cle])) {
+                    $connus[$cle]->update($donnees);
+
+                    continue;
+                }
+
+                if ($this->ajoutPermis() && ! is_numeric($cle)) {
+                    $this->lignes[$cle] = $ligne;
+                    ($this->modele())::create($donnees);
+                }
             }
 
-            if ($this->ajoutPermis() && ! is_numeric($cle)) {
-                $this->lignes[$cle] = $ligne;
-                ($this->modele())::create($donnees);
+            if ($this->aSupprimer) {
+                ($this->modele())::query()->whereIn('id', $this->aSupprimer)->delete();
+                $this->aSupprimer = [];
             }
-        }
 
-        if ($this->aSupprimer) {
-            ($this->modele())::query()->whereIn('id', $this->aSupprimer)->delete();
-            $this->aSupprimer = [];
-        }
-
-        $this->enregistrerLesReglages();
+            $this->enregistrerLesReglages();
+        });
 
         // Les cles « neuf-N » sont remplacees par les identifiants reels, sans
         // quoi un second enregistrement creerait les memes lignes une fois de

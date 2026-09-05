@@ -65,6 +65,20 @@
         </div>
     @endif
 
+    {{-- Un retrait refuse au moment de l'enregistrement. La ligne n'est plus
+         a l'ecran — c'est justement ce qui la rend invisible — donc le message
+         ne peut pas s'afficher sous elle : il vient ici, en tete du
+         formulaire, la ou l'editeur regarde apres avoir clique. --}}
+    @error('aSupprimer')
+        <div role="alert" class="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-100">
+            <ul class="space-y-1">
+                @foreach ($errors->get('aSupprimer') as $ligne)
+                    <li>{{ $ligne }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @enderror
+
     @isset($apercu)
         {{-- L'apercu montre ce que le visiteur verra, avec les valeurs en cours
              de saisie : c'est le seul endroit ou l'on voit qu'un suffixe manque
