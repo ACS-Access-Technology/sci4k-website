@@ -6,7 +6,22 @@
   desormais SUR LE SERVEUR. Le site rendait ses biens d'un bloc puis les
   masquait en JavaScript : tout le catalogue traversait le reseau a chaque
   visite.
+
+  Les libelles de cette page etaient ecrits en dur et traduits par __() :
+  aucun ecran ne les exposait. Le vocabulaire des filtres — types, zones,
+  tranches — etait bien modifiable depuis les referentiels, mais pas les
+  INTITULES au-dessus de chaque liste, ni les mots de la grille, ni ceux du
+  formulaire de rendez-vous.
+
+  Quatre accesseurs les lisent maintenant, un par section, et chacun retombe
+  sur le texte d'origine tant que rien n'est saisi : une base vierge rend
+  exactement ce que cette page rendait avant.
 --}}
+@php($tFiltre = fn (string $nom, string $defaut) => $filtres?->texteBilingue($nom, $langue) ?: $defaut)
+@php($tGrille = fn (string $nom, string $defaut) => $sectionCatalogue?->texteBilingue($nom, $langue) ?: $defaut)
+@php($tFiche = fn (string $nom, string $defaut) => $sectionFiche?->texteBilingue($nom, $langue) ?: $defaut)
+@php($tVisite = fn (string $nom, string $defaut) => $sectionVisite?->texteBilingue($nom, $langue) ?: $defaut)
+
 <div>
 
 <section class="page-hero">
@@ -30,9 +45,9 @@
 
       <div class="field-grid">
         <div class="field">
-          <label for="filtreType">{{ __('Type de bien') }}</label>
+          <label for="filtreType">{{ $tFiltre('libelle_type', __('Type de bien')) }}</label>
           <select id="filtreType" wire:model.live="type">
-            <option value="">{{ __('Tous les types') }}</option>
+            <option value="">{{ $tFiltre('choix_tous_types', __('Tous les types')) }}</option>
             @foreach ($types as $valeur)
               <option value="{{ $valeur->valeur }}">{{ $valeur->libelle($langue) }}</option>
             @endforeach
@@ -40,9 +55,9 @@
         </div>
 
         <div class="field">
-          <label for="filtreZone">{{ __('Localité') }}</label>
+          <label for="filtreZone">{{ $tFiltre('libelle_zone', __('Localité')) }}</label>
           <select id="filtreZone" wire:model.live="zone">
-            <option value="">{{ __('Toutes les zones') }}</option>
+            <option value="">{{ $tFiltre('choix_toutes_zones', __('Toutes les zones')) }}</option>
             @foreach ($zones as $valeur)
               <option value="{{ $valeur->valeur }}">{{ $valeur->libelle($langue) }}</option>
             @endforeach
@@ -50,9 +65,9 @@
         </div>
 
         <div class="field">
-          <label for="filtrePieces">{{ __('Nombre de Pièces') }}</label>
+          <label for="filtrePieces">{{ $tFiltre('libelle_pieces', __('Nombre de Pièces')) }}</label>
           <select id="filtrePieces" wire:model.live="pieces">
-            <option value="">{{ __('Toutes pièces') }}</option>
+            <option value="">{{ $tFiltre('choix_toutes_pieces', __('Toutes pièces')) }}</option>
             @foreach ($tranchesPieces as $valeur)
               <option value="{{ $valeur->valeur }}">{{ $valeur->libelle($langue) }}</option>
             @endforeach
@@ -60,9 +75,9 @@
         </div>
 
         <div class="field">
-          <label for="filtreSurface">{{ __('Surface (m²)') }}</label>
+          <label for="filtreSurface">{{ $tFiltre('libelle_surface', __('Surface (m²)')) }}</label>
           <select id="filtreSurface" wire:model.live="surface">
-            <option value="">{{ __('Toutes surfaces') }}</option>
+            <option value="">{{ $tFiltre('choix_toutes_surfaces', __('Toutes surfaces')) }}</option>
             @foreach ($tranchesSurface as $valeur)
               <option value="{{ $valeur->valeur }}">{{ $valeur->libelle($langue) }}</option>
             @endforeach
@@ -73,7 +88,7 @@
       {{-- Le bouton ne declenche plus la recherche : chaque liste la relance
            d'elle-meme. Il ramene a la liste complete, ce qui est la seule
            action qui manquait au visiteur. --}}
-      <button type="button" class="search-submit" wire:click="reinitialiser">{{ __('Rechercher le bien idéal') }} →</button>
+      <button type="button" class="search-submit" wire:click="reinitialiser">{{ $tFiltre('libelle_bouton', __('Rechercher le bien idéal')) }} →</button>
     </div>
   </div>
 </section>
@@ -95,7 +110,7 @@
   <div class="wrap">
     <div class="filters-bar">
       <div class="filters" id="pillFilters">
-        <button type="button" @class(['pill', 'active' => $type === '' && $offre === '']) wire:click="reinitialiser">{{ __('Tous') }}</button>
+        <button type="button" @class(['pill', 'active' => $type === '' && $offre === '']) wire:click="reinitialiser">{{ $tFiltre('onglet_tous', __('Tous')) }}</button>
         @foreach ([\App\Models\Bien::LOCATION, \App\Models\Bien::VENTE] as $cle)
           <button type="button" @class(['pill', 'active' => $offre === $cle]) wire:click="$set('offre', '{{ $offre === $cle ? '' : $cle }}')">{{ $offres[$cle] }}</button>
         @endforeach
@@ -134,7 +149,7 @@
             @endif
 
             @if ($bien->estVendu())
-              <span class="prop-badge" style="top:auto;bottom:12px;">{{ __('Vendu') }}</span>
+              <span class="prop-badge" style="top:auto;bottom:12px;">{{ $tGrille('pastille_vendu', __('Vendu')) }}</span>
             @endif
           </div>
 
@@ -162,13 +177,13 @@
             </div>
 
             <div class="prop-footer-line">
-              <button type="button" class="prop-btn" wire:click="ouvrirBien({{ $bien->id }})" aria-haspopup="dialog">{{ __('Voir la fiche') }}</button>
+              <button type="button" class="prop-btn" wire:click="ouvrirBien({{ $bien->id }})" aria-haspopup="dialog">{{ $tGrille('libelle_fiche', __('Voir la fiche')) }}</button>
             </div>
           </div>
         </article>
       @empty
         <p style="grid-column:1/-1;text-align:center;padding:48px 0;">
-          {{ __('Aucun bien ne correspond à votre recherche.') }}
+          {{ $tGrille('aucun_resultat', __('Aucun bien ne correspond à votre recherche.')) }}
         </p>
       @endforelse
     </div>
@@ -182,7 +197,7 @@
 @if ($bienOuvert)
   <div class="modal-overlay active" role="presentation" wire:click.self="fermerBien">
     <div class="modal-container" role="dialog" aria-modal="true" aria-labelledby="bien-modal-titre" tabindex="-1">
-      <button type="button" class="modal-close" wire:click="fermerBien" aria-label="{{ __('Fermer') }}">×</button>
+      <button type="button" class="modal-close" wire:click="fermerBien" aria-label="{{ $tGrille('libelle_fermer', __('Fermer')) }}">×</button>
       <div class="modal-header-badge">{{ $bienOuvert->statut_juridique ?: __('Fiche du bien') }}</div>
       <h2 class="modal-title" id="bien-modal-titre">{{ $bienOuvert->titre($langue) }}</h2>
       <div class="modal-loc">{{ $bienOuvert->quartier }}@if ($bienOuvert->quartier && $zones->firstWhere('valeur', $bienOuvert->zone)), @endif{{ $zones->firstWhere('valeur', $bienOuvert->zone)?->libelle($langue) }}</div>
@@ -216,13 +231,13 @@
       {{-- Grille de specifications --}}
       <div class="modal-specs-grid">
         @foreach ([
-          __('Type') => $types->firstWhere('valeur', $bienOuvert->type)?->libelle($langue),
-          __('Surface') => ($bienOuvert->surface_habitable ?? $bienOuvert->surface_terrain) ? (($bienOuvert->surface_habitable ?? $bienOuvert->surface_terrain).' m²') : null,
-          __('Pièces') => $bienOuvert->nombre_pieces,
-          __('Chambres') => $bienOuvert->nombre_chambres,
-          __("Salles d'eau") => $bienOuvert->nombre_salles_eau,
-          __('Statut juridique') => $bienOuvert->statut_juridique,
-          __('Numéro de titre') => $bienOuvert->numero_titre,
+          $tFiche('libelle_type', __('Type')) => $types->firstWhere('valeur', $bienOuvert->type)?->libelle($langue),
+          $tFiche('libelle_surface', __('Surface')) => ($bienOuvert->surface_habitable ?? $bienOuvert->surface_terrain) ? (($bienOuvert->surface_habitable ?? $bienOuvert->surface_terrain).' m²') : null,
+          $tFiche('libelle_pieces', __('Pièces')) => $bienOuvert->nombre_pieces,
+          $tFiche('libelle_chambres', __('Chambres')) => $bienOuvert->nombre_chambres,
+          $tFiche('libelle_salles_eau', __("Salles d'eau")) => $bienOuvert->nombre_salles_eau,
+          $tFiche('libelle_statut_juridique', __('Statut juridique')) => $bienOuvert->statut_juridique,
+          $tFiche('libelle_numero_titre', __('Numéro de titre')) => $bienOuvert->numero_titre,
         ] as $intitule => $valeur)
           @if ($valeur)<div class="spec-item"><label>{{ $intitule }}</label><val>{{ $valeur }}</val></div>@endif
         @endforeach
@@ -230,7 +245,7 @@
 
       {{-- Description --}}
       <div class="modal-description">
-        <h4>{{ __('Description intégrale du bien') }}</h4>
+        <h4>{{ $tGrille('titre_description', __('Description intégrale du bien')) }}</h4>
         <p>{{ $bienOuvert->description($langue) ?: $bienOuvert->accroche($langue) }}</p>
       </div>
 
@@ -243,8 +258,8 @@
 
       {{-- Formulaire de visite integre --}}
       <div class="contact-card" style="margin-top:28px;background:var(--dark-surface);border-color:var(--dark-border);">
-        <h3 style="color:var(--dark-text);">{{ __('Demander une visite') }}</h3>
-        <p class="sub" style="color:var(--dark-text-muted);">{{ __("Laissez vos coordonnées : un conseiller vous rappelle pour convenir d'un créneau.") }}</p>
+        <h3 style="color:var(--dark-text);">{{ $tVisite('titre', __('Demander une visite')) }}</h3>
+        <p class="sub" style="color:var(--dark-text-muted);">{{ $tVisite('accroche', __("Laissez vos coordonnées : un conseiller vous rappelle pour convenir d'un créneau.")) }}</p>
 
         <form id="modalFormulaireVisite" style="margin:0;padding:0;background:transparent;border:none;box-shadow:none;"
               data-bien="{{ $bienOuvert->slug }}" onsubmit="handleModalVisiteSubmit(event)">
@@ -255,34 +270,34 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label for="modalVisiteNom">{{ __('Nom complet') }} *</label>
+              <label for="modalVisiteNom">{{ $tVisite('libelle_nom', __('Nom complet')) }} *</label>
               <input type="text" id="modalVisiteNom" name="nom" required maxlength="80" autocomplete="name">
             </div>
             <div class="form-group">
-              <label for="modalVisiteTelephone">{{ __('Téléphone') }} *</label>
+              <label for="modalVisiteTelephone">{{ $tVisite('libelle_telephone', __('Téléphone')) }} *</label>
               <input type="tel" id="modalVisiteTelephone" name="telephone" required maxlength="40" autocomplete="tel">
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
-              <label for="modalVisiteEmail">{{ __('E-mail') }}</label>
+              <label for="modalVisiteEmail">{{ $tVisite('libelle_email', __('E-mail')) }}</label>
               <input type="email" id="modalVisiteEmail" name="email" maxlength="160" autocomplete="email">
             </div>
             <div class="form-group">
-              <label for="modalVisiteCreneau">{{ __('Créneau souhaité') }}</label>
+              <label for="modalVisiteCreneau">{{ $tVisite('libelle_creneau', __('Créneau souhaité')) }}</label>
               <input type="date" id="modalVisiteCreneau" name="creneau_souhaite" min="{{ now()->toDateString() }}">
             </div>
           </div>
 
           <div class="form-group">
-            <label for="modalVisiteMessage">{{ __('Précisions') }}</label>
+            <label for="modalVisiteMessage">{{ $tVisite('libelle_precisions', __('Précisions')) }}</label>
             <textarea id="modalVisiteMessage" name="message" rows="3" maxlength="2000"></textarea>
           </div>
 
-          <button type="submit" class="hero-btn-primary">{{ __('Envoyer ma demande') }}</button>
+          <button type="submit" class="hero-btn-primary">{{ $tVisite('libelle_bouton', __('Envoyer ma demande')) }}</button>
           <p id="modalVisiteConfirmation" style="display:none;margin-top:12px;color:var(--dark-text-muted);">
-            {{ __('Votre demande est enregistrée. Un conseiller vous rappelle sous 24 heures ouvrées.') }}
+            {{ $tVisite('confirmation', __('Votre demande est enregistrée. Un conseiller vous rappelle sous 24 heures ouvrées.')) }}
           </p>
         </form>
       </div>

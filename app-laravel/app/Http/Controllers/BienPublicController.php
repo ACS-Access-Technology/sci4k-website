@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Bien;
 use App\Models\Referentiel;
+use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 
 /**
@@ -34,9 +35,23 @@ class BienPublicController extends Controller
             ? Referentiel::deLaFamille($famille)->where('valeur', $valeur)->first()?->libelle($langue)
             : null;
 
+        // Les deux sections de textes de la fiche. Elles sont les MEMES que
+        // celles du catalogue : la fenetre qui s'ouvre depuis la grille affiche
+        // les memes caracteristiques et le meme formulaire de rendez-vous. Les
+        // declarer deux fois aurait laisse les deux versions diverger, et
+        // l'editeur aurait corrige l'une en croyant avoir corrige les deux.
+        $sections = ReglageDeSection::whereIn('slug', ['biens.detail', 'biens.visit', 'biens.catalog'])
+            ->get()
+            ->keyBy('slug');
+
         return view('public.bien-detail', [
             'bien' => $bien,
             'langue' => $langue,
+            'sectionFiche' => $sections->get('biens.detail'),
+            'sectionVisite' => $sections->get('biens.visit'),
+            // La pastille « Vendu » appartient a la grille : elle suit la
+            // section du catalogue, et non celle de la fiche.
+            'sectionCatalogue' => $sections->get('biens.catalog'),
             'typeLisible' => $etiquette('types_de_bien', $bien->type),
             'zoneLisible' => $etiquette('zones', $bien->zone),
             'statutJuridiqueLisible' => $etiquette('statuts_juridiques', $bien->statut_juridique),

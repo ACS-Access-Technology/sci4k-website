@@ -102,11 +102,24 @@ class CatalogueDesBiens extends Component
             ->ordonnes()
             ->paginate(12);
 
+        // Les quatre sections de la page, chargees d'une seule requete plutot
+        // que d'une par bloc. `catalogue`, `fiche` et `visite` ne portent aucun
+        // en-tete : elles ne transportent que les textes que « Pages du site →
+        // Biens » rend modifiables — libelles des filtres, de la grille, des
+        // caracteristiques et du formulaire de rendez-vous, tous ecrits en dur
+        // dans cette vue jusqu'ici.
+        $sections = ReglageDeSection::whereIn('slug', [
+            'biens.page', 'biens.filters', 'biens.catalog', 'biens.detail', 'biens.visit',
+        ])->get()->keyBy('slug');
+
         return view('public.biens', [
             'biens' => $biens,
             'langue' => $langue,
-            'banniere' => ReglageDeSection::where('slug', 'biens.page')->first(),
-            'filtres' => ReglageDeSection::where('slug', 'biens.filters')->first(),
+            'banniere' => $sections->get('biens.page'),
+            'filtres' => $sections->get('biens.filters'),
+            'sectionCatalogue' => $sections->get('biens.catalog'),
+            'sectionFiche' => $sections->get('biens.detail'),
+            'sectionVisite' => $sections->get('biens.visit'),
             'types' => Referentiel::deLaFamille('types_de_bien')->visibles()->ordonnees()->get(),
             'zones' => Referentiel::deLaFamille('zones')->visibles()->ordonnees()->get(),
             'tranchesPieces' => Referentiel::deLaFamille('tranches_pieces')->visibles()->ordonnees()->get(),

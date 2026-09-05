@@ -1176,5 +1176,11 @@
     "Le site est momentanément indisponible. Nous revenons très vite.": "The site is temporarily unavailable. We will be back very soon.",
     "Nous revenons très vite": "We will be back very soon",
     "Le site est momentanément en cours de maintenance.": "The site is temporarily under maintenance.",
-    "Nos équipes restent joignables pendant l’opération :": "Our teams remain reachable during the work:"
+    "Nos équipes restent joignables pendant l’opération :": "Our teams remain reachable during the work:",
+    "Textes du bloc": "Block texts",
+    "Les biens publiés, et les textes de la grille de résultats.": "Published properties, and the texts of the results grid.",
+    "Fiche d’un bien": "Property page",
+    "Libellés des caractéristiques, communs à la fenêtre du catalogue et à la fiche.": "Feature labels, shared by the catalogue window and the property page.",
+    "Demande de visite": "Visit request",
+    "Tous les textes du formulaire de rendez-vous.": "All the texts of the appointment form."
 }

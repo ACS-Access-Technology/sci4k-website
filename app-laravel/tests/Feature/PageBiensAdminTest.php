@@ -78,11 +78,23 @@ it('n affiche pas de formulaire sur le module Catalogue', function () {
         ->assertDontSee('wire:model="entete.titre_fr"', false);
 });
 
-it('refuse d enregistrer un module sans section', function () {
+/*
+ * Ce test exigeait auparavant que le module « Catalogue » REFUSE
+ * l'enregistrement, faute de section. Il n'en avait pas parce qu'il n'affichait
+ * aucun en-tete — et c'est precisement ce qui laissait les textes de la grille
+ * (« Vendu », « Voir la fiche », « Aucun bien ne correspond… ») figes dans la
+ * vue, modifiables nulle part. Le module porte desormais une section, et le
+ * test dit ce qui est vrai maintenant.
+ */
+it('enregistre les textes du catalogue', function () {
     Livewire::actingAs($this->admin)->test(PageBiens::class)
         ->call('ouvrir', 'catalogue')
+        ->set('textes.libelle_fiche_fr', 'Découvrir ce bien')
         ->call('enregistrer')
-        ->assertNotFound();
+        ->assertHasNoErrors();
+
+    expect(ReglageDeSection::where('slug', 'biens.catalog')->first()?->texteBilingue('libelle_fiche', 'fr'))
+        ->toBe('Découvrir ce bien');
 });
 
 /* ------------------------------------------------------------------ */
