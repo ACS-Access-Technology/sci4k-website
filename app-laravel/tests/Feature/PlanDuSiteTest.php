@@ -1,7 +1,9 @@
 <?php
 
 use App\Models\Article;
+use App\Models\Bien;
 use App\Models\Categorie;
+use App\Models\PageStatique;
 
 /*
  * Plan du site.
@@ -32,8 +34,14 @@ it('sert un document XML valide', function () {
 });
 
 it('n annonce aucune adresse qui redirige', function () {
-    // Le coeur du defaut : un plan de site ne doit lister que des adresses
-    // finales. Chacune est reellement appelee, et non deduite.
+    // Ce controle ne nommait que trois pages : services.html, faq.html et
+    // actualites.html. Il est reste vert pendant que biens.html,
+    // presentation.html et contact.html, portes depuis, s'installaient dans le
+    // plan — un garde-fou qui verifie les symptomes connus au lieu de la regle
+    // ne rattrape jamais le cas suivant.
+    //
+    // La regle, elle, tient en une phrase : chaque adresse annoncee doit
+    // repondre 200. Elle est donc appliquee en APPELANT chaque adresse.
     $contenu = $this->get('/sitemap.xml')->assertOk()->getContent();
 
     preg_match_all('/<loc>([^<]+)<\/loc>/', $contenu, $trouvees);
@@ -42,12 +50,11 @@ it('n annonce aucune adresse qui redirige', function () {
 
     foreach ($trouvees[1] as $adresse) {
         // La racine n'a pas de composante « path » : parse_url y rend null,
-        // que toBeContain refuserait.
+        // que toContain refuserait.
         $chemin = (string) parse_url($adresse, PHP_URL_PATH);
 
-        expect($chemin)->not->toContain('services.html');
-        expect($chemin)->not->toContain('faq.html');
-        expect($chemin)->not->toContain('actualites.html');
+        expect($this->get($chemin === '' ? '/' : $chemin)->getStatusCode())
+            ->toBe(200, "Le plan du site annonce $adresse, qui ne repond pas 200.");
     }
 });
 
@@ -77,6 +84,38 @@ it('n annonce pas un brouillon', function () {
     $contenu = $this->get('/sitemap.xml')->assertOk()->getContent();
 
     expect($contenu)->not->toContain(route('actualites.detail', $brouillon));
+});
+
+it('annonce chaque fiche de bien', function () {
+    // Les fiches manquaient entierement : le plan annonçait le catalogue, mais
+    // pas les biens. Un catalogue immobilier se trouve par ses biens.
+    $publie = Bien::factory()->create(['slug' => 'villa-cocody', 'statut' => Bien::PUBLIE]);
+    $vendu = Bien::factory()->create(['slug' => 'duplex-riviera', 'statut' => Bien::VENDU]);
+    $brouillon = Bien::factory()->brouillon()->create(['slug' => 'pas-encore-en-ligne']);
+
+    $contenu = $this->get('/sitemap.xml')->assertOk()->getContent();
+
+    expect($contenu)->toContain(route('biens.detail', $publie->slug))
+        // Un bien vendu garde sa fiche, marquee comme telle : la retirer du
+        // plan ferait disparaitre une adresse deja indexee.
+        ->and($contenu)->toContain(route('biens.detail', $vendu->slug))
+        ->and($contenu)->not->toContain($brouillon->slug);
+});
+
+it('n annonce une page legale que si elle est publiee', function () {
+    $politique = PageStatique::where('slug', 'politique-confidentialite')->first();
+    $mentions = PageStatique::where('slug', 'mentions-legales')->first();
+
+    expect($politique?->publie)->toBeTrue()
+        // Les mentions legales attendent des informations que seul le client
+        // detient. Les annoncer aux moteurs criblees de « [a completer] »
+        // serait pire que de ne pas les annoncer.
+        ->and($mentions?->publie)->toBeFalse();
+
+    $contenu = $this->get('/sitemap.xml')->assertOk()->getContent();
+
+    expect($contenu)->toContain(route('politique-confidentialite.index'))
+        ->and($contenu)->not->toContain(route('mentions-legales.index').'</loc>');
 });
 
 it('suit les publications sans qu on touche a un fichier', function () {

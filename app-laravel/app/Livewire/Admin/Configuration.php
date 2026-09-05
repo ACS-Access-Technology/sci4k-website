@@ -282,6 +282,20 @@ class Configuration extends Component
                 continue;
             }
 
+            // Une case decochee renvoie une chaine VIDE, et `Parametre::lire()`
+            // traite le vide comme « rien d'enregistre » : la lecture retombait
+            // donc sur le defaut. Une case dont le defaut est « oui » ne pouvait
+            // ainsi JAMAIS etre decochee — « Autoriser l'indexation par les
+            // moteurs de recherche » et le bouton d'appel de l'en-tete etaient
+            // tous deux dans ce cas, et le premier est le reglage qui decide si
+            // le site est visible sur Google.
+            //
+            // Un « 0 » explicite dit la difference entre « decoche » et « jamais
+            // touche ».
+            if (($description['type'] ?? '') === 'case') {
+                $valeur = filter_var($valeur, FILTER_VALIDATE_BOOL) ? '1' : '0';
+            }
+
             Parametre::poser($cle, $valeur, $groupes[$cle] ?? 'general');
         }
 

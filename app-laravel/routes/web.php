@@ -9,6 +9,7 @@ use App\Http\Controllers\LangueController;
 use App\Http\Controllers\MessageDeContactController;
 use App\Http\Controllers\PagePubliqueController;
 use App\Http\Controllers\PlanDuSiteController;
+use App\Http\Controllers\RobotsController;
 use App\Livewire\Admin\AbonneNewsletterListe;
 use App\Livewire\Admin\Configuration;
 use App\Livewire\Admin\DemandeDeVisiteListe;
@@ -112,6 +113,11 @@ Route::get('/langue/{code}', [LangueController::class, 'basculer'])->name('langu
 // aucun article. Il est exclu de la synchronisation, sans quoi il masquerait
 // cette route — le serveur sert un fichier de public/ avant d'entrer dans PHP.
 Route::get('/sitemap.xml', PlanDuSiteController::class)->name('plan-du-site');
+
+// Meme raison, meme piege : le fichier fige de public/ etait servi avant PHP,
+// et le champ « Fichier robots.txt » de l'ecran Configuration n'etait lu nulle
+// part. Le fichier a ete retire pour que cette route reponde.
+Route::get('/robots.txt', RobotsController::class)->name('robots');
 
 // Ces deux adresses n'exigeaient qu'un compte connecte, la ou tout le reste de
 // l'administration exige un role. « verified » n'y ajoutait rien : le

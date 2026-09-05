@@ -201,3 +201,51 @@ it('refuse l essai a un editeur', function () {
 
     expect($source)->toContain('abort_unless($this->peutEcrire(), 403)');
 });
+
+/*
+ * Les cases a cocher.
+ *
+ * Une case decochee renvoie une chaine VIDE, et `Parametre::lire()` traite le
+ * vide comme « rien d'enregistre » : la lecture retombait sur le defaut. Une
+ * case dont le defaut est « oui » ne pouvait donc JAMAIS etre decochee.
+ *
+ * Le cas le plus couteux est « Autoriser l'indexation par les moteurs de
+ * recherche » : c'est le reglage qui decide si le site est visible sur Google,
+ * et son aide invite explicitement a le decocher tant que le site n'est pas
+ * ouvert au public. Il ne se decochait pas.
+ */
+it('enregistre une case decochee comme decochee, et non comme absente', function () {
+    Livewire::actingAs($this->admin)
+        ->test(Configuration::class)
+        ->set('valeurs.autoriser_indexation', '')
+        ->call('enregistrer')
+        ->assertHasNoErrors();
+
+    expect(Parametre::lire('autoriser_indexation'))->toBe('0')
+        // Le defaut « vrai » ne doit plus reprendre la main : c'est tout
+        // l'objet du correctif.
+        ->and(Parametre::actif('autoriser_indexation', true))->toBeFalse();
+});
+
+it('enregistre une case cochee', function () {
+    Livewire::actingAs($this->admin)
+        ->test(Configuration::class)
+        ->set('valeurs.autoriser_indexation', '1')
+        ->call('enregistrer')
+        ->assertHasNoErrors();
+
+    expect(Parametre::actif('autoriser_indexation', false))->toBeTrue();
+});
+
+it('coupe reellement l indexation du site quand la case est decochee', function () {
+    // Le bout du fil : la case decochee doit se voir sur la page publique ET
+    // dans robots.txt, sans quoi le reglage n'aura fait que changer une ligne
+    // en base.
+    Livewire::actingAs($this->admin)
+        ->test(Configuration::class)
+        ->set('valeurs.autoriser_indexation', '')
+        ->call('enregistrer');
+
+    $this->get('/')->assertOk()->assertSee('noindex', false);
+    $this->get('/robots.txt')->assertOk()->assertSee("Disallow: /\n", false);
+});

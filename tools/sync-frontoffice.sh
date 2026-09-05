@@ -30,6 +30,11 @@
 # d'entrer dans PHP : le copier masquerait la route qui rend le plan du site
 # depuis la base, et le site continuerait d'annoncer des adresses redirigees
 # sans connaitre aucun article.
+#
+# robots.txt aussi, et pour exactement la meme raison : il est desormais rendu
+# depuis le champ « Fichier robots.txt » de l'ecran Configuration, et il declare
+# le plan du site. Une copie figee dans public/ reprendrait la main et
+# l'editeur ne comprendrait pas pourquoi son reglage ne change rien.
 
 set -euo pipefail
 
@@ -76,10 +81,12 @@ echo "  pages statiques : $copiees copiees"
 # Le plan du site est rendu par Laravel depuis la base. Une copie laissee dans
 # public/ par une synchronisation anterieure masquerait la route, le serveur
 # servant un fichier avant d'entrer dans PHP.
-if [ -e "$cible/sitemap.xml" ]; then
-    rm -f "$cible/sitemap.xml"
-    echo "  sitemap.xml : copie retiree, servi par Laravel"
-fi
+for fige in sitemap.xml robots.txt; do
+    if [ -e "$cible/$fige" ]; then
+        rm -f "$cible/$fige"
+        echo "  $fige : copie retiree, servi par Laravel"
+    fi
+done
 
 # Lien vers storage/app/public, ou vivent les couvertures televersees depuis
 # l'administration. Sans lui elles repondent 404, sans erreur cote serveur :
