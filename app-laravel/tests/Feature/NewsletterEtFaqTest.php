@@ -176,6 +176,85 @@ it('n exporte que les adresses actives', function () {
     expect(AbonneNewsletter::actifs()->pluck('email')->all())->toBe(['actif@exemple.ci']);
 });
 
+/* ------------------------------------------------ retrait par l'abonne */
+
+/*
+ * On pouvait s'inscrire, et l'ecran du backoffice pouvait desinscrire
+ * quelqu'un — mais l'abonne n'avait aucun moyen de partir sans le demander a
+ * l'agence. C'est le sens meme du droit de retrait : il ne doit dependre de
+ * personne.
+ */
+it('donne a chaque abonne son adresse de retrait', function () {
+    $abonne = AbonneNewsletter::create(['email' => 'leon@exemple.ci']);
+
+    expect($abonne->jeton)->not->toBeEmpty()
+        ->and(strlen($abonne->jeton))->toBeGreaterThanOrEqual(32)
+        // Le jeton, et NON l'adresse : un lien construit sur l'adresse
+        // permettrait de desinscrire n'importe qui en la devinant.
+        ->and($abonne->lienDeDesinscription())->not->toContain('leon@exemple.ci')
+        ->and($abonne->lienDeDesinscription())->toContain($abonne->jeton);
+});
+
+it('ne desinscrit pas au simple chargement du lien', function () {
+    $abonne = AbonneNewsletter::create(['email' => 'leon@exemple.ci']);
+
+    // Le point sensible : les antivirus de messagerie et les apercus de lien
+    // VISITENT les adresses d'un message pour les inspecter. Un retrait
+    // declenche par un GET partirait au premier d'entre eux.
+    $this->get($abonne->lienDeDesinscription())->assertOk();
+
+    expect($abonne->fresh()->desinscrit_a)->toBeNull();
+});
+
+it('desinscrit quand l abonne confirme', function () {
+    $abonne = AbonneNewsletter::create(['email' => 'leon@exemple.ci']);
+
+    $this->post(route('newsletter.desinscription.retirer', $abonne->jeton))
+        ->assertRedirect($abonne->lienDeDesinscription());
+
+    expect($abonne->fresh()->desinscrit_a)->not->toBeNull()
+        ->and(AbonneNewsletter::actifs()->count())->toBe(0);
+});
+
+it('ne repousse pas la date d un retrait deja enregistre', function () {
+    $abonne = AbonneNewsletter::create(['email' => 'leon@exemple.ci']);
+    $abonne->forceFill(['desinscrit_a' => now()->subMonth()])->save();
+    $premier = $abonne->fresh()->desinscrit_a;
+
+    $this->post(route('newsletter.desinscription.retirer', $abonne->jeton));
+
+    // Le premier retrait est celui qui compte, et c'est lui qu'on doit pouvoir
+    // montrer si l'interesse le demande.
+    expect($abonne->fresh()->desinscrit_a->timestamp)->toBe($premier->timestamp);
+});
+
+it('repond pareil pour un jeton inconnu', function () {
+    // Distinguer les deux cas dirait a qui essaie des jetons lesquels
+    // correspondent a une adresse inscrite.
+    $this->get(route('newsletter.desinscription', 'jeton-invente'))->assertOk();
+
+    $this->post(route('newsletter.desinscription.retirer', 'jeton-invente'))
+        ->assertRedirect(route('newsletter.desinscription', 'jeton-invente'));
+});
+
+it('porte le lien de retrait dans l export', function () {
+    // Les lettres partent d'un outil externe alimente par cet export : c'est le
+    // SEUL chemin par ou le lien peut atteindre le pied des messages.
+    $abonne = AbonneNewsletter::create(['email' => 'actif@exemple.ci']);
+
+    $flux = Livewire::actingAs($this->editeur)
+        ->test(AbonneNewsletterListe::class)
+        ->instance()
+        ->exporter();
+
+    ob_start();
+    $flux->sendContent();
+    $csv = ob_get_clean();
+
+    expect($csv)->toContain('lien_desinscription')
+        ->and($csv)->toContain($abonne->lienDeDesinscription());
+});
+
 it('propose la newsletter dans la barre laterale', function () {
     expect($this->actingAs($this->editeur)->get('/dashboard')->getContent())
         ->toContain('/admin/newsletter');

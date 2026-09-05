@@ -1156,5 +1156,19 @@
     "Étiquette, titre, accroche, boutons, chiffres clés et image de fond.": "Label, title, intro, buttons, key figures and background image.",
     "Étiquette, titre, accroche, chiffres clés et image de fond.": "Label, title, intro, key figures and background image.",
     "à": "to",
-    "✓ Votre question est prête : la conversation WhatsApp s'ouvre dans un nouvel onglet. Appuyez sur Envoyer pour la transmettre à SCI4K.": "✓ Your question is ready: the WhatsApp conversation opens in a new tab. Press Send to pass it on to SCI4K."
+    "✓ Votre question est prête : la conversation WhatsApp s'ouvre dans un nouvel onglet. Appuyez sur Envoyer pour la transmettre à SCI4K.": "✓ Your question is ready: the WhatsApp conversation opens in a new tab. Press Send to pass it on to SCI4K.",
+    "Une visite vient d’être demandée depuis :site.": "A visit has just been requested from :site.",
+    "Bien :": "Property:",
+    "Créneau souhaité :": "Preferred slot:",
+    "Demande de visite de :nom": "Visit request from :nom",
+    "Se désinscrire de la lettre d’information": "Unsubscribe from the newsletter",
+    "Retirer votre adresse de la lettre d’information de SCI4K.": "Remove your address from the SCI4K newsletter.",
+    "Lettre d’information": "Newsletter",
+    "C’est fait": "Done",
+    "Votre adresse ne recevra plus notre lettre d’information. Vous pouvez vous réinscrire à tout moment depuis le site.": "Your address will no longer receive our newsletter. You can subscribe again at any time from the site.",
+    "Retour à l’accueil": "Back to home",
+    "Confirmer la désinscription": "Confirm unsubscription",
+    "Vous êtes sur le point de retirer votre adresse de notre lettre d’information. Cela n’efface aucune demande que vous nous auriez adressée par ailleurs.": "You are about to remove your address from our newsletter. This does not delete any request you may have sent us separately.",
+    "Me désinscrire": "Unsubscribe me",
+    "Annuler et revenir à l’accueil": "Cancel and go back home"
 }

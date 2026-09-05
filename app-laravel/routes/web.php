@@ -8,6 +8,7 @@ use App\Http\Controllers\DemandeDeVisiteController;
 use App\Http\Controllers\LangueController;
 use App\Http\Controllers\MessageDeContactController;
 use App\Http\Controllers\PagePubliqueController;
+use App\Http\Controllers\DesinscriptionNewsletterController;
 use App\Http\Controllers\PlanDuSiteController;
 use App\Http\Controllers\RobotsController;
 use App\Livewire\Admin\AbonneNewsletterListe;
@@ -92,6 +93,20 @@ Route::post('/messages', MessageDeContactController::class)
 Route::post('/newsletter', AbonnementNewsletterController::class)
     ->middleware('throttle:5,1')
     ->name('newsletter.inscription');
+
+// Le retrait, par l'interesse lui-meme. On pouvait s'inscrire, et le backoffice
+// pouvait desinscrire quelqu'un — mais l'abonne n'avait aucun moyen de partir
+// sans le demander a l'agence.
+//
+// EN DEUX TEMPS : le lien ouvre une page qui demande confirmation, et c'est le
+// bouton qui retire. Un retrait declenche par le simple chargement de l'adresse
+// partirait au premier antivirus de messagerie, qui VISITE les liens d'un
+// message pour les inspecter.
+Route::get('/newsletter/desinscription/{jeton}', [DesinscriptionNewsletterController::class, 'formulaire'])
+    ->name('newsletter.desinscription');
+Route::post('/newsletter/desinscription/{jeton}', [DesinscriptionNewsletterController::class, 'retirer'])
+    ->middleware('throttle:10,1')
+    ->name('newsletter.desinscription.retirer');
 
 // Commentaires sous un article. Memes protections que les trois ecritures
 // publiques ci-dessus, plus un filtre qui met de cote ce qui ressemble a du

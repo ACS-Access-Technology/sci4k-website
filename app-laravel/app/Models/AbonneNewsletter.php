@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 /**
  * Une adresse inscrite a la lettre d'information.
@@ -31,6 +32,32 @@ class AbonneNewsletter extends Model
     public function estDesinscrit(): bool
     {
         return $this->desinscrit_a !== null;
+    }
+
+    /**
+     * L'adresse a laquelle cet abonne peut se retirer lui-meme.
+     *
+     * Le jeton, et non l'adresse e-mail : une adresse dans un lien se retrouve
+     * dans les journaux du serveur, dans l'historique du navigateur et chez
+     * tout intermediaire — et un lien construit sur l'adresse permettrait de
+     * desinscrire n'importe qui en la devinant.
+     */
+    public function lienDeDesinscription(): string
+    {
+        return route('newsletter.desinscription', $this->jeton);
+    }
+
+    /**
+     * Le jeton est pose a la creation, jamais laisse au hasard d'un appelant.
+     *
+     * Un abonne sans jeton serait un abonne qui ne peut pas partir, et rien
+     * dans le formulaire public ne le signalerait.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (self $abonne) {
+            $abonne->jeton ??= Str::random(48);
+        });
     }
 
     /**

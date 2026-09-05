@@ -55,19 +55,25 @@ class AbonneNewsletterListe extends Component
      *
      * Seules les ACTIVES : exporter une adresse desinscrite reviendrait a lui
      * reecrire, ce que la desinscription interdit precisement.
+     *
+     * Deux colonnes, et la seconde est aussi importante que la premiere. Les
+     * lettres partent d'un outil externe, alimente par cet export : c'est donc
+     * le SEUL endroit par ou le lien de desinscription peut atteindre le pied
+     * des messages. Un export qui ne porte que des adresses produit des envois
+     * dont on ne peut pas sortir.
      */
     public function exporter(): StreamedResponse
     {
         abort_unless($this->peutEcrire(), 403);
 
-        $adresses = AbonneNewsletter::actifs()->orderBy('email')->pluck('email');
+        $abonnes = AbonneNewsletter::actifs()->orderBy('email')->get();
 
-        return Response::streamDownload(function () use ($adresses) {
+        return Response::streamDownload(function () use ($abonnes) {
             $sortie = fopen('php://output', 'w');
-            fputcsv($sortie, ['email']);
+            fputcsv($sortie, ['email', 'lien_desinscription']);
 
-            foreach ($adresses as $adresse) {
-                fputcsv($sortie, [$adresse]);
+            foreach ($abonnes as $abonne) {
+                fputcsv($sortie, [$abonne->email, $abonne->lienDeDesinscription()]);
             }
 
             fclose($sortie);

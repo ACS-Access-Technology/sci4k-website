@@ -1,10 +1,13 @@
 <?php
 
 use App\Livewire\Admin\DemandeDeVisiteListe;
+use App\Mail\NouvelleDemandeDeVisite;
 use App\Models\ActiviteJournalisee;
 use App\Models\Bien;
 use App\Models\DemandeDeVisite;
+use App\Models\Parametre;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
@@ -115,6 +118,59 @@ it('limite le debit des demandes', function () {
 
     $this->postJson('/visites', ['nom' => 'De trop', 'telephone' => '+225 07 00 00 00'])
         ->assertStatus(429);
+});
+
+/* ------------------------------------------------ alerte a l'agence */
+
+/*
+ * Les messages de contact et les commentaires declenchaient chacun leur
+ * alerte ; les demandes de visite, non. Elles s'empilaient dans leur ecran sans
+ * que personne ne soit prevenu — alors que c'est le seul formulaire du site ou
+ * le visiteur propose une DATE. Une demande vue trois jours plus tard est une
+ * demande perdue.
+ */
+it('previent l agence qu une visite est demandee', function () {
+    Mail::fake();
+    Parametre::poser('destinataire_formulaire', 'agence@sci4k.test', 'contact');
+
+    $this->postJson('/visites', [
+        'nom' => 'Awa Traoré',
+        'telephone' => '+225 07 00 00 00 00',
+        'email' => 'awa@example.com',
+        'bien' => 'villa-les-palmiers',
+        'creneau_souhaite' => now()->addWeek()->toDateString(),
+    ])->assertCreated();
+
+    Mail::assertSent(NouvelleDemandeDeVisite::class, function ($courriel) {
+        // L'adresse du visiteur est en « repondre a » et NON en expediteur :
+        // un message envoye au nom d'un inconnu depuis le domaine du site
+        // serait rejete par la plupart des serveurs.
+        return $courriel->hasTo('agence@sci4k.test')
+            && $courriel->hasReplyTo('awa@example.com');
+    });
+});
+
+it('n envoie rien tant qu aucun destinataire n est configure', function () {
+    Mail::fake();
+    Parametre::poser('destinataire_formulaire', '', 'contact');
+
+    $this->postJson('/visites', ['nom' => 'Sans destinataire', 'telephone' => '+225 07 00 00 00'])
+        ->assertCreated();
+
+    Mail::assertNothingSent();
+});
+
+it('enregistre la demande meme si l envoi echoue', function () {
+    // Le point sensible : un serveur d'envoi mal configure ne doit pas faire
+    // perdre la demande au visiteur, qui l'a bel et bien envoyee.
+    Parametre::poser('destinataire_formulaire', 'agence@sci4k.test', 'contact');
+
+    Mail::shouldReceive('to')->andThrow(new RuntimeException('SMTP injoignable'));
+
+    $this->postJson('/visites', ['nom' => 'Malgré la panne', 'telephone' => '+225 07 00 00 00'])
+        ->assertCreated();
+
+    expect(DemandeDeVisite::where('nom', 'Malgré la panne')->exists())->toBeTrue();
 });
 
 /* ------------------------------------------------ apres la vente */
