@@ -1,8 +1,12 @@
 name: Vérification du site
 
 on:
+  # Les TROIS branches permanentes, et non la seule master. Le travail se fait
+  # sur dev : n'ecouter que master revenait a ne rien verifier avant la fusion
+  # finale, c'est-a-dire au moment ou une regression coute le plus cher a
+  # demeler.
   push:
-    branches: [master]
+    branches: [master, preprod, dev]
   pull_request:
 
 jobs:
@@ -98,6 +102,22 @@ jobs:
       - name: Deposer les ressources du site statique
         working-directory: .
         run: ./tools/sync-frontoffice.sh
+
+      # Le formatage et l'analyse AVANT les tests : ils durent quelques
+      # secondes, la suite en dure cinquante. Un oubli de formatage n'a pas a
+      # se faire attendre une minute pour etre signale.
+      #
+      # Ces deux controles ne tournaient nulle part. Le seul workflow qui les
+      # appelait vivait dans app-laravel/.github/workflows/, un dossier que
+      # GitHub ne lit pas — il ne lit que celui de la RACINE — et visait par
+      # surcroit une branche « main » qui n'existe pas. Il a ete retire, et sa
+      # dette soldee : Pint est vert, phpstan est a zero. Ils peuvent donc
+      # bloquer une fusion, ce qu'ils n'ont jamais pu faire.
+      - name: Formatage (Pint)
+        run: composer lint:check
+
+      - name: Analyse statique (phpstan)
+        run: composer types:check
 
       # Deux passes, et c'est deliberé. phpunit.xml impose SQLite en memoire :
       # rapide, mais ce n'est pas le moteur servi en production. Une variable
