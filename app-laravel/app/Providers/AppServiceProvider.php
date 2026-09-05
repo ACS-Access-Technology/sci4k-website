@@ -35,8 +35,35 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->appliquerLeFuseauHoraire();
         $this->composerLePiedDePage();
         $this->appliquerLaMessagerieEnregistree();
+    }
+
+    /**
+     * Applique le fuseau horaire saisi dans la configuration.
+     *
+     * Il y etait propose depuis le debut, avec deux choix, et n'etait lu nulle
+     * part : l'application restait sur celui de config/app.php. Toutes les
+     * dates affichees — publication d'un article, creneau d'une visite,
+     * horodatage du journal — s'ecartaient donc de l'heure d'Abidjan des que le
+     * serveur etait ailleurs.
+     *
+     * Le reglage est applique a Carbon ET a la configuration : la premiere
+     * gouverne l'affichage, la seconde ce que Laravel ecrit en base.
+     */
+    protected function appliquerLeFuseauHoraire(): void
+    {
+        $fuseau = (string) $this->parametre('fuseau_horaire', '');
+
+        // Un fuseau inconnu ferait tomber l'application entiere au demarrage,
+        // pour un champ de formulaire. On l'ignore plutot.
+        if ($fuseau === '' || ! in_array($fuseau, timezone_identifiers_list(), true)) {
+            return;
+        }
+
+        config(['app.timezone' => $fuseau]);
+        date_default_timezone_set($fuseau);
     }
 
     /**
@@ -147,9 +174,23 @@ class AppServiceProvider extends ServiceProvider
             $logo = $this->parametre('logo', 'images/image (3).png');
             $favicon = $this->parametre('favicon', $logo);
 
+            // La description affichee dans le pied de page et celle que Google
+            // reprend sous le lien ne poursuivent pas le meme but : la premiere
+            // se lit, la seconde doit tenir en 160 caracteres. Les deux
+            // reglages existaient donc bel et bien, mais un seul etait lu — le
+            // champ « Description meta par défaut » ne servait a rien.
+            //
+            // Il PRIME desormais, et retombe sur la description courte quand
+            // l'editeur n'en a pas saisi : une installation qui n'a rempli
+            // qu'un champ garde le comportement qu'elle avait.
+            $descriptionCourte = $this->parametre('description_courte', __("Société Civile Immobilière à Abidjan : achat, vente, location, construction et gestion de patrimoine immobilier."));
+
             $vue->with([
                 'nomDuSite' => $this->parametre('nom_du_site', 'SCI4K'),
-                'descriptionSite' => $this->parametre('description_courte', __("Société Civile Immobilière à Abidjan : achat, vente, location, construction et gestion de patrimoine immobilier.")),
+                'descriptionSite' => $this->parametre('meta_description') ?: $descriptionCourte,
+                // Le titre que porte une page sans titre a elle. Le gabarit
+                // affichait « — SCI4K », precede d'un vide.
+                'titreParDefaut' => $this->parametre('meta_titre', ''),
                 'logoPublic' => $logo,
                 'faviconPublic' => $favicon,
                 'googleAnalytics' => $this->parametre('google_analytics'),

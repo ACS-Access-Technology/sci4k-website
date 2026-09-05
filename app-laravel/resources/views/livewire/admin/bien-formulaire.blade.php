@@ -133,7 +133,10 @@
                     </label>
 
                     <label class="block">
-                        <span class="text-sm font-medium">{{ __('Prix (FCFA)') }}</span>
+                        {{-- La devise suit le reglage « Configuration → Général »
+                             plutot que d'etre ecrite en dur : le libellé du champ
+                             mentirait le jour ou l'agence passe a l'euro. --}}
+                        <span class="text-sm font-medium">{{ __('Prix (:devise)', ['devise' => \App\Models\Bien::symboleDeLaDevise()]) }}</span>
                         <input type="number" wire:model="prix" min="0" class="{{ $champ }}">
                         <span class="mt-1 block text-xs text-zinc-500">{{ __("Facultatif. Le site public n'affiche aucun prix aujourd'hui.") }}</span>
                         @error('prix') <span class="text-sm text-red-600">{{ $message }}</span> @enderror

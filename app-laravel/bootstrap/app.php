@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(append: [
             \App\Http\Middleware\AppliqueLangue::class,
+            // La case « Activer le mode maintenance » de l'ecran Configuration
+            // existait depuis le debut et ne fermait rien. Voir le middleware
+            // pour les trois chemins qui restent ouverts, site ferme.
+            \App\Http\Middleware\FermeLeSitePublic::class,
             \App\Http\Middleware\EnregistreVisite::class,
             // Un compte desactive perd sa session EN COURS, et pas seulement
             // le droit de se reconnecter. On desactive un compte parce qu'il

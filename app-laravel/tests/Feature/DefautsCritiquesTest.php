@@ -72,10 +72,20 @@ it("n'inscrit rien au journal quand un visiteur voit un encart", function () {
 
     ActiviteJournalisee::query()->delete();
 
+    $modifieLe = Encart::where('slug', 'accueil.annonce')->value('updated_at');
+
+    $this->travel(1)->days();
     $this->get('/')->assertOk();
 
+    $encart = Encart::where('slug', 'accueil.annonce')->first();
+
     expect(ActiviteJournalisee::count())->toBe(0)
-        ->and(Encart::where('slug', 'accueil.annonce')->value('impressions'))->toBe(1);
+        ->and($encart->impressions)->toBe(1)
+        // Et la date de modification ne bouge pas non plus. On croyait cela
+        // acquis : « quietly » ne tait que les EVENEMENTS, jamais les
+        // horodatages. Un encart affiche mille fois se serait presente comme
+        // modifie mille fois.
+        ->and($encart->updated_at->timestamp)->toBe($modifieLe->timestamp);
 });
 
 /*

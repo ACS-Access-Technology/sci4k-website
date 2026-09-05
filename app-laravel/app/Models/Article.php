@@ -45,6 +45,29 @@ class Article extends Model
      */
     protected $attributes = ['vues' => 0, 'commentaires_ouverts' => true];
 
+    /**
+     * Compte une lecture, sans rien remuer d'autre.
+     *
+     * `incrementQuietly` tait les evenements du modele — donc le trait de
+     * journalisation, qui ecrivait une ligne « article modifie » a chaque
+     * visite du site public.
+     *
+     * `withoutTimestamps` empeche de toucher `updated_at`, ce qu'on croyait
+     * acquis : « quietly » ne fait que taire les evenements. La consequence
+     * n'etait pas cosmetique — le plan du site tire son `lastmod` de cette
+     * date. Chaque lecture anonyme annonçait donc aux moteurs que l'article
+     * venait d'etre modifie, a chaque passage, ce qui vide `lastmod` de tout
+     * sens.
+     *
+     * La methode vit SUR LE MODELE parce que `incrementQuietly` est protegee :
+     * appelee de l'exterieur elle ne passe que par la magie de `__call`, qui
+     * fonctionne mais qu'aucun lecteur ne peut verifier a l'oeil.
+     */
+    public function compterUneLecture(): void
+    {
+        static::withoutTimestamps(fn () => $this->incrementQuietly('vues'));
+    }
+
     /** Les trois etats possibles d'un article, dans l'ordre du cycle de vie. */
     public const STATUTS = ['brouillon', 'publie', 'archive'];
 

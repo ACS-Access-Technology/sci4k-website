@@ -10,7 +10,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>@yield('titre') — {{ $nomDuSite }}</title>
+{{-- Une page sans titre a elle retombe sur « Titre meta par défaut » de
+     l'ecran Configuration, et sur le seul nom du site s'il est vide lui aussi.
+     Le gabarit affichait « — SCI4K », precede d'un blanc. --}}
+@php($titrePage = trim($__env->yieldContent('titre', $titreParDefaut ?? '')))
+<title>{{ $titrePage === '' ? $nomDuSite : $titrePage.' — '.$nomDuSite }}</title>
 <meta name="description" content="@yield('description', $descriptionSite)">
 @unless ($autoriserIndexation)
 <meta name="robots" content="noindex, nofollow">
@@ -19,7 +23,7 @@
 <meta name="google-site-verification" content="{{ $searchConsole }}">
 @endif
 <meta property="og:type" content="website">
-<meta property="og:title" content="@yield('titre') — {{ $nomDuSite }}">
+<meta property="og:title" content="{{ $titrePage === '' ? $nomDuSite : $titrePage.' — '.$nomDuSite }}">
 <meta property="og:description" content="@yield('description', $descriptionSite)">
 <meta property="og:url" content="{{ url()->current() }}">
 <meta property="og:image" content="{{ url($logoPublic) }}">

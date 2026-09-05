@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Admin\ArticleListe;
+use App\Models\ActiviteJournalisee;
 use App\Models\Article;
 use App\Models\Categorie;
 use App\Models\User;
@@ -40,6 +41,33 @@ it('compte une vue a chaque consultation publique', function () {
     $this->get('/actualites/article-consulte');
 
     expect($article->fresh()->vues)->toBe(3);
+});
+
+it('ne fait pas passer une lecture pour une modification', function () {
+    // Deux consequences d'un compteur trop bavard, et la seconde coute cher.
+    //
+    // Le journal des activites doit dire ce que font les COMPTES du
+    // backoffice ; un `increment` ordinaire declenche `updated`, donc le trait
+    // de journalisation, et le journal se remplissait de passages de visiteurs.
+    //
+    // Et `updated_at` alimente le `lastmod` du plan du site : chaque lecture
+    // anonyme annonçait aux moteurs que l'article venait d'etre modifie, a
+    // chaque passage, ce qui vide `lastmod` de tout sens.
+    $article = Article::factory()->create([
+        'categorie_id' => $this->categorie->id,
+        'statut' => 'publie',
+        'slug' => 'article-lu',
+    ]);
+
+    $modifieLe = $article->updated_at;
+    $journalAvant = ActiviteJournalisee::count();
+
+    $this->travel(1)->days();
+    $this->get('/actualites/article-lu');
+
+    expect($article->fresh()->vues)->toBe(1)
+        ->and($article->fresh()->updated_at->timestamp)->toBe($modifieLe->timestamp)
+        ->and(ActiviteJournalisee::count())->toBe($journalAvant);
 });
 
 it('ne compte pas la liste comme une vue', function () {

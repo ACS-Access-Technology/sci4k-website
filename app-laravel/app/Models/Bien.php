@@ -248,20 +248,55 @@ class Bien extends Model
     }
 
     /**
+     * Le symbole de chaque devise proposee par l'ecran « Configuration ».
+     *
+     * Le franc CFA s'ecrit APRES le montant, comme l'euro ; le dollar avant.
+     * Une seule facon d'ecrire un prix aurait donne « 250 000 $ », qui se lit
+     * mal partout ou l'on ecrit « $250,000 ».
+     */
+    public const DEVISES = [
+        'XOF' => ['symbole' => 'FCFA', 'avant' => false],
+        'EUR' => ['symbole' => '€', 'avant' => false],
+        'USD' => ['symbole' => '$', 'avant' => true],
+    ];
+
+    /**
      * Prix formate, ou null quand il n'y en a pas.
      *
      * Le site n'affiche AUCUN prix aujourd'hui : l'agence les annonce de vive
      * voix. La methode existe pour le backoffice et pour le jour ou le site
      * changera d'avis — elle ne rend rien tant qu'aucun prix n'est saisi,
      * plutot qu'un « 0 FCFA » qui serait faux.
+     *
+     * La devise vient de la configuration. Elle y etait proposee depuis le
+     * debut, avec trois choix, et n'etait lue nulle part : le franc CFA etait
+     * ecrit en dur ici. Un reglage qui ne fait rien est pire qu'un reglage
+     * absent — il donne le sentiment d'avoir agi.
      */
+    /** La devise en cours, telle que l'ecran « Configuration » la fixe. */
+    public static function devise(): array
+    {
+        return self::DEVISES[Parametre::lire('devise', 'XOF')] ?? self::DEVISES['XOF'];
+    }
+
+    /** Son symbole seul, pour les libelles de formulaire. */
+    public static function symboleDeLaDevise(): string
+    {
+        return self::devise()['symbole'];
+    }
+
     public function prixFormate(): ?string
     {
         if (! $this->prix) {
             return null;
         }
 
-        $montant = number_format($this->prix, 0, ',', ' ').' FCFA';
+        $devise = self::devise();
+        $chiffres = number_format($this->prix, 0, ',', ' ');
+
+        $montant = $devise['avant']
+            ? $devise['symbole'].$chiffres
+            : $chiffres.' '.$devise['symbole'];
 
         return match ($this->prix_unite) {
             'm2' => $montant.' / m²',

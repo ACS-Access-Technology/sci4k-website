@@ -49,10 +49,14 @@ class ActualiteController extends Controller
 
         // Un editeur qui relit son article ne gonfle pas le compteur : le
         // chiffre mesure l'interet des lecteurs, pas l'activite interne.
-        // incrementQuietly evite de toucher updated_at, qui laisserait croire
-        // que l'article a ete modifie a chaque visite.
+        //
+        // Le commentaire qui tenait ici pretait a `incrementQuietly` une vertu
+        // qu'il n'a pas : il tait les EVENEMENTS, pas les horodatages.
+        // `updated_at` suivait donc les visites, et le plan du site, qui en
+        // tire son `lastmod`, annonçait chaque article comme modifie du jour a
+        // chaque passage. Voir Article::compterUneLecture().
         if (! auth()->check()) {
-            $article->incrementQuietly('vues');
+            $article->compterUneLecture();
         }
 
         $noeud = [

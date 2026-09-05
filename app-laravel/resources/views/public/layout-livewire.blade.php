@@ -11,7 +11,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ $titre ?? __('Biens Immobiliers') }} — {{ $nomDuSite }}</title>
+{{-- Une page sans titre a elle prend « Titre meta par défaut » de l'ecran
+     Configuration, et retombe sur le libelle d'origine s'il est vide. C'est
+     ici que le reglage se voit : le catalogue des biens est la seule page
+     publique qui n'annonce pas son propre titre. --}}
+@php($titrePage = $titre ?? (trim($titreParDefaut ?? '') ?: __('Biens Immobiliers')))
+<title>{{ $titrePage }} — {{ $nomDuSite }}</title>
 <meta name="description" content="{{ $description ?? $descriptionSite }}">
 @unless ($autoriserIndexation)
 <meta name="robots" content="noindex, nofollow">
@@ -20,7 +25,9 @@
 <meta name="google-site-verification" content="{{ $searchConsole }}">
 @endif
 <meta property="og:type" content="website">
-<meta property="og:title" content="{{ $titre ?? '' }} — {{ $nomDuSite }}">
+{{-- Le titre social suit celui de l'onglet : il affichait « — SCI4K »,
+     precede d'un blanc, sur toute page rendue sans titre. --}}
+<meta property="og:title" content="{{ $titrePage.' — '.$nomDuSite }}">
 <meta property="og:description" content="{{ $description ?? $descriptionSite }}">
 <meta property="og:url" content="{{ url()->current() }}">
 <meta property="og:image" content="{{ url($logoPublic) }}">

@@ -77,7 +77,11 @@ class Configuration extends Component
                 'intitule' => __('Général'),
                 'champs' => [
                     'nom_du_site' => ['intitule' => __('Nom du site'), 'type' => 'texte', 'regles' => ['required', 'string', 'max:120'], 'defaut' => 'SCI4K'],
-                    'slogan' => ['intitule' => __('Slogan'), 'type' => 'texte', 'regles' => ['nullable', 'string', 'max:180']],
+                    // « Slogan » a ete retire : il n'etait affiche nulle part,
+                    // et « Sous-titre du pied de page » — onglet En-tête et
+                    // pied — fait exactement ce travail, lui, pour de vrai.
+                    // Deux champs pour une meme phrase, dont un sans effet,
+                    // n'auraient produit que des questions.
                     'description_courte' => ['intitule' => __('Description courte'), 'type' => 'zone', 'regles' => ['nullable', 'string', 'max:400'],
                         'aide' => __("Sert de description par défaut quand une page n'en fournit pas.")],
                     'langue_par_defaut' => ['intitule' => __('Langue'), 'type' => 'liste', 'regles' => ['required', 'in:fr,en'],

@@ -28,6 +28,30 @@ class Encart extends Model
 
     protected $attributes = ['ordre' => 0, 'visible' => true];
 
+    /**
+     * Compte un affichage, sans rien remuer d'autre.
+     *
+     * DEUX precautions, et chacune repare un defaut distinct.
+     *
+     * `incrementQuietly` tait les evenements du modele : un `increment`
+     * ordinaire declenche `updated`, donc le trait de journalisation, donc
+     * DEUX lignes de journal a chaque visite de l'accueil — l'annonce et la
+     * banderole. Le journal des activites, qui doit dire ce que font les
+     * comptes du backoffice, se remplissait de passages de visiteurs.
+     *
+     * `withoutTimestamps` empeche de toucher `updated_at`. On croyait que
+     * « quietly » s'en chargeait ; il ne fait que taire les evenements. La
+     * date de modification suivait donc les visites au lieu des modifications.
+     *
+     * La methode vit SUR LE MODELE parce que `incrementQuietly` est protegee :
+     * appelee de l'exterieur elle ne passe que par la magie de `__call`, qui
+     * fonctionne mais qu'aucun lecteur ne peut verifier a l'oeil.
+     */
+    public function compterUneImpression(): void
+    {
+        static::withoutTimestamps(fn () => $this->incrementQuietly('impressions'));
+    }
+
     public static function boot(): void
     {
         parent::boot();

@@ -1170,5 +1170,11 @@
     "Confirmer la désinscription": "Confirm unsubscription",
     "Vous êtes sur le point de retirer votre adresse de notre lettre d’information. Cela n’efface aucune demande que vous nous auriez adressée par ailleurs.": "You are about to remove your address from our newsletter. This does not delete any request you may have sent us separately.",
     "Me désinscrire": "Unsubscribe me",
-    "Annuler et revenir à l’accueil": "Cancel and go back home"
+    "Annuler et revenir à l’accueil": "Cancel and go back home",
+    "Prix (:devise)": "Price (:devise)",
+    "Site en cours de maintenance": "Site under maintenance",
+    "Le site est momentanément indisponible. Nous revenons très vite.": "The site is temporarily unavailable. We will be back very soon.",
+    "Nous revenons très vite": "We will be back very soon",
+    "Le site est momentanément en cours de maintenance.": "The site is temporarily under maintenance.",
+    "Nos équipes restent joignables pendant l’opération :": "Our teams remain reachable during the work:"
 }
