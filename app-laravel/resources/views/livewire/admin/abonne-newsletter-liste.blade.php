@@ -94,4 +94,45 @@
             </tbody>
         </table>
     </div>
+    {{-- LES TEXTES DE LA PAGE DE DESINSCRIPTION
+
+         Cette page est servie par le site, hors des sept pages editables :
+         c'est ici, sur l'ecran qui gouverne la lettre d'information, que ses
+         mots se changent. La chercher ailleurs n'aurait eu aucun sens. --}}
+    <section class="rounded-xl border border-zinc-200 p-5 dark:border-zinc-700">
+        <div class="mb-4 flex flex-wrap items-baseline justify-between gap-3">
+            <div>
+                <h2 class="text-sm font-semibold">{{ __('Page de désinscription') }}</h2>
+                <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                    {{ __('Ce que lit l’abonné qui suit le lien de retrait posé dans vos envois.') }}
+                </p>
+            </div>
+
+            {{-- « Français » et « English » restent ecrits dans leur propre
+                 langue : ce sont des endonymes. --}}
+            <div class="inline-flex rounded-lg border border-zinc-200 p-0.5 dark:border-zinc-700">
+                @foreach (['fr' => 'Français', 'en' => 'English'] as $code => $nom)
+                    <button type="button" wire:click="$set('langueActive', '{{ $code }}')"
+                            @class([
+                                'rounded-md px-3 py-1 text-sm font-medium transition',
+                                'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900' => $langueActive === $code,
+                                'text-zinc-600 dark:text-zinc-400' => $langueActive !== $code,
+                            ])>{{ $nom }}</button>
+                @endforeach
+            </div>
+        </div>
+
+        <form wire:submit="enregistrerLesTextes" class="space-y-4">
+            @include('livewire.admin.partials.textes-du-module', [
+                'legendeDesTextes' => __('Textes de la page'),
+            ])
+
+            @if ($peutEcrire)
+                <button type="submit"
+                        class="rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white dark:bg-white dark:text-zinc-900">
+                    {{ __('Enregistrer') }}
+                </button>
+            @endif
+        </form>
+    </section>
 </div>

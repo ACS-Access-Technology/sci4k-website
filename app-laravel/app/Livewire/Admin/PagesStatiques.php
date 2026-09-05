@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Admin;
 
+use App\Livewire\Concerns\PorteDesTextesDeBloc;
 use App\Models\PageStatique;
+use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -10,6 +12,41 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class PagesStatiques extends Component
 {
+    use PorteDesTextesDeBloc;
+
+    /** La section ou vit le gabarit commun aux pages editables. */
+    public const SECTION = 'pages.statiques';
+
+    /**
+     * Les textes du GABARIT, communs a toutes les pages editables.
+     *
+     * La ligne de date s'affiche sous le titre de chaque page legale. Elle
+     * etait ecrite en dur : c'est le dernier texte du site que personne ne
+     * pouvait changer.
+     *
+     * Elle vit ici et non dans le contenu d'une page : elle est la MEME sur
+     * toutes, et la recopier dans chacune aurait fait diverger ce qui doit
+     * rester identique.
+     */
+    public const TEXTES_DU_GABARIT = [
+        'mention_mise_a_jour' => [
+            'intitule' => 'Ligne de date sous le titre (:date sera remplacé)',
+            'defaut' => 'Dernière mise à jour : :date',
+        ],
+    ];
+
+    /**
+     * Le trait interroge d'ordinaire le module ouvert. Cet ecran n'a pas de
+     * modules : il porte une seule liste de textes.
+     */
+    protected function textesDeclares(): array
+    {
+        return self::TEXTES_DU_GABARIT;
+    }
+
+    /** Langue du CONTENU saisi, sans rapport avec celle de l'interface. */
+    public string $langueActive = 'fr';
+
     /**
      * La page ouverte au chargement : la PREMIERE des pages editables.
      *
@@ -32,7 +69,9 @@ class PagesStatiques extends Component
     public function mount(): void
     {
         $this->page = PageStatique::slugsEditables()[0];
+        $this->langueActive = app()->getLocale();
 
+        $this->chargerLesTextes(ReglageDeSection::where('slug', self::SECTION)->first());
         $this->charger();
     }
 
@@ -77,17 +116,25 @@ class PagesStatiques extends Component
             'titreEn' => ['nullable', 'string', 'max:190'],
             'contenuFr' => ['nullable', 'string', 'max:50000'],
             'contenuEn' => ['nullable', 'string', 'max:50000'],
-        ]);
+        ] + $this->reglesDesTextes());
         PageStatique::updateOrCreate(['slug' => $this->page], [
             'titre_fr' => $this->titreFr, 'titre_en' => $this->titreEn,
             'contenu_fr' => $this->contenuFr, 'contenu_en' => $this->contenuEn,
             'publie' => $this->publie,
         ]);
+        // Le gabarit est commun a toutes les pages editables : il vit dans sa
+        // propre section, et non dans le contenu de celle qu'on enregistre.
+        $section = ReglageDeSection::firstOrNew(['slug' => self::SECTION]);
+        $this->poserLesTextes($section);
+        $section->save();
+
         $this->dispatch('toast', message: __('Page enregistrée.'), variant: 'success');
     }
 
     public function render(): View
     {
-        return view('livewire.admin.pages-statiques')->title(__('Pages éditables'));
+        return view('livewire.admin.pages-statiques', [
+            'description' => ['textes' => self::TEXTES_DU_GABARIT],
+        ])->title(__('Pages éditables'));
     }
 }

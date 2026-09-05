@@ -112,6 +112,41 @@
             @endif
         @endforeach
 
+        {{-- LES TEXTES DE LA PAGE D'ATTENTE
+
+             Ils sont sur l'onglet Général, sous la case qui ferme le site :
+             l'administrateur qui vient de la cocher voudra relire ce que le
+             visiteur va lire, et il n'aura pas a chercher ailleurs.
+
+             Ils ne peuvent pas etre des reglages comme le reste de cet ecran :
+             ceux-la ne connaissent qu'une langue, et le site en sert deux —
+             d'ou la bascule ci-dessous. --}}
+        @if ($onglet === 'general')
+            <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
+                <div class="mb-4 flex flex-wrap items-baseline justify-between gap-3">
+                    <h3 class="text-sm font-semibold">{{ __('Page affichée pendant la maintenance') }}</h3>
+
+                    {{-- « Français » et « English » restent ecrits dans leur
+                         propre langue : ce sont des endonymes. --}}
+                    <div class="inline-flex rounded-lg border border-zinc-200 p-0.5 dark:border-zinc-700">
+                        @foreach (['fr' => 'Français', 'en' => 'English'] as $code => $nom)
+                            <button type="button" wire:click="$set('langueActive', '{{ $code }}')"
+                                    @class([
+                                        'rounded-md px-3 py-1 text-sm font-medium transition',
+                                        'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900' => $langueActive === $code,
+                                        'text-zinc-600 dark:text-zinc-400' => $langueActive !== $code,
+                                    ])>{{ $nom }}</button>
+                        @endforeach
+                    </div>
+                </div>
+
+                @include('livewire.admin.partials.textes-du-module', [
+                    'description' => ['textes' => \App\Livewire\Admin\Configuration::TEXTES_DE_LA_MAINTENANCE],
+                    'legendeDesTextes' => __('Textes de la page d’attente'),
+                ])
+            </div>
+        @endif
+
         {{-- L'essai d'envoi n'a de sens que sur l'onglet Messagerie. Il part
              vers l'adresse du compte connecte, jamais vers une adresse
              saisie : un destinataire libre ferait de l'ecran un relais

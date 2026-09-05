@@ -1,14 +1,23 @@
 @extends('public.layout')
 
-@section('titre', __('Se désinscrire de la lettre d’information'))
-@section('description', __('Retirer votre adresse de la lettre d’information de SCI4K.'))
+{{--
+  Le retrait de la lettre d'information.
+
+  Tous les textes viennent de l'ecran « Abonnés newsletter », qui gouverne la
+  lettre : la page est servie par le site, hors des sept pages editables, et
+  ses mots se changent la ou l'on gere ce dont elle parle.
+
+  Chacun retombe sur son texte d'origine tant que rien n'est saisi.
+--}}
+@php($t = fn (string $nom, string $defaut) => $textes?->texteBilingue($nom, app()->getLocale()) ?: $defaut)
+
+@section('titre', $t('meta_titre', __('Se désinscrire de la lettre d’information')))
+@section('description', $t('meta_description', __('Retirer votre adresse de la lettre d’information de SCI4K.')))
 @section('classe-page', 'page-statique')
 
 @section('contenu')
 
 {{--
-  Le retrait de la lettre d'information.
-
   Reprend les classes des pages legales — legal-hero, legal-section,
   legal-block — deja stylees dans les deux themes. Une page publique de plus
   n'avait pas a inventer sa propre mise en forme.
@@ -18,7 +27,7 @@
 --}}
 <section class="legal-hero">
   <div class="wrap">
-    <h1 class="reveal">{{ __('Lettre d’information') }}</h1>
+    <h1 class="reveal">{{ $t('titre_page', __('Lettre d’information')) }}</h1>
   </div>
 </section>
 
@@ -29,12 +38,12 @@
         {{-- Le meme message, que le jeton ait designe un abonne ou non :
              distinguer les deux cas dirait a qui essaie des jetons lesquels
              correspondent a une adresse inscrite. --}}
-        <h2>{{ __('C’est fait') }}</h2>
-        <p>{{ __('Votre adresse ne recevra plus notre lettre d’information. Vous pouvez vous réinscrire à tout moment depuis le site.') }}</p>
-        <p><a href="{{ route('home') }}">{{ __('Retour à l’accueil') }}</a></p>
+        <h2>{{ $t('titre_fait', __('C’est fait')) }}</h2>
+        <p>{{ $t('texte_fait', __('Votre adresse ne recevra plus notre lettre d’information. Vous pouvez vous réinscrire à tout moment depuis le site.')) }}</p>
+        <p><a href="{{ route('home') }}">{{ $t('libelle_retour', __('Retour à l’accueil')) }}</a></p>
       @else
-        <h2>{{ __('Confirmer la désinscription') }}</h2>
-        <p>{{ __('Vous êtes sur le point de retirer votre adresse de notre lettre d’information. Cela n’efface aucune demande que vous nous auriez adressée par ailleurs.') }}</p>
+        <h2>{{ $t('titre_confirmation', __('Confirmer la désinscription')) }}</h2>
+        <p>{{ $t('texte_confirmation', __('Vous êtes sur le point de retirer votre adresse de notre lettre d’information. Cela n’efface aucune demande que vous nous auriez adressée par ailleurs.')) }}</p>
 
         {{-- cta-btn et non submit-btn : le second occupe TOUTE la largeur, ce
              qui a du sens dans un formulaire de contact et aucun sous un
@@ -43,11 +52,11 @@
         <form method="POST" action="{{ route('newsletter.desinscription.retirer', $jeton) }}">
           @csrf
           <button type="submit" class="cta-btn" style="border:none; cursor:pointer; font-family:inherit;">
-            {{ __('Me désinscrire') }}
+            {{ $t('libelle_bouton', __('Me désinscrire')) }}
           </button>
         </form>
 
-        <p><a href="{{ route('home') }}">{{ __('Annuler et revenir à l’accueil') }}</a></p>
+        <p><a href="{{ route('home') }}">{{ $t('libelle_annuler', __('Annuler et revenir à l’accueil')) }}</a></p>
       @endif
     </div>
   </div>

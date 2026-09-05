@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Livewire\Admin\AbonneNewsletterListe;
 use App\Models\AbonneNewsletter;
+use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -33,6 +35,11 @@ class DesinscriptionNewsletterController extends Controller
         return view('public.newsletter-desinscription', [
             'jeton' => $jeton,
             'abonne' => AbonneNewsletter::where('jeton', $jeton)->first(),
+            // Les textes de la page, editables depuis l'ecran « Abonnés
+            // newsletter » : la page est servie par le site, hors des sept
+            // pages editables, et ses mots se changent la ou l'on gere ce dont
+            // elle parle.
+            'textes' => ReglageDeSection::where('slug', AbonneNewsletterListe::SECTION)->first(),
         ]);
     }
 

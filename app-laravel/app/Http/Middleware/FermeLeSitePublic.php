@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Livewire\Admin\Configuration;
 use App\Models\Parametre;
+use App\Models\ReglageDeSection;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -54,6 +56,9 @@ class FermeLeSitePublic
             ->view('public.maintenance', [
                 'telephonePublic' => Parametre::lire('telephone', '+225 07 06 16 50 29'),
                 'emailPublic' => Parametre::lire('email_public', 'contact@sci4k.com'),
+                // Les textes de la page, editables depuis « Configuration →
+                // Général », sous la case qui ferme le site.
+                'textes' => ReglageDeSection::where('slug', Configuration::SECTION_MAINTENANCE)->first(),
             ], 503)
             ->header('Retry-After', '3600');
     }

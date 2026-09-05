@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Livewire\Admin\PageContact;
+use App\Livewire\Admin\PagesStatiques;
 use App\Models\Article;
 use App\Models\ChiffreCle;
 use App\Models\CommuneDuBandeau;
@@ -68,7 +69,14 @@ class PagePubliqueController extends Controller
             ]);
         }
 
-        return view('public.page-statique', ['page' => $page, 'langue' => $langue]);
+        return view('public.page-statique', [
+            'page' => $page,
+            'langue' => $langue,
+            // La ligne de date sous le titre. Elle est la MEME sur toutes ces
+            // pages : elle vit donc dans le gabarit, editable depuis l'ecran
+            // « Pages éditables », et non dans le contenu de chacune.
+            'gabarit' => ReglageDeSection::where('slug', PagesStatiques::SECTION)->first(),
+        ]);
     }
     /**
      * Page d'accueil.

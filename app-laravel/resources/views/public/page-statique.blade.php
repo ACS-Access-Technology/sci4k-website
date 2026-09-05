@@ -20,7 +20,7 @@
 <section class="legal-hero">
   <div class="wrap">
     <h1 class="reveal">{{ $page->titre($langue) }}</h1>
-    <p class="reveal">{{ __('Dernière mise à jour : :date', ['date' => $page->updated_at?->translatedFormat('F Y') ?: '—']) }}</p>
+    <p class="reveal">{{ str_replace(':date', $page->updated_at?->translatedFormat('F Y') ?: '—', $gabarit?->texteBilingue('mention_mise_a_jour', $langue) ?: __('Dernière mise à jour : :date', ['date' => ':date'])) }}</p>
   </div>
 </section>
 

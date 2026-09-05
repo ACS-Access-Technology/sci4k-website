@@ -3,7 +3,9 @@
 namespace App\Livewire\Admin;
 
 use App\Mail\EssaiDeMessagerie;
+use App\Livewire\Concerns\PorteDesTextesDeBloc;
 use App\Models\Parametre;
+use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -24,6 +26,53 @@ use Livewire\WithFileUploads;
 #[Layout('layouts.app')]
 class Configuration extends Component
 {
+    use PorteDesTextesDeBloc;
+
+    /** La section ou vivent les textes de la page d'attente. */
+    public const SECTION_MAINTENANCE = 'site.maintenance';
+
+    /**
+     * Les textes de la page d'attente du mode maintenance.
+     *
+     * Ils sont ICI, sous la case qui ferme le site : l'administrateur qui vient
+     * de la cocher voudra relire ce que le visiteur va lire, et il n'aura pas a
+     * chercher ailleurs.
+     *
+     * Ils ne peuvent pas etre des reglages Parametre comme le reste de cet
+     * ecran : ceux-la ne connaissent qu'une langue, et le site en sert deux.
+     */
+    public const TEXTES_DE_LA_MAINTENANCE = [
+        'meta_titre' => ['intitule' => 'Titre dans l’onglet du navigateur', 'defaut' => 'Site en cours de maintenance'],
+        'titre' => ['intitule' => 'Titre affiché sur la page', 'defaut' => 'Nous revenons très vite'],
+        'accroche' => [
+            'intitule' => 'Phrase sous le titre',
+            'defaut' => 'Le site est momentanément en cours de maintenance.',
+            'long' => true,
+        ],
+        'introduction_coordonnees' => [
+            'intitule' => 'Phrase au-dessus des coordonnées',
+            'defaut' => 'Nos équipes restent joignables pendant l’opération :',
+            'long' => true,
+        ],
+    ];
+
+    /**
+     * Le trait interroge d'ordinaire le module ouvert. Cet ecran n'a pas de
+     * modules : il porte une seule liste de textes.
+     */
+    protected function textesDeclares(): array
+    {
+        return self::TEXTES_DE_LA_MAINTENANCE;
+    }
+
+    /**
+     * Langue du CONTENU saisi, sans rapport avec celle de l'interface.
+     *
+     * Propriete PUBLIQUE : c'est ce qui permet a l'administrateur de basculer
+     * entre francais et anglais sans quitter l'ecran.
+     */
+    public string $langueActive = 'fr';
+
     use WithFileUploads;
 
     /**
@@ -226,6 +275,9 @@ class Configuration extends Component
 
         $this->logoActuel = Parametre::lire('logo');
         $this->faviconActuel = Parametre::lire('favicon');
+
+        $this->langueActive = app()->getLocale();
+        $this->chargerLesTextes(ReglageDeSection::where('slug', self::SECTION_MAINTENANCE)->first());
     }
 
     /** Un mot de passe SMTP est-il deja enregistre ? */
@@ -246,7 +298,7 @@ class Configuration extends Component
         // Le favicon accepte aussi l'ICO, que la regle « image » refuse.
         $regles['favicon'] = ['nullable', 'file', 'mimes:png,ico,svg', 'max:512'];
 
-        return $regles;
+        return $regles + $this->reglesDesTextes();
     }
 
     protected function validationAttributes(): array
@@ -257,7 +309,7 @@ class Configuration extends Component
             $intitules['valeurs.'.$cle] = mb_strtolower($description['intitule'] ?? $cle);
         }
 
-        return $intitules + ['logo' => __('le logo'), 'favicon' => __('le favicon')];
+        return $intitules + $this->intitulesDesTextes() + ['logo' => __('le logo'), 'favicon' => __('le favicon')];
     }
 
     public function enregistrer(): void
@@ -315,6 +367,13 @@ class Configuration extends Component
                 $this->$visuel = null;
             }
         }
+
+        // Les textes de la page d'attente vivent dans une SECTION et non dans
+        // des reglages Parametre : ceux-la ne connaissent qu'une langue, et le
+        // site en sert deux.
+        $section = ReglageDeSection::firstOrNew(['slug' => self::SECTION_MAINTENANCE]);
+        $this->poserLesTextes($section);
+        $section->save();
 
         $this->dispatch('toast', message: __('Configuration enregistrée.'), variant: 'success');
     }
