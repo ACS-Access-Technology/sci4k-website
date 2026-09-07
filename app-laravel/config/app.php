@@ -56,6 +56,35 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Proxys de confiance
+    |--------------------------------------------------------------------------
+    |
+    | Derriere un proxy — nginx en frontal, un repartiteur de charge, un
+    | Cloudflare — c'est le proxy qui parle en HTTPS au visiteur et en HTTP a
+    | PHP. Sans cette declaration, isSecure() repond faux : les URL generees et
+    | les redirections repartent en http, le cookie de session ne recoit jamais
+    | son attribut Secure malgre SESSION_SECURE_COOKIE, et l'adresse vue par la
+    | limitation de debit est celle du proxy — un seul compteur throttle:5,1
+    | partage par l'ensemble des visiteurs, ce qui fermerait les quatre
+    | formulaires publics des le cinquieme envoi.
+    |
+    | Le reglage vit ICI, et non dans bootstrap/app.php ou il aurait sa place :
+    | ce fichier n'y aurait acces que par env(), et .env n'est plus lu des que
+    | la configuration est mise en cache — ce que fait tout deploiement de
+    | production. La declaration aurait fonctionne en developpement et serait
+    | restee inerte precisement la ou elle sert.
+    |
+    | Vide en l'absence de proxy, et alors sans effet. Sinon « * », ou des
+    | adresses et des plages separees par des virgules. Ne mettre « * » que si
+    | PHP n'est joignable QUE par le proxy : autrement chacun se declare ce
+    | qu'il veut.
+    |
+    */
+
+    'trusted_proxies' => env('TRUSTED_PROXIES'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

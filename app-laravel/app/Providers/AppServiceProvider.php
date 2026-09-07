@@ -12,6 +12,7 @@ use App\Routing\GenerateurDUrlBilingue;
 use App\Services\Traduction\Traducteur;
 use App\Services\Traduction\TraducteurDeepL;
 use Carbon\CarbonImmutable;
+use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -80,9 +81,41 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->declarerLesProxysDeConfiance();
         $this->appliquerLeFuseauHoraire();
         $this->composerLePiedDePage();
         $this->appliquerLaMessagerieEnregistree();
+    }
+
+    /**
+     * Declare les proxys derriere lesquels l'application se tient.
+     *
+     * TrustProxies figure deja dans la pile globale ; il ne fait rien tant
+     * qu'on ne lui a pas dit a QUI se fier. Sans cela, derriere un proxy,
+     * isSecure() repond faux : les URL et les redirections repartent en http,
+     * le cookie de session ne recoit pas son attribut Secure malgre
+     * SESSION_SECURE_COOKIE, et la limitation de debit compte toutes les
+     * visites sur l'adresse du proxy — throttle:5,1 devient alors un compteur
+     * unique pour le monde entier, et les quatre formulaires publics ferment
+     * au cinquieme envoi.
+     *
+     * Le reglage se lit dans config() et non dans env() : .env n'est plus lu
+     * une fois la configuration mise en cache, ce que fait tout deploiement de
+     * production. Voir le commentaire de config/app.php.
+     *
+     * Sans valeur, rien n'est declare et le comportement ne change pas.
+     */
+    protected function declarerLesProxysDeConfiance(): void
+    {
+        $proxys = config('app.trusted_proxies');
+
+        if (! $proxys) {
+            return;
+        }
+
+        TrustProxies::at(
+            $proxys === '*' ? '*' : array_map(trim(...), explode(',', $proxys)),
+        );
     }
 
     /**

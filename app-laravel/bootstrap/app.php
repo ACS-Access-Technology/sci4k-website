@@ -21,6 +21,14 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
         ]);
 
+        // Les proxys de confiance ne se declarent PAS ici, bien que ce soit
+        // l'endroit prevu. Ce fichier n'a acces qu'a env(), et
+        // LoadEnvironmentVariables ne lit plus .env des que la configuration
+        // est mise en cache — ce que fait tout deploiement de production.
+        // La declaration aurait donc fonctionne en developpement et serait
+        // restee inerte precisement la ou elle sert. Elle vit dans
+        // AppServiceProvider, qui lit config().
+
         $middleware->web(append: [
             AppliqueLangue::class,
             // La case « Activer le mode maintenance » de l'ecran Configuration
