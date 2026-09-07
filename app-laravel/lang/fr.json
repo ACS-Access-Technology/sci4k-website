@@ -217,5 +217,14 @@
     "Textes enregistrés.": "Textes enregistrés.",
     "Langue du backoffice": "Langue du backoffice",
     "Langue au premier passage dans l’administration. Le site public, lui, prend sa langue dans l’adresse.": "Langue au premier passage dans l’administration. Le site public, lui, prend sa langue dans l’adresse.",
-    "Cumul des visiteurs de chaque jour, et non un nombre de personnes.": "Cumul des visiteurs de chaque jour, et non un nombre de personnes."
+    "Cumul des visiteurs de chaque jour, et non un nombre de personnes.": "Cumul des visiteurs de chaque jour, et non un nombre de personnes.",
+    "Rechercher un bien": "Rechercher un bien",
+    "Type de bien": "Type de bien",
+    "Offre": "Offre",
+    "Zone": "Zone",
+    "Nombre de pièces": "Nombre de pièces",
+    "Surface": "Surface",
+    "Statut": "Statut",
+    "Trier les biens": "Trier les biens",
+    "Choisir une image": "Choisir une image"
 }

@@ -129,7 +129,11 @@
                                                placeholder="{{ $cle === 'atout1' ? __('Expertise Juridique') : __('Ancrage Abidjanais') }}"
                                                class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950">
                                     </label>
+                                    {{-- Hors du <label> qui englobe le champ voisin : il lui faut
+                                         donc son propre nom accessible. Un placeholder n'en est pas
+                                         un, il disparait des la premiere frappe. --}}
                                     <textarea wire:model="atouts.{{ $cle }}_texte_{{ $langueActive }}" rows="2"
+                                              aria-label="{{ $intituleAtout }} — {{ __('Texte de l’atout') }}"
                                               placeholder="{{ __('Texte de l’atout') }}"
                                               class="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"></textarea>
                                 </div>

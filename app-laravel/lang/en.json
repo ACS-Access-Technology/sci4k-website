@@ -1198,5 +1198,8 @@
     "Textes enregistrés.": "Texts saved.",
     "Langue du backoffice": "Backoffice language",
     "Langue au premier passage dans l’administration. Le site public, lui, prend sa langue dans l’adresse.": "Language on a first visit to the administration. The public site takes its language from the address.",
-    "Cumul des visiteurs de chaque jour, et non un nombre de personnes.": "A running total of each day’s visitors, not a count of people."
+    "Cumul des visiteurs de chaque jour, et non un nombre de personnes.": "A running total of each day’s visitors, not a count of people.",
+    "Nombre de pièces": "Number of rooms",
+    "Trier les biens": "Sort properties",
+    "Choisir une image": "Choose an image"
 }

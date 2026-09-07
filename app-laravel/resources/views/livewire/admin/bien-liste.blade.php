@@ -41,44 +41,45 @@
 
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <input type="search" wire:model.live.debounce.300ms="recherche"
+               aria-label="{{ __('Rechercher un bien') }}"
                placeholder="{{ __('Un titre, une référence, un quartier…') }}" class="{{ $classeChamp }}">
 
-        <select wire:model.live="type" class="{{ $classeChamp }}">
+        <select wire:model.live="type" aria-label="{{ __('Type de bien') }}" class="{{ $classeChamp }}">
             <option value="">{{ __('Tous les types') }}</option>
             @foreach ($types as $valeur)
                 <option value="{{ $valeur->valeur }}">{{ $valeur->libelle($langue) }}</option>
             @endforeach
         </select>
 
-        <select wire:model.live="offre" class="{{ $classeChamp }}">
+        <select wire:model.live="offre" aria-label="{{ __('Offre') }}" class="{{ $classeChamp }}">
             <option value="">{{ __('Toutes les offres') }}</option>
             @foreach ($offres as $cle => $intitule)
                 <option value="{{ $cle }}">{{ $intitule }}</option>
             @endforeach
         </select>
 
-        <select wire:model.live="zone" class="{{ $classeChamp }}">
+        <select wire:model.live="zone" aria-label="{{ __('Zone') }}" class="{{ $classeChamp }}">
             <option value="">{{ __('Toutes les zones') }}</option>
             @foreach ($zones as $valeur)
                 <option value="{{ $valeur->valeur }}">{{ $valeur->libelle($langue) }}</option>
             @endforeach
         </select>
 
-        <select wire:model.live="pieces" class="{{ $classeChamp }}">
+        <select wire:model.live="pieces" aria-label="{{ __('Nombre de pièces') }}" class="{{ $classeChamp }}">
             <option value="">{{ __('Toutes pièces') }}</option>
             @foreach ($tranchesPieces as $valeur)
                 <option value="{{ $valeur->valeur }}">{{ $valeur->libelle($langue) }}</option>
             @endforeach
         </select>
 
-        <select wire:model.live="surface" class="{{ $classeChamp }}">
+        <select wire:model.live="surface" aria-label="{{ __('Surface') }}" class="{{ $classeChamp }}">
             <option value="">{{ __('Toutes surfaces') }}</option>
             @foreach ($tranchesSurface as $valeur)
                 <option value="{{ $valeur->valeur }}">{{ $valeur->libelle($langue) }}</option>
             @endforeach
         </select>
 
-        <select wire:model.live="statut" class="{{ $classeChamp }}">
+        <select wire:model.live="statut" aria-label="{{ __('Statut') }}" class="{{ $classeChamp }}">
             <option value="">{{ __('Tous les statuts') }}</option>
             @foreach ($statuts as $cle => $intitule)
                 <option value="{{ $cle }}">{{ $intitule }}</option>
@@ -86,7 +87,7 @@
         </select>
 
         <div class="flex gap-2">
-            <select wire:model.live="tri" class="{{ $classeChamp }}">
+            <select wire:model.live="tri" aria-label="{{ __('Trier les biens') }}" class="{{ $classeChamp }}">
                 <option value="recent">{{ __('Plus récent') }}</option>
                 <option value="prix_croissant">{{ __('Prix croissant') }}</option>
                 <option value="prix_decroissant">{{ __('Prix décroissant') }}</option>

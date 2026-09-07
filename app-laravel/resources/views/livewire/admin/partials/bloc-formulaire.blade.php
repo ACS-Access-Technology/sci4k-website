@@ -92,6 +92,7 @@
                  depuis un ecouteur global. Ce marqueur est le seul moyen de
                  l'en dispenser ici : voir recadrageDuFichier(). --}}
             <input type="file" wire:model="fichier" accept="image/*" class="{{ $classeChamp }}"
+                   aria-label="{{ $descriptionFichier['intitule'] ?? __('Choisir une image') }}"
                    @unless ($recadrageDuFichier) data-sans-recadrage @endunless>
 
             @if ($descriptionFichier['aide'])
