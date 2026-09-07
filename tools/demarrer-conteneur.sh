@@ -50,6 +50,22 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+# Le planificateur, a cote du serveur.
+#
+# Sur un hebergement ordinaire, une ligne de crontab appelle « schedule:run »
+# chaque minute. Un conteneur n'a pas de crontab : schedule:work tient ce role,
+# en appelant le planificateur lui-meme a intervalle regulier.
+#
+# UNE SEULE INSTANCE, sinon chacune aurait son planificateur et les taches
+# d'entretien tourneraient en double. PLANIFICATEUR_INTEGRE=false le desactive,
+# pour le jour ou le site tournera derriere plusieurs instances et ou un service
+# de cron dedie prendra le relais.
+if [ "${PLANIFICATEUR_INTEGRE:-true}" = "true" ]; then
+    echo "== Planificateur =="
+    php artisan schedule:work >/dev/null 2>&1 &
+    echo "  demarre (pid $!)"
+fi
+
 echo "== Pret =="
 
 exec frankenphp run --config /etc/frankenphp/Caddyfile
