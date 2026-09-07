@@ -154,7 +154,4 @@ Aucun ne se règle en programmant.
 - Le nom du **directeur de publication**, et l'autorisation d'afficher les
   **logos des partenaires**.
 - Six visuels sont provisoires (voir `A-REMPLACER.md`).
-- La **facturation GitHub Actions** de l'organisation : tant qu'elle n'est pas
-  réglée, les contrôles ci-dessus sont refusés avant démarrage et ne protègent
-  rien.
 - Domaine, hébergement, HTTPS, SMTP, sauvegardes : voir `docs/MISE_EN_LIGNE.md`.

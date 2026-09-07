@@ -150,11 +150,11 @@ ligne autant que le reste.
 | Autorisation d'afficher les logos des partenaires | Le client |
 | Coordonnées de l'hébergeur pour les mentions légales | Le client, une fois l'hébergement choisi |
 | Textes juridiques définitifs (mentions légales, politique de confidentialité) | La direction |
-| Facturation GitHub Actions de l'organisation | Le propriétaire de l'organisation |
 
-Tant que la facturation GitHub Actions n'est pas réglée, **aucun contrôle ne
-s'exécute** : les jobs sont refusés avant démarrage. Le workflow est en place
-et a été rejoué en local, mais il ne protège rien pour l'instant.
+L'intégration continue, elle, tourne : les contrôles de non-régression et les
+tests Laravel s'exécutent sur les trois branches et passent. Un check
+supplémentaire vient de SonarCloud, hors GitHub Actions, sur la qualité du
+code.
 
 ## 5. Les branches
 
