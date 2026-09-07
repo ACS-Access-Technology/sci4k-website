@@ -1,0 +1,48 @@
+# Ce qui ne doit PAS entrer dans l'image.
+#
+# Le point le plus important est vendor/ : le Dockerfile installe les
+# dependances de production avant de copier le code, et un vendor/ local venu du
+# poste de developpement ECRASERAIT cette installation. L'image embarquerait
+# alors pint, phpstan et pest — 217 Mo au lieu d'environ 130 — et surtout des
+# paquets de developpement en production.
+app-laravel/vendor/
+app-laravel/node_modules/
+
+# Produits de construction : refaits dans l'image, a partir des sources.
+app-laravel/public/build/
+app-laravel/bootstrap/cache/*.php
+
+# Deposes par tools/sync-frontoffice.sh, qui tourne dans l'image.
+app-laravel/public/assets/
+app-laravel/public/images/
+app-laravel/public/storage
+app-laravel/public/*.html
+
+# Secrets et etat local. .env surtout : il porte les identifiants du poste de
+# developpement, et la plateforme injecte les siens par l'environnement.
+app-laravel/.env
+app-laravel/.env.*
+!app-laravel/.env.example
+!app-laravel/.env.production.example
+app-laravel/storage/logs/*
+app-laravel/storage/framework/cache/*
+app-laravel/storage/framework/sessions/*
+app-laravel/storage/framework/views/*
+app-laravel/storage/app/public/*
+
+# Historique et outillage, inutiles a l'execution.
+.git/
+.github/
+.claude/
+.remember/
+docs/
+demo/
+antigravity-workspace/
+*.zip
+
+# Les maquettes du backoffice ne sont pas servies ; celles du frontoffice, si,
+# car sync-frontoffice.sh y puise les styles, le script et les images.
+maquettes-backoffice/
+
+.DS_Store
+**/.DS_Store
