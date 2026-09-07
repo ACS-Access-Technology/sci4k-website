@@ -124,9 +124,8 @@ de dialecte ne se voient pas autrement.
 | Branche | Rôle |
 |---|---|
 | `dev` | La branche de travail. C'est elle qui porte l'état courant. |
-| `master` | Intégration |
 | `preprod` | Préproduction |
-| `prod` | **À refaire** — voir `docs/MISE_EN_LIGNE.md`, §5 |
+| `master` | **La production.** Il n'y a pas de branche `prod` : `master` tient ce rôle. |
 
 ## Documents
 

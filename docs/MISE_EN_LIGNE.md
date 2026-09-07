@@ -144,15 +144,28 @@ Tant que la facturation GitHub Actions n'est pas réglée, **aucun contrôle ne
 s'exécute** : les jobs sont refusés avant démarrage. Le workflow est en place
 et a été rejoué en local, mais il ne protège rien pour l'instant.
 
-## 5. Point ouvert : la branche `prod`
+## 5. Les branches
 
-`acs/prod` pointe sur un commit orphelin, `68dba05 "Initial commit: Laravel
-project setup"`, **sans aucun lien d'historique** avec `master` ni `dev`, et
-avec l'application Laravel à la racine du dépôt au lieu de `app-laravel/`.
-Elle a été poussée depuis un second clone, positionné une couche trop bas.
+Trois branches permanentes chez `acs`, alignées sur le même commit :
 
-En l'état, déployer depuis `prod` livrerait une application vide, sans aucun
-des écrans d'administration. La branche est à refaire à partir de `master`
-avant toute mise en production. Ce n'est pas une correction à faire à la
-légère : `prod` est une branche de livraison, et la réécrire regarde le
-propriétaire du dépôt.
+| Branche | Rôle |
+|---|---|
+| `dev` | La branche de travail |
+| `preprod` | Préproduction |
+| `master` | **La production.** C'est depuis elle que le site se déploie. |
+
+Il n'y a **pas** de branche `prod`, et c'est délibéré : `master` tient ce
+rôle. Une quatrième branche qui suivrait `master` pas à pas n'ajouterait
+qu'un endroit de plus où oublier de pousser.
+
+Un relevé antérieur affirmait qu'une branche `prod` existait et pointait sur
+un commit orphelin, `68dba05 "Initial commit: Laravel project setup"`, sans
+lien d'historique avec `master` et avec l'application à la racine du dépôt au
+lieu de `app-laravel/`. Ce constat était faux : il venait des références d'un
+second clone git logé dans `app-laravel/`, qui n'avait pas resynchronisé
+depuis 195 commits et montrait donc l'état du dépôt tel qu'il était des
+semaines plus tôt.
+
+Ce clone a été retiré. La leçon vaut d'être retenue : un dépôt imbriqué
+répond aux commandes git à la place du vrai, avec ses propres références
+périmées, sans que rien ne le signale.
