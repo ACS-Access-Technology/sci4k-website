@@ -21,12 +21,24 @@ quelqu'un d'autre**. Le dernier groupe ne dépend d'aucun code.
 | Un **domaine** | — | — |
 | Un **certificat HTTPS** | Le cookie de session doit porter `Secure` | Voir §3 |
 | Un **compte SMTP** | 6 courriels partent de l'application | Voir §3 |
+| Un **accès cron** | `schedule:run` chaque minute | Sans lui la table des visites croît sans borne |
 
-L'application ne réclame **ni Redis, ni superviseur de file d'attente, ni
-tâche planifiée** : aucune classe n'implémente `ShouldQueue`, les huit envois
-de courriel sont synchrones, et `routes/console.php` ne planifie rien.
-`QUEUE_CONNECTION=database` est présent mais inerte. C'est une économie
-d'exploitation réelle : rien à surveiller en arrière-plan.
+L'application ne réclame **ni Redis, ni superviseur de file d'attente** :
+aucune classe n'implémente `ShouldQueue` et les huit envois de courriel sont
+synchrones. `QUEUE_CONNECTION=database` est présent mais inerte.
+
+Elle réclame en revanche **une ligne de cron**. Une tâche quotidienne agrège
+les visites et purge le détail au-delà de quatre-vingt-dix jours ; sans elle,
+la table des visites recommence à croître sans borne :
+
+```cron
+* * * * * cd /chemin/vers/app-laravel && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Chaque minute, oui : c'est Laravel qui décide ensuite quoi lancer, et il n'y a
+qu'une tâche, à 3 h 10. La commande est rejouable sans risque et rattrape les
+jours manqués, donc un cron interrompu quelques jours se rattrape tout seul à
+la reprise.
 
 ## 2. La séquence de déploiement
 

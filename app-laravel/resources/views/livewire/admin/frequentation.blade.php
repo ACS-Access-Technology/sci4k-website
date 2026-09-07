@@ -12,7 +12,15 @@
 
     <div class="grid gap-4 sm:grid-cols-2">
         <div class="rounded-xl border border-zinc-200 p-5 dark:border-zinc-700"><p class="text-sm text-zinc-500">{{ __('Pages vues') }}</p><p class="mt-2 text-3xl font-semibold">{{ $total }}</p></div>
-        <div class="rounded-xl border border-zinc-200 p-5 dark:border-zinc-700"><p class="text-sm text-zinc-500">{{ __('Visiteurs uniques estimés') }}</p><p class="mt-2 text-3xl font-semibold">{{ $visiteurs }}</p></div>
+        <div class="rounded-xl border border-zinc-200 p-5 dark:border-zinc-700"><p class="text-sm text-zinc-500">{{ __('Visiteurs uniques estimés') }}</p><p class="mt-2 text-3xl font-semibold">{{ $visiteurs }}</p>
+            {{-- Au-dela du detail conserve, le chiffre est une somme de journees
+                 et non un nombre de personnes : quelqu'un qui revient compte une
+                 fois par jour. Le dire vaut mieux que de laisser lire le nombre
+                 le plus flatteur. --}}
+            @if ($cumulDeVisiteurs)
+                <p class="mt-2 text-xs text-zinc-500">{{ __('Cumul des visiteurs de chaque jour, et non un nombre de personnes.') }}</p>
+            @endif
+        </div>
     </div>
 
     <div class="grid gap-4 lg:grid-cols-2">

@@ -84,6 +84,13 @@ demandes de visite, la lettre d'information, la médiathèque, la fréquentation
 et — réservés aux administrateurs — la configuration, les référentiels, les
 menus et les comptes.
 
+**Fréquentation.** Le détail des visites n'est gardé que quatre-vingt-dix
+jours. Une tâche quotidienne, `php artisan frequentation:agreger`, en tire des
+comptages par jour puis purge le détail — sans quoi la table recevrait une
+ligne par page vue, indéfiniment. Elle est rejouable sans risque, rattrape les
+jours manqués, et ne purge jamais un jour qu'elle n'a pas réussi à compter.
+Elle exige une ligne de cron en production : voir `docs/MISE_EN_LIGNE.md`.
+
 ## Les maquettes d'administration
 
 Les 30 pages de `maquettes-backoffice/` sont **générées**. Ne pas les modifier
