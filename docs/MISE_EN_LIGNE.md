@@ -27,18 +27,20 @@ L'application ne réclame **ni Redis, ni superviseur de file d'attente** :
 aucune classe n'implémente `ShouldQueue` et les huit envois de courriel sont
 synchrones. `QUEUE_CONNECTION=database` est présent mais inerte.
 
-Elle réclame en revanche **une ligne de cron**. Une tâche quotidienne agrège
-les visites et purge le détail au-delà de quatre-vingt-dix jours ; sans elle,
-la table des visites recommence à croître sans borne :
+Elle réclame en revanche **une ligne de cron**. Deux tâches quotidiennes
+bornent ce qui grossirait sans fin : l'une agrège les visites et purge le
+détail au-delà de quatre-vingt-dix jours, l'autre retire du journal d'activité
+les entrées de plus d'un an. Sans cette ligne, les deux tables recommencent à
+croître sans borne :
 
 ```cron
 * * * * * cd /chemin/vers/app-laravel && php artisan schedule:run >> /dev/null 2>&1
 ```
 
 Chaque minute, oui : c'est Laravel qui décide ensuite quoi lancer, et il n'y a
-qu'une tâche, à 3 h 10. La commande est rejouable sans risque et rattrape les
-jours manqués, donc un cron interrompu quelques jours se rattrape tout seul à
-la reprise.
+que deux tâches, à 3 h 10 et 3 h 40. Les deux sont rejouables sans risque ;
+celle de la fréquentation rattrape en outre les jours manqués, donc un cron
+interrompu quelques jours se répare tout seul à la reprise.
 
 ## 2. La séquence de déploiement
 
@@ -122,7 +124,15 @@ Relevés en lisant la configuration. Les cinq premiers sont bloquants.
    développement écrit dans un fichier unique que rien ne fait tourner, au
    niveau `debug` — donc chaque requête SQL. Il sature le disque à terme.
 
-7. **`DEEPL_API_KEY`** reste facultatif : sans clé, la traduction automatique
+7. **`SENTRY_LARAVEL_DSN`** est facultatif mais vivement conseillé : sans lui,
+   une erreur en production n'est signalée à personne et ne se découvre que
+   par un visiteur qui se plaint. Aucune donnée personnelle n'est transmise —
+   `send_default_pii` reste à `false`, donc ni adresse IP, ni en-têtes, ni
+   corps de requête. Seul l'identifiant interne du compte backoffice connecté
+   accompagne le rapport, ce qui laisse la politique de confidentialité vraie
+   telle qu'elle est écrite.
+
+8. **`DEEPL_API_KEY`** reste facultatif : sans clé, la traduction automatique
    des articles se tait et les deux langues se saisissent à la main.
 
 ### Ce qui est déjà correct

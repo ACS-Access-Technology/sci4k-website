@@ -84,12 +84,21 @@ demandes de visite, la lettre d'information, la médiathèque, la fréquentation
 et — réservés aux administrateurs — la configuration, les référentiels, les
 menus et les comptes.
 
-**Fréquentation.** Le détail des visites n'est gardé que quatre-vingt-dix
-jours. Une tâche quotidienne, `php artisan frequentation:agreger`, en tire des
-comptages par jour puis purge le détail — sans quoi la table recevrait une
-ligne par page vue, indéfiniment. Elle est rejouable sans risque, rattrape les
-jours manqués, et ne purge jamais un jour qu'elle n'a pas réussi à compter.
-Elle exige une ligne de cron en production : voir `docs/MISE_EN_LIGNE.md`.
+**Ce qui est borné.** Deux tables recevaient des lignes sans que rien ne les
+arrête. Le détail des visites n'est gardé que quatre-vingt-dix jours :
+`php artisan frequentation:agreger` en tire des comptages par jour puis purge
+le reste, rattrape les jours manqués, et ne purge jamais un jour qu'elle n'a
+pas réussi à compter. Le journal d'activité garde un an :
+`php artisan journal:purger` retire ce qui dépasse — sans agrégat, un journal
+d'audit répondant à « qui a touché à quoi » qu'un résumé ne remplacerait pas.
+
+Les deux sont planifiées et **exigent une ligne de cron en production** : voir
+`docs/MISE_EN_LIGNE.md`.
+
+**Rapport d'erreurs.** Sentry est branché mais inerte sans `SENTRY_LARAVEL_DSN`,
+comme la traduction automatique l'est sans sa clé. Aucune donnée personnelle
+n'est transmise : `send_default_pii` reste à `false`, et seul l'identifiant
+interne du compte backoffice connecté accompagne un rapport.
 
 ## Les maquettes d'administration
 
