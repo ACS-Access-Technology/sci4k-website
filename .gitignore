@@ -25,3 +25,9 @@ app-laravel/node_modules/
 app-laravel/.env
 app-laravel/public/build/
 app-laravel/storage/*.key
+
+# Worktrees git locaux. Un worktree contient un fichier .git, que git
+# enregistre alors comme gitlink (mode 160000) : le dossier apparait
+# eternellement « modifie » puisque le worktree avance et que le SHA grave
+# dans la branche ne bouge pas. Ce sont des checkouts locaux, pas du contenu.
+.claude/worktrees/
