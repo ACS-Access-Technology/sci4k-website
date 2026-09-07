@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\PorteDesImagesDeFond;
 use App\Livewire\Concerns\PorteDesTextesDeBloc;
+use App\Livewire\Concerns\PorteUnEcranDePage;
 use App\Livewire\Concerns\PorteUnEnteteDeSection;
 use App\Models\Article;
 use App\Models\CommuneDuBandeau;
@@ -38,6 +39,7 @@ class PageAccueil extends Component
 {
     use PorteDesImagesDeFond;
     use PorteDesTextesDeBloc;
+    use PorteUnEcranDePage;
     use PorteUnEnteteDeSection;
 
     /** Les textes du hero qui ne sont ni un titre ni un bouton. */
@@ -145,7 +147,6 @@ class PageAccueil extends Component
     public string $module = 'hero';
 
     /** Langue du CONTENU saisi, sans rapport avec celle de l'interface. */
-    public string $langueActive = 'fr';
 
     /** Valeurs de l'en-tete de section du module ouvert. */
     public array $entete = [];
@@ -173,36 +174,7 @@ class PageAccueil extends Component
     /** Libelles et cibles des deux boutons du hero. */
     public array $boutons = [];
 
-    public ?string $message = null;
-
-    protected function peutEcrire(): bool
-    {
-        return (bool) auth()->user()?->hasAnyRole(['administrateur', 'editeur']);
-    }
-
-    public function mount(): void
-    {
-        abort_unless(auth()->user()?->hasAnyRole(['administrateur', 'editeur', 'redacteur', 'lecteur']), 403);
-
-        $this->langueActive = app()->getLocale();
-        $this->charger();
-    }
-
-    public function ouvrir(string $module): void
-    {
-        abort_unless(array_key_exists($module, $this->modules()), 404);
-
-        $this->module = $module;
-        $this->message = null;
-        $this->resetValidation();
-        $this->charger();
-    }
-
     /** Description du module ouvert. */
-    public function moduleCourant(): array
-    {
-        return $this->modules()[$this->module] ?? $this->modules()['hero'];
-    }
 
     /**
      * Recharge les champs du module ouvert depuis la base.
@@ -276,11 +248,6 @@ class PageAccueil extends Component
      * Intitules lisibles, pour que le message de validation ne cite pas
      * « textes.libelle_lien_fr ».
      */
-    protected function validationAttributes(): array
-    {
-        return $this->intitulesDesTextes();
-    }
-
     public function enregistrer(): void
     {
         abort_unless($this->peutEcrire(), 403);

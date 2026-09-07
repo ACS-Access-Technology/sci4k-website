@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\PorteDesImagesDeFond;
 use App\Livewire\Concerns\PorteDesTextesDeBloc;
+use App\Livewire\Concerns\PorteUnEcranDePage;
 use App\Livewire\Concerns\PorteUnEnteteDeSection;
 use App\Models\Parametre;
 use App\Models\ReglageDeSection;
@@ -36,6 +37,7 @@ class PageContact extends Component
 {
     use PorteDesImagesDeFond;
     use PorteDesTextesDeBloc;
+    use PorteUnEcranDePage;
     use PorteUnEnteteDeSection;
 
     /**
@@ -157,19 +159,10 @@ class PageContact extends Component
 
     public string $module = 'banniere';
 
-    public string $langueActive = 'fr';
-
     public array $entete = [];
 
     /** Valeurs des reglages du module ouvert, par cle Parametre. */
     public array $reglages = [];
-
-    public ?string $message = null;
-
-    protected function peutEcrire(): bool
-    {
-        return (bool) auth()->user()?->hasAnyRole(['administrateur', 'editeur']);
-    }
 
     /**
      * Les reglages Parametre restent reserves aux administrateurs.
@@ -202,29 +195,6 @@ class PageContact extends Component
         $declaration = (new Configuration)->onglets()['contact']['champs'] ?? [];
 
         return array_intersect_key($declaration, array_flip($cles));
-    }
-
-    public function mount(): void
-    {
-        abort_unless(auth()->user()?->hasAnyRole(['administrateur', 'editeur', 'redacteur', 'lecteur']), 403);
-
-        $this->langueActive = app()->getLocale();
-        $this->charger();
-    }
-
-    public function ouvrir(string $module): void
-    {
-        abort_unless(array_key_exists($module, $this->modules()), 404);
-
-        $this->module = $module;
-        $this->message = null;
-        $this->resetValidation();
-        $this->charger();
-    }
-
-    public function moduleCourant(): array
-    {
-        return $this->modules()[$this->module] ?? $this->modules()['banniere'];
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\PorteDesImagesDeFond;
 use App\Livewire\Concerns\PorteDesTextesDeBloc;
+use App\Livewire\Concerns\PorteUnEcranDePage;
 use App\Livewire\Concerns\PorteUnEnteteDeSection;
 use App\Models\ReglageDeSection;
 use Illuminate\Contracts\View\View;
@@ -27,6 +28,7 @@ class PagePresentation extends Component
 {
     use PorteDesImagesDeFond;
     use PorteDesTextesDeBloc;
+    use PorteUnEcranDePage;
     use PorteUnEnteteDeSection;
 
     /**
@@ -108,7 +110,6 @@ class PagePresentation extends Component
     public string $module = 'banniere';
 
     /** Langue du CONTENU saisi, sans rapport avec celle de l'interface. */
-    public string $langueActive = 'fr';
 
     /** Champs de l'en-tete de section, corps de texte compris. */
     public array $entete = [];
@@ -128,36 +129,6 @@ class PagePresentation extends Component
 
     /** Le compteur du mot du directeur. */
     public array $compteur = [];
-
-    public ?string $message = null;
-
-    protected function peutEcrire(): bool
-    {
-        return (bool) auth()->user()?->hasAnyRole(['administrateur', 'editeur']);
-    }
-
-    public function mount(): void
-    {
-        abort_unless(auth()->user()?->hasAnyRole(['administrateur', 'editeur', 'redacteur', 'lecteur']), 403);
-
-        $this->langueActive = app()->getLocale();
-        $this->charger();
-    }
-
-    public function ouvrir(string $module): void
-    {
-        abort_unless(array_key_exists($module, $this->modules()), 404);
-
-        $this->module = $module;
-        $this->message = null;
-        $this->resetValidation();
-        $this->charger();
-    }
-
-    public function moduleCourant(): array
-    {
-        return $this->modules()[$this->module] ?? $this->modules()['banniere'];
-    }
 
     protected function charger(): void
     {
