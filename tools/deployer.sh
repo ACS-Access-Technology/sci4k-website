@@ -81,8 +81,14 @@ composer install --no-dev --optimize-autoloader --no-interaction
 
 # Sans cette etape, toute page d'administration echoue sur « Vite manifest not
 # found » : les vues appellent @vite et public/build n'est pas versionne.
+#
+# --ignore-scripts empeche les scripts de cycle de vie des paquets de
+# s'executer. Un paquet installe peut y lancer du code arbitraire, et c'est par
+# la qu'une dependance compromise atteint le serveur qui deploie. Verifie sur ce
+# projet : « npm ci --ignore-scripts » puis « npm run build » aboutit, aucun
+# paquet n'ayant besoin de son postinstall.
 echo "== Ressources front =="
-npm ci
+npm ci --ignore-scripts
 npm run build
 
 # --- Base et fichiers --------------------------------------------------------

@@ -65,7 +65,11 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Installer PHP
-        uses: shivammathur/setup-php@v2
+        # Epinglee par empreinte de commit, et non par etiquette : une
+        # etiquette se deplace, et « v2 » designerait alors un autre code sans
+        # que rien ne change ici. Les actions actions/* viennent de GitHub
+        # lui-meme ; celle-ci est tierce.
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
         with:
           php-version: '8.3'
           extensions: mbstring, pdo_mysql, pdo_sqlite, gd, intl
@@ -83,7 +87,7 @@ jobs:
       # que la CI, ce qui coute une heure a comprendre.
       - name: Assembler les ressources
         run: |
-          npm ci
+          npm ci --ignore-scripts
           npm run build
 
       - name: Preparer l'environnement
