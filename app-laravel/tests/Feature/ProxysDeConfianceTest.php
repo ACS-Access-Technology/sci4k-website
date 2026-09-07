@@ -34,10 +34,21 @@ function declarerLesProxys(): void
 /**
  * Fait traverser le middleware a une requete venue de $adresse, en se
  * presentant comme relayee en HTTPS, et repond si Laravel l'a crue.
+ *
+ * LA REQUETE ARRIVE EN CLAIR, et c'est tout l'objet du test : c'est ainsi
+ * qu'un proxy parle a PHP, en annoncant le vrai protocole dans un en-tete.
+ * Fabriquer cette requete en HTTPS rendrait le test vide tout en le laissant
+ * vert — isSecure() repondrait vrai parce que l'adresse l'est, sans que
+ * TrustProxies n'ait eu a se prononcer.
+ *
+ * Le chemin est relatif a dessein : Request::create() le sert depuis l'hote
+ * local en clair, ce qui donne la meme requete sans qu'une adresse non
+ * chiffree s'ecrive dans le code — la ou un analyseur ne verrait qu'un oubli,
+ * et ou la « corriger » viderait le test.
  */
 function requeteVueCommeSecurisee(string $adresse): bool
 {
-    $requete = Request::create('http://exemple.ci/', server: [
+    $requete = Request::create('/', server: [
         'REMOTE_ADDR' => $adresse,
         'HTTP_X_FORWARDED_PROTO' => 'https',
     ]);
