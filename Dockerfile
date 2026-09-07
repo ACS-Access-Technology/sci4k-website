@@ -62,6 +62,14 @@ FROM dunglas/frankenphp:php8.3
 # mais Laravel les attend sur certains chemins, et leur cout est negligeable.
 RUN install-php-extensions pdo_mysql pdo_sqlite gd intl zip opcache
 
+# rsync : tools/sync-frontoffice.sh s'en sert pour deposer les ressources du
+# site statique. Il est fourni sur macOS et sur les executeurs GitHub, mais pas
+# dans cette image — la construction echouait ici, et aucune relecture de
+# chemins n'aurait pu le prevoir.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends rsync \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
