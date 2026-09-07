@@ -13,6 +13,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class ActiviteJournalisee extends Model
 {
+    /**
+     * Combien de jours une entree est conservee.
+     *
+     * Un an : assez pour retrouver l'auteur d'un changement lors d'un litige ou
+     * d'un audit annuel, assez court pour que la table reste bornee.
+     */
+    public const JOURS_DE_CONSERVATION = 365;
+
     protected $table = 'journal_activites';
 
     protected $fillable = [
