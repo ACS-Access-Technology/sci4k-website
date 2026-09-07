@@ -8,6 +8,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Sentry\Laravel\Integration;
 use Spatie\Permission\Middleware\RoleMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -65,6 +66,20 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Sentry ne s'accroche pas tout seul : sans cette ligne, aucune
+        // exception ne lui parvient. Et rien ne le signalerait — un rapport qui
+        // n'est pas envoye ne casse rien, il manque, ce qui ne se decouvre que
+        // le jour ou l'on cherche une panne et qu'il n'y a rien a lire.
+        //
+        // Inerte tant que SENTRY_LARAVEL_DSN est vide, comme la traduction
+        // automatique l'est sans sa cle. Et discret par construction :
+        // send_default_pii reste a false, de sorte que ni adresse IP, ni
+        // en-tetes, ni corps de requete ne quittent le serveur — la politique
+        // de confidentialite promet en gras qu'aucune IP n'est conservee, et
+        // l'envoyer a un tiers reviendrait au meme mensonge par un autre
+        // chemin.
+        Integration::handles($exceptions);
+
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );

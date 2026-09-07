@@ -12,13 +12,17 @@ use App\Routing\GenerateurDUrlBilingue;
 use App\Services\Traduction\Traducteur;
 use App\Services\Traduction\TraducteurDeepL;
 use Carbon\CarbonImmutable;
+use Illuminate\Auth\Events\Authenticated;
 use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Sentry\Laravel\Integration;
+use Sentry\State\Scope;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -82,9 +86,32 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->declarerLesProxysDeConfiance();
+        $this->identifierLeCompteAuprèsDeSentry();
         $this->appliquerLeFuseauHoraire();
         $this->composerLePiedDePage();
         $this->appliquerLaMessagerieEnregistree();
+    }
+
+    /**
+     * Donne a Sentry l'identifiant du compte connecte, et rien d'autre.
+     *
+     * send_default_pii reste a false : ni adresse IP, ni en-tetes, ni corps de
+     * requete ne quittent le serveur, et Sentry n'apprend donc rien du visiteur.
+     * Mais une panne rencontree DANS L'ADMINISTRATION se reproduit beaucoup plus
+     * vite quand on sait quel compte l'a rencontree.
+     *
+     * L'identifiant interne suffit : il se relie a la base quand c'est utile,
+     * la ou l'adresse electronique partirait chez un tiers sans rien apporter
+     * de plus. La politique de confidentialite parle des visiteurs du site ; un
+     * compte du backoffice n'en est pas un.
+     */
+    protected function identifierLeCompteAuprèsDeSentry(): void
+    {
+        Event::listen(Authenticated::class, function (Authenticated $connexion): void {
+            Integration::configureScope(function (Scope $portee) use ($connexion): void {
+                $portee->setUser(['id' => (string) $connexion->user->getAuthIdentifier()]);
+            });
+        });
     }
 
     /**
