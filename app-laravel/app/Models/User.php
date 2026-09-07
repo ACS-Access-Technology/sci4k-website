@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Support\Media;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -155,6 +156,6 @@ class User extends Authenticatable implements PasskeyUser
      */
     public function urlPhoto(): ?string
     {
-        return $this->photo ? asset($this->photo) : null;
+        return Media::url($this->photo);
     }
 }

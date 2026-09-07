@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\CollectionOrdonnable;
 use App\Models\Concerns\JournaliseSesChangements;
 use App\Models\Concerns\TraduitParColonnes;
+use App\Support\Media;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -117,6 +118,6 @@ class Encart extends Model
             return null;
         }
 
-        return asset($this->image_source);
+        return Media::url($this->image_source);
     }
 }

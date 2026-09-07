@@ -1,5 +1,6 @@
 <?php
 
+use App\Support\TachesDEntretien;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -18,9 +19,9 @@ Artisan::command('inspire', function () {
 //
 // SANS CRON, RIEN DE CECI NE TOURNE. L'hebergement doit porter la ligne qui
 // appelle « php artisan schedule:run » chaque minute — voir docs/MISE_EN_LIGNE.md.
-Schedule::command('frequentation:agreger')->dailyAt('03:10');
+Schedule::command(TachesDEntretien::COMMANDES[0])->dailyAt('03:10');
 
 // Le journal d'activite recevait une ligne par action d'administration et rien
 // ne l'effaçait. Une demi-heure apres l'agregation de la frequentation, pour
 // que les deux entretiens ne se disputent pas la base.
-Schedule::command('journal:purger')->dailyAt('03:40');
+Schedule::command(TachesDEntretien::COMMANDES[1])->dailyAt('03:40');

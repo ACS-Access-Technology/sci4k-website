@@ -1,0 +1,24 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "./tools/construire-vercel.sh",
+  "outputDirectory": "app-laravel/public",
+  "framework": null,
+  "installCommand": "echo 'installation faite par le script de construction'",
+  "functions": {
+    "app-laravel/api/index.php": {
+      "runtime": "vercel-php@0.7.4",
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  },
+  "routes": [
+    { "src": "/build/(.*)", "dest": "/build/$1" },
+    { "src": "/assets/(.*)", "dest": "/assets/$1" },
+    { "src": "/images/(.*)", "dest": "/images/$1" },
+    { "src": "/(favicon\\.ico|robots\\.txt|apple-touch-icon\\.png)", "dest": "/$1" },
+    { "src": "/(.*)", "dest": "/app-laravel/api/index.php" }
+  ],
+  "crons": [
+    { "path": "/_taches-planifiees", "schedule": "10 3 * * *" }
+  ]
+}

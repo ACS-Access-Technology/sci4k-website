@@ -31,6 +31,8 @@ use App\Livewire\Admin\Referentiels;
 use App\Livewire\Admin\TableauDeBord;
 use App\Livewire\Admin\UtilisateurListe;
 use App\Livewire\Public\CatalogueDesBiens;
+use App\Support\TachesDEntretien;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -241,5 +243,28 @@ Route::middleware(['auth', 'role:administrateur|editeur|redacteur|lecteur'])
             Route::get('/utilisateurs', UtilisateurListe::class)->name('utilisateurs');
         });
     });
+
+// Declencheur des taches d'entretien pour les plateformes sans ligne de
+// commande, ou aucune crontab ne peut appeler « artisan schedule:run ».
+//
+// ELLE REPOND 404 QUAND LE JETON MANQUE, et non 401 : un 401 confirmerait a qui
+// tatonne que l'adresse existe et qu'il ne manque qu'un secret. Sans secret
+// configure, elle n'existe pas du tout.
+//
+// Elle execute les commandes directement, sans passer par schedule:run : celui
+// -ci n'execute que ce qui est du a la minute courante, et un appel decale
+// d'une minute suffirait a ce que l'entretien ne tourne jamais, sans erreur ni
+// trace.
+Route::get('/_taches-planifiees', function () {
+    $secret = config('app.cron_secret');
+
+    abort_unless($secret && hash_equals((string) $secret, (string) request()->bearerToken()), 404);
+
+    foreach (TachesDEntretien::COMMANDES as $commande) {
+        Artisan::call($commande);
+    }
+
+    return response()->noContent(200);
+})->name('taches-planifiees');
 
 require __DIR__.'/settings.php';

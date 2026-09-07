@@ -85,6 +85,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Secret du declencheur d'entretien
+    |--------------------------------------------------------------------------
+    |
+    | Utile aux seules plateformes sans acces en ligne de commande, ou les
+    | taches planifiees ne peuvent etre declenchees que par un appel HTTP.
+    | Vide, la route n'existe pas : un deploiement qui aurait oublie de poser ce
+    | secret n'ouvrirait pas l'entretien a tout le monde.
+    |
+    */
+
+    'cron_secret' => env('CRON_SECRET'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |
