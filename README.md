@@ -1,58 +1,101 @@
-# SCI4K — site vitrine et maquettes d'administration
+# SCI4K — site vitrine et administration
 
 Site de la Société Civile Immobilière SCI4K, à Abidjan : achat, vente,
 location, construction et gestion de patrimoine immobilier.
 
-Le dépôt contient deux ensembles distincts.
+Le dépôt contient **une application** et **deux jeux de maquettes** qui lui
+ont servi de référence.
 
 | Dossier | Contenu | État |
 |---|---|---|
-| `frontoffice/` | Le site public : 12 pages HTML statiques, une feuille de style, un script | Fonctionnel |
-| `backoffice/` | 30 maquettes d'écrans d'administration, générées par des scripts Python | Maquettes only — aucune donnée, aucun serveur |
+| `app-laravel/` | L'application : site public rendu depuis la base, et son administration | **C'est ici que se fait le travail** |
+| `maquettes-frontoffice/` | 12 pages HTML statiques, une feuille de style, un script | Référence visuelle, et source des ressources copiées dans `public/` |
+| `maquettes-backoffice/` | 30 maquettes d'écrans, générées par des scripts Python | Référence visuelle uniquement — aucune donnée, aucun serveur |
 
-## Le site public
+Les deux dossiers de maquettes ne sont plus le produit livré. Ils restent
+parce qu'ils décrivent l'intention, et parce que `maquettes-frontoffice/` est
+la source de vérité des styles, des images et du script du site public.
 
-Aucune dépendance, aucune étape de construction : ce sont des fichiers
-statiques. Pour les consulter en local :
+## L'application
+
+Laravel 13, Livewire 4, Fortify pour l'authentification, spatie/laravel-permission
+pour les rôles. PHP 8.3 et MySQL 8.
 
 ```bash
-cd frontoffice && python3 -m http.server 8777
+cd app-laravel
+composer install
+npm ci && npm run build
+cp .env.example .env && php artisan key:generate
+php artisan migrate --seed
+php artisan storage:link
+cd .. && ./tools/sync-frontoffice.sh
+cd app-laravel && php artisan serve
 ```
 
-Puis ouvrir <http://localhost:8777>.
+`./tools/sync-frontoffice.sh` **est indispensable après chaque clonage** : il
+dépose dans `app-laravel/public/` les styles, le script, les images et les
+pages non encore portées en Blade. Ces copies ne sont pas versionnées — la
+source unique reste `maquettes-frontoffice/`, et verser un second exemplaire
+des mêmes fichiers garantirait qu'un jour l'un soit corrigé et l'autre oublié.
 
-**Bilingue.** Les textes proviennent d'un dictionnaire unique en tête de
-`assets/main.js` (`window.SCI4K_I18N`). Le HTML porte des attributs
-`data-i18n`, `data-i18n-html`, `data-i18n-ph` et `data-i18n-aria` ; le
-contenu affiché est écrit par le script au chargement. **Modifier le HTML
-seul ne suffit donc pas** : le dictionnaire l'écrase. Les deux langues se
-corrigent ensemble.
+### Le site public
 
-**Images de fond.** Toutes sont déclarées comme variables CSS dans
-`assets/images.css`, à raison d'une ligne par emplacement. Changer un visuel
-revient à changer cette ligne. Les visuels les plus lourds ont une variante
-WebP de 800 px, servie sous 820 px de large uniquement.
+Sept pages sont rendues depuis la base : accueil, présentation, biens,
+services, actualités, FAQ, contact, plus les deux pages légales et le plan du
+site. Les anciennes adresses en `.html` répondent par une redirection
+permanente, et les pages statiques correspondantes sont exclues de la
+synchronisation — sans quoi le serveur les servirait avant d'entrer dans PHP,
+et masquerait les routes.
 
-**Formulaires.** Le contact et la question de la FAQ composent un message
-WhatsApp vers le numéro de l'agence, puis laissent le visiteur l'envoyer.
-Il n'y a pas de serveur : c'est un choix, pas un manque.
+Quatre formulaires écrivent en base : message de contact, inscription à la
+lettre d'information, commentaire d'article, demande de visite. Ce sont les
+seuls points d'écriture ouverts au public. Ils sont hors contrôle CSRF —
+délibérément, le raisonnement est écrit dans `bootstrap/app.php` — et
+protégés à la place par une limitation à 5 envois par minute, un champ piège
+et des longueurs bornées.
+
+**Bilingue.** La langue vient de l'**adresse**, et non plus de la session :
+`/services` sert le français, `/en/services` l'anglais. En session, la même
+adresse servait deux contenus — un moteur de recherche, qui n'a pas de
+session, ne voyait donc que le français, et un lien anglais partagé s'ouvrait
+en français chez le destinataire. Le backoffice fait exception et garde la
+session : il n'est pas indexé, et préfixer cent routes d'administration
+n'apporterait rien.
+
+Les textes viennent de la base ; le dictionnaire `window.SCI4K_I18N` de
+`maquettes-frontoffice/assets/main.js` ne sert plus qu'aux pages restées
+statiques.
+
+### L'administration
+
+29 modèles, 47 composants Livewire d'administration, 42 migrations.
+Quatre rôles : `administrateur`, `editeur`, `redacteur`, `lecteur`.
+
+L'organisation est **une page d'administration par page publique** —
+`/admin/pages/accueil`, `/pages/presentation`, `/pages/biens`, `/pages/services`,
+`/pages/actualites`, `/pages/faq`, `/pages/contact` — et non un écran par type
+de contenu. Les quinze écrans par type ont été retirés : chaque collection
+s'édite depuis l'écran de la page qui l'affiche, où elle est embarquée avec
+son formulaire. Deux adresses pour une même table, c'était deux endroits où
+corriger le même défaut.
+
+S'y ajoutent le tableau de bord, le journal des activités, les messages, les
+demandes de visite, la lettre d'information, la médiathèque, la fréquentation,
+et — réservés aux administrateurs — la configuration, les référentiels, les
+menus et les comptes.
 
 ## Les maquettes d'administration
 
-Les 30 pages de `backoffice/` sont **générées**. Ne pas les modifier à la
-main : la prochaine génération écraserait le changement.
+Les 30 pages de `maquettes-backoffice/` sont **générées**. Ne pas les modifier
+à la main : la prochaine génération écraserait le changement.
 
 ```bash
-cd backoffice && python3 _build/build.py
+cd maquettes-backoffice && python3 _build/build.py
 ```
 
 Les sources sont `_build/pages_a.py`, `pages_b.py`, `pages_c.py` et
-`layout.py`. La médiathèque construit son inventaire en parcourant réellement
-`frontoffice/images/` : ajouter ou retirer une image suffit, il faut ensuite
-régénérer.
-
-Ces écrans n'ont ni base de données, ni authentification, ni serveur. Ils
-décrivent une administration à construire ; ils ne l'implémentent pas.
+`layout.py`. Un contrôle d'intégration vérifie que le HTML versionné
+correspond toujours à ce que produisent ces scripts.
 
 ## Contrôles
 
@@ -60,25 +103,52 @@ décrivent une administration à construire ; ils ne l'implémentent pas.
 python3 tools/verifier-site.py
 ```
 
-Rejoue les vérifications de non-régression : références mortes, données
-structurées (dont la concordance entre la FAQ balisée et la FAQ affichée),
-intitulés de formulaire, syntaxe JavaScript, cohérence du plan de site.
-Ces contrôles tournent aussi à chaque push et sur chaque pull request.
+Références mortes, données structurées (dont la concordance entre la FAQ
+balisée et la FAQ affichée), intitulés de formulaire, syntaxe JavaScript,
+cohérence du plan de site.
 
-## Documents de conception
+```bash
+cd app-laravel
+./vendor/bin/pint --test        # formatage
+./vendor/bin/phpstan analyse    # analyse statique, niveau 5
+php artisan test                # la suite complete
+```
+
+Ces quatre contrôles sont **bloquants** dans l'intégration continue, sur
+`master`, `preprod` et `dev`. Les tests y sont rejoués deux fois : sur SQLite,
+rapide, puis sur MySQL, le moteur réellement servi en production — les écarts
+de dialecte ne se voient pas autrement.
+
+## Branches
+
+| Branche | Rôle |
+|---|---|
+| `dev` | La branche de travail. C'est elle qui porte l'état courant. |
+| `master` | Intégration |
+| `preprod` | Préproduction |
+| `prod` | **À refaire** — voir `docs/MISE_EN_LIGNE.md`, §5 |
+
+## Documents
 
 | Fichier | Objet |
 |---|---|
+| `docs/MISE_EN_LIGNE.md` | Ce que le déploiement demande, et les réglages de production |
+| `docs/RELAIS_PROJET.md` | Reprise du contexte projet |
 | `ECARTS_FRONT_BACKOFFICE.md` | Confrontation du site public au périmètre couvert par l'administration |
 | `BACKOFFICE_SECTIONS.md` | Champs attendus, section par section |
 | `WIREFRAME_BACKOFFICE.md` | Maquettes filaires des écrans |
-| `frontoffice/images/A-REMPLACER.md` | Six visuels provisoires issus de Wikimedia, à remplacer par des photographies de l'agence |
+| `maquettes-frontoffice/images/A-REMPLACER.md` | Six visuels provisoires issus de Wikimedia, à remplacer par des photographies de l'agence |
 
 ## Points ouverts
 
+Aucun ne se règle en programmant.
+
 - Les mentions légales attendent le numéro **RCCM**, le **Compte
-  Contribuable** et l'**hébergeur** ; ces valeurs ne figurent nulle part et
-  sont à obtenir auprès de la direction.
+  Contribuable** et le nom de l'**hébergeur**.
+- Le nom du **directeur de publication**, et l'autorisation d'afficher les
+  **logos des partenaires**.
 - Six visuels sont provisoires (voir `A-REMPLACER.md`).
-- L'administration reste à implémenter : hébergement, persistance et
-  authentification n'ont pas encore été arbitrés.
+- La **facturation GitHub Actions** de l'organisation : tant qu'elle n'est pas
+  réglée, les contrôles ci-dessus sont refusés avant démarrage et ne protègent
+  rien.
+- Domaine, hébergement, HTTPS, SMTP, sauvegardes : voir `docs/MISE_EN_LIGNE.md`.

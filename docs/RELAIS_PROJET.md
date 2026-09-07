@@ -2,7 +2,7 @@
 
 > Document de référence pour reprendre le développement du site SCI4K sans perdre le contexte fonctionnel, technique ou l'avancement.
 >
-> Dernière mise à jour : 27 août 2026
+> Dernière mise à jour : 7 septembre 2026
 >
 > Dépôt : `https://github.com/yutomase99-blip/sci4k-website`
 
@@ -10,23 +10,23 @@
 
 SCI4K est un site vitrine immobilier pour une agence basée à Abidjan. Le projet est organisé en deux interfaces :
 
-- `frontoffice/` : site public statique en HTML/CSS/JavaScript, bilingue français/anglais.
-- `backoffice/` : maquettes HTML de l'administration, générées par des scripts Python.
-- `app-laravel/` : application Laravel serveur existante. La branche de référence active est `worktree-lot3-reglages` (`0129ae0`, également publiée comme `origin/worktree-lot3-reglages`) ; elle contient les sources Laravel fonctionnelles.
+- `maquettes-frontoffice/` : site public statique en HTML/CSS/JavaScript, bilingue français/anglais.
+- `maquettes-backoffice/` : maquettes HTML de l'administration, générées par des scripts Python.
+- `app-laravel/` : **l'application livrée**. C'est elle qui rend le site public et son administration ; les deux dossiers de maquettes ne servent plus que de référence visuelle. La branche de référence active est **`dev`**. Les branches `worktree-lot1-actualites`, `worktree-lot2-blocs` et `worktree-lot3-reglages` sont fusionnées et closes : ne plus s'y appuyer.
 
 Le dépôt contient les maquettes HTML historiques, le frontoffice statique et, sur la branche du lot 3, l'application Laravel fonctionnelle. C'est cette branche et cette application qui constituent la base de travail ; les maquettes HTML servent de référence visuelle et fonctionnelle.
 
 ## 2. Structure et conventions à préserver
 
-- La branche de travail doit être `worktree-lot3-reglages` ou la branche active équivalente du lot 3 ; ne pas revenir à `master` par défaut.
+- La branche de travail est **`dev`**. Les trois branches permanentes sont `master`, `preprod` et `dev` ; l'intégration continue les surveille toutes les trois. `prod` est à refaire, voir `MISE_EN_LIGNE.md` §5.
 - L'application Laravel se trouve dans `app-laravel/` sur cette branche.
 - Les tests Laravel se lancent avec `cd app-laravel && php artisan test --compact` après installation de `vendor/`.
-- Les pages du back-office historique sont générées par `backoffice/_build/build.py`.
-- Les sources des écrans sont `backoffice/_build/layout.py`, `pages_a.py`, `pages_b.py` et `pages_c.py`.
+- Les pages du back-office historique sont générées par `maquettes-backoffice/_build/build.py`.
+- Les sources des écrans sont `maquettes-backoffice/_build/layout.py`, `pages_a.py`, `pages_b.py` et `pages_c.py`.
 - Ne pas modifier directement les fichiers HTML générés du back-office : une régénération les écraserait.
 - Régénération : `cd backoffice && python3 _build/build.py`.
-- Le site public centralise une partie des traductions dans `frontoffice/assets/main.js`, notamment `window.SCI4K_I18N`.
-- Les images de fond du frontoffice sont déclarées dans `frontoffice/assets/images.css`.
+- Le site public centralise une partie des traductions dans `maquettes-frontoffice/assets/main.js`, notamment `window.SCI4K_I18N`.
+- Les images de fond du frontoffice sont déclarées dans `maquettes-frontoffice/assets/images.css`.
 - Le contrôle existant est `python3 tools/verifier-site.py`.
 - Le frontoffice peut être servi localement avec `cd frontoffice && python3 -m http.server 8777`.
 - Le backoffice est prévu pour être servi comme HTML statique. Une configuration locale historique mentionne `127.0.0.1:24282/dashboard/`, mais il faut vérifier le serveur réellement actif avant de s'y fier.
@@ -39,13 +39,13 @@ Pages présentes : accueil, présentation, biens, services, actualités, détail
 
 Le catalogue des biens est désormais servi par Laravel/Livewire sur la branche du lot 3, avec filtres serveur, pagination, photos et demandes de visite. Les fichiers HTML statiques restent l'ancienne version de référence. Les formulaires contact et FAQ gardent leur comportement WhatsApp historique côté site statique.
 
-Le dossier `frontoffice/images/` contient 49 fichiers réels selon la demande métier. Il comprend notamment les visuels d'équipe, services, partenaires, héros et articles.
+Le dossier `maquettes-frontoffice/images/` contient 49 fichiers réels selon la demande métier. Il comprend notamment les visuels d'équipe, services, partenaires, héros et articles.
 
 ### Backoffice
 
 Les maquettes couvrent notamment les biens, articles, FAQ, services, pages, médiathèque, témoignages, partenaires, statistiques, encarts, équipe, valeurs, processus, messages, visites, newsletter, réglages, utilisateurs, menus et référentiels. L'application Laravel de la branche du lot 3 contient déjà les composants Livewire correspondants, notamment `BienFormulaire`, `BienListe`, `CatalogueDesBiens`, `DemandeDeVisiteListe` et les composants de réglages.
 
-Les icônes de navigation de la sidebar sont déjà centralisées dans `backoffice/_build/layout.py` via le dictionnaire `ICONS` et la structure `MENUS`. Ce point doit être vérifié visuellement et complété uniquement pour les modules qui n'ont pas encore un pictogramme pertinent.
+Les icônes de navigation de la sidebar sont déjà centralisées dans `maquettes-backoffice/_build/layout.py` via le dictionnaire `ICONS` et la structure `MENUS`. Ce point doit être vérifié visuellement et complété uniquement pour les modules qui n'ont pas encore un pictogramme pertinent.
 
 La médiathèque parcourt déjà réellement le dossier d'images dans le générateur, mais cela reste un inventaire de maquette tant qu'aucune persistance n'est branchée.
 
@@ -57,7 +57,7 @@ Les cases indiquent l'état au moment de cette documentation, pas une promesse d
 - [~] **2. Boutons WhatsApp et tawk.io** : un include commun est ajouté aux deux layouts publics Laravel, avec ouverture différée de tawk.io. Les pages statiques historiques doivent encore recevoir le même include ou leur équivalent avant de déclarer le point terminé.
 - [x] **3. Icônes des modules de sidebar** : chaque entrée de la navigation Laravel utilise maintenant le composant d'icône admin avec un pictogramme sémantique.
 - [~] **4. Favicon et identité navigateur** : le favicon et l'icône tactile du backoffice utilisent désormais le logo SCI4K publié. Les pages statiques et la génération des formats ICO/SVG restent à vérifier.
-- [x] **5. Filtres de la page des biens** : `/biens` Laravel reprend désormais la structure de `frontoffice/biens.html` — segment offre, quatre filtres, pastilles, grille et modale — avec des données Livewire issues du backoffice. Vérification navigateur effectuée : `villa` + `cocody` + `5+ pièces` restent sur `/biens` et réduisent la grille à 1 résultat ; les options viennent toujours des référentiels administrables.
+- [x] **5. Filtres de la page des biens** : `/biens` Laravel reprend désormais la structure de `maquettes-frontoffice/biens.html` — segment offre, quatre filtres, pastilles, grille et modale — avec des données Livewire issues du backoffice. Vérification navigateur effectuée : `villa` + `cocody` + `5+ pièces` restent sur `/biens` et réduisent la grille à 1 résultat ; les options viennent toujours des référentiels administrables.
 - [~] **6. Fiche d'un bien en modal + aperçu backoffice** : la fiche s'ouvre maintenant dans le catalogue Livewire sans changement d'URL, et l'éditeur affiche un aperçu vivant. Il reste à couvrir la navigation clavier complète et à factoriser davantage le fragment descriptif.
 - [~] **7. Toasts du backoffice** : le composant toast existant est maintenant alimenté par les messages flash après les actions redirigées. Les actions inline et les erreurs doivent encore être harmonisées.
 - [~] **8a. Médiathèque** : l’écran Laravel `/admin/mediatheque` inventorie les images réellement synchronisées dans `public/images/`, avec recherche par nom, filtre de format, aperçu et chemin exploitable. Le rattachement persistant aux contenus reste à modéliser.
@@ -77,7 +77,7 @@ Les cases indiquent l'état au moment de cette documentation, pas une promesse d
 
 ## 6. Risques et décisions à prendre
 
-- **Branche de travail** : utiliser `worktree-lot3-reglages` comme base confirmée du lot 3 et vérifier les commits plus récents avant chaque lot.
+- **Branche de travail** : partir de `dev`, et vérifier les commits plus récents avant chaque lot.
 - **Périmètre technique** : Laravel est la cible confirmée. Les choix upload, crop, persistance, auth, analytics et toasts doivent respecter l'architecture déjà en place dans le backoffice fonctionnel, sans recréer un serveur parallèle.
 - **Source des contenus** : définir la base de données et les contrats entre frontoffice et backoffice avant de remplacer les données de démonstration.
 - **Images** : décider stockage local ou objet, noms générés, variantes, quota, nettoyage des fichiers orphelins et règles de sécurité d'upload.
@@ -88,17 +88,29 @@ Les cases indiquent l'état au moment de cette documentation, pas une promesse d
 
 ## 7. Vérifications minimales après chaque lot
 
+Les quatre contrôles de l'intégration continue, dans l'ordre où elle les
+lance. Ils sont **bloquants** sur `master`, `preprod` et `dev`.
+
 ```bash
-python3 tools/verifier-site.py
-cd backoffice && python3 _build/build.py
-cd ../frontoffice && python3 -m http.server 8777
+python3 tools/verifier-site.py                 # references, donnees structurees, formulaires
+cd maquettes-backoffice && python3 _build/build.py && cd ..
+git diff --exit-code maquettes-backoffice/     # le HTML correspond-il a ses scripts ?
+
+cd app-laravel
+./vendor/bin/pint --test                       # formatage
+./vendor/bin/phpstan analyse                   # analyse statique, niveau 5
+php artisan test                               # la suite complete
 ```
+
+Les tests sont rejoués deux fois en intégration : sur SQLite, rapide, puis sur
+MySQL, le moteur réellement servi en production. Les écarts de dialecte — le
+type énuméré des statuts au premier chef — ne se voient pas autrement.
 
 Vérifier également manuellement les vues desktop et mobile, la console JavaScript, les chemins d'images, le clavier dans les modales et l'absence de références Laravel résiduelles dans les favicons.
 
 ## 8. Informations pour une autre IA
 
-- Commencer par lire ce fichier, `README.md`, `ECARTS_FRONT_BACKOFFICE.md`, les sources `_build/` et le code Laravel de `worktree-lot3-reglages` avant toute édition.
+- Commencer par lire ce fichier, `README.md`, `MISE_EN_LIGNE.md`, `ECARTS_FRONT_BACKOFFICE.md`, les sources `_build/` et le code Laravel de `dev` avant toute édition.
 - Pour le backoffice, éditer les générateurs Python puis régénérer les HTML.
 - Pour le frontoffice, vérifier `assets/main.js` avant de modifier un libellé : le dictionnaire bilingue peut réécrire le HTML au chargement.
 - Préserver les changements utilisateurs déjà présents dans le dépôt ; ne jamais réinitialiser ou écraser des fichiers sans les lire.
@@ -111,6 +123,7 @@ Vérifier également manuellement les vues desktop et mobile, la console JavaScr
 - **27/08/2026** : précision projet ajoutée : les serveurs Laravel et un backoffice fonctionnel existent déjà ; le projet est considéré comme étant au lot 3. La branche `worktree-lot3-reglages` contient les sources à utiliser.
 - **27/08/2026** : assets frontoffice synchronisés dans Laravel, toasts inline ajoutés aux listes partagées, médiathèque Laravel créée et validée par cache Blade et navigation locale. L'écran est accessible à `/admin/mediatheque` avec recherche, filtre de format et aperçu.
 - **27/08/2026** : présentation équipe interactive, favicon/logo public, filtres sans redirection, lien « Voir le site », régie d'encarts, fréquentation réelle et pages éditables ajoutés dans Laravel. Les validations PHP/Blade, routes, HTTP et vérificateur statique passent.
-- **27/08/2026** : le catalogue Laravel `/biens` a été réaligné sur la maquette `frontoffice/biens.html` sans basculer le rendu final vers le statique. Test multi-filtres et ouverture de fiche modale validés dans le navigateur.
+- **27/08/2026** : le catalogue Laravel `/biens` a été réaligné sur la maquette `maquettes-frontoffice/biens.html` sans basculer le rendu final vers le statique. Test multi-filtres et ouverture de fiche modale validés dans le navigateur.
 - **27/08/2026** : correction du blanc après filtre : les cartes du catalogue Laravel n'utilisent plus l'animation `.reveal` qui les laissait invisibles après remplacement Livewire. `/biens.html` redirige vers `/biens`; test navigateur confirmé avec filtres conservés et seules les cartes hors critère masquées.
 - **27/08/2026** : correction complémentaire du même défaut sur le hero, la carte de recherche et la barre de pastilles : leur animation `.reveal` les masquait aussi après filtrage. Test navigateur confirmé : ces trois zones restent visibles avant/après, seules les cartes hors critère disparaissent.
+- **07/09/2026** : reprise du contexte après le lot 4. La branche de référence est désormais `dev` ; les branches `worktree-*` sont fusionnées et closes. Pint, PHPStan (niveau 5, zéro erreur) et la suite de tests passent, et sont devenus bloquants en intégration sur les trois branches permanentes. Trois défauts de dépôt corrigés ou relevés : un second clone git logé dans `app-laravel/` masquait le dépôt réel et faisait mentir toute commande git lancée depuis ce dossier ; un worktree local était entré dans l'index comme gitlink, d'où un « modifié » permanent sur les deux branches ; et `acs/prod` pointe toujours sur un commit orphelin sans lien d'historique, avec l'application à la racine du dépôt — cette dernière reste à refaire, voir `MISE_EN_LIGNE.md` §5. Ajout de `MISE_EN_LIGNE.md` et du gabarit `app-laravel/.env.production.example` ; `README.md` réaligné sur la structure réelle du dépôt.

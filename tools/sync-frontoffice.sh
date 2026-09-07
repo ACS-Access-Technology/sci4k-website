@@ -7,7 +7,7 @@
 #
 # POURQUOI CES COPIES NE SONT PAS VERSIONNEES
 # -------------------------------------------
-# frontoffice/ est la seule source de verite. Verser ces 2,5 Mo une seconde
+# maquettes-frontoffice/ est la seule source de verite. Verser ces 2,5 Mo une seconde
 # fois dans le depot creerait deux exemplaires des memes fichiers : a la
 # premiere retouche d'un style ou d'une image, l'un serait corrige et l'autre
 # oublie, sans que rien ne le signale. Les copies sont donc ignorees par git
@@ -15,7 +15,7 @@
 # Meme raisonnement que pour tools/extraction-articles.py : on versionne
 # l'outil, pas son produit.
 #
-# A LANCER APRES CHAQUE CLONAGE, et apres toute modification de frontoffice/.
+# A LANCER APRES CHAQUE CLONAGE, et apres toute modification de maquettes-frontoffice/.
 #
 # PAGES VOLONTAIREMENT EXCLUES
 # ----------------------------
@@ -54,7 +54,7 @@ exclues=("index.html" "actualites.html" "actualite-detail.html" "services.html" 
 echo "Synchronisation depuis $source_fo"
 
 # Feuilles de style, script et images. rsync --delete garde la cible alignee :
-# un fichier retire de frontoffice/ disparait aussi de public/.
+# un fichier retire de maquettes-frontoffice/ disparait aussi de public/.
 for dossier in assets images; do
     rsync -a --delete "$source_fo/$dossier/" "$cible/$dossier/"
     echo "  $dossier/ : $(find "$cible/$dossier" -type f | wc -l | tr -d ' ') fichiers"
