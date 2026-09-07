@@ -40,7 +40,7 @@ set -euo pipefail
 
 racine="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-if [ ! -d "$racine/maquettes-frontoffice" ] || [ ! -d "$racine/app-laravel/public" ]; then
+if [[ ! -d "$racine/maquettes-frontoffice" || ! -d "$racine/app-laravel/public" ]]; then
     echo "Erreur : lancer ce script depuis la racine du depot." >&2
     echo "  maquettes-frontoffice/ et app-laravel/public/ doivent exister." >&2
     exit 1
@@ -66,9 +66,9 @@ for page in "$source_fo"/*.html; do
     nom="$(basename "$page")"
     ignoree=0
     for exclue in "${exclues[@]}"; do
-        [ "$nom" = "$exclue" ] && ignoree=1
+        [[ "$nom" = "$exclue" ]] && ignoree=1
     done
-    if [ "$ignoree" -eq 1 ]; then
+    if [[ "$ignoree" -eq 1 ]]; then
         echo "  $nom : exclue, servie par Laravel"
         rm -f "$cible/$nom"
         continue
@@ -82,7 +82,7 @@ echo "  pages statiques : $copiees copiees"
 # public/ par une synchronisation anterieure masquerait la route, le serveur
 # servant un fichier avant d'entrer dans PHP.
 for fige in sitemap.xml robots.txt; do
-    if [ -e "$cible/$fige" ]; then
+    if [[ -e "$cible/$fige" ]]; then
         rm -f "$cible/$fige"
         echo "  $fige : copie retiree, servi par Laravel"
     fi
@@ -91,7 +91,7 @@ done
 # Lien vers storage/app/public, ou vivent les couvertures televersees depuis
 # l'administration. Sans lui elles repondent 404, sans erreur cote serveur :
 # le defaut ne se voit qu'a l'image cassee sur le site public.
-if [ ! -e "$cible/storage" ]; then
+if [[ ! -e "$cible/storage" ]]; then
     (cd "$racine/app-laravel" && php artisan storage:link >/dev/null)
     echo "  storage/ : lien cree"
 else

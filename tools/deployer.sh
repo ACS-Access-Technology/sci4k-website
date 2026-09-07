@@ -27,7 +27,7 @@ echo "== Deploiement de SCI4K =="
 
 # --- Verifications prealables, avant de toucher a quoi que ce soit -----------
 
-if [ ! -f "$app/.env" ]; then
+if [[ ! -f "$app/.env" ]]; then
     echo "ERREUR : $app/.env est absent." >&2
     echo "  Copier le gabarit de PRODUCTION, et non celui de developpement :" >&2
     echo "    cp app-laravel/.env.production.example app-laravel/.env" >&2
@@ -37,16 +37,18 @@ if [ ! -f "$app/.env" ]; then
 fi
 
 valeur_env() {
+    local cherchee="$1"
+
     # Lit une cle du .env sans charger tout le fichier dans le shell : une
     # valeur contenant une espace ou un point-virgule s'y executerait.
-    sed -n "s/^$1=//p" "$app/.env" | head -1 | tr -d '"'"'"'' | tr -d '\r'
+    sed -n "s/^${cherchee}=//p" "$app/.env" | head -1 | tr -d '"'"'"'' | tr -d '\r'
 }
 
 debug="$(valeur_env APP_DEBUG)"
 environnement="$(valeur_env APP_ENV)"
 cle="$(valeur_env APP_KEY)"
 
-if [ "$debug" != "false" ]; then
+if [[ "$debug" != "false" ]]; then
     echo "ERREUR : APP_DEBUG vaut « ${debug:-<vide>} » et doit valoir false." >&2
     echo "  En production, la page d'erreur de Laravel expose la trace" >&2
     echo "  d'execution, les requetes SQL et les variables d'environnement" >&2
@@ -54,19 +56,19 @@ if [ "$debug" != "false" ]; then
     exit 1
 fi
 
-if [ "$environnement" != "production" ]; then
+if [[ "$environnement" != "production" ]]; then
     echo "ERREUR : APP_ENV vaut « ${environnement:-<vide>} » et doit valoir production." >&2
     exit 1
 fi
 
-if [ -z "$cle" ]; then
+if [[ -z "$cle" ]]; then
     echo "ERREUR : APP_KEY est vide. Lancer « php artisan key:generate »." >&2
     echo "  Elle dechiffre les cookies et les sessions : sans elle, rien ne tient." >&2
     exit 1
 fi
 
 php_version="$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')"
-if [ "$(printf '%s\n8.3\n' "$php_version" | sort -V | head -1)" != "8.3" ]; then
+if [[ "$(printf '%s\n8.3\n' "$php_version" | sort -V | head -1)" != "8.3" ]]; then
     echo "ERREUR : PHP $php_version. composer.json exige 8.3 ou plus." >&2
     exit 1
 fi
