@@ -11,6 +11,7 @@ use App\Http\Controllers\MessageDeContactController;
 use App\Http\Controllers\PagePubliqueController;
 use App\Http\Controllers\PlanDuSiteController;
 use App\Http\Controllers\RobotsController;
+use App\Http\Controllers\SecurityTxtController;
 use App\Livewire\Admin\AbonneNewsletterListe;
 use App\Livewire\Admin\Configuration;
 use App\Livewire\Admin\DemandeDeVisiteListe;
@@ -112,6 +113,15 @@ $pagesPubliques = function () {
 
 Route::group([], $pagesPubliques);
 Route::prefix('en')->name('en.')->group($pagesPubliques);
+
+// Le fichier qui dit ou signaler une faille — RFC 9116. Rendu et non depose
+// dans public/ : sa date d'expiration est obligatoire, et un fichier fige se
+// perimerait en silence. Voir le controleur.
+//
+// Les deux adresses : « /.well-known/ » est celle du standard, « /security.txt »
+// celle que cherchent encore beaucoup d'outils d'audit.
+Route::get('/.well-known/security.txt', SecurityTxtController::class)->name('security.txt');
+Route::get('/security.txt', SecurityTxtController::class);
 
 Route::permanentRedirect('/index.html', '/');
 Route::get('/actualite-detail.html', [ActualiteController::class, 'ancienneAdresse']);

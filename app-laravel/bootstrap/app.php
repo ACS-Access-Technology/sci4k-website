@@ -3,6 +3,7 @@
 use App\Http\Middleware\AppliqueLangue;
 use App\Http\Middleware\EnregistreVisite;
 use App\Http\Middleware\FermeLeSitePublic;
+use App\Http\Middleware\PoseLesEnTetesDeSecurite;
 use App\Http\Middleware\RefuseLesComptesDesactives;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -30,6 +31,14 @@ return Application::configure(basePath: dirname(__DIR__))
         // La declaration aurait donc fonctionne en developpement et serait
         // restee inerte precisement la ou elle sert. Elle vit dans
         // AppServiceProvider, qui lit config().
+
+        // Les en-tetes de securite sont poses sur TOUTE reponse du groupe web,
+        // publique comme administrative. En tete de liste : ils doivent valoir
+        // meme quand un middleware suivant interrompt la chaine — une
+        // redirection vers la connexion, une page de maintenance, un refus.
+        $middleware->web(prepend: [
+            PoseLesEnTetesDeSecurite::class,
+        ]);
 
         $middleware->web(append: [
             AppliqueLangue::class,
