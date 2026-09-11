@@ -225,7 +225,13 @@ class Configuration extends Component
                 'intitule' => __('Messagerie'),
                 'champs' => [
                     'smtp_hote' => ['intitule' => __('Serveur SMTP'), 'type' => 'texte', 'regles' => ['nullable', 'string', 'max:160']],
-                    'smtp_port' => ['intitule' => __('Port'), 'type' => 'nombre', 'regles' => ['nullable', 'integer', 'min:1', 'max:65535']],
+                    // L'avertissement n'est pas theorique : l'hebergement de ce
+                    // site bloque les ports 25, 465 et 587 en sortie — ils
+                    // expirent sans repondre. Le message d'erreur parle alors
+                    // d'un delai depasse, ce qui ressemble a une panne du
+                    // fournisseur et non a un port a changer.
+                    'smtp_port' => ['intitule' => __('Port'), 'type' => 'nombre', 'regles' => ['nullable', 'integer', 'min:1', 'max:65535'],
+                        'aide' => __('587 en temps normal. Si l’essai signale un délai dépassé, l’hébergeur bloque ce port : utilisez le port de contournement de votre fournisseur — 2587 chez Resend, 2525 chez SMTP2GO.')],
                     'smtp_chiffrement' => ['intitule' => __('Chiffrement'), 'type' => 'liste', 'regles' => ['nullable', 'in:tls,ssl,'],
                         'choix' => ['tls' => 'TLS', 'ssl' => 'SSL', '' => __('Aucun')]],
                     'smtp_identifiant' => ['intitule' => __('Identifiant'), 'type' => 'texte', 'regles' => ['nullable', 'string', 'max:160']],
