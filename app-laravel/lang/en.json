@@ -1219,5 +1219,7 @@
     "Cliquez sur « Enregistrer » pour les conserver.": "Click “Save” to keep them.",
     "Compte créé pour :adresse, mais AUCUN courriel n’est parti : la messagerie n’est pas configurée. Renseignez « Serveur SMTP » dans Configuration → Messagerie, puis renvoyez l’invitation.": "Account created for :adresse, but NO email was sent: mail is not configured. Fill in “SMTP server” under Configuration → Mail, then resend the invitation.",
     "Aucun courriel n’est parti : la messagerie n’est pas configurée. Renseignez « Serveur SMTP » dans Configuration → Messagerie.": "No email was sent: mail is not configured. Fill in “SMTP server” under Configuration → Mail.",
-    "587 en temps normal. Si l’essai signale un délai dépassé, l’hébergeur bloque ce port : utilisez le port de contournement de votre fournisseur — 2587 chez Resend, 2525 chez SMTP2GO.": "587 normally. If the test reports a timeout, the host blocks that port: use your provider's fallback port — 2587 for Resend, 2525 for SMTP2GO."
+    "587 en temps normal. Si l’essai signale un délai dépassé, l’hébergeur bloque ce port : utilisez le port de contournement de votre fournisseur — 2587 chez Resend, 2525 chez SMTP2GO.": "587 normally. If the test reports a timeout, the host blocks that port: use your provider's fallback port — 2587 for Resend, 2525 for SMTP2GO.",
+    "Compte créé pour :nom, mais l’invitation n’a pas pu être remise : :raison": "Account created for :nom, but the invitation could not be delivered: :raison",
+    "Le renvoi a été refusé : :raison": "The resend was refused: :raison"
 }

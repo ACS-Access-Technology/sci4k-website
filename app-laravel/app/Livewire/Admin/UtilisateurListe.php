@@ -118,11 +118,17 @@ class UtilisateurListe extends Component
 
         $jeton = Password::broker()->createToken($compte);
 
-        Mail::to($compte->email)->send(new InvitationAuBackoffice(
-            $compte,
-            route('password.reset', ['token' => $jeton, 'email' => $compte->email]),
-            (string) auth()->user()?->name,
-        ));
+        // UN REFUS DU SERVEUR NE DOIT PAS CASSER L'ECRAN.
+        //
+        // L'envoi n'etait protege par rien : un « 550 » remontait en page
+        // d'erreur, APRES la creation du compte. L'administrateur voyait un
+        // ecran plante, et son second essai butait sur « adresse deja prise »
+        // puisque le compte existait bel et bien.
+        //
+        // Constate en configurant Resend : l'expediteur de demonstration ne
+        // delivre qu'a l'adresse proprietaire du compte, et refuse tout autre
+        // destinataire.
+        $echec = $this->remettre($compte, $jeton);
 
         $this->panneauInvitation = false;
 
@@ -137,9 +143,46 @@ class UtilisateurListe extends Component
         //
         // Le compte, lui, est bel et bien cree : ce n'est pas un echec, c'est
         // une remise qui n'a pas eu lieu.
+        if ($echec !== null) {
+            // Le compte reste : c'est la remise qui a echoue, pas la creation.
+            // Et la raison vient du serveur — elle designe le vrai obstacle,
+            // qu'aucun message maison ne saurait deviner.
+            $this->message = __('Compte créé pour :nom, mais l’invitation n’a pas pu être remise : :raison', [
+                'nom' => $compte->name,
+                'raison' => $echec,
+            ]);
+
+            return;
+        }
+
         $this->message = $this->messagerieRemetVraiment()
             ? __('Invitation envoyée à :adresse.', ['adresse' => $compte->email])
             : __('Compte créé pour :adresse, mais AUCUN courriel n’est parti : la messagerie n’est pas configurée. Renseignez « Serveur SMTP » dans Configuration → Messagerie, puis renvoyez l’invitation.', ['adresse' => $compte->email]);
+    }
+
+    /**
+     * Remet l'invitation, et rend la raison du refus s'il y en a une.
+     *
+     * @return string|null La raison donnee par le serveur, ou null si la
+     *                     remise a ete acceptee.
+     */
+    protected function remettre(User $compte, string $jeton): ?string
+    {
+        try {
+            Mail::to($compte->email)->send(new InvitationAuBackoffice(
+                $compte,
+                route('password.reset', ['token' => $jeton, 'email' => $compte->email]),
+                (string) auth()->user()?->name,
+            ));
+
+            return null;
+        } catch (\Throwable $e) {
+            // Journalise pour qu'une remise refusee laisse une trace ailleurs
+            // que sur un ecran qu'on va quitter.
+            report($e);
+
+            return $e->getMessage();
+        }
     }
 
     /**
@@ -222,14 +265,13 @@ class UtilisateurListe extends Component
             return;
         }
 
-        Mail::to($compte->email)->send(new InvitationAuBackoffice(
-            $compte,
-            route('password.reset', [
-                'token' => Password::broker()->createToken($compte),
-                'email' => $compte->email,
-            ]),
-            (string) auth()->user()?->name,
-        ));
+        $echec = $this->remettre($compte, Password::broker()->createToken($compte));
+
+        if ($echec !== null) {
+            $this->message = __('Le renvoi a été refusé : :raison', ['raison' => $echec]);
+
+            return;
+        }
 
         // Meme reserve qu'a la premiere invitation : un renvoi qui ne part pas
         // doit le dire, sans quoi l'administrateur reessaie indefiniment.
