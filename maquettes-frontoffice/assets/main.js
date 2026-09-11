@@ -40,37 +40,61 @@ function sci4kValeur(id) {
    WhatsApp : elle porte un creneau et un bien precis, que l'agence doit
    retrouver dans son ecran de suivi. Le visiteur reste sur la page et voit sa
    demande confirmee. */
+/* LES CHAMPS SE LISENT DANS LE FORMULAIRE SOUMIS, PAR LEUR NOM.
+
+   Ils se lisaient par identifiant global. Or le site porte DEUX formulaires de
+   visite — celui de la fiche complete, et celui de la fenetre ouverte depuis
+   le catalogue — aux identifiants differents (« visiteNom » / « modalVisiteNom »).
+   Une seconde fonction avait donc ete appelee pour la fenetre,
+   handleModalVisiteSubmit… qui n'a jamais ete ecrite.
+
+   Le clic levait une ReferenceError : preventDefault() ne tournait pas, le
+   navigateur soumettait le formulaire nativement en GET vers la meme page, et
+   le visiteur voyait sa page se recharger en croyant sa demande partie. Rien
+   n'atteignait le serveur. Aucune erreur cote Laravel — aucune requete n'y
+   parvenait.
+
+   Lire par nom, dans event.target, supprime la cause plutot que le symptome :
+   les deux formulaires portent deja les memes noms, et un troisieme marcherait
+   sans qu'on ait a toucher a cette fonction. */
 window.handleVisiteSubmit = function (event) {
   event.preventDefault();
 
   var formulaire = event.target;
-  var valeur = function (id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; };
+  var valeur = function (nom) {
+    var e = formulaire.elements[nom];
+    return e && typeof e.value === 'string' ? e.value.trim() : '';
+  };
+
+  /* La confirmation est CELLE DE CE FORMULAIRE. Un identifiant global aurait
+     ramene le meme defaut par la fenetre : deux formulaires, deux zones de
+     message, et celle de l'autre page n'existe pas ici. */
+  var confirmation = formulaire.querySelector('[data-visite-confirmation]')
+    || document.getElementById('visiteConfirmation');
 
   fetch('/visites', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify({
-      nom: valeur('visiteNom'),
-      telephone: valeur('visiteTelephone'),
-      email: valeur('visiteEmail'),
-      message: valeur('visiteMessage'),
-      creneau_souhaite: valeur('visiteCreneau') || null,
+      nom: valeur('nom'),
+      telephone: valeur('telephone'),
+      email: valeur('email'),
+      message: valeur('message'),
+      creneau_souhaite: valeur('creneau_souhaite') || null,
       bien: formulaire.getAttribute('data-bien'),
-      site_web: valeur('visiteSiteWeb')
+      site_web: valeur('site_web')
     })
   }).then(function (reponse) {
     /* La confirmation n'apparait qu'apres l'accord du serveur : c'est un
        rendez-vous, pas une inscription sans consequence. Annoncer un succes
        qui n'a pas eu lieu ferait attendre un rappel qui ne viendra pas. */
     if (!reponse.ok) throw new Error('refus');
-    var ok = document.getElementById('visiteConfirmation');
-    if (ok) ok.style.display = 'block';
+    if (confirmation) confirmation.style.display = 'block';
     formulaire.reset();
   }).catch(function () {
-    var ok = document.getElementById('visiteConfirmation');
-    if (ok) {
-      ok.textContent = 'Envoi impossible pour le moment. Appelez-nous au +225 07 06 16 50 29.';
-      ok.style.display = 'block';
+    if (confirmation) {
+      confirmation.textContent = 'Envoi impossible pour le moment. Appelez-nous au +225 07 06 16 50 29.';
+      confirmation.style.display = 'block';
     }
   });
 };

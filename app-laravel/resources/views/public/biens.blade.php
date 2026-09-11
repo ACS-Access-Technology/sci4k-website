@@ -276,7 +276,7 @@
         <p class="sub" style="color:var(--dark-text-muted);">{{ $tVisite('accroche', __("Laissez vos coordonnées : un conseiller vous rappelle pour convenir d'un créneau.")) }}</p>
 
         <form id="modalFormulaireVisite" style="margin:0;padding:0;background:transparent;border:none;box-shadow:none;"
-              data-bien="{{ $bienOuvert->slug }}" onsubmit="handleModalVisiteSubmit(event)">
+              data-bien="{{ $bienOuvert->slug }}" onsubmit="handleVisiteSubmit(event)">
           <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
             <label for="modalVisiteSiteWeb">Site web</label>
             <input type="text" id="modalVisiteSiteWeb" name="site_web" tabindex="-1" autocomplete="off">
@@ -310,7 +310,7 @@
           </div>
 
           <button type="submit" class="hero-btn-primary">{{ $tVisite('libelle_bouton', __('Envoyer ma demande')) }}</button>
-          <p id="modalVisiteConfirmation" style="display:none;margin-top:12px;color:var(--dark-text-muted);">
+          <p data-visite-confirmation id="modalVisiteConfirmation" style="display:none;margin-top:12px;color:var(--dark-text-muted);">
             {{ $tVisite('confirmation', __('Votre demande est enregistrée. Un conseiller vous rappelle sous 24 heures ouvrées.')) }}
           </p>
         </form>

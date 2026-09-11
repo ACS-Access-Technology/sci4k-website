@@ -151,7 +151,7 @@
           </div>
 
           <button type="submit" class="hero-btn-primary">{{ $tVisite('libelle_bouton', __('Envoyer ma demande')) }}</button>
-          <p id="visiteConfirmation" style="display:none;margin-top:12px;">
+          <p data-visite-confirmation id="visiteConfirmation" style="display:none;margin-top:12px;">
             {{ $tVisite('confirmation', __('Votre demande est enregistrée. Un conseiller vous rappelle sous 24 heures ouvrées.')) }}
           </p>
         </form>
