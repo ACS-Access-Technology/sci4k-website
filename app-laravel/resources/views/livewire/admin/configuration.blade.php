@@ -78,8 +78,24 @@
         @foreach ($courant['champs'] as $cle => $description)
             @php($type = $description['type'] ?? 'texte')
 
+            {{-- wire:key DONNE UNE IDENTITE A CHAQUE CHAMP.
+
+                 Sans lui, changer d'onglet rendait une NOUVELLE liste de champs
+                 a la meme place. Livewire compare l'ancien arbre au nouveau et,
+                 trouvant un <input> la ou il y en avait un, REUTILISE l'element
+                 au lieu de le remplacer — l'element gardant la liaison de
+                 l'onglet precedent.
+
+                 Le champ affichait alors « Nom du site » et ecrivait dans
+                 « facebook » : effacer l'un effacait l'autre, saisir dans l'un
+                 remplissait l'autre. Constate en production, dans les deux sens.
+
+                 C'est tres probablement ce qui a depose l'identifiant et le mot
+                 de passe SMTP dans « Cible du bouton » et « Sous-titre du pied
+                 de page » — et donc le mot de passe administrateur sur toutes
+                 les pages publiques du site. --}}
             @if ($type === 'case')
-                <label class="flex items-start gap-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
+                <label wire:key="champ-{{ $cle }}" class="flex items-start gap-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
                     <input type="checkbox" wire:model="valeurs.{{ $cle }}" value="1"
                            class="mt-0.5 size-4 rounded border-zinc-300 dark:border-zinc-600">
                     <span>
@@ -90,7 +106,7 @@
                     </span>
                 </label>
             @else
-                <label class="block">
+                <label wire:key="champ-{{ $cle }}" class="block">
                     <span class="text-sm font-medium">{{ $description['intitule'] }}</span>
 
                     @if ($type === 'zone')

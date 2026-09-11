@@ -51,7 +51,7 @@
         @foreach ($champs as $nom => $description)
             @continue($description['bilingue'] ?? false)
 
-            <label class="block">
+            <label wire:key="champ-{{ $nom }}" class="block">
                 <span class="text-sm font-medium">{{ $description['intitule'] }}</span>
 
                 @if (($description['type'] ?? 'texte') === 'fige' && ! $estCreation)
@@ -141,7 +141,7 @@
                      etant masquee : la basculer ne doit pas coûter un
                      aller-retour au serveur ni perdre une saisie en cours. --}}
                 @foreach (['fr', 'en'] as $code)
-                    <label class="block {{ $langueActive === $code ? '' : 'hidden' }}">
+                    <label wire:key="champ-{{ $nom }}-{{ $code }}" class="block {{ $langueActive === $code ? '' : 'hidden' }}">
                         <span class="text-sm font-medium">
                             {{ $description['intitule'] }} ({{ $code === 'fr' ? __('français') : __('anglais') }})
                         </span>

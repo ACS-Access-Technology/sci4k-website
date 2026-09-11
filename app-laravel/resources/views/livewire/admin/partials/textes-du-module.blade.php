@@ -20,8 +20,12 @@
             {{ __('Laissez un champ vide pour garder le texte d’origine, rappelé en filigrane.') }}
         </p>
 
+        {{-- wire:key : sans identite, changer de module rendait une NOUVELLE liste de
+     champs au meme endroit, et Livewire reutilisait les <input> existants — qui
+     gardaient la liaison du module precedent. Voir configuration.blade.php,
+     ou ce defaut a depose un mot de passe sur le site public. --}}
         @foreach ($description['textes'] as $nom => $decrit)
-            <label class="block">
+            <label wire:key="texte-{{ $nom }}" class="block">
                 <span class="text-sm font-medium">{{ __($decrit['intitule']) }}</span>
                 @if ($decrit['long'] ?? false)
                     <textarea wire:model="textes.{{ $nom }}_{{ $langueActive }}" rows="3" autocomplete="off" data-1p-ignore data-lpignore="true"
