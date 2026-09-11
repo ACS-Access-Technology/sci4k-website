@@ -86,10 +86,13 @@
         </div>
       </div>
 
-      {{-- Le bouton ne declenche plus la recherche : chaque liste la relance
-           d'elle-meme. Il ramene a la liste complete, ce qui est la seule
-           action qui manquait au visiteur. --}}
-      <button type="button" class="search-submit" wire:click="reinitialiser">{{ $tFiltre('libelle_bouton', __('Rechercher le bien idéal')) }} →</button>
+      {{-- PLUS DE BOUTON « Rechercher le bien ideal » ici.
+           Il ne cherchait rien — chaque liste relance la recherche d'elle-meme —
+           et appelait reinitialiser() : il VIDAIT les criteres que le visiteur
+           venait de poser. Le libelle promettait l'inverse de ce que le clic
+           faisait, et c'est le libelle que le visiteur lit.
+           L'onglet « Tous », juste en dessous, offre cette remise a zero sous
+           un nom qui la decrit. --}}
     </div>
   </div>
 </section>

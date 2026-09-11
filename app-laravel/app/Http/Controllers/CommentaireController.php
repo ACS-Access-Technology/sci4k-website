@@ -55,11 +55,23 @@ class CommentaireController extends Controller
             'parent_id.exists' => __('Ce commentaire n’existe plus.'),
         ]);
 
+        // AUCUN COMMENTAIRE NE PARAIT SANS RELECTURE.
+        //
+        // La regle d'origine publiait d'emblee ce que le filtre automatique ne
+        // retenait pas. Constate sur le site en ligne : un commentaire est
+        // arrive d'une adresse jetable, corps en faux latin, ni lien ni motif
+        // suspect — et s'est affiche sous un article sans que personne ne l'ait
+        // vu. Le filtre n'etait pas en cause : un texte nu ne lui donne aucune
+        // prise, et aucun filtre n'en aura jamais sur un texte quelconque.
+        //
+        // Le motif reste calcule : il ne decide plus de la mise en ligne, mais
+        // il TRIE la file du moderateur, qui voit d'un coup d'oeil ce qui
+        // sentait deja le courrier indesirable.
         $motif = Commentaire::motifDeMiseEnAttente($valide['message'], $valide['auteur']);
 
         $commentaire = Commentaire::create($valide + [
             'article_id' => $article->id,
-            'statut' => $motif ? Commentaire::EN_ATTENTE : Commentaire::PUBLIE,
+            'statut' => Commentaire::EN_ATTENTE,
             'motif_de_mise_en_attente' => $motif,
         ]);
 
@@ -70,9 +82,10 @@ class CommentaireController extends Controller
         // sans explication passe pour une panne.
         return redirect()
             ->to(route('actualites.detail', $article).'#commentaires')
-            ->with('commentaire', $motif
-                ? __('Merci. Votre commentaire sera lu par notre équipe avant d’être publié.')
-                : __('Merci, votre commentaire est en ligne.'));
+            // Le meme message pour tous : dire « en ligne » a l'un et « sera lu »
+            // a l'autre revient a annoncer au courrier indesirable qu'il a ete
+            // repere, et le prochain essai contournera le filtre.
+            ->with('commentaire', __('Merci. Votre commentaire sera lu par notre équipe avant d’être publié.'));
     }
 
     /**

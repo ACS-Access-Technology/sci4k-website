@@ -59,9 +59,10 @@
                 <select wire:model="statut" class="{{ $champ }}">
                     <option value="brouillon">{{ __('Brouillon') }}</option>
                     <option value="publie">{{ __('Publié') }}</option>
+                    <option value="archive">{{ __('Archivé') }}</option>
                 </select>
                 <span class="mt-1 block text-xs text-zinc-500">
-                    {{ __("Un brouillon n'apparaît pas sur le site public.") }}
+                    {{ __("Brouillon et archive n'apparaissent pas sur le site public. Le brouillon n'est pas encore prêt ; l'archive a vécu et se retire.") }}
                 </span>
                 @error('statut') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
             </label>

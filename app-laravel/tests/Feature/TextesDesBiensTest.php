@@ -50,18 +50,15 @@ it('rend le catalogue inchange tant que rien n est saisi', function () {
     // texte d'origine reste le repli de chaque champ.
     $corps = $this->get(route('biens.index'))->assertOk()->getContent();
 
-    expect($corps)->toContain('Type de bien')
-        ->and($corps)->toContain('Rechercher le bien idéal');
+    expect($corps)->toContain('Type de bien');
 });
 
 it('applique les libelles des filtres saisis en backoffice', function () {
     saisir($this->admin, 'filtres', 'libelle_type', 'Nature du bien');
-    saisir($this->admin, 'filtres', 'libelle_bouton', 'Lancer la recherche');
 
     $corps = $this->get(route('biens.index'))->assertOk()->getContent();
 
     expect($corps)->toContain('Nature du bien')
-        ->and($corps)->toContain('Lancer la recherche')
         ->and($corps)->not->toContain('Type de bien');
 });
 

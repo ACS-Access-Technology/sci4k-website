@@ -44,6 +44,54 @@
     }
 }
 
+/* LE BOUTON DES CHAMPS DE FICHIER.
+ *
+ * Le reset de Tailwind touche ::file-selector-button — il figure dans la liste
+ * du bloc @layer base ci-dessus — et lui retire son apparence native. Rien ne
+ * la remplacait : « Choisir une image » s'affichait en texte nu, sans cadre ni
+ * fond, et ne se lisait plus comme un bouton. Signale en recette.
+ *
+ * On le redessine donc ici, une fois, plutot que dans chacun des cinq
+ * formulaires qui portent un champ de fichier — leurs classes decrivent le
+ * champ, pas son bouton, et aucune variante Tailwind n'etait posee dessus.
+ */
+input[type="file"]::file-selector-button {
+    margin-right: 0.75rem;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--color-zinc-300, #d4d4d8);
+    border-radius: 0.5rem;
+    background: var(--color-zinc-100, #f4f4f5);
+    color: var(--color-zinc-800, #27272a);
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    cursor: pointer;
+    transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background: var(--color-zinc-200, #e4e4e7);
+    border-color: var(--color-zinc-400, #a1a1aa);
+}
+
+/* Le champ lui-meme garde le cadre pose par le gabarit ; seul son bouton
+ * change. Le curseur, lui, doit dire que toute la zone est cliquable. */
+input[type="file"] {
+    cursor: pointer;
+}
+
+.dark input[type="file"]::file-selector-button {
+    border-color: var(--color-zinc-600, #52525b);
+    background: var(--color-zinc-800, #27272a);
+    color: var(--color-zinc-100, #f4f4f5);
+}
+
+.dark input[type="file"]::file-selector-button:hover {
+    background: var(--color-zinc-700, #3f3f46);
+    border-color: var(--color-zinc-500, #71717a);
+}
+
 [x-cloak] {
     display: none !important;
 }

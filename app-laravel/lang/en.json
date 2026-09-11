@@ -1206,5 +1206,6 @@
     "Cette page est introuvable": "Page not found",
     "Cette adresse ne correspond à aucune page du site.": "This address does not match any page on the site.",
     "L’adresse demandée ne correspond à aucune page. Elle a peut-être changé, ou comporte une faute de frappe.": "The address you asked for matches no page. It may have changed, or contain a typo.",
-    "Vous pouvez reprendre par l’une de ces pages :": "You can pick up from one of these pages:"
+    "Vous pouvez reprendre par l’une de ces pages :": "You can pick up from one of these pages:",
+    "Brouillon et archive n'apparaissent pas sur le site public. Le brouillon n'est pas encore prêt ; l'archive a vécu et se retire.": "Drafts and archives do not appear on the public site. A draft is not ready yet; an archive has had its life and is withdrawn."
 }

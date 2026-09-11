@@ -146,7 +146,11 @@ class ArticleFormulaire extends Component
             ],
             'categorieId' => ['required', 'exists:categories,id'],
             'datePublication' => ['required', 'date'],
-            'statut' => ['required', 'in:brouillon,publie'],
+            // « archive » complete le couple d'origine : la liste le proposait
+            // deja dans son filtre et le comptait dans ses indicateurs, sans
+            // qu'aucun ecran ne permette de l'atteindre. Un filtre qui ne
+            // trouve jamais rien laisse chercher une manoeuvre qui n'existe pas.
+            'statut' => ['required', 'in:'.implode(',', Article::STATUTS)],
             'commentairesOuverts' => ['boolean'],
             // L'anglais n'est pas exige : Article lit ses textes par
             // TraduitParColonnes, qui replie sur le francais des que la colonne

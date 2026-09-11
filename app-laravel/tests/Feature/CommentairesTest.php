@@ -49,17 +49,40 @@ function unCommentaire(array $champs = []): array
 /* Le depot */
 /* ------------------------------------------------------------------ */
 
-it('publie immediatement un commentaire ordinaire', function () {
+/*
+ * TOUT COMMENTAIRE ATTEND SA RELECTURE — ce test verrouillait l'inverse.
+ *
+ * La regle d'origine publiait d'emblee ce qui ne declenchait pas le filtre
+ * automatique. Constate en recette, sur le site en ligne : un commentaire est
+ * arrive d'une adresse jetable, corps en faux latin, ni lien ni motif
+ * suspect — et s'est affiche sous un article sans que personne ne l'ait vu.
+ * Le filtre n'etait pas en cause : un texte nu ne lui donne aucune prise.
+ *
+ * Les trois etats existaient deja, et l'ecran de moderation s'ouvre par defaut
+ * sur « En attente ». Il ne manquait que ceci : que le depot s'y range.
+ * Le filtre automatique reste utile — il donne au moderateur le MOTIF, ce qui
+ * trie sa file d'attente — mais il ne decide plus de la mise en ligne.
+ */
+it('met tout commentaire en attente de relecture', function () {
     $this->post(route('commentaires.depot', $this->article), unCommentaire())
         ->assertRedirect(route('actualites.detail', $this->article).'#commentaires');
 
     $commentaire = Commentaire::first();
 
-    expect($commentaire->statut)->toBe(Commentaire::PUBLIE)
+    expect($commentaire->statut)->toBe(Commentaire::EN_ATTENTE)
         ->and($commentaire->motif_de_mise_en_attente)->toBeNull();
 
     $this->get(route('actualites.detail', $this->article))
-        ->assertSee('Awa Koné', false);
+        ->assertDontSee('Awa Koné', false);
+});
+
+/*
+ * Et le visiteur doit le SAVOIR. Un commentaire qui n'apparait pas, sans un
+ * mot, passe pour une panne — et il le redepose.
+ */
+it('annonce au visiteur que son commentaire sera relu', function () {
+    $this->post(route('commentaires.depot', $this->article), unCommentaire())
+        ->assertSessionHas('commentaire', fn (string $message) => str_contains($message, 'avant d’être publié'));
 });
 
 /**

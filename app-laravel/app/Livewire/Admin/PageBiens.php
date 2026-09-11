@@ -53,7 +53,9 @@ class PageBiens extends Component
         'choix_toutes_pieces' => ['intitule' => 'Choix « toutes pièces »', 'defaut' => 'Toutes pièces'],
         'libelle_surface' => ['intitule' => 'Libellé du filtre « surface »', 'defaut' => 'Surface (m²)'],
         'choix_toutes_surfaces' => ['intitule' => 'Choix « toutes surfaces »', 'defaut' => 'Toutes surfaces'],
-        'libelle_bouton' => ['intitule' => 'Libellé du bouton de recherche', 'defaut' => 'Rechercher le bien idéal'],
+        // Le « bouton de recherche » a ete retire du catalogue : il ne cherchait
+        // rien et vidait les filtres. Le reglage qui le nommait part avec lui —
+        // un champ qui ne pilote plus rien donne le sentiment d'avoir agi.
         'onglet_tous' => ['intitule' => 'Onglet « tous »', 'defaut' => 'Tous'],
     ];
 
