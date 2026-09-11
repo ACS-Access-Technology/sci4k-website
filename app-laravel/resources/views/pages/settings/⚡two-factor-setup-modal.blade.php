@@ -235,11 +235,26 @@ new class extends Component {
                                 <div class="size-8 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600 dark:border-zinc-600 dark:border-t-zinc-200"></div>
                             </div>
                         @else
-                            <div x-data class="flex items-center justify-center h-full p-4">
-                                <div
-                                    class="bg-white p-3 rounded"
-                                    :style="($store.appearance.value === 'dark' || ($store.appearance.value === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) ? 'filter: invert(1) brightness(1.5)' : ''"
-                                >
+                            {{-- LE CODE N'EST PAS INVERSE EN THEME SOMBRE.
+
+                                 Le gabarit herite du starter kit posait ici
+                                 « filter: invert(1) brightness(1.5) » des que le
+                                 theme sombre etait actif, pour accorder le code a
+                                 l'habillage. Le resultat s'affichait en negatif :
+                                 modules clairs sur fond noir.
+
+                                 Or la norme QR suppose des modules SOMBRES sur
+                                 fond CLAIR, et un code inverse est refuse par la
+                                 plupart des lecteurs — dont les applications
+                                 d'authentification. L'habillage passait avant la
+                                 fonction, et la fonction ne marchait plus.
+
+                                 « bg-white » suffit : le code garde son fond clair
+                                 dans les deux themes, ce qui lui fournit aussi la
+                                 marge tranquille que la norme exige autour du
+                                 motif. --}}
+                            <div class="flex items-center justify-center h-full p-4">
+                                <div class="bg-white p-3 rounded">
                                     {!! $qrCodeSvg !!}
                                 </div>
                             </div>
