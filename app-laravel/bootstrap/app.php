@@ -10,6 +10,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Sentry\Laravel\Integration;
 use Spatie\Permission\Middleware\RoleMiddleware;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -83,4 +84,26 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        // La page « introuvable » doit repondre dans la langue de l'adresse.
+        //
+        // AppliqueLangue ne peut pas s'en charger : il lit le NOM de la route
+        // en cours, et une adresse introuvable n'en a aucune. Le middleware du
+        // groupe « web » ne tourne d'ailleurs pas du tout ici, l'exception
+        // etant levee par le routeur avant qu'il n'y arrive. Sans cette ligne,
+        // /en/whatever rendait une page en francais a un visiteur anglais.
+        //
+        // Le segment se lit donc sur l'adresse elle-meme — le seul
+        // renseignement disponible a ce stade. La vue est ensuite resolue par
+        // Laravel comme d'habitude.
+        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return null;
+            }
+
+            $segments = explode('/', trim($request->path(), '/'));
+            app()->setLocale($segments[0] === 'en' ? 'en' : 'fr');
+
+            return null;
+        });
     })->create();

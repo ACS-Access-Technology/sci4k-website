@@ -1202,5 +1202,9 @@
     "Cumul des visiteurs de chaque jour, et non un nombre de personnes.": "A running total of each day’s visitors, not a count of people.",
     "Nombre de pièces": "Number of rooms",
     "Trier les biens": "Sort properties",
-    "Choisir une image": "Choose an image"
+    "Choisir une image": "Choose an image",
+    "Cette page est introuvable": "Page not found",
+    "Cette adresse ne correspond à aucune page du site.": "This address does not match any page on the site.",
+    "L’adresse demandée ne correspond à aucune page. Elle a peut-être changé, ou comporte une faute de frappe.": "The address you asked for matches no page. It may have changed, or contain a typo.",
+    "Vous pouvez reprendre par l’une de ces pages :": "You can pick up from one of these pages:"
 }

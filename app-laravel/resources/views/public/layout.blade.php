@@ -16,9 +16,13 @@
 @php($titrePage = trim($__env->yieldContent('titre', $titreParDefaut ?? '')))
 <title>{{ $titrePage === '' ? $nomDuSite : $titrePage.' — '.$nomDuSite }}</title>
 <meta name="description" content="@yield('description', $descriptionSite)">
-@unless ($autoriserIndexation)
-<meta name="robots" content="noindex, nofollow">
-@endunless
+{{-- Une page peut refuser l'indexation POUR ELLE SEULE, sans toucher au
+     reglage global : la page « introuvable » n'a pas de contenu propre et se
+     placerait dans les resultats a la place de la page cherchee. --}}
+@php($robots = trim($__env->yieldContent('robots', $autoriserIndexation ? '' : 'noindex, nofollow')))
+@if ($robots !== '')
+<meta name="robots" content="{{ $robots }}">
+@endif
 @if ($searchConsole)
 <meta name="google-site-verification" content="{{ $searchConsole }}">
 @endif

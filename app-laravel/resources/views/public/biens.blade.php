@@ -196,7 +196,17 @@
 </section>
 
 @if ($bienOuvert)
-  <div class="modal-overlay active" role="presentation" wire:click.self="fermerBien">
+  {{-- Echap ferme la fiche, au meme titre que la croix et le clic sur le fond.
+       Verifie en recette : elle ne fermait rien, et un visiteur au clavier
+       n'avait aucune sortie.
+
+       « .window » plutot qu'un ecouteur local : rien ne place le focus DANS la
+       fenetre a son ouverture — il reste sur le bouton « Voir la fiche »,
+       derriere elle. Un ecouteur pose sur la fenetre ne verrait donc jamais la
+       touche passer. --}}
+  <div class="modal-overlay active" role="presentation"
+       wire:click.self="fermerBien"
+       wire:keydown.escape.window="fermerBien">
     <div class="modal-container" role="dialog" aria-modal="true" aria-labelledby="bien-modal-titre" tabindex="-1">
       <button type="button" class="modal-close" wire:click="fermerBien" aria-label="{{ $tSite('libelle_fermer', __('Fermer')) }}">×</button>
       <div class="modal-header-badge">{{ $bienOuvert->statut_juridique ?: __('Fiche du bien') }}</div>

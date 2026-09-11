@@ -70,6 +70,11 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends rsync \
     && rm -rf /var/lib/apt/lists/*
 
+# Les reglages de PHP. L'image n'en charge aucun par defaut, et les valeurs
+# d'usine plafonnent un televersement a 2 Mo — sous ce que les ecrans
+# d'administration declarent accepter. Voir docker/php.ini.
+COPY docker/php.ini /usr/local/etc/php/conf.d/sci4k.ini
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
