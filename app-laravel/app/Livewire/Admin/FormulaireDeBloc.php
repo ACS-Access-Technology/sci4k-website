@@ -249,7 +249,7 @@ abstract class FormulaireDeBloc extends Component
 
             if ($description['bilingue'] ?? false) {
                 $regles['valeurs.'.$nom.'_fr'] = $propres;
-                $regles['valeurs.'.$nom.'_en'] = $propres;
+                $regles['valeurs.'.$nom.'_en'] = self::sansObligation($propres);
             } else {
                 $regles['valeurs.'.$nom] = $propres;
             }
@@ -332,7 +332,7 @@ abstract class FormulaireDeBloc extends Component
             $this->valeurs[$nom.'_en'] = $en;
         }
 
-        $this->validate();
+        $this->validerEnMontrantLaLangueFautive();
 
         // Voir clesDeclarees() : on ne garde que les colonnes de cet ecran.
         $donnees = array_intersect_key($this->valeurs, array_flip($this->clesDeclarees()));

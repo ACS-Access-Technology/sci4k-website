@@ -90,13 +90,38 @@ it('charge les valeurs existantes a l edition', function () {
         ->assertSet('titreEn', 'Already written');
 });
 
-it('refuse un enregistrement sans titre anglais', function () {
+/*
+ * L'ANGLAIS N'EST PLUS EXIGE — ce test verrouillait la regle inverse.
+ *
+ * Article lit ses textes par TraduitParColonnes, qui replie sur le francais
+ * des que la colonne anglaise est vide : un article redige en francais seul
+ * s'affiche donc dans les deux langues, en francais. L'exigence portee ici
+ * reposait sur la traduction automatique, et devenait un mur des qu'aucune cle
+ * DeepL n'etait posee — le message d'erreur atterrissant qui plus est dans
+ * l'onglet anglais, masque. Voir RemplitParTraduction::sansObligation().
+ */
+it('accepte un enregistrement sans titre anglais', function () {
     formulaireRempli(
         Livewire::actingAs($this->editeur)->test(ArticleFormulaire::class),
-        ['slug' => 'incomplet', 'titreEn' => '']
+        ['slug' => 'sans-anglais', 'titreEn' => '']
     )
         ->call('enregistrer')
-        ->assertHasErrors(['titreEn' => 'required']);
+        ->assertHasNoErrors();
+
+    expect(Article::where('slug', 'sans-anglais')->first()->titre('en'))->toBe('Titre français');
+});
+
+/*
+ * Le francais, lui, reste exige : le repli ne va que dans un sens, et un titre
+ * saisi en anglais seul laisserait la page francaise vide.
+ */
+it('refuse un enregistrement sans titre francais', function () {
+    formulaireRempli(
+        Livewire::actingAs($this->editeur)->test(ArticleFormulaire::class),
+        ['slug' => 'incomplet', 'titreFr' => '']
+    )
+        ->call('enregistrer')
+        ->assertHasErrors(['titreFr' => 'required']);
 
     expect(Article::count())->toBe(0);
 });

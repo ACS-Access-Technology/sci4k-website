@@ -1049,6 +1049,7 @@
     "Vous ne pouvez pas supprimer votre propre compte.": "You cannot delete your own account.",
     "Vous ne trouvez pas votre réponse ?": "Can't find your answer?",
     "Vous pouvez ne remplir qu'une langue : l'autre sera traduite à l'enregistrement. Un texte déjà saisi n'est jamais remplacé.": "You may fill in one language only: the other is translated when you save. Text you have already written is never replaced.",
+    "L'anglais est facultatif : laissé vide, c'est le texte français qui s'affiche sur le site anglais. Le français, lui, est obligatoire.": "English is optional: left empty, the French text is what appears on the English site. French, however, is required.",
     "Vue d'ensemble de l'activité du site SCI4K": "Overview of activity on the SCI4K site",
     "Vues": "Views",
     "Vues cumulées": "Total views",

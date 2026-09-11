@@ -233,7 +233,10 @@ abstract class EditionGroupee extends Component
         foreach (array_keys($this->lignes) as $cle) {
             foreach ($this->champsBilingues() as $champ) {
                 $regles["lignes.$cle.{$champ}_fr"] = $this->reglesDuChamp($champ);
-                $regles["lignes.$cle.{$champ}_en"] = $this->reglesDuChamp($champ);
+                // Voir sansObligation() : l'anglais laisse vide retombe sur le
+                // francais a l'affichage, et l'exiger rendait ces ecrans
+                // impossibles a enregistrer sans traducteur configure.
+                $regles["lignes.$cle.{$champ}_en"] = self::sansObligation($this->reglesDuChamp($champ));
             }
 
             foreach ($this->champsSimples() as $champ => $regle) {
@@ -304,7 +307,7 @@ abstract class EditionGroupee extends Component
         // vu une erreur technique la ou il venait simplement de tout retirer.
         // Meme garde que Referentiels::enregistrer().
         if ($this->rules() !== []) {
-            $this->validate();
+            $this->validerEnMontrantLaLangueFautive();
         }
 
         // Les identifiants a effacer viennent du navigateur comme le reste :

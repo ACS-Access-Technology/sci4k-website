@@ -156,7 +156,22 @@ it('ne remplit qu un champ vide, laissant les autres intacts', function () {
     expect($article->contenu_en)->toBe('[en] Contenu');
 });
 
-it('refuse l enregistrement et le dit quand la traduction est indisponible', function () {
+/*
+ * SANS SERVICE DE TRADUCTION, L'ENREGISTREMENT PASSE QUAND MEME.
+ *
+ * Ce test verrouillait l'inverse : « refuse l'enregistrement et le dit ». Il
+ * disait vrai sur le refus et faux sur le « le dit » — l'erreur atterrissait
+ * sur titreEn, c'est-a-dire dans l'onglet anglais, que les trois ecrans de
+ * saisie bilingue rendent masque. L'editeur voyait un bouton sans effet.
+ *
+ * Constate en production : l'encart d'annonce de l'accueil est reste
+ * impossible a modifier tant que la regle a tenu.
+ *
+ * Le repli de TraduitParColonnes rend ce refus inutile : le francais seul
+ * s'affiche dans les deux langues. La traduction automatique reste un confort,
+ * elle n'est plus une condition pour publier.
+ */
+it('enregistre le francais seul quand la traduction est indisponible', function () {
     traducteurFactice(disponible: false);
 
     Livewire::actingAs($this->editeur)
@@ -168,9 +183,9 @@ it('refuse l enregistrement et le dit quand la traduction est indisponible', fun
         ->set('resumeFr', 'Résumé')
         ->set('contenuFr', 'Contenu')
         ->call('enregistrer')
-        ->assertHasErrors(['titreEn']);
+        ->assertHasNoErrors();
 
-    expect(Article::count())->toBe(0);
+    expect(Article::where('slug', 'sans-service')->first()->titre('en'))->toBe('Titre');
 });
 
 it('n appelle pas le service quand rien ne manque', function () {

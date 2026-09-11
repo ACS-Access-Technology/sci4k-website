@@ -29,9 +29,16 @@
         </div>
     </div>
 
+    {{-- Ce que devient un onglet laisse vide. Sans ce rappel, l'editeur ne
+         pouvait que le deviner — et quand la traduction automatique n'est pas
+         configuree, il n'avait meme plus l'encadre bleu pour l'y aider. --}}
     @if ($traductionActive)
         <p class="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 dark:border-sky-800 dark:bg-sky-950 dark:text-sky-100">
             {{ __("Vous pouvez ne remplir qu'une langue : l'autre sera traduite à l'enregistrement. Un texte déjà saisi n'est jamais remplacé.") }}
+        </p>
+    @else
+        <p class="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 dark:border-sky-800 dark:bg-sky-950 dark:text-sky-100">
+            {{ __("L'anglais est facultatif : laissé vide, c'est le texte français qui s'affiche sur le site anglais. Le français, lui, est obligatoire.") }}
         </p>
     @endif
 

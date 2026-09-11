@@ -148,12 +148,16 @@ class ArticleFormulaire extends Component
             'datePublication' => ['required', 'date'],
             'statut' => ['required', 'in:brouillon,publie'],
             'commentairesOuverts' => ['boolean'],
+            // L'anglais n'est pas exige : Article lit ses textes par
+            // TraduitParColonnes, qui replie sur le francais des que la colonne
+            // anglaise est vide. Voir sansObligation() pour le raisonnement et
+            // pour la panne que cette exigence a causee.
             'titreFr' => ['required', 'string', 'max:190'],
-            'titreEn' => ['required', 'string', 'max:190'],
+            'titreEn' => ['nullable', 'string', 'max:190'],
             'resumeFr' => ['required', 'string'],
-            'resumeEn' => ['required', 'string'],
+            'resumeEn' => ['nullable', 'string'],
             'contenuFr' => ['required', 'string'],
-            'contenuEn' => ['required', 'string'],
+            'contenuEn' => ['nullable', 'string'],
             'metaDescriptionFr' => ['nullable', 'string', 'max:160'],
             'metaDescriptionEn' => ['nullable', 'string', 'max:160'],
             'couverture' => ['nullable', 'image', 'max:4096'],
@@ -219,7 +223,7 @@ class ArticleFormulaire extends Component
         // designe les champs restes vides.
         $this->remplirParTraductionCeQuiEstVide();
 
-        $this->validate();
+        $this->validerEnMontrantLaLangueFautive();
 
         $couverture = $this->resoudreCouverture();
 
