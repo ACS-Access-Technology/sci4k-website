@@ -63,7 +63,7 @@
                                         'email' => 'email',
                                         default => 'text',
                                     } }}"
-                           wire:model="valeurs.{{ $nom }}" autocomplete="off" class="{{ $classeChamp }}">
+                           wire:model="valeurs.{{ $nom }}" autocomplete="off" data-1p-ignore data-lpignore="true" class="{{ $classeChamp }}">
                 @endif
 
                 @isset($description['aide'])
@@ -147,9 +147,9 @@
                         </span>
 
                         @if (($description['type'] ?? 'texte') === 'zone')
-                            <textarea wire:model="valeurs.{{ $nom }}_{{ $code }}" rows="4" autocomplete="off" class="{{ $classeChamp }}"></textarea>
+                            <textarea wire:model="valeurs.{{ $nom }}_{{ $code }}" rows="4" autocomplete="off" data-1p-ignore data-lpignore="true" class="{{ $classeChamp }}"></textarea>
                         @else
-                            <input type="text" wire:model="valeurs.{{ $nom }}_{{ $code }}" autocomplete="off" class="{{ $classeChamp }}">
+                            <input type="text" wire:model="valeurs.{{ $nom }}_{{ $code }}" autocomplete="off" data-1p-ignore data-lpignore="true" class="{{ $classeChamp }}">
                         @endif
 
                         @isset($description['aide'])

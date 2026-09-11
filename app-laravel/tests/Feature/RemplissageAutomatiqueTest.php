@@ -64,6 +64,17 @@ it('declare autocomplete sur chaque champ de chaque onglet', function () {
             // prendrait un second argument pour un second motif a CHERCHER.
             expect(str_contains($balise, 'autocomplete='))
                 ->toBeTrue("Onglet « {$onglet} » : un champ sans autocomplete rouvre le chemin de la fuite.\n".$balise);
+
+            // 1Password et LastPass IGNORENT autocomplete="off" — c'est assume
+            // de leur part. Ils honorent ces deux marqueurs-la, qui leur disent
+            // que le champ n'est pas un identifiant. Sans eux, la protection ne
+            // vaut que pour les navigateurs.
+            if (str_contains($balise, 'type="password"')) {
+                continue;
+            }
+
+            expect(str_contains($balise, 'data-1p-ignore') && str_contains($balise, 'data-lpignore'))
+                ->toBeTrue("Onglet « {$onglet} » : un champ qu'un gestionnaire de mots de passe remplira quand meme.\n".$balise);
         }
     }
 });

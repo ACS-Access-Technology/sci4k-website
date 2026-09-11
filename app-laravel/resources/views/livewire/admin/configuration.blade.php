@@ -94,7 +94,7 @@
                     <span class="text-sm font-medium">{{ $description['intitule'] }}</span>
 
                     @if ($type === 'zone')
-                        <textarea wire:model="valeurs.{{ $cle }}" rows="3" autocomplete="off" class="{{ $classeChamp }}"></textarea>
+                        <textarea wire:model="valeurs.{{ $cle }}" rows="3" autocomplete="off" data-1p-ignore data-lpignore="true" class="{{ $classeChamp }}"></textarea>
                     @elseif ($type === 'liste')
                         <select wire:model="valeurs.{{ $cle }}" class="{{ $classeChamp }}">
                             @foreach ($description['choix'] as $valeur => $libelle)
@@ -112,7 +112,7 @@
                                             'courriel' => 'email',
                                             default => 'text',
                                         } }}"
-                               wire:model="valeurs.{{ $cle }}" autocomplete="off" class="{{ $classeChamp }}">
+                               wire:model="valeurs.{{ $cle }}" autocomplete="off" data-1p-ignore data-lpignore="true" class="{{ $classeChamp }}">
                     @endif
 
                     @isset($description['aide'])

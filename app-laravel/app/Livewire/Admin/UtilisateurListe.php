@@ -125,7 +125,32 @@ class UtilisateurListe extends Component
         ));
 
         $this->panneauInvitation = false;
-        $this->message = __('Invitation envoyée à :adresse.', ['adresse' => $compte->email]);
+
+        // ON NE DIT PAS AVOIR ENVOYE CE QU'ON N'A PAS ENVOYE.
+        //
+        // Tant que « Serveur SMTP » n'est pas renseigne, Laravel ecrit les
+        // courriels dans le journal au lieu de les remettre — comportement
+        // voulu pour un environnement d'essai. L'ecran affichait pourtant
+        // « Invitation envoyee », sans reserve : l'administrateur attendait une
+        // reponse qui ne pouvait pas venir, et cherchait la panne du mauvais
+        // cote. C'est arrive.
+        //
+        // Le compte, lui, est bel et bien cree : ce n'est pas un echec, c'est
+        // une remise qui n'a pas eu lieu.
+        $this->message = $this->messagerieRemetVraiment()
+            ? __('Invitation envoyée à :adresse.', ['adresse' => $compte->email])
+            : __('Compte créé pour :adresse, mais AUCUN courriel n’est parti : la messagerie n’est pas configurée. Renseignez « Serveur SMTP » dans Configuration → Messagerie, puis renvoyez l’invitation.', ['adresse' => $compte->email]);
+    }
+
+    /**
+     * La messagerie remet-elle vraiment, ou se contente-t-elle d'ecrire ?
+     *
+     * « log » ecrit dans le journal, « array » garde en memoire : aucun des
+     * deux ne fait sortir un courriel du serveur.
+     */
+    protected function messagerieRemetVraiment(): bool
+    {
+        return ! in_array(config('mail.default'), ['log', 'array'], true);
     }
 
     /* --------------------------------------------------- actions */
@@ -206,7 +231,11 @@ class UtilisateurListe extends Component
             (string) auth()->user()?->name,
         ));
 
-        $this->message = __('Invitation renvoyée à :adresse.', ['adresse' => $compte->email]);
+        // Meme reserve qu'a la premiere invitation : un renvoi qui ne part pas
+        // doit le dire, sans quoi l'administrateur reessaie indefiniment.
+        $this->message = $this->messagerieRemetVraiment()
+            ? __('Invitation renvoyée à :adresse.', ['adresse' => $compte->email])
+            : __('Aucun courriel n’est parti : la messagerie n’est pas configurée. Renseignez « Serveur SMTP » dans Configuration → Messagerie.');
     }
 
     public function supprimer(int $id): void

@@ -1216,5 +1216,7 @@
     "Déposé depuis le formulaire du site.": "Sent from the site's form.",
     "Invisible sous l’article tant qu’il n’est pas validé.": "Hidden under the article until approved.",
     ":nombre photo ajoutée, pas encore enregistrée|:nombre photos ajoutées, pas encore enregistrées": ":nombre photo added, not saved yet|:nombre photos added, not saved yet",
-    "Cliquez sur « Enregistrer » pour les conserver.": "Click “Save” to keep them."
+    "Cliquez sur « Enregistrer » pour les conserver.": "Click “Save” to keep them.",
+    "Compte créé pour :adresse, mais AUCUN courriel n’est parti : la messagerie n’est pas configurée. Renseignez « Serveur SMTP » dans Configuration → Messagerie, puis renvoyez l’invitation.": "Account created for :adresse, but NO email was sent: mail is not configured. Fill in “SMTP server” under Configuration → Mail, then resend the invitation.",
+    "Aucun courriel n’est parti : la messagerie n’est pas configurée. Renseignez « Serveur SMTP » dans Configuration → Messagerie.": "No email was sent: mail is not configured. Fill in “SMTP server” under Configuration → Mail."
 }
