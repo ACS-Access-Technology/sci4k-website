@@ -1214,5 +1214,7 @@
     ":nombre commentaire en attente de relecture|:nombre commentaires en attente de relecture": ":nombre comment awaiting review|:nombre comments awaiting review",
     "Un visiteur attend d’être rappelé.": "A visitor is waiting for a call back.",
     "Déposé depuis le formulaire du site.": "Sent from the site's form.",
-    "Invisible sous l’article tant qu’il n’est pas validé.": "Hidden under the article until approved."
+    "Invisible sous l’article tant qu’il n’est pas validé.": "Hidden under the article until approved.",
+    ":nombre photo ajoutée, pas encore enregistrée|:nombre photos ajoutées, pas encore enregistrées": ":nombre photo added, not saved yet|:nombre photos added, not saved yet",
+    "Cliquez sur « Enregistrer » pour les conserver.": "Click “Save” to keep them."
 }

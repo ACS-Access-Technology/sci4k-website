@@ -297,6 +297,29 @@
                                  sans que l'editeur ait a s'en soucier. --}}
                             <input type="file" wire:model="nouvellesPhotos" multiple accept="image/*"
                                    data-sans-recadrage class="mt-1 text-sm">
+
+                            <div wire:loading wire:target="nouvellesPhotos" class="mt-2 text-xs text-zinc-500">{{ __('Envoi en cours…') }}</div>
+
+                            {{-- L'APERCU DE CE QUI VIENT D'ETRE CHOISI.
+                                 Sans lui, choisir des fichiers ne produisait aucun
+                                 retour visible : l'ecran ne montrait que les photos
+                                 deja enregistrees. L'editeur choisissait, ne voyait
+                                 rien changer, et concluait a une panne — alors que
+                                 ses fichiers etaient bel et bien montes et
+                                 n'attendaient qu'un enregistrement. --}}
+                            @if ($nouvellesPhotos && ! $errors->has('nouvellesPhotos.*'))
+                                <div class="mt-3 rounded-lg border border-dashed border-zinc-300 p-3 dark:border-zinc-600">
+                                    <p class="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                                        {{ trans_choice(':nombre photo ajoutée, pas encore enregistrée|:nombre photos ajoutées, pas encore enregistrées', count($nouvellesPhotos), ['nombre' => count($nouvellesPhotos)]) }}
+                                    </p>
+                                    <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{{ __('Cliquez sur « Enregistrer » pour les conserver.') }}</p>
+                                    <div class="mt-2 flex flex-wrap gap-2">
+                                        @foreach ($nouvellesPhotos as $enAttente)
+                                            <img src="{{ $enAttente->temporaryUrl() }}" alt="" class="h-16 w-24 rounded object-cover">
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
                             <span class="mt-1 block text-xs text-zinc-500">{{ __('JPG ou PNG. Les images trop lourdes sont réduites automatiquement.') }}</span>
                             @error('nouvellesPhotos.*') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
                         </label>

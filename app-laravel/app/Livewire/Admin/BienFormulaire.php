@@ -11,6 +11,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -298,7 +299,17 @@ class BienFormulaire extends Component
 
         $this->remplirParTraductionCeQuiEstVide();
 
-        $this->validate();
+        // CE FORMULAIRE A QUATRE ONGLETS, et un refus portant sur un champ d'un
+        // autre onglet s'affichait dans une zone masquee. L'editeur restait
+        // devant un bouton « Enregistrer » sans effet, sans rien pour le
+        // renseigner — le meme piege que les onglets de langue.
+        try {
+            $this->validate();
+        } catch (ValidationException $erreur) {
+            $this->ouvrirLOngletFautif(array_keys($erreur->validator->errors()->messages()));
+
+            throw $erreur;
+        }
 
         $donnees = [
             'reference' => $this->reference ?: null,
@@ -365,6 +376,47 @@ class BienFormulaire extends Component
     protected function enLignes(string $texte): array
     {
         return array_values(array_filter(array_map('trim', preg_split('/\R/u', $texte) ?: []), static fn (string $ligne): bool => $ligne !== ''));
+    }
+
+    /**
+     * Ouvre l'onglet qui porte une erreur, quand l'onglet ouvert n'en porte aucune.
+     *
+     * On ne bascule QUE si l'onglet ouvert est sain : sinon l'editeur perdrait
+     * de vue l'erreur qu'il est en train de lire.
+     *
+     * @param  list<string>  $champs
+     */
+    private function ouvrirLOngletFautif(array $champs): void
+    {
+        $ongletDuChamp = [
+            'general' => ['reference', 'slug', 'titreFr', 'titreEn', 'sousTitreFr', 'sousTitreEn',
+                'accrocheFr', 'accrocheEn', 'descriptionFr', 'descriptionEn', 'type', 'offre',
+                'zone', 'quartier', 'statut', 'dateMiseEnLigne', 'enAvant', 'urgent'],
+            'caracteristiques' => ['statutJuridique', 'numeroTitre', 'prix', 'prixUnite',
+                'surfaceHabitable', 'surfaceTerrain', 'nombrePieces', 'nombreChambres',
+                'nombreSallesEau', 'equipementsFr', 'equipementsEn'],
+            'seo' => ['metaTitreFr', 'metaTitreEn', 'metaDescriptionFr', 'metaDescriptionEn'],
+            'photos' => ['nouvellesPhotos'],
+        ];
+
+        $enFaute = [];
+
+        foreach ($champs as $champ) {
+            // « nouvellesPhotos.0 » designe l'onglet de « nouvellesPhotos ».
+            $racine = explode('.', $champ)[0];
+
+            foreach ($ongletDuChamp as $onglet => $siens) {
+                if (in_array($racine, $siens, true)) {
+                    $enFaute[] = $onglet;
+                }
+            }
+        }
+
+        if ($enFaute === [] || in_array($this->onglet, $enFaute, true)) {
+            return;
+        }
+
+        $this->onglet = $enFaute[0];
     }
 
     /**
