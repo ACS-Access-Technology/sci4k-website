@@ -24,11 +24,11 @@
             <label class="block">
                 <span class="text-sm font-medium">{{ __($decrit['intitule']) }}</span>
                 @if ($decrit['long'] ?? false)
-                    <textarea wire:model="textes.{{ $nom }}_{{ $langueActive }}" rows="3"
+                    <textarea wire:model="textes.{{ $nom }}_{{ $langueActive }}" rows="3" autocomplete="off"
                               placeholder="{{ $langueActive === 'fr' ? $decrit['defaut'] : __($decrit['defaut'], [], 'en') }}"
                               class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"></textarea>
                 @else
-                    <input wire:model="textes.{{ $nom }}_{{ $langueActive }}"
+                    <input wire:model="textes.{{ $nom }}_{{ $langueActive }}" autocomplete="off"
                            placeholder="{{ $langueActive === 'fr' ? $decrit['defaut'] : __($decrit['defaut'], [], 'en') }}"
                            class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950">
                 @endif

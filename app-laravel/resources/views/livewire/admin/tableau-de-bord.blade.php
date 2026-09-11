@@ -1,8 +1,14 @@
 @php($tons = [
-    'primaire' => 'bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300',
-    'succes' => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
-    'info' => 'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300',
-    'alerte' => 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
+    {{-- UNE SEULE TEINTE, NEUTRE.
+
+         Les quatre tuiles portaient quatre couleurs — bleu, vert, violet,
+         ambre — heritees de la maquette. Elles ne disaient rien : ni gravite,
+         ni famille, ni etat. Un code couleur qui ne code rien fatigue l'oeil et
+         devalue celui qui, ailleurs dans l'ecran, en porte un vrai. --}}
+    'primaire' => 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300',
+    'succes' => 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300',
+    'info' => 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300',
+    'alerte' => 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300',
 ])
 @php($tonsEcheance = [
     'urgent' => 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',

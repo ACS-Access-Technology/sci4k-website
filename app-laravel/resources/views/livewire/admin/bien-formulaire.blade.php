@@ -287,8 +287,17 @@
                     @if ($peutEcrire && $photos->count() < $photosMax)
                         <label class="mt-4 block">
                             <span class="text-sm font-medium">{{ __('Ajouter des photos') }}</span>
-                            <input type="file" wire:model="nouvellesPhotos" multiple accept="image/*" class="mt-1 text-sm">
-                            <span class="mt-1 block text-xs text-zinc-500">{{ __('JPG ou PNG, 2 Mo au maximum par image.') }}</span>
+                            {{-- data-sans-recadrage : le recadreur produit un CARRE.
+                                 C'est ce qu'il faut pour un portrait ou une
+                                 vignette, jamais pour la photo d'un bien, que la
+                                 galerie affiche a ses proportions d'origine.
+                                 Ces fichiers passent donc par la simple
+                                 reduction — bord le plus long borne, proportions
+                                 gardees — qui les ramene aussi sous la limite
+                                 sans que l'editeur ait a s'en soucier. --}}
+                            <input type="file" wire:model="nouvellesPhotos" multiple accept="image/*"
+                                   data-sans-recadrage class="mt-1 text-sm">
+                            <span class="mt-1 block text-xs text-zinc-500">{{ __('JPG ou PNG. Les images trop lourdes sont réduites automatiquement.') }}</span>
                             @error('nouvellesPhotos.*') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
                         </label>
                     @endif

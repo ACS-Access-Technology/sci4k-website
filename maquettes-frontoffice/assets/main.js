@@ -72,6 +72,16 @@ window.handleVisiteSubmit = function (event) {
   var confirmation = formulaire.querySelector('[data-visite-confirmation]')
     || document.getElementById('visiteConfirmation');
 
+  /* La zone sert au succes ET au refus. On retient le texte d'origine des le
+     premier passage : sans cela, un envoi reussi apres un refus reafficherait
+     le message du refus. */
+  var messageDeSucces = confirmation
+    ? (confirmation.getAttribute('data-message-succes') || confirmation.textContent.trim())
+    : '';
+  if (confirmation && !confirmation.getAttribute('data-message-succes')) {
+    confirmation.setAttribute('data-message-succes', messageDeSucces);
+  }
+
   fetch('/visites', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
@@ -88,12 +98,34 @@ window.handleVisiteSubmit = function (event) {
     /* La confirmation n'apparait qu'apres l'accord du serveur : c'est un
        rendez-vous, pas une inscription sans consequence. Annoncer un succes
        qui n'a pas eu lieu ferait attendre un rappel qui ne viendra pas. */
-    if (!reponse.ok) throw new Error('refus');
-    if (confirmation) confirmation.style.display = 'block';
-    formulaire.reset();
-  }).catch(function () {
+    if (reponse.ok) {
+      if (confirmation) {
+        confirmation.textContent = messageDeSucces;
+        confirmation.style.display = 'block';
+      }
+      formulaire.reset();
+      return;
+    }
+
+    /* LE SERVEUR DIT POURQUOI IL REFUSE — on le repete au visiteur.
+       Un creneau deja passe, un telephone trop long, un envoi trop rapide :
+       chacun a son message, et le site les remplacait tous par « Envoi
+       impossible pour le moment ». Le visiteur corrigeait au hasard, ou
+       renoncait en croyant le site casse. */
+    return reponse.json().catch(function () { return null; }).then(function (corps) {
+      var message = corps && corps.message ? corps.message : null;
+
+      if (!message && reponse.status === 429) {
+        message = 'Trop de demandes en peu de temps. Patientez une minute avant de réessayer.';
+      }
+
+      throw new Error(message || 'Envoi impossible pour le moment. Appelez-nous au +225 07 06 16 50 29.');
+    });
+  }).catch(function (erreur) {
     if (confirmation) {
-      confirmation.textContent = 'Envoi impossible pour le moment. Appelez-nous au +225 07 06 16 50 29.';
+      confirmation.textContent = erreur && erreur.message
+        ? erreur.message
+        : 'Envoi impossible pour le moment. Appelez-nous au +225 07 06 16 50 29.';
       confirmation.style.display = 'block';
     }
   });
@@ -955,6 +987,23 @@ document.addEventListener('DOMContentLoaded', function () {
 /* ---- Page: Biens (biens.html) ---- */
 (function () {
   if (!document.body.classList.contains('page-biens')) return;
+
+  /* CE BLOC NE SERT PLUS QUE LA MAQUETTE D'ORIGINE.
+   *
+   * Le catalogue est desormais un composant Livewire : il filtre sur le
+   * serveur et ne rend plus ni #propertyGrid, ni #selectType, ni les autres
+   * identifiants que ce code interroge. Or il appelle filterProperties() au
+   * chargement — qui lisait donc la propriete « value » de null.
+   *
+   * L'exception remontait au niveau racine du script, et le navigateur
+   * ABANDONNE ALORS TOUT CE QUI SUIT dans le fichier. Le bouton flottant de
+   * contact, cable 240 lignes plus bas, n'etait jamais accroche : il
+   * s'affichait et ne s'ouvrait pas. Signale sur la page des biens.
+   *
+   * On sort donc des que le balisage d'origine est absent. La page conserve sa
+   * classe « page-biens » — elle sert au style — mais plus rien ici ne la
+   * concerne. */
+  if (!document.getElementById('propertyGrid')) return;
 
   function currentLang() {
     return (window.SCI4K_LANG && window.SCI4K_LANG.get()) || 'fr';

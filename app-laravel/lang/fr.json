@@ -226,5 +226,8 @@
     "Surface": "Surface",
     "Statut": "Statut",
     "Trier les biens": "Trier les biens",
-    "Choisir une image": "Choisir une image"
+    "Choisir une image": "Choisir une image",
+    ":nombre demande de visite à confirmer|:nombre demandes de visite à confirmer": ":nombre demande de visite à confirmer|:nombre demandes de visite à confirmer",
+    ":nombre message de contact non lu|:nombre messages de contact non lus": ":nombre message de contact non lu|:nombre messages de contact non lus",
+    ":nombre commentaire en attente de relecture|:nombre commentaires en attente de relecture": ":nombre commentaire en attente de relecture|:nombre commentaires en attente de relecture"
 }

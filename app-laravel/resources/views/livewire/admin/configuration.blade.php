@@ -7,7 +7,19 @@
 --}}
 @php($classeChamp = 'mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950')
 
-<form wire:submit="enregistrer" class="max-w-3xl space-y-6">
+{{-- autocomplete="off" SUR LE FORMULAIRE ET SUR CHAQUE CHAMP.
+
+     Cet ecran porte un champ type="password" — le mot de passe SMTP — au
+     milieu d'une vingtaine de champs texte. Le navigateur y reconnait la forme
+     d'un formulaire de connexion et remplit d'autorite les champs voisins avec
+     ce qu'il a en memoire.
+
+     Ce n'est pas une precaution theorique : en production, le mot de passe du
+     compte administrateur s'est ainsi retrouve dans « Sous-titre du pied de
+     page », donc affiche en clair sur toutes les pages publiques, et son
+     identifiant dans deux autres champs. Le champ mot de passe, lui, etait
+     protege ; la fuite est passee par ceux qui ne l'etaient pas. --}}
+<form wire:submit="enregistrer" autocomplete="off" class="max-w-3xl space-y-6">
 
     <x-admin.entete-page
         :titre="__('Configuration')"
@@ -82,7 +94,7 @@
                     <span class="text-sm font-medium">{{ $description['intitule'] }}</span>
 
                     @if ($type === 'zone')
-                        <textarea wire:model="valeurs.{{ $cle }}" rows="3" class="{{ $classeChamp }}"></textarea>
+                        <textarea wire:model="valeurs.{{ $cle }}" rows="3" autocomplete="off" class="{{ $classeChamp }}"></textarea>
                     @elseif ($type === 'liste')
                         <select wire:model="valeurs.{{ $cle }}" class="{{ $classeChamp }}">
                             @foreach ($description['choix'] as $valeur => $libelle)
@@ -100,7 +112,7 @@
                                             'courriel' => 'email',
                                             default => 'text',
                                         } }}"
-                               wire:model="valeurs.{{ $cle }}" class="{{ $classeChamp }}">
+                               wire:model="valeurs.{{ $cle }}" autocomplete="off" class="{{ $classeChamp }}">
                     @endif
 
                     @isset($description['aide'])

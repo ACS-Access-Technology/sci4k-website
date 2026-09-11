@@ -11,7 +11,11 @@
 --}}
 @php($classeChamp = 'mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950')
 
-<form wire:submit="enregistrer" class="max-w-3xl space-y-6">
+{{-- autocomplete="off" : un gestionnaire de mots de passe qui croit
+     reconnaitre un formulaire de connexion remplit d'autorite les champs
+     texte. En production, cela a depose le mot de passe administrateur dans un
+     champ affiche sur toutes les pages publiques. Voir configuration.blade.php. --}}
+<form wire:submit="enregistrer" autocomplete="off" class="max-w-3xl space-y-6">
 
     {{-- Le formulaire n'a ni titre de page ni fil d'Ariane : il est ouvert
          DANS une liste, elle-meme rendue depuis un ecran de page qui porte les
@@ -59,7 +63,7 @@
                                         'email' => 'email',
                                         default => 'text',
                                     } }}"
-                           wire:model="valeurs.{{ $nom }}" class="{{ $classeChamp }}">
+                           wire:model="valeurs.{{ $nom }}" autocomplete="off" class="{{ $classeChamp }}">
                 @endif
 
                 @isset($description['aide'])
@@ -143,9 +147,9 @@
                         </span>
 
                         @if (($description['type'] ?? 'texte') === 'zone')
-                            <textarea wire:model="valeurs.{{ $nom }}_{{ $code }}" rows="4" class="{{ $classeChamp }}"></textarea>
+                            <textarea wire:model="valeurs.{{ $nom }}_{{ $code }}" rows="4" autocomplete="off" class="{{ $classeChamp }}"></textarea>
                         @else
-                            <input type="text" wire:model="valeurs.{{ $nom }}_{{ $code }}" class="{{ $classeChamp }}">
+                            <input type="text" wire:model="valeurs.{{ $nom }}_{{ $code }}" autocomplete="off" class="{{ $classeChamp }}">
                         @endif
 
                         @isset($description['aide'])

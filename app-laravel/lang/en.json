@@ -1207,5 +1207,12 @@
     "Cette adresse ne correspond à aucune page du site.": "This address does not match any page on the site.",
     "L’adresse demandée ne correspond à aucune page. Elle a peut-être changé, ou comporte une faute de frappe.": "The address you asked for matches no page. It may have changed, or contain a typo.",
     "Vous pouvez reprendre par l’une de ces pages :": "You can pick up from one of these pages:",
-    "Brouillon et archive n'apparaissent pas sur le site public. Le brouillon n'est pas encore prêt ; l'archive a vécu et se retire.": "Drafts and archives do not appear on the public site. A draft is not ready yet; an archive has had its life and is withdrawn."
+    "Brouillon et archive n'apparaissent pas sur le site public. Le brouillon n'est pas encore prêt ; l'archive a vécu et se retire.": "Drafts and archives do not appear on the public site. A draft is not ready yet; an archive has had its life and is withdrawn.",
+    "JPG ou PNG. Les images trop lourdes sont réduites automatiquement.": "JPG or PNG. Oversized images are reduced automatically.",
+    ":nombre demande de visite à confirmer|:nombre demandes de visite à confirmer": ":nombre viewing request to confirm|:nombre viewing requests to confirm",
+    ":nombre message de contact non lu|:nombre messages de contact non lus": ":nombre unread contact message|:nombre unread contact messages",
+    ":nombre commentaire en attente de relecture|:nombre commentaires en attente de relecture": ":nombre comment awaiting review|:nombre comments awaiting review",
+    "Un visiteur attend d’être rappelé.": "A visitor is waiting for a call back.",
+    "Déposé depuis le formulaire du site.": "Sent from the site's form.",
+    "Invisible sous l’article tant qu’il n’est pas validé.": "Hidden under the article until approved."
 }

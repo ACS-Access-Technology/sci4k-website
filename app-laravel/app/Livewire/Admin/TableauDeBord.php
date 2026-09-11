@@ -5,10 +5,13 @@ namespace App\Livewire\Admin;
 use App\Models\ActiviteJournalisee;
 use App\Models\Article;
 use App\Models\ChiffreCle;
+use App\Models\Commentaire;
+use App\Models\DemandeDeVisite;
 use App\Models\Encart;
 use App\Models\EtapeProcessus;
 use App\Models\ImageDeFond;
 use App\Models\MembreEquipe;
+use App\Models\MessageDeContact;
 use App\Models\Partenaire;
 use App\Models\QuestionFaq;
 use App\Models\Service;
@@ -237,6 +240,45 @@ class TableauDeBord extends Component
     protected function aTraiter(): array
     {
         $aFaire = [];
+
+        // CE QUI ARRIVE DE L'EXTERIEUR PASSE EN TETE.
+        //
+        // Ce panneau ne suivait que la completude editoriale — brouillons,
+        // elements masques, textes sans version anglaise. Tout cela peut
+        // attendre. Ce qui ne peut pas attendre, c'est ce qu'un visiteur vient
+        // de deposer : une demande de visite qui dort trois jours derriere
+        // quatre rappels de traduction est une affaire perdue.
+        $visites = DemandeDeVisite::where('statut', DemandeDeVisite::A_CONFIRMER)->count();
+
+        if ($visites > 0) {
+            $aFaire[] = [
+                'texte' => trans_choice(':nombre demande de visite à confirmer|:nombre demandes de visite à confirmer', $visites, ['nombre' => $visites]),
+                'detail' => __('Un visiteur attend d’être rappelé.'),
+                'route' => 'admin.visites',
+            ];
+        }
+
+        $messages = MessageDeContact::where('statut', MessageDeContact::NOUVEAU)->count();
+
+        if ($messages > 0) {
+            $aFaire[] = [
+                'texte' => trans_choice(':nombre message de contact non lu|:nombre messages de contact non lus', $messages, ['nombre' => $messages]),
+                'detail' => __('Déposé depuis le formulaire du site.'),
+                'route' => 'admin.messages',
+            ];
+        }
+
+        // Depuis que tout commentaire arrive en attente, cette file ne se vide
+        // que si quelqu'un la regarde — et rien ne la signalait.
+        $commentaires = Commentaire::where('statut', Commentaire::EN_ATTENTE)->count();
+
+        if ($commentaires > 0) {
+            $aFaire[] = [
+                'texte' => trans_choice(':nombre commentaire en attente de relecture|:nombre commentaires en attente de relecture', $commentaires, ['nombre' => $commentaires]),
+                'detail' => __('Invisible sous l’article tant qu’il n’est pas validé.'),
+                'route' => 'admin.pages.actualites',
+            ];
+        }
 
         $brouillons = Article::where('statut', 'brouillon')->count();
 
