@@ -106,19 +106,23 @@
                     </span>
                 </label>
             @else
-                <label wire:key="champ-{{ $cle }}" class="block">
+                {{-- for/id plutot que la seule imbrication : envelopper un champ
+                     dans son <label> vaut association en HTML, mais les lecteurs
+                     d'ecran la restituent moins fidelement que le couple
+                     explicite, et certains l'ignorent. --}}
+                <label wire:key="champ-{{ $cle }}" for="reglage-{{ $cle }}" class="block">
                     <span class="text-sm font-medium">{{ $description['intitule'] }}</span>
 
                     @if ($type === 'zone')
-                        <textarea wire:model="valeurs.{{ $cle }}" rows="3" autocomplete="off" data-1p-ignore data-lpignore="true" class="{{ $classeChamp }}"></textarea>
+                        <textarea id="reglage-{{ $cle }}" wire:model="valeurs.{{ $cle }}" rows="3" autocomplete="off" data-1p-ignore data-lpignore="true" class="{{ $classeChamp }}"></textarea>
                     @elseif ($type === 'liste')
-                        <select wire:model="valeurs.{{ $cle }}" class="{{ $classeChamp }}">
+                        <select id="reglage-{{ $cle }}" wire:model="valeurs.{{ $cle }}" class="{{ $classeChamp }}">
                             @foreach ($description['choix'] as $valeur => $libelle)
                                 <option value="{{ $valeur }}">{{ $libelle }}</option>
                             @endforeach
                         </select>
                     @elseif ($type === 'secret')
-                        <input type="password" wire:model="valeurs.{{ $cle }}" autocomplete="new-password"
+                        <input type="password" id="reglage-{{ $cle }}" wire:model="valeurs.{{ $cle }}" autocomplete="new-password"
                                placeholder="{{ $this->secretEnregistre() ? __('Enregistré — laissez vide pour le conserver') : __('Aucun mot de passe enregistré') }}"
                                class="{{ $classeChamp }}">
                     @else
@@ -128,7 +132,7 @@
                                             'courriel' => 'email',
                                             default => 'text',
                                         } }}"
-                               wire:model="valeurs.{{ $cle }}" autocomplete="off" data-1p-ignore data-lpignore="true" class="{{ $classeChamp }}">
+                               id="reglage-{{ $cle }}" wire:model="valeurs.{{ $cle }}" autocomplete="off" data-1p-ignore data-lpignore="true" class="{{ $classeChamp }}">
                     @endif
 
                     @isset($description['aide'])

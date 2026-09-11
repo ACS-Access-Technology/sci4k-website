@@ -138,10 +138,14 @@ async function reduireSiTropLourde(fichier) {
     let image;
     try {
         image = await chargerImage(fichier);
-    } catch (e) {
+    } catch {
         // Illisible par le navigateur : on laisse passer, la validation du
         // serveur dira ce qui ne va pas. Refuser ici sans message serait
         // exactement le silence qu'on cherche a supprimer.
+        //
+        // Sans liaison sur le catch : l'exception ne nous apprend rien de plus
+        // que « cette image ne se decode pas », et une variable qu'on ne lit
+        // jamais laisse croire qu'on l'examine.
         return fichier;
     }
 
@@ -194,7 +198,7 @@ document.addEventListener('change', (event) => {
     // reduction, qui borne le bord le plus long sans toucher aux proportions.
     // Les ignorer tout a fait laissait partir des photos de plusieurs
     // megaoctets, que PHP jetait sans un mot.
-    const transformer = input.hasAttribute('data-sans-recadrage') ? reduireSiTropLourde : ouvrirRecadrage;
+    const transformer = input.dataset.sansRecadrage !== undefined ? reduireSiTropLourde : ouvrirRecadrage;
     const fichiers = [...input.files].filter((fichier) => fichier.type.startsWith('image/') && fichier.type !== 'image/svg+xml');
     if (!fichiers.length) return;
     event.stopImmediatePropagation();

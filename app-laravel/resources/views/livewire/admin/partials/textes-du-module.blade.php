@@ -25,14 +25,14 @@
      gardaient la liaison du module precedent. Voir configuration.blade.php,
      ou ce defaut a depose un mot de passe sur le site public. --}}
         @foreach ($description['textes'] as $nom => $decrit)
-            <label wire:key="texte-{{ $nom }}" class="block">
+            <label wire:key="texte-{{ $nom }}" for="texte-{{ $nom }}-{{ $langueActive }}" class="block">
                 <span class="text-sm font-medium">{{ __($decrit['intitule']) }}</span>
                 @if ($decrit['long'] ?? false)
-                    <textarea wire:model="textes.{{ $nom }}_{{ $langueActive }}" rows="3" autocomplete="off" data-1p-ignore data-lpignore="true"
+                    <textarea id="texte-{{ $nom }}-{{ $langueActive }}" wire:model="textes.{{ $nom }}_{{ $langueActive }}" rows="3" autocomplete="off" data-1p-ignore data-lpignore="true"
                               placeholder="{{ $langueActive === 'fr' ? $decrit['defaut'] : __($decrit['defaut'], [], 'en') }}"
                               class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"></textarea>
                 @else
-                    <input wire:model="textes.{{ $nom }}_{{ $langueActive }}" autocomplete="off" data-1p-ignore data-lpignore="true"
+                    <input id="texte-{{ $nom }}-{{ $langueActive }}" wire:model="textes.{{ $nom }}_{{ $langueActive }}" autocomplete="off" data-1p-ignore data-lpignore="true"
                            placeholder="{{ $langueActive === 'fr' ? $decrit['defaut'] : __($decrit['defaut'], [], 'en') }}"
                            class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950">
                 @endif

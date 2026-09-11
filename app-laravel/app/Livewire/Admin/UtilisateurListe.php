@@ -181,8 +181,39 @@ class UtilisateurListe extends Component
             // que sur un ecran qu'on va quitter.
             report($e);
 
-            return $e->getMessage();
+            return $this->raisonDuRefus($e->getMessage());
         }
+    }
+
+    /**
+     * Ce qu'on montre d'un refus : la reponse du serveur, et rien d'autre.
+     *
+     * Le message d'une exception de transport porte plus que cette reponse :
+     * il cite l'IDENTIFIANT employe. Vu pendant la configuration de Resend —
+     * « Failed to authenticate on SMTP server with username "resend"… ».
+     *
+     * Le rendre tel quel a l'ecran le met sur une capture, et les captures
+     * circulent : dans un ticket, dans une conversation. C'est ainsi qu'un
+     * secret sort, et deux l'ont deja fait sur ce projet.
+     *
+     * On garde donc ce qui renseigne — le code et le texte du serveur, « 550
+     * Invalid `to` field » — et on laisse le reste, qui ne dit rien a
+     * l'administrateur et beaucoup a qui lit par-dessus son epaule.
+     */
+    protected function raisonDuRefus(string $brut): string
+    {
+        // La reponse SMTP : trois chiffres suivis de son texte. On prend la
+        // DERNIERE, les transports imbriquant la reponse reelle dans leur
+        // propre message.
+        if (preg_match_all('/\b([45]\d{2})\s+([^"\n]{3,140})/', $brut, $trouves, PREG_SET_ORDER) > 0) {
+            $dernier = end($trouves);
+
+            return trim($dernier[1].' '.rtrim(trim($dernier[2]), '".'));
+        }
+
+        // Rien de reconnaissable : on borne, plutot que de deverser un message
+        // interne dont la longueur n'a pas de limite connue.
+        return Str::limit($brut, 160);
     }
 
     /**

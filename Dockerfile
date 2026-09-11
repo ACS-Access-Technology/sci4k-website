@@ -100,7 +100,10 @@ RUN ./tools/sync-frontoffice.sh
 RUN mkdir -p app-laravel/storage/framework/{cache,sessions,views} \
              app-laravel/storage/app/public \
              app-laravel/storage/logs \
-    && chmod -R 777 app-laravel/storage app-laravel/bootstrap/cache
+    # 775 et non 777 : le conteneur tourne sous root, qui possede ces dossiers,
+    # et le volume monte par la plateforme l'est aussi. Donner l'ecriture au
+    # reste du monde n'ouvrait donc rien d'utile — seulement un chemin de plus.
+    && chmod -R 775 app-laravel/storage app-laravel/bootstrap/cache
 
 ENV SERVER_NAME=:8080
 ENV SERVER_ROOT=/app/app-laravel/public
