@@ -91,7 +91,17 @@ COPY --from=ressources /construction/public/build ./app-laravel/public/build
 
 # Depose dans public/ les styles, le script, les images et les pages non encore
 # portees en Blade.
-RUN ./tools/sync-frontoffice.sh
+#
+# Le chmod n'est pas superflu. Git enregistre bien ce script en 100755, mais
+# « railway up » televerse le DOSSIER DE TRAVAIL, pas le depot : depuis
+# Windows, ou NTFS n'a pas de bit d'execution, le mode se perd en route et la
+# construction echouait sur « Permission denied ». Un deploiement partant d'un
+# clone git — la liaison GitHub, ou une machine Unix — n'a jamais montre le
+# defaut, ce qui le rendait invisible jusqu'ici.
+#
+# Et « chmod +x » plutot que « sh ./tools/... » : le script porte un shebang
+# bash et se sert de tableaux, que le dash de Debian ne comprend pas.
+RUN chmod +x ./tools/sync-frontoffice.sh && ./tools/sync-frontoffice.sh
 
 # Le disque du conteneur est jetable : storage/ doit venir d'un volume monte
 # par la plateforme, sinon les images televersees disparaissent au redeploiement.
