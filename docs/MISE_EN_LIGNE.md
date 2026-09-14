@@ -1,7 +1,9 @@
 # Mise en ligne
 
 Ce que le déploiement demande, dans l'ordre, et ce qu'il reste à obtenir de
-tiers. Établi le 7 septembre 2026 à partir de la branche `dev`.
+tiers. Établi le 7 septembre 2026 à partir de la branche `dev`, complété le
+14 septembre 2026 : sauvegarde de la base avant une migration destructive, et
+partage des rôles entre cette séquence et ce que le conteneur tient déjà.
 
 Le document sépare trois choses qui se confondent facilement : ce qu'il faut
 **commander**, ce qu'il faut **régler**, et ce qu'il faut **attendre de
@@ -89,6 +91,58 @@ téléchargeables.
 
 Les étapes 2, 3, 5, 6, 7 et 8 sont à rejouer à chaque mise à jour. L'étape 4
 ne se rejoue pas : elle écraserait la configuration en place.
+
+**Cette séquence est celle d'un hébergement classique, avec un accès SSH.**
+Sur une plateforme à conteneurs, elle est déjà tenue par l'image et par le
+script de démarrage : `Dockerfile` enchaîne `npm run build` et
+`tools/sync-frontoffice.sh`, `tools/demarrer-conteneur.sh` fait le lien de
+`storage/`, les migrations et les trois caches. Il n'y a donc rien à rejouer
+à la main après un déploiement Railway — et surtout rien à oublier. Voir
+`DEPLOIEMENT_RAILWAY.md`.
+
+### Sauvegarder avant toute migration qui supprime
+
+Le mot « sauvegarde » ne figurait nulle part dans cette note. Il y entre
+maintenant, parce que la première migration destructive du projet vient
+d'arriver.
+
+Toutes les migrations ne se défont pas également. Ajouter une colonne se
+retire sans perte. En **supprimer** une emporte son contenu, et le `down()`
+qui prétend la reconstruire ne restitue que ce qu'une autre table conserve
+encore — il rejoue une copie, il ne ressuscite rien.
+
+La première de ce genre est
+`2026_09_14_120000_cree_les_equipements_administrables` : elle verse les
+équipements de `biens.equipements` dans le référentiel et dans la table de
+jointure, puis supprime la colonne. Son retour arrière a été éprouvé sur des
+données réellement saisies depuis le back-office et ne perd rien — mais il ne
+vaut que tant que la table de jointure est intacte. Une seconde erreur
+par-dessus, et il n'existe plus de source à recopier.
+
+```bash
+mysqldump --single-transaction --routines --triggers \
+  -u <utilisateur> -p <base> > sauvegarde-$(date +%Y%m%d-%H%M).sql
+```
+
+Vérifier que le fichier n'est pas vide avant d'aller plus loin. Sur un
+hébergement à conteneurs, le disque est éphémère : la sauvegarde doit
+**sortir** du conteneur, rapatriée en local ou déposée sur un stockage objet.
+Un fichier écrit à côté de l'application disparaît au déploiement suivant.
+
+**Sur Railway, les migrations n'attendent personne.**
+`tools/demarrer-conteneur.sh` les lance au démarrage du conteneur, et
+`MIGRER_AU_DEMARRAGE` vaut `true` par défaut : pousser sur `master` suffit à
+ce qu'une migration destructive s'exécute, sans aucune étape manuelle où
+s'arrêter pour sauvegarder. Pour une mise à jour qui en contient une :
+
+1. poser `MIGRER_AU_DEMARRAGE=false` dans les variables du service ;
+2. déployer ;
+3. sauvegarder la base ;
+4. lancer `php artisan migrate --force` depuis la console du service ;
+5. remettre `MIGRER_AU_DEMARRAGE=true`.
+
+Sans cette précaution, la sauvegarde arrive après la suppression, ce qui
+revient à ne pas en avoir.
 
 ## 3. Les réglages à ne pas manquer
 
