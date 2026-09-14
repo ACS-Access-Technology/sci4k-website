@@ -75,6 +75,12 @@ RUN apt-get update \
 # d'administration declarent accepter. Voir docker/php.ini.
 COPY docker/php.ini /usr/local/etc/php/conf.d/sci4k.ini
 
+# Le serveur, avec les en-tetes de cache. L'image n'en pose AUCUN sur les
+# fichiers statiques : chaque visite redemandait donc les images pour
+# s'entendre repondre « inchangee ». Voir docker/Caddyfile, qui reprend la
+# configuration d'origine et n'y ajoute que ces en-tetes.
+COPY docker/Caddyfile /etc/frankenphp/Caddyfile
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app

@@ -18,6 +18,8 @@
 # arbre de travail Windows, ce que fait « railway up ».
 *.sh            text eol=lf
 Dockerfile      text eol=lf
+Caddyfile       text eol=lf
+*.ini           text eol=lf
 .dockerignore   text eol=lf
 .railwayignore  text eol=lf
 .gitignore      text eol=lf
