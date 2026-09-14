@@ -1,0 +1,36 @@
+# Ce qui ne part PAS chez Railway.
+#
+# A ne pas confondre avec .dockerignore, qui agit une etape plus tard :
+# .railwayignore decide de ce qui est TELEVERSE, .dockerignore de ce qui entre
+# dans le contexte de construction une fois l'envoi arrive. Un dossier ecarte
+# par le seul .dockerignore traverse quand meme le reseau pour rien.
+#
+# L'envoi pesait 10,9 Mo, et un transfert coupe en cours de route
+# (« os error 10054 ») laisse repartir de zero. Ces regles le ramenent a
+# environ 7,5 Mo sans retirer quoi que ce soit dont la construction a besoin.
+#
+# CE QUI DOIT RESTER, et pourquoi :
+#   maquettes-frontoffice/  le Dockerfile lance tools/sync-frontoffice.sh, qui
+#                           y puise le CSS, le script et les images du site
+#                           public. L'ecarter casserait la construction.
+#   app-laravel/            l'application elle-meme.
+#   tools/                  sync-frontoffice.sh et demarrer-conteneur.sh.
+#   docker/                 php.ini.
+
+# Maquettes historiques du backoffice. Trente ecrans generes par des scripts
+# Python, conserves comme reference visuelle ; aucune etape de construction ne
+# les lit, verifie sur Dockerfile et sur tools/*.sh.
+maquettes-backoffice/
+
+# Documents de conception et de relais. Deja ecartes du contexte de
+# construction par .dockerignore, mais ils traversaient encore le reseau.
+docs/
+*.md
+
+# Integration continue : elle tourne chez GitHub, pas dans l'image.
+.github/
+
+# Outils et reglages locaux.
+.claude/
+.vscode/
+.idea/
