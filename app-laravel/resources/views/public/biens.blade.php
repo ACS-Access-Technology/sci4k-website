@@ -128,6 +128,9 @@
       </div>
     </div>
 
+    <div class="catalogue-layout">
+
+    <div class="catalogue-main">
     <div class="prop-grid reveal-stagger">
       @forelse ($biens as $bien)
         {{-- wire:key est indispensable, et il manquait. Sans lui, chaque
@@ -195,6 +198,63 @@
     @if ($biens->hasPages())
       <div style="margin-top:32px;">{{ $biens->links() }}</div>
     @endif
+    </div>{{-- .catalogue-main --}}
+
+    {{-- Panneau des equipements — SECOND filtre, multicritere.
+         Il se cumule aux cinq listes du haut de page au lieu de les remplacer :
+         cocher « Piscine » restreint ce que « Villa » + « Cocody » ont deja
+         laisse passer.
+         Les cases viennent du referentiel, comme les autres filtres : ajouter
+         un equipement depuis le backoffice fait apparaitre sa case ici, sans
+         toucher a cette vue.
+         Place APRES la grille dans le balisage, et non avant : ce sont les
+         biens qui comptent, et un lecteur d'ecran comme une tabulation les
+         atteignent donc en premier. La colonne de droite vient de la grille. --}}
+    @php($titrePanneau = $tFiltre('titre_equipements', __('Équipements')))
+    <aside @class(['equip-panel', 'est-ouvert' => $panneauDeploye]) aria-label="{{ $titrePanneau }}">
+      {{-- Deux en-tetes pour une seule raison : sur grand ecran le panneau est
+           toujours ouvert et n'a besoin que d'un titre ; sur telephone il se
+           replie, et un titre ne se clique pas. Chacun est masque la ou il n'a
+           pas de sens, et le nom accessible du panneau est porte par l'aside
+           lui-meme pour ne dependre d'aucun des deux. --}}
+      <h3 class="equip-titre">{{ $titrePanneau }}</h3>
+
+      {{-- Replie par defaut sur telephone. Deploye, ce panneau occupait tout
+           l'ecran AVANT le premier bien, et sa liste piegeait le doigt dans un
+           defilement imbrique. Le nombre de cases cochees reste affiche une
+           fois referme : un filtre actif qu'on ne voit pas est un filtre qu'on
+           ne pense pas a retirer. --}}
+      <button type="button" class="equip-toggle" wire:click="basculerLePanneau"
+              aria-expanded="{{ $panneauDeploye ? 'true' : 'false' }}" aria-controls="equip-list">
+        <span>{{ $titrePanneau }}</span>
+        @if ($equipementsChoisis)
+          <span class="equip-compte">{{ count($equipementsChoisis) }}</span>
+        @endif
+        <svg class="equip-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 9l6 6 6-6"/>
+        </svg>
+      </button>
+
+      <div class="equip-list" id="equip-list">
+        @forelse ($equipementsProposes as $equipement)
+          <label @class(['equip-option', 'is-active' => in_array($equipement->id, $equipementsChoisis, true)])>
+            <input type="checkbox" value="{{ $equipement->id }}" wire:model.live="equipements">
+            <span>{{ $equipement->libelle($langue) }}</span>
+          </label>
+        @empty
+          <p class="equip-empty">{{ $tFiltre('aucun_equipement', __('Aucun équipement à filtrer pour le moment.')) }}</p>
+        @endforelse
+
+        @if ($equipementsChoisis)
+          <button type="button" class="equip-reset" wire:click="viderLesEquipements">
+            {{ $tFiltre('bouton_vider_equipements', __('Tout décocher')) }}
+          </button>
+        @endif
+      </div>
+    </aside>
+
+    </div>{{-- .catalogue-layout --}}
   </div>
 </section>
 
@@ -264,9 +324,9 @@
       </div>
 
       {{-- Equipements --}}
-      @if ($bienOuvert->equipements($langue))
+      @if ($bienOuvert->equipements->isNotEmpty())
         <div class="modal-features-list">
-          @foreach ($bienOuvert->equipements($langue) as $equipement)<span class="feat-tag">✓ {{ $equipement }}</span>@endforeach
+          @foreach ($bienOuvert->equipements as $equipement)<span class="feat-tag">✓ {{ $equipement->libelle($langue) }}</span>@endforeach
         </div>
       @endif
 

@@ -99,8 +99,31 @@ it('reprend les six biens du site', function () {
         ->and($villa->zone)->toBe('cocody')
         ->and($villa->surface_habitable)->toBe(310)
         ->and($villa->quartier)->toBe('Riviera Golf')
-        ->and($villa->equipements('fr'))->toContain('Piscine privative')
-        ->and($villa->equipements('en'))->toContain('Private pool');
+        ->and($villa->equipements->pluck('libelle_fr'))->toContain('Piscine privative')
+        ->and($villa->equipements->pluck('libelle_en'))->toContain('Private pool');
+});
+
+it('ne cree qu une entree par equipement, partagee entre les biens', function () {
+    $this->seed(BiensSeeder::class);
+
+    // Deux biens qui mentionnent le meme equipement doivent pointer LA MEME
+    // ligne du referentiel : c'est toute la raison d'etre du vocabulaire
+    // partage, sans quoi la case a cocher du catalogue ne ramenerait qu'un
+    // des deux.
+    $libelles = Referentiel::deLaFamille('equipements')->pluck('libelle_fr');
+
+    expect($libelles->count())->toBe($libelles->unique()->count());
+});
+
+it('rejoue le rattachement des equipements sans les dupliquer', function () {
+    $this->seed(BiensSeeder::class);
+    $avant = Referentiel::deLaFamille('equipements')->count();
+
+    $this->seed(BiensSeeder::class);
+
+    expect(Referentiel::deLaFamille('equipements')->count())->toBe($avant)
+        ->and(Bien::where('slug', 'villa-les-palmiers')->first()->equipements->pluck('libelle_fr'))
+        ->toContain('Piscine privative');
 });
 
 it('n invente ni prix ni photo pour les biens repris', function () {
@@ -217,22 +240,78 @@ it('propose une adresse a partir du titre', function () {
         ->assertSet('slug', 'villa-les-palmiers');
 });
 
-it('range les equipements ligne par ligne, dans les deux langues', function () {
+it('rattache au bien les equipements coches', function () {
+    $piscine = Referentiel::create([
+        'famille' => 'equipements', 'valeur' => 'piscine',
+        'libelle_fr' => 'Piscine', 'ordre' => 1, 'visible' => true,
+    ]);
+    $garage = Referentiel::create([
+        'famille' => 'equipements', 'valeur' => 'garage',
+        'libelle_fr' => 'Garage', 'ordre' => 2, 'visible' => true,
+    ]);
+
     Livewire::actingAs($this->editeur)
         ->test(BienFormulaire::class)
         ->set('titreFr', 'Villa équipée')
         ->set('slug', 'villa-equipee')
         ->set('type', 'villa')
         ->set('zone', 'cocody')
-        ->set('equipementsFr', "Piscine\n\nGarage  \nJardin")
-        ->set('equipementsEn', "Pool\nGarage\nGarden")
+        ->set('equipements', [$piscine->id, $garage->id])
         ->call('enregistrer')
         ->assertHasNoErrors();
 
-    // Les lignes vides et les espaces de fin disparaissent : un equipement
-    // vide s'afficherait comme une puce sans texte.
-    expect(Bien::where('slug', 'villa-equipee')->first()->equipements('fr'))
-        ->toBe(['Piscine', 'Garage', 'Jardin']);
+    expect(Bien::where('slug', 'villa-equipee')->first()->equipements->pluck('libelle_fr')->all())
+        ->toBe(['Piscine', 'Garage']);
+});
+
+it('refuse un equipement qui n appartient pas au referentiel', function () {
+    // L'identifiant vient du navigateur : une valeur forgee designerait une
+    // zone ou un type de bien, que la fiche afficherait alors comme un
+    // equipement.
+    $zone = Referentiel::deLaFamille('zones')->first();
+
+    Livewire::actingAs($this->editeur)
+        ->test(BienFormulaire::class)
+        ->set('titreFr', 'Villa forgée')
+        ->set('slug', 'villa-forgee')
+        ->set('type', 'villa')
+        ->set('zone', 'cocody')
+        ->set('equipements', [$zone->id])
+        ->call('enregistrer')
+        ->assertHasErrors('equipements.0');
+});
+
+it('cree un equipement depuis la fiche du bien, et le coche', function () {
+    $composant = Livewire::actingAs($this->editeur)
+        ->test(BienFormulaire::class)
+        ->set('nouvelEquipement', 'Groupe électrogène')
+        ->call('ajouterEquipement')
+        ->assertSet('nouvelEquipement', '');
+
+    $cree = Referentiel::deLaFamille('equipements')->where('libelle_fr', 'Groupe électrogène')->first();
+
+    expect($cree)->not->toBeNull()
+        ->and($cree->valeur)->toBe('groupe-electrogene');
+
+    $composant->assertSet('equipements', [$cree->id]);
+});
+
+it('coche un equipement deja connu au lieu de le creer deux fois', function () {
+    $piscine = Referentiel::create([
+        'famille' => 'equipements', 'valeur' => 'piscine',
+        'libelle_fr' => 'Piscine', 'ordre' => 1, 'visible' => true,
+    ]);
+
+    // La casse ne doit pas creer un doublon : « piscine » et « Piscine »
+    // donneraient deux cases a cocher dont chacune ne ramene qu'une partie
+    // des biens.
+    Livewire::actingAs($this->editeur)
+        ->test(BienFormulaire::class)
+        ->set('nouvelEquipement', 'piscine')
+        ->call('ajouterEquipement')
+        ->assertSet('equipements', [$piscine->id]);
+
+    expect(Referentiel::deLaFamille('equipements')->count())->toBe(1);
 });
 
 it('filtre la liste avec le vocabulaire du referentiel', function () {

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -29,13 +30,11 @@ class Bien extends Model
         'prix', 'prix_unite',
         'surface_habitable', 'surface_terrain',
         'nombre_pieces', 'nombre_chambres', 'nombre_salles_eau',
-        'equipements',
         'meta_titre_fr', 'meta_titre_en', 'meta_description_fr', 'meta_description_en',
         'statut', 'date_mise_en_ligne', 'en_avant', 'urgent', 'auteur_id', 'ordre',
     ];
 
     protected $casts = [
-        'equipements' => 'array',
         'date_mise_en_ligne' => 'date',
         'en_avant' => 'boolean',
         'urgent' => 'boolean',
@@ -96,6 +95,24 @@ class Bien extends Model
         return $this->belongsTo(User::class, 'auteur_id');
     }
 
+    /**
+     * Les equipements du bien, pris au referentiel partage.
+     *
+     * La famille est filtree ICI et non laissee a l'appelant : la table de
+     * jointure pointe `referentiels`, qui porte aussi les types, les zones et
+     * les tranches. Sans cette clause, une ligne mal formee ferait apparaitre
+     * « Villa » parmi les equipements d'un bien.
+     *
+     * @return BelongsToMany<Referentiel, $this>
+     */
+    public function equipements(): BelongsToMany
+    {
+        return $this->belongsToMany(Referentiel::class, 'bien_equipement')
+            ->where('referentiels.famille', 'equipements')
+            ->orderBy('referentiels.ordre')
+            ->orderBy('referentiels.id');
+    }
+
     /* --------------------------------------------------- portees */
 
     /** Ce que le visiteur voit. Un bien vendu reste visible, mais marque. */
@@ -129,18 +146,6 @@ class Bien extends Model
     public function description(string $langue = 'fr'): string
     {
         return $this->texteDansLaLangue('description', $langue);
-    }
-
-    /**
-     * Les equipements dans la langue demandee.
-     *
-     * @return list<string>
-     */
-    public function equipements(string $langue = 'fr'): array
-    {
-        $listes = $this->equipements ?? [];
-
-        return $listes[$langue] ?? $listes['fr'] ?? [];
     }
 
     /* --------------------------------------------------- tranches */
@@ -220,6 +225,35 @@ class Bien extends Model
             '5' => $requete->where('nombre_pieces', '>=', 5),
             default => $requete,
         };
+    }
+
+    /**
+     * Restreint aux biens portant TOUS les equipements demandes.
+     *
+     * Cocher « Piscine » et « Garage » ne doit ramener que les biens qui ont
+     * les deux : on affine sa recherche en cochant, et une liste qui grandit a
+     * mesure qu'on precise surprendrait le visiteur.
+     *
+     * Le comptage remplace une chaine de whereHas, un par equipement : la
+     * clause unique tient parce que la table de jointure interdit le doublon,
+     * donc N correspondances signifient N equipements DISTINCTS.
+     *
+     * @param  list<int>  $ids
+     */
+    public function scopeAvecLesEquipements(Builder $requete, array $ids): Builder
+    {
+        $ids = array_values(array_unique($ids));
+
+        if ($ids === []) {
+            return $requete;
+        }
+
+        return $requete->whereHas(
+            'equipements',
+            fn (Builder $r) => $r->whereIn('referentiels.id', $ids),
+            '=',
+            count($ids)
+        );
     }
 
     /** Restreint aux biens d'une tranche de surface. */

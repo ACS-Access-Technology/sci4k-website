@@ -51,11 +51,35 @@ class CatalogueDesBiens extends Component
 
     public string $surface = '';
 
+    /**
+     * Equipements coches dans le panneau lateral.
+     *
+     * Second filtre, multicritere, qui s'applique EN MEME TEMPS que les cinq
+     * listes du haut de page et non a leur place.
+     *
+     * @var list<int>
+     */
+    public array $equipements = [];
+
+    /**
+     * Le panneau des equipements est-il deploye ?
+     *
+     * N'a d'effet QUE sur telephone, ou il s'ouvre a la demande ; au-dela de
+     * 980 px la feuille de style l'affiche toujours et ignore ce drapeau.
+     *
+     * L'etat est porte par le serveur plutot que par Alpine : ce composant se
+     * re-rend a chaque case cochee, et une classe posee cote navigateur serait
+     * effacee par la reconciliation du DOM — le panneau se refermerait tout
+     * seul au premier clic. Le cout est un aller-retour pour l'ouvrir, soit
+     * exactement ce que coute deja chaque filtre de cette page.
+     */
+    public bool $panneauDeploye = false;
+
     public ?Bien $bienOuvert = null;
 
     public function ouvrirBien(int $id): void
     {
-        $this->bienOuvert = Bien::query()->publies()->with('photos')->findOrFail($id);
+        $this->bienOuvert = Bien::query()->publies()->with(['photos', 'equipements'])->findOrFail($id);
     }
 
     public function fermerBien(): void
@@ -65,15 +89,32 @@ class CatalogueDesBiens extends Component
 
     public function updating($nom): void
     {
-        if (in_array($nom, ['offre', 'type', 'zone', 'pieces', 'surface'], true)) {
+        // La racine seule : cocher une case remonte « equipements.2 » et non
+        // « equipements », et la page ne se remettait alors pas au debut — le
+        // visiteur restait sur une page 3 qui n'existait plus apres filtrage.
+        $racine = explode('.', (string) $nom)[0];
+
+        if (in_array($racine, ['offre', 'type', 'zone', 'pieces', 'surface', 'equipements'], true)) {
             $this->resetPage();
         }
     }
 
     public function reinitialiser(): void
     {
-        $this->reset(['offre', 'type', 'zone', 'pieces', 'surface']);
+        $this->reset(['offre', 'type', 'zone', 'pieces', 'surface', 'equipements']);
         $this->resetPage();
+    }
+
+    /** Decoche tout le panneau lateral, sans toucher aux cinq listes du haut. */
+    public function viderLesEquipements(): void
+    {
+        $this->reset('equipements');
+        $this->resetPage();
+    }
+
+    public function basculerLePanneau(): void
+    {
+        $this->panneauDeploye = ! $this->panneauDeploye;
     }
 
     public function render(): View
@@ -91,6 +132,15 @@ class CatalogueDesBiens extends Component
         $surface = in_array($this->surface, $connues('tranches_surface'), true) ? $this->surface : '';
         $offre = in_array($this->offre, array_keys(Bien::offres()), true) ? $this->offre : '';
 
+        // Les equipements proposes, et eux seuls : un identifiant coche puis
+        // rendu invisible depuis le backoffice ne doit pas continuer de
+        // restreindre une recherche que plus aucune case n'explique.
+        $equipementsProposes = Referentiel::deLaFamille('equipements')->visibles()->ordonnees()->get();
+        $equipementsChoisis = array_values(array_intersect(
+            array_map('intval', $this->equipements),
+            $equipementsProposes->pluck('id')->all()
+        ));
+
         $biens = Bien::query()
             ->publies()
             ->with('photos')
@@ -99,6 +149,7 @@ class CatalogueDesBiens extends Component
             ->when($offre !== '', fn ($r) => $r->where('offre', $offre))
             ->when($pieces !== '', fn ($r) => $r->deLaTrancheDePieces($pieces))
             ->when($surface !== '', fn ($r) => $r->deLaTrancheDeSurface($surface))
+            ->avecLesEquipements($equipementsChoisis)
             ->ordonnes()
             ->paginate(12);
 
@@ -131,6 +182,8 @@ class CatalogueDesBiens extends Component
             'zones' => Referentiel::deLaFamille('zones')->visibles()->ordonnees()->get(),
             'tranchesPieces' => Referentiel::deLaFamille('tranches_pieces')->visibles()->ordonnees()->get(),
             'tranchesSurface' => Referentiel::deLaFamille('tranches_surface')->visibles()->ordonnees()->get(),
+            'equipementsProposes' => $equipementsProposes,
+            'equipementsChoisis' => $equipementsChoisis,
             'offres' => Bien::offres(),
         ]);
     }

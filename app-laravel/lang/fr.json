@@ -230,5 +230,10 @@
     ":nombre demande de visite à confirmer|:nombre demandes de visite à confirmer": ":nombre demande de visite à confirmer|:nombre demandes de visite à confirmer",
     ":nombre message de contact non lu|:nombre messages de contact non lus": ":nombre message de contact non lu|:nombre messages de contact non lus",
     ":nombre commentaire en attente de relecture|:nombre commentaires en attente de relecture": ":nombre commentaire en attente de relecture|:nombre commentaires en attente de relecture",
-    ":nombre photo ajoutée, pas encore enregistrée|:nombre photos ajoutées, pas encore enregistrées": ":nombre photo ajoutée, pas encore enregistrée|:nombre photos ajoutées, pas encore enregistrées"
+    ":nombre photo ajoutée, pas encore enregistrée|:nombre photos ajoutées, pas encore enregistrées": ":nombre photo ajoutée, pas encore enregistrée|:nombre photos ajoutées, pas encore enregistrées",
+    "Aucun équipement pour le moment. Ajoutez le premier ci-dessous.": "Aucun équipement pour le moment. Ajoutez le premier ci-dessous.",
+    "Ajouter un équipement — ex. Piscine": "Ajouter un équipement — ex. Piscine",
+    "Aucun équipement à filtrer pour le moment.": "Aucun équipement à filtrer pour le moment.",
+    "Tout décocher": "Tout décocher",
+    "Cases à cocher de la page /biens, et étiquettes des fiches": "Cases à cocher de la page /biens, et étiquettes des fiches"
 }

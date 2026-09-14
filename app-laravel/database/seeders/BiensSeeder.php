@@ -70,10 +70,6 @@ class BiensSeeder extends Seeder
                 'quartier' => $this->quartier($entree['localisation_fr'] ?? ''),
                 'statut_juridique' => $this->statutJuridique($entree['statut_juridique_texte_fr'] ?? ''),
                 'nombre_pieces' => $pieces,
-                'equipements' => [
-                    'fr' => $entree['equipements_fr'] ?? [],
-                    'en' => $entree['equipements_en'] ?? [],
-                ],
                 // La surface d'un terrain nu est celle de la parcelle.
                 'surface_habitable' => $entree['type'] === 'terrain' ? null : $surface,
                 'surface_terrain' => $entree['type'] === 'terrain' ? $surface : null,
@@ -89,10 +85,68 @@ class BiensSeeder extends Seeder
 
             $bien->save();
 
+            $this->rattacherLesEquipements($bien, $entree);
             $this->verifierLaTranche($bien, $entree);
         }
 
         $this->command?->info(sprintf('%d biens au catalogue.', Bien::count()));
+    }
+
+    /**
+     * Verse les equipements du fichier d'import au referentiel, puis les lie.
+     *
+     * Ils etaient ecrits dans une colonne JSON du bien. Depuis qu'ils sont
+     * aussi les cases a cocher du catalogue, ils appartiennent au vocabulaire
+     * partage : deux biens qui mentionnent « Piscine privative » doivent
+     * pointer LA MEME entree, sans quoi la case ne ramene que l'un des deux.
+     *
+     * Le rattachement est rejouable : l'appariement se fait sur le libelle
+     * francais, et sync() remet exactement la liste du fichier.
+     */
+    protected function rattacherLesEquipements(Bien $bien, array $entree): void
+    {
+        $fr = array_values(array_filter(array_map('trim', $entree['equipements_fr'] ?? [])));
+        $en = array_values(array_filter(array_map('trim', $entree['equipements_en'] ?? [])));
+
+        // L'anglais n'est repris que si les deux listes se correspondent une a
+        // une : des longueurs differentes ne disent pas quel mot traduit quel
+        // autre.
+        $apparier = count($fr) === count($en);
+        $ids = [];
+
+        foreach ($fr as $i => $libelle) {
+            $equipement = Referentiel::equipementNomme($libelle);
+
+            if (! $equipement) {
+                $equipement = Referentiel::create([
+                    'famille' => 'equipements',
+                    'valeur' => $this->valeurLibrePour($libelle),
+                    'libelle_fr' => $libelle,
+                    'libelle_en' => $apparier ? ($en[$i] ?? null) : null,
+                    'ordre' => Referentiel::rangSuivantDans('equipements'),
+                    'visible' => true,
+                ]);
+            }
+
+            $ids[] = $equipement->id;
+        }
+
+        $bien->equipements()->sync($ids);
+    }
+
+    /** Une valeur technique encore libre dans la famille des equipements. */
+    protected function valeurLibrePour(string $libelle): string
+    {
+        $prises = Referentiel::deLaFamille('equipements')->pluck('valeur')->all();
+        $base = mb_substr(Str::slug($libelle) ?: 'equipement', 0, 50);
+        $valeur = $base;
+        $suffixe = 2;
+
+        while (in_array($valeur, $prises, true)) {
+            $valeur = $base.'-'.$suffixe++;
+        }
+
+        return $valeur;
     }
 
     /**

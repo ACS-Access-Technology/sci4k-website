@@ -100,11 +100,11 @@
           <p>{{ $bien->description($langue) }}</p>
         @endif
 
-        @if ($bien->equipements($langue))
+        @if ($bien->equipements->isNotEmpty())
           <h3 class="reveal" style="margin-top:24px;">{{ $tFiche('titre_equipements', __('Équipements')) }}</h3>
           <ul class="spec-list">
-            @foreach ($bien->equipements($langue) as $equipement)
-              <li class="spec-item">{{ $equipement }}</li>
+            @foreach ($bien->equipements as $equipement)
+              <li class="spec-item">{{ $equipement->libelle($langue) }}</li>
             @endforeach
           </ul>
         @endif

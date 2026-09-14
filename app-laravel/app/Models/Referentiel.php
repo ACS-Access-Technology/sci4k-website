@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\DB;
 /**
  * Une valeur de liste deroulante du site public.
  *
- * Types de bien, zones, tranches de pieces, tranches de surface, statuts
- * juridiques : cinq familles dans une seule table, parce qu'elles ont
+ * Types de bien, zones, tranches de pieces, tranches de surface, equipements,
+ * statuts juridiques : six familles dans une seule table, parce qu'elles ont
  * exactement la meme forme et le meme comportement.
  *
  * Deux familles de la maquette ne sont PAS ici : les categories d'articles et
@@ -61,6 +61,10 @@ class Referentiel extends Model
                 'intitule' => __('Tranches de surface'),
                 'aide' => __('Filtre « surface » de la page /biens'),
             ],
+            'equipements' => [
+                'intitule' => __('Équipements'),
+                'aide' => __('Cases à cocher de la page /biens, et étiquettes des fiches'),
+            ],
             'statuts_juridiques' => [
                 'intitule' => __('Statuts juridiques'),
                 'aide' => __("Liste déroulante de la fiche d'un bien"),
@@ -83,6 +87,26 @@ class Referentiel extends Model
     public function libelle(string $langue = 'fr'): string
     {
         return $this->texteDansLaLangue('libelle', $langue);
+    }
+
+    /**
+     * L'equipement portant ce libelle francais, quelle que soit la casse.
+     *
+     * La comparaison se fait EN PHP et non en SQL. `LOWER()` de SQLite ne
+     * connait que l'ASCII : « Groupe Électrogène » y garde son E accentue
+     * capital, ne correspond donc jamais a la forme minuscule calculee par
+     * mb_strtolower(), et le meme equipement se recreait a chaque import —
+     * donnant deux cases a cocher dont chacune ne ramenait qu'une partie des
+     * biens. La famille compte quelques dizaines de lignes : la charger
+     * entierement ne coute rien.
+     */
+    public static function equipementNomme(string $libelle): ?self
+    {
+        $cherche = mb_strtolower(trim($libelle));
+
+        return static::deLaFamille('equipements')
+            ->get()
+            ->first(fn (self $entree) => mb_strtolower(trim((string) $entree->libelle_fr)) === $cherche);
     }
 
     /**

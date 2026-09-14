@@ -23,7 +23,7 @@ use Livewire\WithFileUploads;
  * Le plus gros formulaire du backoffice : quarante champs, une galerie, et le
  * vocabulaire du referentiel a respecter. Il est ecrit a part plutot que plie
  * dans FormulaireDeBloc, dont la description declarative ne sait pas exprimer
- * une galerie ni des listes d'equipements bilingues.
+ * une galerie ni la creation d'un equipement au fil de la saisie.
  */
 #[Layout('layouts.app')]
 class BienFormulaire extends Component
@@ -87,10 +87,21 @@ class BienFormulaire extends Component
 
     public string $nombreSallesEau = '';
 
-    /** Equipements, une ligne par element, dans chaque langue. */
-    public string $equipementsFr = '';
+    /**
+     * Equipements coches, par identifiant du referentiel.
+     *
+     * C'etaient deux zones de texte libre, une par langue. Elles suffisaient
+     * tant que ces mots n'etaient que des etiquettes ; depuis qu'ils sont aussi
+     * les cases a cocher du catalogue, un equipement doit etre UNE valeur
+     * partagee — sinon « Piscine » saisi ici et « piscine » saisi la font deux
+     * cases dont chacune ne ramene qu'une partie des biens.
+     *
+     * @var list<int>
+     */
+    public array $equipements = [];
 
-    public string $equipementsEn = '';
+    /** Saisie du champ « ajouter un équipement », vidée après chaque ajout. */
+    public string $nouvelEquipement = '';
 
     public string $metaTitreFr = '';
 
@@ -178,10 +189,7 @@ class BienFormulaire extends Component
         $this->nombreChambres = (string) ($bien->nombre_chambres ?? '');
         $this->nombreSallesEau = (string) ($bien->nombre_salles_eau ?? '');
 
-        // Une ligne par equipement : c'est la forme la plus simple a saisir,
-        // et elle se relit sans separateur a retenir.
-        $this->equipementsFr = implode("\n", $bien->equipements('fr'));
-        $this->equipementsEn = implode("\n", $bien->equipements['en'] ?? []);
+        $this->equipements = $bien->equipements()->pluck('referentiels.id')->all();
 
         $this->metaTitreFr = (string) $bien->meta_titre_fr;
         $this->metaTitreEn = (string) $bien->meta_titre_en;
@@ -235,8 +243,9 @@ class BienFormulaire extends Component
             'nombreChambres' => ['nullable', 'integer', 'min:0', 'max:100'],
             'nombreSallesEau' => ['nullable', 'integer', 'min:0', 'max:100'],
 
-            'equipementsFr' => ['nullable', 'string', 'max:2000'],
-            'equipementsEn' => ['nullable', 'string', 'max:2000'],
+            'equipements' => ['array'],
+            'equipements.*' => [Rule::in($this->identifiantsDesEquipements())],
+            'nouvelEquipement' => ['nullable', 'string', 'max:120'],
 
             'metaTitreFr' => ['nullable', 'string', 'max:70'],
             'metaTitreEn' => ['nullable', 'string', 'max:70'],
@@ -254,6 +263,12 @@ class BienFormulaire extends Component
     protected function valeursDe(string $famille): array
     {
         return Referentiel::deLaFamille($famille)->pluck('valeur')->all();
+    }
+
+    /** @return list<int> */
+    protected function identifiantsDesEquipements(): array
+    {
+        return Referentiel::deLaFamille('equipements')->pluck('id')->all();
     }
 
     protected function validationAttributes(): array
@@ -275,6 +290,70 @@ class BienFormulaire extends Component
         if ($this->estCreation() && trim($this->slug) === '') {
             $this->slug = Str::slug($valeur);
         }
+    }
+
+    /**
+     * Cree un equipement depuis la fiche d'un bien, et le coche.
+     *
+     * Ouvert a qui peut ecrire un bien, et pas aux seuls administrateurs comme
+     * l'ecran des referentiels : demander a un editeur de sortir du formulaire,
+     * d'aller creer « Piscine » ailleurs, puis de revenir, c'est la garantie
+     * qu'il renoncera. Renommer et supprimer le vocabulaire restent en
+     * revanche dans les referentiels — la portee n'y est pas la meme, une
+     * suppression retirant l'equipement de TOUS les biens qui le portent.
+     */
+    public function ajouterEquipement(): void
+    {
+        abort_unless($this->peutEcrire(), 403);
+
+        $libelle = trim($this->nouvelEquipement);
+
+        if ($libelle === '') {
+            return;
+        }
+
+        $this->validateOnly('nouvelEquipement');
+
+        // Un equipement deja connu est COCHE plutot que cree une seconde fois.
+        // Deux entrees pour le meme mot donneraient deux cases a cocher dont
+        // chacune ne ramenerait qu'une partie des biens concernes — exactement
+        // le defaut que le referentiel est cense fermer.
+        $equipement = Referentiel::equipementNomme($libelle)
+            ?? Referentiel::create([
+                'famille' => 'equipements',
+                'valeur' => $this->valeurLibrePour($libelle),
+                'libelle_fr' => $libelle,
+                'libelle_en' => null,
+                'ordre' => Referentiel::rangSuivantDans('equipements'),
+                'visible' => true,
+            ]);
+
+        if (! in_array($equipement->id, array_map('intval', $this->equipements), true)) {
+            $this->equipements[] = $equipement->id;
+        }
+
+        $this->nouvelEquipement = '';
+    }
+
+    /**
+     * Une valeur technique encore libre dans la famille des equipements.
+     *
+     * La base interdit deux fois la meme valeur dans une famille : « Piscine »
+     * et « piscine privative » donnent des libelles distincts, mais deux
+     * radicaux peuvent tout de meme se rejoindre apres mise en forme.
+     */
+    protected function valeurLibrePour(string $libelle): string
+    {
+        $prises = $this->valeursDe('equipements');
+        $base = mb_substr(Str::slug($libelle) ?: 'equipement', 0, 50);
+        $valeur = $base;
+        $suffixe = 2;
+
+        while (in_array($valeur, $prises, true)) {
+            $valeur = $base.'-'.$suffixe++;
+        }
+
+        return $valeur;
     }
 
     public function retirerPhoto(int $id): void
@@ -335,10 +414,6 @@ class BienFormulaire extends Component
             'nombre_pieces' => $this->nombrePieces === '' ? null : (int) $this->nombrePieces,
             'nombre_chambres' => $this->nombreChambres === '' ? null : (int) $this->nombreChambres,
             'nombre_salles_eau' => $this->nombreSallesEau === '' ? null : (int) $this->nombreSallesEau,
-            'equipements' => [
-                'fr' => $this->enLignes($this->equipementsFr),
-                'en' => $this->enLignes($this->equipementsEn),
-            ],
             'meta_titre_fr' => $this->metaTitreFr ?: null,
             'meta_titre_en' => $this->metaTitreEn ?: null,
             'meta_description_fr' => $this->metaDescriptionFr ?: null,
@@ -359,6 +434,10 @@ class BienFormulaire extends Component
             $this->bien = Bien::create($donnees);
         }
 
+        // sync() apres l'ecriture du bien, et pas avant : a la creation, il n'y
+        // a pas encore d'identifiant auquel rattacher les equipements.
+        $this->bien->equipements()->sync(array_map('intval', $this->equipements));
+
         $this->televerserLesPhotos();
 
         $this->dispatch('toast', message: __('Bien enregistré.'), variant: 'success');
@@ -370,12 +449,6 @@ class BienFormulaire extends Component
         $this->dispatch('bloc-enregistre');
 
         return null;
-    }
-
-    /** Chaque ligne non vide devient un equipement. */
-    protected function enLignes(string $texte): array
-    {
-        return array_values(array_filter(array_map('trim', preg_split('/\R/u', $texte) ?: []), static fn (string $ligne): bool => $ligne !== ''));
     }
 
     /**
@@ -394,7 +467,7 @@ class BienFormulaire extends Component
                 'zone', 'quartier', 'statut', 'dateMiseEnLigne', 'enAvant', 'urgent'],
             'caracteristiques' => ['statutJuridique', 'numeroTitre', 'prix', 'prixUnite',
                 'surfaceHabitable', 'surfaceTerrain', 'nombrePieces', 'nombreChambres',
-                'nombreSallesEau', 'equipementsFr', 'equipementsEn'],
+                'nombreSallesEau', 'equipements', 'nouvelEquipement'],
             'seo' => ['metaTitreFr', 'metaTitreEn', 'metaDescriptionFr', 'metaDescriptionEn'],
             'photos' => ['nouvellesPhotos'],
         ];
@@ -465,6 +538,7 @@ class BienFormulaire extends Component
             'types' => Referentiel::deLaFamille('types_de_bien')->ordonnees()->get(),
             'zones' => Referentiel::deLaFamille('zones')->ordonnees()->get(),
             'statutsJuridiques' => Referentiel::deLaFamille('statuts_juridiques')->ordonnees()->get(),
+            'equipementsProposes' => Referentiel::deLaFamille('equipements')->ordonnees()->get(),
             'offres' => Bien::offres(),
             'statuts' => Bien::statuts(),
             'unitesDePrix' => Bien::unitesDePrix(),

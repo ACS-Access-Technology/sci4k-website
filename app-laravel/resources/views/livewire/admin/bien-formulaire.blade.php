@@ -211,18 +211,52 @@
                     </label>
                 </div>
 
-                {{-- Une liste libre plutot que des cases a cocher : le site
-                     affiche « Cuisine américaine équipée » ou « Fibre optique »,
-                     que huit cases n'auraient pas su dire. --}}
-                <div class="grid gap-4 sm:grid-cols-2">
-                    @foreach (['Fr' => __('français'), 'En' => __('anglais')] as $suffixe => $nomLangue)
-                        <label class="block">
-                            <span class="text-sm font-medium">{{ __('Équipements') }} ({{ $nomLangue }})</span>
-                            <textarea wire:model="equipements{{ $suffixe }}" rows="7" class="{{ $champ }}"
-                                      placeholder="{{ __('Un équipement par ligne') }}"></textarea>
-                            @error('equipements'.$suffixe) <span class="text-sm text-red-600">{{ $message }}</span> @enderror
-                        </label>
-                    @endforeach
+                {{-- Des cases a cocher, et non plus deux zones de texte libre.
+                     Ces mots ne sont plus seulement les etiquettes de la fiche :
+                     ce sont aussi les cases du panneau lateral de /biens. Un
+                     vocabulaire partage est donc la condition pour que cocher
+                     « Piscine » sur le site ramene TOUS les biens qui en ont une.
+                     Le libelle anglais et l'ordre d'affichage se reglent dans
+                     « Pages du site → Biens immobiliers → Filtres ». --}}
+                <div>
+                    <span class="text-sm font-medium">{{ __('Équipements') }}</span>
+
+                    @if ($equipementsProposes->isEmpty())
+                        <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+                            {{ __('Aucun équipement pour le moment. Ajoutez le premier ci-dessous.') }}
+                        </p>
+                    @else
+                        <div class="mt-2 grid gap-x-4 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
+                            @foreach ($equipementsProposes as $equipement)
+                                <label class="flex items-center gap-2 text-sm" wire:key="equip-{{ $equipement->id }}">
+                                    <input type="checkbox" value="{{ $equipement->id }}" wire:model="equipements"
+                                           @disabled(! $peutEcrire)
+                                           class="rounded border-zinc-300 dark:border-zinc-600">
+                                    <span @class(['text-zinc-400 line-through' => ! $equipement->visible])>{{ $equipement->libelle($langue) }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    @error('equipements.*') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+
+                    @if ($peutEcrire)
+                        {{-- Creation au fil de la saisie : sortir du formulaire
+                             pour aller creer « Piscine » ailleurs, puis revenir,
+                             c'est la garantie qu'on y renonce. Entree valide,
+                             sans soumettre le formulaire entier. --}}
+                        <div class="mt-3 flex gap-2">
+                            <input type="text" wire:model="nouvelEquipement"
+                                   wire:keydown.enter.prevent="ajouterEquipement"
+                                   class="{{ $champ }} mt-0"
+                                   placeholder="{{ __('Ajouter un équipement — ex. Piscine') }}">
+                            <button type="button" wire:click="ajouterEquipement"
+                                    class="shrink-0 rounded-lg border border-zinc-300 px-3 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800">
+                                {{ __('Ajouter') }}
+                            </button>
+                        </div>
+                        @error('nouvelEquipement') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+                    @endif
                 </div>
             @endif
 
