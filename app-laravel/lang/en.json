@@ -1226,5 +1226,8 @@
     "Ajouter un équipement — ex. Piscine": "Add an amenity — e.g. Swimming pool",
     "Aucun équipement à filtrer pour le moment.": "No amenities to filter on yet.",
     "Tout décocher": "Clear all",
+    "Merci, votre adresse est enregistrée.": "Thank you, your address has been saved.",
+    "Inscription impossible pour le moment. Réessayez plus tard.": "Sign-up is unavailable right now. Please try again later.",
+    "Cette adresse e-mail n’est pas valide.": "That email address is not valid.",
     "Cases à cocher de la page /biens, et étiquettes des fiches": "Checkboxes on the /biens page, and listing tags"
 }

@@ -380,6 +380,14 @@ body.page-home .foot-logo{font-size:18px;font-weight:800;letter-spacing:0.06em;t
 
 .newsletter button:hover{background:var(--gold-300);}
 
+.newsletter button:disabled{opacity:.55;cursor:progress;}
+
+/* Retour d'inscription. Le vert et le rouge ne portent pas seuls
+   l'information — le texte dit deja ce qui s'est passe — pour rester
+   lisible en cas de daltonisme. */
+.newsletter-msg{margin:8px 2px 0;font-size:13px;line-height:1.45;color:#8FD4A8;}
+
+.newsletter-msg.is-error{color:#F0A9A0;}
 
 .bottom-bar{display:flex;justify-content:space-between;align-items:center;padding:26px 0;font-size:13px;flex-wrap:wrap;gap:12px;}
 

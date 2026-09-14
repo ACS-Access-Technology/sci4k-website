@@ -1508,15 +1508,40 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 /* ---- Newsletter (pied de page, toutes pages) ----
-   Aucun backend n'est encore branche : l'inscription part par email vers
-   l'agence plutot que d'etre silencieusement perdue. */
+   L'adresse part sur le serveur, et le visiteur en est AVERTI. Elle etait
+   deja enregistree, mais rien ne le disait : le champ se vidait, un point
+   c'est tout. Rien ne distinguait une inscription reussie d'un clic sans
+   effet, et un refus du serveur n'existait que dans la console. */
 (function () {
-  var EMAIL_AGENCE = 'contact@sci4k.com';
-
   document.querySelectorAll('.newsletter').forEach(function (bloc) {
     var champ = bloc.querySelector('input[type="email"]');
     var bouton = bloc.querySelector('.newsletter-btn');
     if (!champ || !bouton) return;
+
+    /* Le message se tient APRES le bloc, pas dedans : .newsletter est une
+       ligne — champ et bouton cote a cote — et y glisser un paragraphe le
+       ferait entrer dans cette rangee. */
+    var zoneMessage = bloc.parentNode
+      ? bloc.parentNode.querySelector('.newsletter-msg')
+      : null;
+
+    function annoncer(texte, estUneErreur) {
+      if (!zoneMessage) return;
+      zoneMessage.textContent = texte;
+      zoneMessage.classList.toggle('is-error', !!estUneErreur);
+      zoneMessage.hidden = false;
+    }
+
+    function taire() {
+      if (!zoneMessage) return;
+      zoneMessage.hidden = true;
+      zoneMessage.textContent = '';
+      zoneMessage.classList.remove('is-error');
+    }
+
+    function texteDu(nom, repli) {
+      return bloc.getAttribute(nom) || repli;
+    }
 
     function inscrire() {
       var adresse = champ.value.trim();
@@ -1525,43 +1550,60 @@ document.addEventListener('DOMContentLoaded', function () {
          expression reguliere maison, toujours plus laxiste ou plus stricte. */
       if (!adresse || !champ.checkValidity()) {
         champ.setAttribute('aria-invalid', 'true');
+        /* Message PROPRE a la saisie. Annoncer ici « reessayez plus tard »
+           accuserait le serveur, et le visiteur reessaierait avec la meme
+           adresse mal ecrite. */
+        annoncer(texteDu('data-invalide', 'Cette adresse e-mail n\'est pas valide.'), true);
         champ.focus();
         return;
       }
       champ.removeAttribute('aria-invalid');
 
-      /* L'adresse part sur le SERVEUR, et non plus vers le logiciel de
-         courrier du visiteur. Un lien « mailto: » ne fait rien du tout sur la
-         plupart des telephones, ou aucun compte n'y est configure : l'agence
-         perdait des adresses sans jamais savoir combien.
+      /* Le champ n'est PLUS vide avant la reponse. Il l'etait, pour ne pas
+         faire patienter sur un reseau lent — mais vider un champ est le seul
+         signe que le visiteur recevait, et il le recevait aussi quand le
+         serveur refusait l'adresse. On attend donc, bouton desactive, et on
+         dit ce qui s'est passe. */
+      bouton.disabled = true;
+      taire();
 
-         Le champ se vide sans attendre la reponse : l'inscription est sans
-         consequence pour le visiteur, et le faire patienter sur un reseau lent
-         serait pire qu'un envoi rate. */
+      var fini = function (texte, estUneErreur) {
+        bouton.disabled = false;
+        annoncer(texte, estUneErreur);
+      };
+
       try {
         fetch('/newsletter', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify({ email: adresse, site_web: '' })
         }).then(function (reponse) {
-          /* Meme raison qu'au depot d'un message : le visiteur voit son champ
-             se vider quoi qu'il arrive, mais un echec doit rester lisible
-             dans la console plutot que de disparaitre sans bruit. */
           if (!reponse.ok) {
             console.warn('SCI4K : inscription a la lettre d\'information refusee (HTTP ' + reponse.status + ').');
+            fini(texteDu('data-erreur', 'Inscription impossible pour le moment.'), true);
+            return;
           }
+
+          champ.value = '';
+          fini(texteDu('data-merci', 'Merci, votre adresse est enregistree.'), false);
         }).catch(function (e) {
           console.warn('SCI4K : inscription a la lettre d\'information echouee.', e);
+          fini(texteDu('data-erreur', 'Inscription impossible pour le moment.'), true);
         });
-      } catch (e) {}
-
-      champ.value = '';
-      champ.setAttribute('placeholder', champ.getAttribute('data-merci') || champ.getAttribute('placeholder'));
+      } catch (e) {
+        /* Navigateur sans fetch : ne pas laisser le bouton desactive, sans
+           quoi le visiteur ne peut meme plus reessayer. */
+        fini(texteDu('data-erreur', 'Inscription impossible pour le moment.'), true);
+      }
     }
 
     bouton.addEventListener('click', inscrire);
     champ.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') { e.preventDefault(); inscrire(); }
     });
+    /* Repartir de zero des que le visiteur corrige : un « merci » fige au
+       dessus d'un champ reecrit se lirait comme la confirmation de la
+       NOUVELLE adresse, qui n'est pas encore partie. */
+    champ.addEventListener('input', taire);
   });
 })();

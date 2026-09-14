@@ -52,6 +52,19 @@ class Menus extends Component
         // --- pied de page ---
         'exemple_newsletter' => ['intitule' => 'Exemple dans le champ de la lettre d’information', 'defaut' => 'Votre adresse email'],
         'aria_newsletter' => ['intitule' => 'Bouton d’inscription — description', 'defaut' => "S'inscrire à la newsletter"],
+        // L'inscription enregistrait l'adresse sans jamais le dire : le champ
+        // se vidait, et c'etait tout. Rien ne distinguait une inscription
+        // reussie d'un clic sans effet.
+        'merci_newsletter' => ['intitule' => 'Message de confirmation d’inscription', 'defaut' => 'Merci, votre adresse est enregistrée.'],
+        // Distinct du message d'echec : dire « réessayez plus tard » devant une
+        // adresse mal ecrite accuse le serveur, et le visiteur reessaie avec la
+        // meme adresse.
+        'invalide_newsletter' => ['intitule' => 'Message quand l’adresse est mal écrite', 'defaut' => 'Cette adresse e-mail n’est pas valide.'],
+        'erreur_newsletter' => [
+            'intitule' => 'Message quand l’inscription échoue',
+            'defaut' => 'Inscription impossible pour le moment. Réessayez plus tard.',
+            'long' => true,
+        ],
         'titre_navigation' => ['intitule' => 'Titre de la colonne « Navigation »', 'defaut' => 'Navigation'],
         'titre_services' => ['intitule' => 'Titre de la colonne « Services »', 'defaut' => 'Nos Services'],
         'titre_contact' => ['intitule' => 'Titre de la colonne « Contact »', 'defaut' => 'Nous contacter'],

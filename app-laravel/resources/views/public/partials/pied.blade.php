@@ -23,7 +23,17 @@
           @endforeach
         </div>
       @endif
-      <div class="newsletter"><input type="email" aria-label="{{ $t('exemple_newsletter', __('Votre adresse email')) }}" placeholder="{{ $t('exemple_newsletter', __('Votre adresse email')) }}"><button type="button" class="newsletter-btn" aria-label="{{ $t('aria_newsletter', __("S'inscrire à la newsletter")) }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></button></div>
+      {{-- Les deux messages voyagent en attributs data-, et non en dur dans
+           main.js : ce script est commun a toutes les pages et ne connait ni
+           la langue rendue, ni les textes que l'ecran « Menus » permet de
+           changer. --}}
+      <div class="newsletter"
+           data-merci="{{ $t('merci_newsletter', __('Merci, votre adresse est enregistrée.')) }}"
+           data-invalide="{{ $t('invalide_newsletter', __('Cette adresse e-mail n’est pas valide.')) }}"
+           data-erreur="{{ $t('erreur_newsletter', __('Inscription impossible pour le moment. Réessayez plus tard.')) }}"><input type="email" aria-label="{{ $t('exemple_newsletter', __('Votre adresse email')) }}" placeholder="{{ $t('exemple_newsletter', __('Votre adresse email')) }}"><button type="button" class="newsletter-btn" aria-label="{{ $t('aria_newsletter', __("S'inscrire à la newsletter")) }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></button></div>
+      {{-- role="status" : le message est annonce par les lecteurs d'ecran sans
+           voler le focus, et le visiteur au clavier reste dans le champ. --}}
+      <p class="newsletter-msg" role="status" aria-live="polite" hidden></p>
     </div>
     <div>
       <h5>{{ $t('titre_navigation', __('Navigation')) }}</h5>
