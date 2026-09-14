@@ -189,6 +189,30 @@ Relevés en lisant la configuration. Les cinq premiers sont bloquants.
 8. **`DEEPL_API_KEY`** reste facultatif : sans clé, la traduction automatique
    des articles se tait et les deux langues se saisissent à la main.
 
+### L'indexation : une case, et le bon moment
+
+Dans `/admin/configuration`, la case **« Autoriser l'indexation par les
+moteurs de recherche »** gouverne à la fois le `robots.txt` et la balise
+`<meta name="robots">`, sur toutes les pages et tous les gabarits. Une seule
+source, pas de risque qu'ils se contredisent.
+
+**Elle doit rester décochée tant que le site vit sur une adresse provisoire.**
+Sur l'instance d'essai, PageSpeed note le SEO 69 sur 100 et annonce
+« L'indexation de la page est bloquée » : ce n'est pas un défaut à corriger,
+c'est la conséquence attendue et voulue.
+
+La cocher trop tôt coûte cher, et longtemps. Google indexerait l'adresse
+provisoire — `*.up.railway.app` — qui entrerait alors en concurrence avec le
+domaine définitif le jour du lancement. Et l'ancienneté joue en sa faveur :
+c'est la mauvaise adresse qui sortirait en premier. Sortir une adresse de
+l'index demande ensuite des semaines, pendant lesquelles le site doit rester
+en ligne à servir un `noindex` pour que les robots le constatent.
+
+**À cocher donc au lancement, une fois le domaine définitif en place** — et
+pas avant. Deux conditions l'accompagnent : les pages légales complètes (voir
+§4), puisqu'un site indexé est un site qui se visite, et un contenu réel
+plutôt que les biens de démonstration.
+
 ### Ce qui est déjà correct
 
 Vérifié, rien à faire :
