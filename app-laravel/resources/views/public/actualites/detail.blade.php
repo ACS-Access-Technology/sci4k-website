@@ -61,7 +61,11 @@
             <a href="https://wa.me/?text={{ urlencode($article->titre($langue).' '.$urlArticle) }}" target="_blank" rel="noopener noreferrer">{{ $tArticle('partage_whatsapp', __('WhatsApp')) }}</a>
             <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode($urlArticle) }}" target="_blank" rel="noopener noreferrer">{{ $tArticle('partage_linkedin', __('LinkedIn')) }}</a>
             <a href="https://twitter.com/intent/tweet?url={{ urlencode($urlArticle) }}&text={{ urlencode($article->titre($langue)) }}" target="_blank" rel="noopener noreferrer">{{ $tArticle('partage_x', __('X/Twitter')) }}</a>
-            <button type="button" onclick="navigator.clipboard && navigator.clipboard.writeText('{{ $urlArticle }}')">{{ $tArticle('partage_lien', __('Copier le lien')) }}</button>
+            {{-- L'adresse voyage en attribut plutot que dans un « onclick » :
+                 main.js s'en charge, et confirme la copie en changeant le
+                 libelle deux secondes. Sans retour, rien ne disait au visiteur
+                 si son clic avait pris. --}}
+            <button type="button" data-copier="{{ $urlArticle }}" data-copie="{{ __('Lien copié') }}">{{ $tArticle('partage_lien', __('Copier le lien')) }}</button>
           </div>
         @endif
       </div>
@@ -151,7 +155,7 @@
         {{-- Champ piege : invisible et hors du parcours au clavier, un humain
              ne le remplit jamais. Un robot remplit tout ce qu'il trouve, et le
              serveur refuse alors l'envoi. --}}
-        <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
+        <div aria-hidden="true" class="champ-piege">
           <label for="commentSiteWeb">{{ __('Site web') }}</label>
           <input type="text" id="commentSiteWeb" name="site_web" tabindex="-1" autocomplete="off">
         </div>

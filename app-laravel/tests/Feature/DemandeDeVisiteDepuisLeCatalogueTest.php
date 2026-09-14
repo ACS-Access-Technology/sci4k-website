@@ -28,10 +28,21 @@ use App\Models\Bien;
 use Illuminate\Support\Facades\File;
 use Livewire\Livewire;
 
-/** Le nom de la fonction appelee par le formulaire de visite d'une page. */
-function gestionnaireDeVisite(string $html): ?string
+/*
+ * Le formulaire ne nomme plus la fonction a appeler : il declare CE QU'IL EST,
+ * et main.js decide. Le « onsubmit="handleVisiteSubmit(event)" » a ete sorti
+ * du balisage avec tout le JavaScript en ligne.
+ *
+ * Le controle, lui, ne change pas de nature : les deux formulaires doivent
+ * declarer le meme acheminement, et cet acheminement doit mener a une fonction
+ * qui existe. C'est exactement le defaut d'origine — un nom ecrit dans le
+ * gabarit, aucune fonction derriere.
+ */
+
+/** L'acheminement declare par le formulaire de visite d'une page. */
+function acheminementDeVisite(string $html): ?string
 {
-    preg_match('/data-bien="[^"]*"\s+onsubmit="([a-zA-Z]+)\(/', $html, $trouve);
+    preg_match('/data-bien="[^"]*"\s+data-envoi="([a-z]+)"/', $html, $trouve);
 
     return $trouve[1] ?? null;
 }
@@ -45,9 +56,9 @@ it('appelle le meme gestionnaire depuis le catalogue et depuis la fiche', functi
 
     $fiche = $this->get('/biens/villa-essai')->assertOk()->getContent();
 
-    expect(gestionnaireDeVisite($fenetre))
-        ->not->toBeNull('La fenetre du catalogue ne declare aucun gestionnaire.')
-        ->toBe(gestionnaireDeVisite($fiche));
+    expect(acheminementDeVisite($fenetre))
+        ->not->toBeNull('La fenetre du catalogue ne declare aucun acheminement.')
+        ->toBe(acheminementDeVisite($fiche));
 });
 
 /*
@@ -58,12 +69,21 @@ it('appelle le meme gestionnaire depuis le catalogue et depuis la fiche', functi
 it('declare ce gestionnaire dans le script du site', function () {
     $bien = Bien::factory()->create(['statut' => 'publie', 'slug' => 'villa-essai']);
 
-    $nom = gestionnaireDeVisite(
+    $cle = acheminementDeVisite(
         Livewire::test(CatalogueDesBiens::class)->call('ouvrirBien', $bien->id)->html()
     );
 
-    expect(File::get(base_path('../maquettes-frontoffice/assets/main.js')))
-        ->toContain('window.'.$nom.' =');
+    $script = File::get(base_path('../maquettes-frontoffice/assets/main.js'));
+
+    // La table d'acheminement connait-elle cette cle, et vers quelle fonction
+    // renvoie-t-elle ? On suit le chemin plutot que de graver un nom ici :
+    // c'est la rupture de ce chemin qui avait laisse passer le defaut.
+    preg_match('/'.preg_quote($cle, '/').':\s*function[^}]*window\.(\w+)/', $script, $appelle);
+
+    expect($appelle[1] ?? null)
+        ->not->toBeNull("Aucun acheminement « {$cle} » dans le script du site.");
+
+    expect($script)->toContain('window.'.$appelle[1].' =');
 });
 
 /*

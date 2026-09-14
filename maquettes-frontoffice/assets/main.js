@@ -1507,6 +1507,67 @@ document.addEventListener('DOMContentLoaded', function () {
 })();
 
 
+/* ---- Envoi des formulaires publics ----
+   Les quatre formulaires portaient « onsubmit="handleXSubmit(event)" » dans
+   leur balisage. Ils declarent maintenant ce qu'ils sont — data-envoi — et
+   c'est ce fichier qui decide quoi appeler.
+
+   Un seul ecouteur, pose sur le document : la fiche d'un bien s'ouvre dans
+   une fenetre rendue par Livewire, et le formulaire qu'elle contient n'existe
+   pas au chargement de la page. */
+var SCI4K_ENVOIS = {
+  contact: function (e) { if (window.handleContactSubmit) window.handleContactSubmit(e); },
+  visite: function (e) { if (window.handleVisiteSubmit) window.handleVisiteSubmit(e); },
+  faq: function (e) { if (window.handleAskSubmit) window.handleAskSubmit(e); },
+  /* Le filtre des actualites se soumet a la recherche, pas au serveur. */
+  aucun: function (e) { e.preventDefault(); }
+};
+
+document.addEventListener('submit', function (evenement) {
+  var formulaire = evenement.target;
+  if (!formulaire || !formulaire.getAttribute) return;
+
+  var quoi = formulaire.getAttribute('data-envoi');
+  if (quoi && SCI4K_ENVOIS[quoi]) SCI4K_ENVOIS[quoi](evenement);
+});
+
+/* ---- Copier le lien d'un article ----
+   C'etait un « onclick » portant l'adresse en dur. Elle voyage maintenant
+   dans un attribut data-, et le bouton confirme ce qu'il a fait : sans
+   retour, on ne sait pas si le clic a pris. */
+document.addEventListener('click', function (evenement) {
+  if (!evenement.target || !evenement.target.closest) return;
+
+  var bouton = evenement.target.closest('[data-copier]');
+  if (!bouton || !navigator.clipboard) return;
+
+  navigator.clipboard.writeText(bouton.getAttribute('data-copier')).then(function () {
+    var initial = bouton.getAttribute('data-libelle-initial') || bouton.textContent;
+    bouton.setAttribute('data-libelle-initial', initial);
+    bouton.textContent = bouton.getAttribute('data-copie') || initial;
+    setTimeout(function () { bouton.textContent = initial; }, 2000);
+  }).catch(function () { /* presse-papiers refuse : le lien reste visible dans la barre d'adresse */ });
+});
+
+/* ---- Galerie d'un bien : la vignette remplace la photo principale ----
+   C'etait un « onclick » recopie sur chaque vignette, plus deux gestionnaires
+   de survol qui ecrivaient la couleur de bordure a la main. Le survol est
+   passe dans la feuille de style, ou il a sa place.
+
+   L'ecouteur est pose sur le document et non sur les vignettes : la fenetre
+   du catalogue est rendue par Livewire, qui remplace son contenu a chaque
+   ouverture de fiche. Des ecouteurs poses sur les vignettes presentes au
+   chargement disparaitraient donc des la premiere ouverture. */
+document.addEventListener('click', function (evenement) {
+  if (!evenement.target || !evenement.target.closest) return;
+
+  var vignette = evenement.target.closest('.vignette-galerie');
+  if (!vignette || !vignette.closest('.galerie-vignettes')) return;
+
+  var principale = document.querySelector('.modal-hero-visual img');
+  if (principale) principale.src = vignette.src;
+});
+
 /* ---- Newsletter (pied de page, toutes pages) ----
    L'adresse part sur le serveur, et le visiteur en est AVERTI. Elle etait
    deja enregistree, mais rien ne le disait : le champ se vidait, un point

@@ -46,7 +46,7 @@
   <div class="wrap overview-grid">
     <div class="overview-content reveal">
       @if ($apercu?->etiquette($langue))
-        <div class="tag" style="color:var(--accent-etiquette); border-color:var(--gold-500);">{{ $apercu->etiquette($langue) }}</div>
+        <div class="tag tag-accent">{{ $apercu->etiquette($langue) }}</div>
       @endif
       <h2>{{ $apercu?->titre($langue) ?: __('Présentation Générale de SCI4K') }}</h2>
 
@@ -81,7 +81,7 @@
     <div class="overview-media reveal">
       <img src="{{ asset($visuelApercu?->fichier ?: 'images/presentation/apercu.jpg') }}"
            alt="{{ $visuelApercu?->texteAlternatif($langue) ?: __('Immobilier Abidjan') }}"
-           style="border-radius:24px; box-shadow:var(--shadow);" loading="lazy">
+           class="visuel-apercu" loading="lazy">
     </div>
   </div>
 </section>
@@ -103,7 +103,7 @@
     </div>
     <div class="pres-body">
       @if ($motDuDirecteur?->etiquette($langue))
-        <div class="tag reveal" style="color:var(--accent-etiquette); border-color:var(--gold-500);">{{ $motDuDirecteur->etiquette($langue) }}</div>
+        <div class="tag tag-accent reveal">{{ $motDuDirecteur->etiquette($langue) }}</div>
       @endif
       <h3 class="reveal">{{ $motDuDirecteur?->titre($langue) ?: __('Bâtir des lieux de vie, pas seulement des bâtiments.') }}</h3>
 
@@ -126,13 +126,13 @@
 @if ($valeurs->isNotEmpty())
   <section class="values-section">
     <div class="wrap">
-      <div class="section-head reveal" style="max-width:640px;">
+      <div class="section-head etroite sur-fond-sombre reveal">
         @if ($enteteValeurs?->etiquette($langue))
-          <div class="tag" style="color:var(--gold-300); border-color:rgba(211,182,172,0.5);">{{ $enteteValeurs->etiquette($langue) }}</div>
+          <div class="tag">{{ $enteteValeurs->etiquette($langue) }}</div>
         @endif
-        <h2 style="color:#fff;">{{ $enteteValeurs?->titre($langue) ?: __('Les engagements de SCI4K') }}</h2>
+        <h2>{{ $enteteValeurs?->titre($langue) ?: __('Les engagements de SCI4K') }}</h2>
         @if ($enteteValeurs?->chapo($langue))
-          <p style="color:rgba(255,255,255,0.75);">{{ $enteteValeurs->chapo($langue) }}</p>
+          <p>{{ $enteteValeurs->chapo($langue) }}</p>
         @endif
       </div>
 
@@ -155,9 +155,9 @@
 @if ($membres->isNotEmpty())
   <section class="team-section">
     <div class="wrap">
-      <div class="section-head reveal" style="max-width:640px;">
+      <div class="section-head etroite reveal">
         @if ($enteteEquipe?->etiquette($langue))
-          <div class="tag" style="color:var(--accent-etiquette); border-color:var(--gold-500);">{{ $enteteEquipe->etiquette($langue) }}</div>
+          <div class="tag tag-accent">{{ $enteteEquipe->etiquette($langue) }}</div>
         @endif
         <h2>{{ $enteteEquipe?->titre($langue) ?: __("Notre Équipe d'Experts") }}</h2>
         @if ($enteteEquipe?->chapo($langue))

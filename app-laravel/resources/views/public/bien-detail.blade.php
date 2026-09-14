@@ -30,29 +30,29 @@
 </section>
 
 <section class="properties-section">
-  <div class="wrap">
+  <div class="wrap fiche-bien">
 
-    <p style="margin-bottom:24px;">
+    <p class="lien-retour">
       <a href="{{ route('biens.index') }}" wire:navigate>← {{ $tFiche('lien_retour', __('Retour au catalogue')) }}</a>
     </p>
 
     <div class="pres-grid">
       <div class="pres-media reveal">
-        <div class="frame" style="overflow:hidden;">
+        <div class="frame">
           @if ($bien->photos->isNotEmpty())
             <img src="{{ asset($bien->photos->first()->fichier) }}"
                  alt="{{ $bien->photos->first()->texteAlternatif($langue) ?: $bien->titre($langue) }}"
-                 loading="lazy" style="width:100%;height:100%;object-fit:cover">
+                 loading="lazy" class="visuel-couvrant">
           @else
-            <x-public.illustration-bien :type="$bien->type" style="width:100%;height:auto;" />
+            <x-public.illustration-bien :type="$bien->type" class="illustration-pleine" />
           @endif
         </div>
 
         @if ($bien->photos->count() > 1)
-          <div class="prop-meta" style="margin-top:12px;gap:8px;flex-wrap:wrap;">
+          <div class="prop-meta bande-vignettes">
             @foreach ($bien->photos->skip(1) as $photo)
               <img src="{{ asset($photo->fichier) }}" alt="{{ $photo->texteAlternatif($langue) }}"
-                   loading="lazy" style="width:88px;height:64px;object-fit:cover;border-radius:8px;">
+                   loading="lazy" class="vignette-fiche">
             @endforeach
           </div>
         @endif
@@ -60,18 +60,18 @@
 
       <div class="pres-body">
         @if ($bien->estVendu())
-          <div class="tag" style="margin-bottom:12px;">{{ $tGrille('pastille_vendu', __('Vendu')) }}</div>
+          <div class="tag pastille-vendu">{{ $tGrille('pastille_vendu', __('Vendu')) }}</div>
         @endif
 
         @if ($bien->sousTitre($langue))
           <div class="prop-type">{{ $bien->sousTitre($langue) }}</div>
         @endif
 
-        <div class="prop-loc" style="margin-bottom:16px;">
+        <div class="prop-loc">
           {{ $bien->quartier }}@if ($bien->quartier && $zoneLisible), @endif{{ $zoneLisible }}
         </div>
 
-        <div class="overview-highlights" style="margin-bottom:20px;">
+        <div class="overview-highlights">
           @foreach ([
               $tFiche('libelle_type', __('Type')) => $typeLisible,
               $tFiche('libelle_surface', __('Surface')) => ($bien->surface_habitable ?? $bien->surface_terrain) ? (($bien->surface_habitable ?? $bien->surface_terrain).' m²') : null,
@@ -93,7 +93,7 @@
         </div>
 
         @if ($bien->prixFormate())
-          <p style="font-size:20px;font-weight:700;">{{ $bien->prixFormate() }}</p>
+          <p class="prix">{{ $bien->prixFormate() }}</p>
         @endif
 
         @if ($bien->description($langue))
@@ -101,7 +101,7 @@
         @endif
 
         @if ($bien->equipements->isNotEmpty())
-          <h3 class="reveal" style="margin-top:24px;">{{ $tFiche('titre_equipements', __('Équipements')) }}</h3>
+          <h3 class="reveal titre-equipements">{{ $tFiche('titre_equipements', __('Équipements')) }}</h3>
           <ul class="spec-list">
             @foreach ($bien->equipements as $equipement)
               <li class="spec-item">{{ $equipement->libelle($langue) }}</li>
@@ -113,12 +113,12 @@
              visiteur n'a pas a recopier de quoi il parle, et l'agence sait
              immediatement quel bien est concerne. Elle arrive dans l'ecran
              « Demandes de visite » du backoffice. --}}
-        <form id="formulaireVisite" class="contact-card" style="margin-top:32px;"
-              data-bien="{{ $bien->slug }}" onsubmit="handleVisiteSubmit(event)">
+        <form id="formulaireVisite" class="contact-card formulaire-visite"
+              data-bien="{{ $bien->slug }}" data-envoi="visite">
           <h3>{{ $tVisite('titre', __('Demander une visite')) }}</h3>
           <p class="sub">{{ $tVisite('accroche', __('Laissez vos coordonnées : un conseiller vous rappelle pour convenir d’un créneau.')) }}</p>
 
-          <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
+          <div aria-hidden="true" class="champ-piege">
             <label for="visiteSiteWeb">Site web</label>
             <input type="text" id="visiteSiteWeb" name="site_web" tabindex="-1" autocomplete="off">
           </div>
@@ -151,7 +151,7 @@
           </div>
 
           <button type="submit" class="hero-btn-primary">{{ $tVisite('libelle_bouton', __('Envoyer ma demande')) }}</button>
-          <p data-visite-confirmation id="visiteConfirmation" style="display:none;margin-top:12px;">
+          <p data-visite-confirmation id="visiteConfirmation" class="message-confirmation">
             {{ $tVisite('confirmation', __('Votre demande est enregistrée. Un conseiller vous rappelle sous 24 heures ouvrées.')) }}
           </p>
         </form>
@@ -159,14 +159,14 @@
     </div>
 
     @if ($similaires->isNotEmpty())
-      <h3 style="margin-top:56px;">{{ $tFiche('titre_meme_zone', __('Dans la même zone')) }}</h3>
-      <div class="prop-grid reveal-stagger" style="margin-top:16px;">
+      <h3 class="titre-meme-zone">{{ $tFiche('titre_meme_zone', __('Dans la même zone')) }}</h3>
+      <div class="prop-grid reveal-stagger grille-meme-zone">
         @foreach ($similaires as $autre)
           <a class="prop-card reveal" href="{{ route('biens.detail', $autre->slug) }}" style="--i:{{ $loop->index }}">
             <div class="prop-visual">
               @if ($autre->photos->isNotEmpty())
                 <img src="{{ asset($autre->photos->first()->fichier) }}" alt="" loading="lazy"
-                     style="width:100%;height:100%;object-fit:cover">
+                     class="visuel-couvrant">
               @else
                 <x-public.illustration-bien :type="$autre->type" />
               @endif

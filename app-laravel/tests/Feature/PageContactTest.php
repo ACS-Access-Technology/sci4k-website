@@ -34,7 +34,10 @@ it('conserve les points d accroche de main.js', function (string $accroche) {
     'id="contactSiteWeb"',
     'id="successAlert"',
     'id="formTitle"',
-    'onsubmit="handleContactSubmit(event)"',
+    // Le formulaire ne nomme plus la fonction a appeler : il declare ce qu'il
+    // est, et main.js decide. L'accroche reste, elle a seulement change de
+    // forme en meme temps que le JavaScript en ligne a quitte le balisage.
+    'data-envoi="contact"',
 ]);
 
 it('sert les en-tetes de section depuis la base', function () {

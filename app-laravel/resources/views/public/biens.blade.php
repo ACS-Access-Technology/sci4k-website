@@ -41,7 +41,7 @@
                     @class(['active' => $offre === $cle])>{{ $offres[$cle] }}</button>
           @endforeach
         </div>
-        <div style="font-size:13px; font-weight:700; color:var(--texte-appuye);">{{ $filtres?->titre($langue) ?: __('Filtres multicritères') }}</div>
+        <div class="libelle-filtres">{{ $filtres?->titre($langue) ?: __('Filtres multicritères') }}</div>
       </div>
 
       <div class="field-grid">
@@ -148,7 +148,7 @@
             @if ($bien->photos->isNotEmpty())
               <img src="{{ asset($bien->photos->first()->fichier) }}"
                    alt="{{ $bien->photos->first()->texteAlternatif($langue) ?: $bien->titre($langue) }}"
-                   loading="lazy" style="width:100%;height:100%;object-fit:cover">
+                   loading="lazy" class="visuel-couvrant">
             @else
               {{-- Les six biens repris du site n'ont pas de photo : le dessin
                    tient lieu de visuel, comme aujourd'hui. --}}
@@ -156,7 +156,7 @@
             @endif
 
             @if ($bien->estVendu())
-              <span class="prop-badge" style="top:auto;bottom:12px;">{{ $tGrille('pastille_vendu', __('Vendu')) }}</span>
+              <span class="prop-badge en-bas">{{ $tGrille('pastille_vendu', __('Vendu')) }}</span>
             @endif
           </div>
 
@@ -189,14 +189,14 @@
           </div>
         </article>
       @empty
-        <p style="grid-column:1/-1;text-align:center;padding:48px 0;">
+        <p class="message-aucun-resultat">
           {{ $tGrille('aucun_resultat', __('Aucun bien ne correspond à votre recherche.')) }}
         </p>
       @endforelse
     </div>
 
     @if ($biens->hasPages())
-      <div style="margin-top:32px;">{{ $biens->links() }}</div>
+      <div class="pagination-biens">{{ $biens->links() }}</div>
     @endif
     </div>{{-- .catalogue-main --}}
 
@@ -279,15 +279,16 @@
       {{-- Galerie photo --}}
       @if ($bienOuvert->photos->isNotEmpty())
         <div class="modal-hero-visual">
-          <img src="{{ asset($bienOuvert->photos->first()->fichier) }}" alt="{{ $bienOuvert->titre($langue) }}" style="width:100%;height:100%;object-fit:cover">
+          <img src="{{ asset($bienOuvert->photos->first()->fichier) }}" alt="{{ $bienOuvert->titre($langue) }}" class="visuel-couvrant">
         </div>
         @if ($bienOuvert->photos->count() > 1)
-          <div style="display:flex;gap:8px;overflow-x:auto;margin-bottom:24px;padding-bottom:4px;">
+          {{-- Le survol et le clic sont desormais dans main.js et dans la
+               feuille de style : cliquer une vignette remplace la photo
+               principale, et la bordure s'allume au survol. --}}
+          <div class="galerie-vignettes" data-galerie="bien">
             @foreach ($bienOuvert->photos as $photo)
               <img src="{{ asset($photo->fichier) }}" alt="{{ $photo->texteAlternatif($langue) }}"
-                   loading="lazy" style="width:80px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;cursor:pointer;border:2px solid transparent;transition:border-color .2s;"
-                   onmouseover="this.style.borderColor='var(--gold-500)'" onmouseout="this.style.borderColor='transparent'"
-                   onclick="var m=document.querySelector('.modal-hero-visual img');if(m)m.src=this.src">
+                   loading="lazy" class="vignette-galerie">
             @endforeach
           </div>
         @endif
@@ -299,7 +300,7 @@
 
       {{-- Prix --}}
       @if ($bienOuvert->prixFormate())
-        <p style="font-size:22px;font-weight:800;color:var(--gold-300);margin-bottom:20px;">{{ $bienOuvert->prixFormate() }}</p>
+        <p class="prix-modale">{{ $bienOuvert->prixFormate() }}</p>
       @endif
 
       {{-- Grille de specifications --}}
@@ -331,13 +332,13 @@
       @endif
 
       {{-- Formulaire de visite integre --}}
-      <div class="contact-card" style="margin-top:28px;background:var(--dark-surface);border-color:var(--dark-border);">
-        <h3 style="color:var(--dark-text);">{{ $tVisite('titre', __('Demander une visite')) }}</h3>
-        <p class="sub" style="color:var(--dark-text-muted);">{{ $tVisite('accroche', __("Laissez vos coordonnées : un conseiller vous rappelle pour convenir d'un créneau.")) }}</p>
+      <div class="contact-card carte-visite-modale">
+        <h3>{{ $tVisite('titre', __('Demander une visite')) }}</h3>
+        <p class="sub">{{ $tVisite('accroche', __("Laissez vos coordonnées : un conseiller vous rappelle pour convenir d'un créneau.")) }}</p>
 
-        <form id="modalFormulaireVisite" style="margin:0;padding:0;background:transparent;border:none;box-shadow:none;"
-              data-bien="{{ $bienOuvert->slug }}" onsubmit="handleVisiteSubmit(event)">
-          <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
+        <form id="modalFormulaireVisite"
+              data-bien="{{ $bienOuvert->slug }}" data-envoi="visite">
+          <div aria-hidden="true" class="champ-piege">
             <label for="modalVisiteSiteWeb">Site web</label>
             <input type="text" id="modalVisiteSiteWeb" name="site_web" tabindex="-1" autocomplete="off">
           </div>
@@ -370,7 +371,7 @@
           </div>
 
           <button type="submit" class="hero-btn-primary">{{ $tVisite('libelle_bouton', __('Envoyer ma demande')) }}</button>
-          <p data-visite-confirmation id="modalVisiteConfirmation" style="display:none;margin-top:12px;color:var(--dark-text-muted);">
+          <p data-visite-confirmation id="modalVisiteConfirmation" class="message-confirmation">
             {{ $tVisite('confirmation', __('Votre demande est enregistrée. Un conseiller vous rappelle sous 24 heures ouvrées.')) }}
           </p>
         </form>

@@ -51,7 +51,7 @@
              classe ici aurait produit un bouton sans style. --}}
         <form method="POST" action="{{ route('newsletter.desinscription.retirer', $jeton) }}">
           @csrf
-          <button type="submit" class="cta-btn" style="border:none; cursor:pointer; font-family:inherit;">
+          <button type="submit" class="cta-btn">
             {{ $t('libelle_bouton', __('Me désinscrire')) }}
           </button>
         </form>

@@ -81,13 +81,13 @@
 @if ($etapes->isNotEmpty())
   <section class="process-section {{ $miseEnPageProcessus === 'liste' ? 'process-liste' : '' }}">
     <div class="wrap">
-      <div class="section-head reveal" style="max-width:640px;">
+      <div class="section-head etroite sur-fond-sombre reveal">
         @if ($enteteProcessus?->etiquette($langue))
-          <div class="tag" style="color:var(--gold-300); border-color:rgba(211,182,172,0.5);">{{ $enteteProcessus->etiquette($langue) }}</div>
+          <div class="tag">{{ $enteteProcessus->etiquette($langue) }}</div>
         @endif
-        <h2 style="color:#fff;">{{ $enteteProcessus?->titre($langue) ?: __('Comment nous travaillons avec vous') }}</h2>
+        <h2>{{ $enteteProcessus?->titre($langue) ?: __('Comment nous travaillons avec vous') }}</h2>
         @if ($enteteProcessus?->chapo($langue))
-          <p style="color:rgba(255,255,255,0.75);">{{ $enteteProcessus->chapo($langue) }}</p>
+          <p>{{ $enteteProcessus->chapo($langue) }}</p>
         @endif
       </div>
       <div class="process-grid reveal-stagger">
