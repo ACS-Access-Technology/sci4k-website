@@ -156,8 +156,12 @@ return new class extends Migration
 
         foreach ($parBien as $bienId => $listes) {
             DB::table('biens')->where('id', $bienId)->update([
+                // Le francais est toujours la : un bien n'entre dans ce tableau
+                // que par la ligne qui l'y pose. L'anglais, lui, n'est ajoute
+                // que si l'equipement en porte un — d'ou le repli sur la seule
+                // liste qui peut manquer.
                 'equipements' => json_encode([
-                    'fr' => $listes['fr'] ?? [],
+                    'fr' => $listes['fr'],
                     'en' => $listes['en'] ?? [],
                 ], JSON_UNESCAPED_UNICODE),
             ]);
