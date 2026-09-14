@@ -1,0 +1,23 @@
+# Fins de ligne.
+#
+# Git sous Windows convertit LF en CRLF a la sortie quand core.autocrlf vaut
+# true, ce qui est le defaut de l'installeur. Pour du code source c'est sans
+# consequence ; pour les fichiers ci-dessous, c'est fatal :
+#
+#   *.sh          le shebang devient « #!/usr/bin/env bash\r », et Linux cherche
+#                 un programme litteralement nomme « bash\r ». La construction
+#                 de l'image s'arretait la, et le conteneur n'aurait de toute
+#                 facon pas demarre : demarrer-conteneur.sh est sa commande de
+#                 lancement.
+#   Dockerfile    un retour chariot en fin de ligne casse les continuations.
+#   *ignore       les motifs se comparent avec le \r colle a la fin, et
+#                 n'excluent alors plus rien.
+#
+# Le defaut ne se voyait pas tant que les deploiements partaient d'un clone
+# Unix ou de la construction chez GitHub. Il apparait des qu'on televerse un
+# arbre de travail Windows, ce que fait « railway up ».
+*.sh            text eol=lf
+Dockerfile      text eol=lf
+.dockerignore   text eol=lf
+.railwayignore  text eol=lf
+.gitignore      text eol=lf
