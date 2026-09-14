@@ -52,6 +52,37 @@ it('charge chaque famille dans son propre bloc', function () {
         ->assertSet("lignes.types_de_bien.{$type->id}.libelle_fr", 'Villa');
 });
 
+it('donne a chaque ligne une cle de rendu qui lui est propre', function () {
+    // SANS wire:key, la reconciliation du DOM apparie les lignes PAR POSITION.
+    // Retirer une valeur au milieu d'une famille decalait alors toutes les
+    // suivantes : le champ gardait sa valeur affichee mais recevait le chemin
+    // « lignes.famille.ID » de son voisin, et la saisie partait dans
+    // l'enregistrement d'a cote. Constate sur les equipements, ou trente-trois
+    // valeurs rendent le decalage evident ; le defaut valait pour toutes les
+    // familles.
+    $a = Referentiel::factory()->create(['famille' => 'equipements', 'valeur' => 'piscine', 'libelle_fr' => 'Piscine', 'ordre' => 1]);
+    $b = Referentiel::factory()->create(['famille' => 'equipements', 'valeur' => 'garage', 'libelle_fr' => 'Garage', 'ordre' => 2]);
+
+    Livewire::actingAs($this->admin)
+        ->test(Referentiels::class)
+        ->assertSee('wire:key="ligne-equipements-'.$a->id.'"', false)
+        ->assertSee('wire:key="ligne-equipements-'.$b->id.'"', false);
+});
+
+it('ne heurte pas deux lignes neuves de familles differentes', function () {
+    // Une ligne jamais enregistree s'appelle « neuf-1 » DANS CHAQUE FAMILLE :
+    // le compteur est par famille. Une cle reduite a « neuf-1 » se retrouverait
+    // donc en double sur la page des qu'on ajoute une valeur a deux endroits,
+    // et deux cles identiques ramenent exactement le defaut qu'elles doivent
+    // fermer. La famille fait partie de la cle pour cette raison.
+    Livewire::actingAs($this->admin)
+        ->test(Referentiels::class)
+        ->call('ajouter', 'zones')
+        ->call('ajouter', 'equipements')
+        ->assertSee('wire:key="ligne-zones-neuf-1"', false)
+        ->assertSee('wire:key="ligne-equipements-neuf-1"', false);
+});
+
 it('ajoute une valeur a la famille demandee', function () {
     Livewire::actingAs($this->admin)
         ->test(Referentiels::class)

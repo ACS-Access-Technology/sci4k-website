@@ -56,7 +56,7 @@
     @endif
 
     @foreach ($familles as $famille => $definition)
-        <section class="rounded-xl border border-zinc-200 dark:border-zinc-700">
+        <section wire:key="famille-{{ $famille }}" class="rounded-xl border border-zinc-200 dark:border-zinc-700">
             <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-200 px-4 py-3 dark:border-zinc-700">
                 <div>
                     <h2 class="text-sm font-semibold text-zinc-900 dark:text-white">{{ $definition['intitule'] }}</h2>
@@ -68,8 +68,23 @@
             </div>
 
             <div class="space-y-3 p-4">
+                {{-- wire:key est INDISPENSABLE, et il manquait.
+                     Sans lui, la reconciliation du DOM apparie les lignes par
+                     POSITION. Retirer une valeur au milieu d'une famille
+                     decalait donc toutes les suivantes d'un cran : le champ
+                     gardait la valeur affichee mais recevait le chemin
+                     « lignes.famille.ID » de son voisin, et la saisie partait
+                     dans l'enregistrement d'a cote. Le defaut existait depuis
+                     l'origine ; il ne se voyait pas avec quatre a six valeurs
+                     par famille, et saute aux yeux avec les trente-trois
+                     equipements.
+
+                     La cle porte la FAMILLE en plus de l'identifiant : une
+                     ligne jamais enregistree s'appelle « neuf-1 » dans chaque
+                     famille, et « neuf-1 » seul se retrouverait en double sur
+                     la page des qu'on ajoute une valeur a deux endroits. --}}
                 @forelse ($lignes[$famille] ?? [] as $cle => $ligne)
-                    <div class="grid gap-3 sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-start">
+                    <div wire:key="ligne-{{ $famille }}-{{ $cle }}" class="grid gap-3 sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-start">
                         <label class="block">
                             <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">{{ __('Libellé (français)') }}</span>
                             <input type="text" wire:model="lignes.{{ $famille }}.{{ $cle }}.libelle_fr" class="{{ $classeChamp }} mt-1">
