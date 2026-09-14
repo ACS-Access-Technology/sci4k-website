@@ -21,7 +21,7 @@ class BienPublicController extends Controller
 {
     public function __invoke(string $slug): View
     {
-        $bien = Bien::publies()->with('photos')->where('slug', $slug)->firstOrFail();
+        $bien = Bien::publies()->with(['photos', 'equipements'])->where('slug', $slug)->firstOrFail();
 
         // Compteur de consultations. Ecriture directe, sans passer par le
         // modele : elle ne doit ni toucher `updated_at` ni inscrire une ligne

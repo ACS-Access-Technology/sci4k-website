@@ -23,10 +23,10 @@ use Livewire\Component;
  * filtres, et le catalogue lui-meme.
  *
  * Le module Filtres embarque l'ecran des referentiels. Ce n'est pas un
- * rapprochement de circonstance : les cinq familles qu'il edite SONT le
+ * rapprochement de circonstance : les six familles qu'il edite SONT le
  * vocabulaire des filtres de /biens et des fiches de bien — types, zones,
- * tranches de pieces, tranches de surface, statuts juridiques. Les modifier
- * ailleurs obligeait a deviner ou l'on agissait.
+ * tranches de pieces, tranches de surface, equipements, statuts juridiques.
+ * Les modifier ailleurs obligeait a deviner ou l'on agissait.
  */
 #[Layout('layouts.app')]
 class PageBiens extends Component
@@ -57,6 +57,16 @@ class PageBiens extends Component
         // rien et vidait les filtres. Le reglage qui le nommait part avec lui —
         // un champ qui ne pilote plus rien donne le sentiment d'avoir agi.
         'onglet_tous' => ['intitule' => 'Onglet « tous »', 'defaut' => 'Tous'],
+        // Le panneau lateral des equipements. Son vocabulaire se regle dans les
+        // referentiels, juste en dessous ; ces trois libelles sont l'habillage
+        // autour des cases.
+        'titre_equipements' => ['intitule' => 'Titre du panneau « équipements »', 'defaut' => 'Équipements'],
+        'bouton_vider_equipements' => ['intitule' => 'Bouton qui décoche les équipements', 'defaut' => 'Tout décocher'],
+        'aucun_equipement' => [
+            'intitule' => 'Message quand aucun équipement n’est proposé',
+            'defaut' => 'Aucun équipement à filtrer pour le moment.',
+            'long' => true,
+        ],
     ];
 
     /**

@@ -1221,5 +1221,13 @@
     "Aucun courriel n’est parti : la messagerie n’est pas configurée. Renseignez « Serveur SMTP » dans Configuration → Messagerie.": "No email was sent: mail is not configured. Fill in “SMTP server” under Configuration → Mail.",
     "587 en temps normal. Si l’essai signale un délai dépassé, l’hébergeur bloque ce port : utilisez le port de contournement de votre fournisseur — 2587 chez Resend, 2525 chez SMTP2GO.": "587 normally. If the test reports a timeout, the host blocks that port: use your provider's fallback port — 2587 for Resend, 2525 for SMTP2GO.",
     "Compte créé pour :nom, mais l’invitation n’a pas pu être remise : :raison": "Account created for :nom, but the invitation could not be delivered: :raison",
-    "Le renvoi a été refusé : :raison": "The resend was refused: :raison"
+    "Le renvoi a été refusé : :raison": "The resend was refused: :raison",
+    "Aucun équipement pour le moment. Ajoutez le premier ci-dessous.": "No amenities yet. Add the first one below.",
+    "Ajouter un équipement — ex. Piscine": "Add an amenity — e.g. Swimming pool",
+    "Aucun équipement à filtrer pour le moment.": "No amenities to filter on yet.",
+    "Tout décocher": "Clear all",
+    "Merci, votre adresse est enregistrée.": "Thank you, your address has been saved.",
+    "Inscription impossible pour le moment. Réessayez plus tard.": "Sign-up is unavailable right now. Please try again later.",
+    "Cette adresse e-mail n’est pas valide.": "That email address is not valid.",
+    "Cases à cocher de la page /biens, et étiquettes des fiches": "Checkboxes on the /biens page, and listing tags"
 }
