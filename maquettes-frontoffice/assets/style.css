@@ -221,6 +221,31 @@ section{padding:110px 0;}
 
 .section-head p{margin-top:18px;font-size:17.5px;color:#5a6673;line-height:1.65;}
 
+/* Colonne de lecture resserree, la ou le chapo respire mieux court. */
+.section-head.etroite{max-width:640px;}
+
+/* Titre d'une section secondaire — partenaires, formulaire de contact. Plus
+   petit que le titre de section ordinaire, qui monte jusqu'a 48 px. */
+.titre-secondaire{font-size:clamp(28px,3vw,42px); color:var(--texte-titre); margin-top:8px;}
+
+.titre-secondaire.avec-marge{font-size:clamp(26px,3vw,38px); margin-top:0; margin-bottom:28px;}
+
+/* En-tete posee sur un fond sombre — temoignages, valeurs, processus. Le
+   blanc etait force en style en ligne sur chaque titre et chaque chapo des
+   trois vues concernees.
+   La regle est repetee pour le theme sombre, et ce n'est pas une precaution
+   gratuite : « html[data-theme="dark"] .section-head h2 » est plus specifique
+   et reprendrait la main, rendant un gris clair la ou le fond exige du blanc.
+   C'est exactement ce que le style en ligne contournait. */
+.section-head.sur-fond-sombre h2,
+html[data-theme="dark"] .section-head.sur-fond-sombre h2{color:#fff;}
+
+.section-head.sur-fond-sombre p,
+html[data-theme="dark"] .section-head.sur-fond-sombre p{color:rgba(255,255,255,0.75);}
+
+/* Etiquette en accent chaud, sur les sections claires de la presentation. */
+.tag.tag-accent{color:var(--accent-etiquette);border-color:var(--gold-500);}
+
 .services-section{background:var(--paper);}
 
 .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;}
@@ -832,6 +857,33 @@ nav.links a::after{content:''; position:absolute; left:0; bottom:0; width:0; hei
 
 .contact-card p.sub{font-size:15px; color:#5a6673; margin-bottom:28px; line-height:1.55;}
 
+/* Le formulaire de visite tel qu'il apparait DANS la fenetre du catalogue.
+   La carte de contact y est posee sur le fond sombre de la fenetre, et le
+   formulaire qu'elle porte ne doit pas rejouer sa propre carte par-dessus.
+   Ces reglages etaient recopies en style en ligne sur quatre elements. */
+.carte-visite-modale{margin-top:28px; background:var(--dark-surface); border-color:var(--dark-border);}
+
+.carte-visite-modale h3{color:var(--dark-text);}
+
+.carte-visite-modale p.sub{color:var(--dark-text-muted);}
+
+.carte-visite-modale form{margin:0; padding:0; background:transparent; border:none; box-shadow:none;}
+
+/* Message de confirmation d'un formulaire. Cache tant que le serveur n'a pas
+   accepte l'envoi ; main.js le revele en posant « display:block » EN LIGNE,
+   qui l'emporte sur cette regle. */
+.message-confirmation{display:none; margin-top:12px;}
+
+.carte-visite-modale .message-confirmation{color:var(--dark-text-muted);}
+
+/* Champ piege des quatre formulaires publics. Invisible a l'oeil, mais
+   toujours present dans le document : un robot qui remplit tout le remplit
+   aussi, et le serveur refuse alors l'envoi. D'ou le deport hors de l'ecran
+   plutot qu'un « display:none », que certains automates savent reconnaitre.
+   Le meme bloc etait recopie en style en ligne dans les cinq vues qui
+   portent un formulaire. */
+.champ-piege{position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden;}
+
 .form-group{margin-bottom:18px;}
 
 .form-group label{display:block; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--navy-700); margin-bottom:7px;}
@@ -1184,6 +1236,23 @@ html[data-theme="dark"] .article-date{ color:var(--dark-text-muted); }
 
 .equip-empty{ margin:0; font-size:12px; line-height:1.5; }
 
+/* Intitule du panneau de recherche, au-dessus des cinq listes. */
+.libelle-filtres{ font-size:13px; font-weight:700; color:var(--texte-appuye); }
+
+/* Message affiche a la place de la grille quand aucun bien ne correspond :
+   il occupe toute la largeur plutot que la premiere colonne. */
+.message-aucun-resultat{ grid-column:1/-1; text-align:center; padding:48px 0; }
+
+/* Pagination, sous la grille. */
+.pagination-biens{ margin-top:32px; }
+
+/* Pastille « Vendu » posee en bas de la vignette, et non en haut : le coin
+   superieur porte deja l'etiquette de l'offre. */
+.prop-badge.en-bas{ top:auto; bottom:12px; }
+
+/* Visuel d'ouverture de la presentation. */
+.visuel-apercu{ border-radius:24px; box-shadow:var(--shadow); }
+
 .equip-reset{
     margin-top:10px; width:100%; padding:6px 10px; border-radius:100px;
     background:none; border:1px solid;
@@ -1340,6 +1409,67 @@ html[data-theme="dark"] .article-date{ color:var(--dark-text-muted); }
   }
 
 .modal-hero-visual svg{ width:60%; }
+
+/* ---------------------------------------------------------------
+   Photos des biens. Ces regles etaient recopiees en style en ligne
+   sur chaque balise <img>, dans la fiche comme dans la fenetre du
+   catalogue.
+   --------------------------------------------------------------- */
+
+/* Remplit son conteneur sans deformer la photo. */
+.visuel-couvrant{ width:100%; height:100%; object-fit:cover; }
+
+/* Vignettes des photos secondaires. Les deux tailles sont distinctes
+   a dessein : la fiche dispose de toute la largeur de la page, la
+   fenetre du catalogue d'une bande defilante plus etroite. */
+.vignette-fiche{ width:88px; height:64px; object-fit:cover; border-radius:8px; }
+
+.vignette-galerie{
+    width:80px; height:60px; object-fit:cover; border-radius:8px;
+    flex-shrink:0; cursor:pointer;
+    border:2px solid transparent; transition:border-color .2s ease;
+  }
+
+.vignette-galerie:hover,
+.vignette-galerie:focus-visible{ border-color:var(--gold-500); }
+
+/* Bande defilante des vignettes, sous la photo principale. */
+.galerie-vignettes{
+    display:flex; gap:8px; overflow-x:auto;
+    margin-bottom:24px; padding-bottom:4px;
+  }
+
+/* ---------------------------------------------------------------
+   Fiche d'un bien. Ces espacements etaient poses un par un en style
+   en ligne, sur douze elements ; les reunir ici rend le rythme de la
+   page modifiable d'un seul endroit.
+   Tout est porte par « .fiche-bien » : « .frame », « .prop-loc » ou
+   « .tag » servent ailleurs, et des regles nues les auraient suivis
+   sur les autres pages.
+   --------------------------------------------------------------- */
+.fiche-bien .lien-retour{ margin-bottom:24px; }
+
+.fiche-bien .frame{ overflow:hidden; }
+
+.fiche-bien .illustration-pleine{ width:100%; height:auto; }
+
+.fiche-bien .pastille-vendu{ margin-bottom:12px; }
+
+.fiche-bien .prop-loc{ margin-bottom:16px; }
+
+.fiche-bien .overview-highlights{ margin-bottom:20px; }
+
+.fiche-bien .prix{ font-size:20px; font-weight:700; }
+
+.fiche-bien .titre-equipements{ margin-top:24px; }
+
+.fiche-bien .bande-vignettes{ margin-top:12px; gap:8px; flex-wrap:wrap; }
+
+.fiche-bien .formulaire-visite{ margin-top:32px; }
+
+.fiche-bien .titre-meme-zone{ margin-top:56px; }
+
+.fiche-bien .grille-meme-zone{ margin-top:16px; }
 
 .modal-specs-grid{
     display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px;
@@ -1506,14 +1636,35 @@ body{margin:0; font-family:'Montserrat',sans-serif; background:var(--cream); col
 footer{background-image: linear-gradient(180deg, rgba(31,51,70,0.96) 0%, rgba(31,51,70,0.99) 100%), var(--img-footer); background-size:cover; background-position:center; color:rgba(255,255,255,0.6); padding-top:90px; border-top:1px solid rgba(255,255,255,0.08);}
 .logo{display:flex; align-items:center; gap:12px; font-family:'Montserrat',sans-serif; font-weight:800; font-size:20px; color:var(--navy-950); letter-spacing:0.04em; text-transform:uppercase; text-decoration:none;}
 nav.links{display:flex; gap:32px; font-size:15px; font-weight:600;}
-.cta-btn{background:var(--gold-500); color:var(--navy-950); font-weight:700; font-size:14px; padding:12px 22px; border-radius:100px; white-space:nowrap; transition:transform .3s ease, box-shadow .3s ease, background .3s ease; box-shadow:0 8px 22px rgba(211,182,172,0.35); text-decoration:none;}
+/* « border », « cursor » et « font-family » sont la pour le jour ou ce bouton
+   est un <button> et non un <a> — la desinscription de la lettre
+   d'information en est un, puisqu'elle soumet un formulaire. Sans ces trois
+   remises a zero, le navigateur lui redonne sa bordure grise et sa police
+   systeme. Elles etaient posees en style en ligne a cet endroit precis ; les
+   mettre ici evite d'y repenser au prochain bouton. */
+.cta-btn{background:var(--gold-500); color:var(--navy-950); font-weight:700; font-size:14px; padding:12px 22px; border-radius:100px; white-space:nowrap; transition:transform .3s ease, box-shadow .3s ease, background .3s ease; box-shadow:0 8px 22px rgba(211,182,172,0.35); text-decoration:none; border:none; cursor:pointer; font-family:inherit;}
+
+/* Appel a l'action de la banderole, plus large que le bouton d'en-tete. */
+.cta-btn.cta-banderole{padding:16px 32px; font-size:15px;}
 .cta-btn:hover{transform:translateY(-2px); background:var(--gold-300); box-shadow:0 12px 28px rgba(211,182,172,0.5);}
 .mobile-menu{display:none; position:fixed; top:70px; left:0; right:0; background:var(--paper); padding:24px; border-bottom:1px solid rgba(0,0,0,0.05); z-index:99; flex-direction:column; gap:16px; text-align:center; box-shadow:0 8px 30px rgba(0,0,0,0.1);}
 .page-banner h1{font-size:clamp(38px,5.2vw,58px); color:#fff; margin-bottom:16px;}
 h1,h2,h3{font-family:'Montserrat',sans-serif; font-weight:800; letter-spacing:-0.01em; margin:0;}
 .reveal{opacity:0; transform:translateY(28px); transition:opacity .9s cubic-bezier(.16,.8,.24,1), transform .9s cubic-bezier(.16,.8,.24,1);}
+
+/* Echelonne l'apparition d'un bloc : le titre, puis le chapo, puis les
+   boutons. C'etait un « transition-delay » recopie en style en ligne sur
+   chaque element. Les classes portent leur valeur en centiemes de seconde,
+   pour qu'on sache ce qu'on pose sans avoir a revenir ici. */
+.reveal.retard-10{ transition-delay:.10s; }
+.reveal.retard-15{ transition-delay:.15s; }
+.reveal.retard-20{ transition-delay:.20s; }
+.reveal.retard-30{ transition-delay:.30s; }
+.reveal.retard-40{ transition-delay:.40s; }
 .newsletter button{background:var(--gold-500); border:none; padding:0 20px; color:var(--navy-950); cursor:pointer; font-weight:700; transition:background .3s;}
 .foot-logo{display:flex; align-items:center; gap:10px; font-family:'Montserrat',sans-serif; font-weight:700; color:#fff; font-size:21px; margin-bottom:18px;}
+
+.foot-logo img{height:36px; width:auto;}
 
 /* ---- Overrides propres a une page (via body.page-*) ---- */
 body.page-biens{background-image:none; background-color:var(--paper); background-attachment:initial; color:var(--ink);}

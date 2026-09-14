@@ -71,7 +71,7 @@
       <h3>{{ $sectionQuestion?->titre($langue) ?: __('Vous ne trouvez pas votre réponse ?') }}</h3>
       <p class="sub">{{ $sectionQuestion?->chapo($langue) ?: __('Posez-nous directement votre question, un conseiller SCI4K vous répondra sous 24 heures ouvrées.') }}</p>
       <div class="ask-alert-success" id="askSuccessAlert">{{ $texte('confirmation', __("✓ Votre question est prête : la conversation WhatsApp s'ouvre dans un nouvel onglet. Appuyez sur Envoyer pour la transmettre à SCI4K.")) }}</div>
-      <form id="askForm" onsubmit="handleAskSubmit(event)">
+      <form id="askForm" data-envoi="faq">
         <div class="ask-form-row">
           <div class="ask-form-group">
             <label for="askName">{{ $texte('libelle_nom', __('Nom complet *')) }}</label>
@@ -86,7 +86,7 @@
           <label for="askQuestion">{{ $texte('libelle_question', __('Votre question *')) }}</label>
           <textarea id="askQuestion" name="question" rows="4" required maxlength="900" placeholder="{{ $texte('exemple_question', __('Écrivez votre question ici...')) }}"></textarea>
         </div>
-        <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
+        <div aria-hidden="true" class="champ-piege">
           <label for="askSiteWeb">Site web</label>
           <input type="text" id="askSiteWeb" name="site_web" tabindex="-1" autocomplete="off">
         </div>

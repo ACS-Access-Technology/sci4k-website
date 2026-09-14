@@ -39,7 +39,7 @@
       cote client par-dessus le rendu serveur — deux mecanismes pour un meme
       libelle.
     --}}
-    <form class="news-toolbar reveal" onsubmit="return false">
+    <form class="news-toolbar reveal" data-envoi="aucun">
       <div class="nt-field nt-search">
         <label for="newsQ">{{ $tFiltre('libelle_recherche', __('Rechercher')) }}</label>
         <input type="search" id="newsQ" placeholder="{{ $tFiltre('exemple_recherche', __('Titre, mot-clé…')) }}">

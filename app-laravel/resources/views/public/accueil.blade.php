@@ -52,7 +52,7 @@
          « \n » serait lue telle quelle par le contrôle des traductions, qui
          lit le texte source et non la valeur résolue. --}}
     @php($lignesTitre = $hero?->titreEnLignes($langue) ?: [__('Votre propriété,'), __('notre priorité.')])
-    <h1 class="reveal" style="transition-delay:.1s">
+    <h1 class="reveal retard-10">
       @foreach ($lignesTitre as $ligne)
         @if ($loop->first)
           {{ $ligne }}
@@ -63,14 +63,14 @@
     </h1>
 
     @if ($hero?->chapo($langue))
-      <p class="lede reveal" style="transition-delay:.2s">{{ $hero->chapo($langue) }}</p>
+      <p class="lede reveal retard-20">{{ $hero->chapo($langue) }}</p>
     @endif
 
     {{-- Les deux boutons viennent des options du hero, editables depuis
          « Pages du site → Accueil ». Ils etaient ecrits en dur, et le premier
          pointait sur /biens.html — une adresse qui ne repond plus que par une
          redirection 301 depuis le portage du catalogue. --}}
-    <div class="hero-actions reveal" style="transition-delay:.3s">
+    <div class="hero-actions reveal retard-30">
       <a href="{{ $hero?->option('bouton1_cible') ?: route('biens.index') }}" class="hero-btn-primary">
         <span>{{ $hero?->option('bouton1_libelle_'.$langue) ?: __('Rechercher un bien') }}</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
@@ -84,7 +84,7 @@
          main.js anime ; le suffixe est pose apres l'animation, sans quoi le
          compteur ferait defiler « 9, 96, 96 % ». --}}
     @if ($chiffres->isNotEmpty())
-      <div class="hero-stats reveal" style="transition-delay:.4s">
+      <div class="hero-stats reveal retard-40">
         @foreach ($chiffres as $chiffre)
           <div class="stat">
             <b class="cnt" data-target="{{ $chiffre->valeur }}">0</b>{{ $chiffre->suffixe }}
@@ -127,9 +127,9 @@
         @if ($enteteServices?->etiquette($langue))
           <div class="tag tag-home reveal">{{ $enteteServices->etiquette($langue) }}</div>
         @endif
-        <h2 class="reveal" style="transition-delay:.1s">{{ $enteteServices?->titre($langue) ?: __('Un accompagnement sur-mesure, à chaque étape') }}</h2>
+        <h2 class="reveal retard-10">{{ $enteteServices?->titre($langue) ?: __('Un accompagnement sur-mesure, à chaque étape') }}</h2>
         @if ($enteteServices?->chapo($langue))
-          <p class="reveal" style="transition-delay:.15s">{{ $enteteServices->chapo($langue) }}</p>
+          <p class="reveal retard-15">{{ $enteteServices->chapo($langue) }}</p>
         @endif
       </div>
 
@@ -211,7 +211,7 @@
             <p>{{ $banderole->texte($langue) }}</p>
           @endif
         </div>
-        <a href="{{ $banderole->cible_bouton ?: '/biens.html' }}" class="cta-btn" style="padding:16px 32px;font-size:15px;">
+        <a href="{{ $banderole->cible_bouton ?: '/biens.html' }}" class="cta-btn cta-banderole">
           <span>{{ $banderole->libelleBouton($langue) ?: __('Consulter les biens') }}</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
         </a>
@@ -228,9 +228,9 @@
         @if ($enteteArticles?->etiquette($langue))
           <div class="tag tag-home reveal">{{ $enteteArticles->etiquette($langue) }}</div>
         @endif
-        <h2 class="reveal" style="transition-delay:.1s">{{ $enteteArticles?->titre($langue) ?: __('Nos derniers articles') }}</h2>
+        <h2 class="reveal retard-10">{{ $enteteArticles?->titre($langue) ?: __('Nos derniers articles') }}</h2>
         @if ($enteteArticles?->chapo($langue))
-          <p class="reveal" style="transition-delay:.15s">{{ $enteteArticles->chapo($langue) }}</p>
+          <p class="reveal retard-15">{{ $enteteArticles->chapo($langue) }}</p>
         @endif
       </div>
 
@@ -261,13 +261,13 @@
 @if ($temoignages->isNotEmpty())
   <section class="testimonials-section">
     <div class="wrap">
-      <div class="section-head" style="max-width:640px;">
+      <div class="section-head etroite sur-fond-sombre">
         @if ($enteteTemoignages?->etiquette($langue))
           <div class="tag reveal">{{ $enteteTemoignages->etiquette($langue) }}</div>
         @endif
-        <h2 class="reveal" style="color:#fff;">{{ $enteteTemoignages?->titre($langue) ?: __('Ce que disent nos clients') }}</h2>
+        <h2 class="reveal">{{ $enteteTemoignages?->titre($langue) ?: __('Ce que disent nos clients') }}</h2>
         @if ($enteteTemoignages?->chapo($langue))
-          <p class="reveal" style="color:rgba(255,255,255,0.75);">{{ $enteteTemoignages->chapo($langue) }}</p>
+          <p class="reveal">{{ $enteteTemoignages->chapo($langue) }}</p>
         @endif
       </div>
 
@@ -301,7 +301,7 @@
           @if ($entetePartenaires?->etiquette($langue))
             <div class="tag tag-home">{{ $entetePartenaires->etiquette($langue) }}</div>
           @endif
-          <h2 style="font-size:clamp(28px,3vw,42px);color:var(--texte-titre);margin-top:8px;">{{ $entetePartenaires?->titre($langue) ?: __('Nos Partenaires Privilégiés') }}</h2>
+          <h2 class="titre-secondaire">{{ $entetePartenaires?->titre($langue) ?: __('Nos Partenaires Privilégiés') }}</h2>
         </div>
         </div>
 

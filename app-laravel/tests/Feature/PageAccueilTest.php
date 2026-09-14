@@ -71,7 +71,13 @@ it('ne laisse jamais passer de balisage saisi dans le titre', function () {
 
     // L'assertion porte sur le TITRE et non sur la page : celle-ci contient
     // des scripts legitimes — le theme pose avant premier rendu, main.js.
-    preg_match('/<h1 class="reveal".*?<\/h1>/s', $corps, $titre);
+    //
+    // Le motif accepte n'importe quelle liste de classes contenant « reveal ».
+    // Il exigeait « class="reveal" » a l'identique, et tombait donc des qu'une
+    // classe s'ajoutait a cote — ce qui est arrive en sortant le
+    // « transition-delay » du style en ligne. Ce test verifie l'echappement du
+    // balisage saisi, pas la feuille de style.
+    preg_match('/<h1[^>]*class="[^"]*\breveal\b[^"]*"[^>]*>.*?<\/h1>/s', $corps, $titre);
 
     expect($titre)->not->toBeEmpty();
     expect($titre[0])->not->toContain('<script');

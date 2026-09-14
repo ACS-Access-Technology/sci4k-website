@@ -70,11 +70,11 @@
 
         <div class="alert-success" id="successAlert">{{ $texte('confirmation', __("Votre message est prêt : la conversation WhatsApp s'ouvre dans un nouvel onglet. Appuyez sur Envoyer pour le transmettre à SCI4K.")) }}</div>
 
-        <form id="contactForm" onsubmit="handleContactSubmit(event)">
+        <form id="contactForm" data-envoi="contact">
           {{-- Champ piege : invisible et hors du parcours au clavier, un humain
                ne le remplit jamais. Un robot remplit tout ce qu'il trouve, et
                le serveur refuse alors l'envoi. --}}
-          <div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden">
+          <div aria-hidden="true" class="champ-piege">
             <label for="contactSiteWeb">{{ __('Site web') }}</label>
             <input type="text" id="contactSiteWeb" name="site_web" tabindex="-1" autocomplete="off">
           </div>
@@ -154,7 +154,7 @@
 {{-- CARTE --}}
 <section class="map-section">
   <div class="wrap">
-    <h2 class="reveal" style="font-size:clamp(26px,3vw,38px); color:var(--texte-titre); margin-bottom:28px;">
+    <h2 class="reveal titre-secondaire avec-marge">
       {{ $enteteCarte?->titre($langue) ?: __('Notre localisation à Cocody') }}
     </h2>
     <div class="map-container reveal">

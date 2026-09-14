@@ -14,7 +14,7 @@
  <div class="wrap">
   <div class="footer-top">
     <div>
-      <div class="foot-logo"><img src="{{ asset($logoPublic) }}" alt="{{ $t('aria_logo', __('Logo :site', ['site' => $nomDuSite])) }}" style="height:36px;width:auto;" loading="lazy"> {{ $nomDuSite }}</div>
+      <div class="foot-logo"><img src="{{ asset($logoPublic) }}" alt="{{ $t('aria_logo', __('Logo :site', ['site' => $nomDuSite])) }}" loading="lazy"> {{ $nomDuSite }}</div>
       <p>{{ $descriptionCourte }}</p>
       @if ($liensSociaux)
         <div class="social-links">
