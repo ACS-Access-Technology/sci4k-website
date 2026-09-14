@@ -1,0 +1,72 @@
+# Configuration du serveur, reprise de celle que livre FrankenPHP, avec les
+# en-tetes de cache en plus.
+#
+# POURQUOI CE FICHIER EXISTE
+# --------------------------
+# L'image sert les fichiers statiques SANS aucun « Cache-Control » : seuls un
+# « etag » et un « last-modified » accompagnent la reponse. Le navigateur doit
+# donc redemander chaque ressource a chaque visite pour s'entendre repondre
+# « inchangee ». PageSpeed chiffrait le gaspillage a 1 551 Kio par page sur
+# mobile — une dizaine d'allers-retours inutiles, payes plein tarif sur une
+# connexion lente.
+#
+# Le reste du fichier est celui de FrankenPHP, recopie tel quel : les
+# variables {$...} gardent les memes noms et les memes valeurs par defaut, de
+# sorte que rien de ce que la plateforme injecte ne se perd.
+
+{
+	skip_install_trust
+
+	{$CADDY_GLOBAL_OPTIONS}
+
+	frankenphp {
+		{$FRANKENPHP_CONFIG}
+	}
+}
+
+{$CADDY_EXTRA_CONFIG}
+
+{$SERVER_NAME:localhost} {
+	root {$SERVER_ROOT:public/}
+	encode zstd br gzip
+
+	# --- Caches, par duree de vie reelle de l'adresse -----------------
+	#
+	# La regle est partout la meme : une adresse peut etre gardee aussi
+	# longtemps que son CONTENU ne peut pas changer sous elle.
+
+	# Fichiers televerses depuis le backoffice, et ressources construites
+	# par Vite. Les uns portent un nom aleatoire, les autres une empreinte
+	# du contenu : remplacer le fichier produit une AUTRE adresse, jamais
+	# une autre version de la meme. Rien ne peut donc perimer.
+	@adresses_definitives path /storage/* /build/*
+	header @adresses_definitives Cache-Control "public, max-age=31536000, immutable"
+
+	# Feuille de style et script du site public. Servis avec « ?v=<date> »
+	# par App\Support\Ressource : l'adresse change des que le fichier
+	# change, ce qui revient au meme. Pas de « immutable » cependant — une
+	# adresse sans le parametre reste possible, et doit pouvoir etre
+	# revalidee a la demande.
+	@ressources_versionnees path /assets/*
+	header @ressources_versionnees Cache-Control "public, max-age=31536000"
+
+	# Images du site, au contraire, portent un nom FIXE — /images/hero/contact.jpg
+	# — et sont remplacees sur place au deploiement. Une semaine est le
+	# compromis : assez pour eviter le retelechargement a chaque visite,
+	# assez court pour qu'un visuel change se propage sans qu'on ait a le
+	# demander. Les versionner leverait cette limite ; ce n'est pas fait.
+	@images_du_site path /images/*
+	header @images_du_site Cache-Control "public, max-age=604800"
+
+	# Les pages, elles, ne sont PAS mises en cache ici : leur contenu vient
+	# de la base et change des qu'un editeur enregistre. Laravel pose ses
+	# propres en-tetes dessus, et les matchers ci-dessus ne visent que des
+	# dossiers de fichiers statiques.
+
+	{$CADDY_SERVER_EXTRA_DIRECTIVES}
+
+	php_server
+}
+
+# Les blocs ajoutes par la plateforme, le cas echeant.
+import Caddyfile.d/*.caddyfile

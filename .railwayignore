@@ -15,7 +15,7 @@
 #                           public. L'ecarter casserait la construction.
 #   app-laravel/            l'application elle-meme.
 #   tools/                  sync-frontoffice.sh et demarrer-conteneur.sh.
-#   docker/                 php.ini.
+#   docker/                 php.ini et le Caddyfile du serveur.
 
 # Maquettes historiques du backoffice. Trente ecrans generes par des scripts
 # Python, conserves comme reference visuelle ; aucune etape de construction ne
