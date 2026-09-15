@@ -2213,6 +2213,26 @@ nav.links{gap:26px;}
 @media (min-width:1121px){
   .nav{flex-wrap:nowrap;}
   nav.links{flex-shrink:1;min-width:0;}
+
+  /* Le menu au MILIEU de la barre, et non colle au logo.
+     Le « justify-content:space-between » de .nav ne servait a rien : la
+     regle generale « .util-switches{margin-left:auto} », plus bas dans ce
+     fichier et sans media query, absorbe A ELLE SEULE tout l'espace libre
+     pour plaquer les bascules a droite. Il ne reste alors plus rien a
+     repartir, et le logo et le menu restent empiles a gauche — mesure a
+     1440px : le menu tombait 142px a gauche du centre.
+     On donne donc aux deux blocs lateraux une part egale du reste
+     (flex:1 1 0), ce qui pose le menu au centre exact quelle que soit la
+     largeur du logo. La marge automatique est remise a zero explicitement :
+     sans cela elle ne serait neutralisee que par effet de bord — les
+     elements grandissant jusqu'a ne plus laisser d'espace libre — et
+     reviendrait des que l'un de ces flex changerait.
+     Rien n'est reclame en plus : la base 0 se contente de repartir la place
+     deja disponible, et min-width:auto empeche le logo d'etre comprime sous
+     son contenu. */
+  .nav .logo{flex:1 1 0;}
+  .nav .util-switches{flex:1 1 0; justify-content:flex-end; margin-left:0;}
+  .nav nav.links{flex:0 1 auto; justify-content:center;}
 }
 
 /* palier intermediaire : on compacte avant de basculer sur le burger */
