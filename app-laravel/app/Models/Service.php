@@ -9,6 +9,7 @@ use App\Support\Media;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Service extends Model
 {
@@ -178,6 +179,34 @@ class Service extends Model
     public function categorie(): BelongsTo
     {
         return $this->belongsTo(Categorie::class, 'categorie_id');
+    }
+
+    /**
+     * Les biens qui illustrent cette activite.
+     *
+     * Volontairement SANS filtre de publication : un ecran d'administration a
+     * besoin de voir aussi les brouillons rattaches. C'est l'appelant public
+     * qui restreint — voir `illustrations()`.
+     *
+     * @return BelongsToMany<Bien, $this>
+     */
+    public function biens(): BelongsToMany
+    {
+        return $this->belongsToMany(Bien::class, 'bien_service');
+    }
+
+    /**
+     * Ce que le visiteur voit sous cette activite.
+     *
+     * Une realisation y a toute sa place — c'est meme sa seule vitrine, le
+     * catalogue l'ecartant. On ne retient donc que la publication, sans passer
+     * par `duCatalogue()` qui les exclurait justement.
+     *
+     * @return BelongsToMany<Bien, $this>
+     */
+    public function illustrations(): BelongsToMany
+    {
+        return $this->biens()->publies()->ordonnes();
     }
 
     public function getRouteKeyName(): string

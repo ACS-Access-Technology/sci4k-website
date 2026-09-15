@@ -6,6 +6,7 @@ use App\Livewire\Concerns\RemplitParTraduction;
 use App\Models\Bien;
 use App\Models\PhotoDeBien;
 use App\Models\Referentiel;
+use App\Models\Service;
 use App\Services\Traduction\Traducteur;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
@@ -103,6 +104,27 @@ class BienFormulaire extends Component
     /** Saisie du champ « ajouter un équipement », vidée après chaque ajout. */
     public string $nouvelEquipement = '';
 
+    /**
+     * Les activites de l'agence que ce bien illustre, par identifiant.
+     *
+     * Rien en base ne permet de les deduire : « type = terrain » donnerait bien
+     * le Foncier, mais Achat et Vente designent le meme bien vu de deux cotes,
+     * et aucune colonne ne dit qu'un immeuble a ete bati ou est administre par
+     * l'agence. D'ou un choix pose ici, a la main.
+     *
+     * @var list<int>
+     */
+    public array $services = [];
+
+    /**
+     * Une reference, et non un bien a vendre.
+     *
+     * Un immeuble bati ou administre par l'agence merite ses photos et sa
+     * fiche, mais n'a ni prix ni visite a proposer : il quitte le catalogue
+     * tout en restant visible sous l'activite qu'il illustre.
+     */
+    public bool $estUneRealisation = false;
+
     public string $metaTitreFr = '';
 
     public string $metaTitreEn = '';
@@ -190,6 +212,8 @@ class BienFormulaire extends Component
         $this->nombreSallesEau = (string) ($bien->nombre_salles_eau ?? '');
 
         $this->equipements = $bien->equipements()->pluck('referentiels.id')->all();
+        $this->services = $bien->services()->pluck('services.id')->all();
+        $this->estUneRealisation = (bool) $bien->est_une_realisation;
 
         $this->metaTitreFr = (string) $bien->meta_titre_fr;
         $this->metaTitreEn = (string) $bien->meta_titre_en;
@@ -247,6 +271,10 @@ class BienFormulaire extends Component
             'equipements.*' => [Rule::in($this->identifiantsDesEquipements())],
             'nouvelEquipement' => ['nullable', 'string', 'max:120'],
 
+            'services' => ['array'],
+            'services.*' => [Rule::in($this->identifiantsDesServices())],
+            'estUneRealisation' => ['boolean'],
+
             'metaTitreFr' => ['nullable', 'string', 'max:70'],
             'metaTitreEn' => ['nullable', 'string', 'max:70'],
             'metaDescriptionFr' => ['nullable', 'string', 'max:160'],
@@ -269,6 +297,19 @@ class BienFormulaire extends Component
     protected function identifiantsDesEquipements(): array
     {
         return Referentiel::deLaFamille('equipements')->pluck('id')->all();
+    }
+
+    /**
+     * Les activites auxquelles un bien peut se rattacher.
+     *
+     * Toutes, y compris celles masquees du site : un service temporairement
+     * retire de la page publique garde ses biens, qui reapparaissent avec lui.
+     *
+     * @return list<int>
+     */
+    protected function identifiantsDesServices(): array
+    {
+        return Service::pluck('id')->all();
     }
 
     protected function validationAttributes(): array
@@ -422,6 +463,7 @@ class BienFormulaire extends Component
             'date_mise_en_ligne' => $this->dateMiseEnLigne ?: null,
             'en_avant' => $this->enAvant,
             'urgent' => $this->urgent,
+            'est_une_realisation' => $this->estUneRealisation,
         ];
 
         if ($this->bien?->exists) {
@@ -437,6 +479,7 @@ class BienFormulaire extends Component
         // sync() apres l'ecriture du bien, et pas avant : a la creation, il n'y
         // a pas encore d'identifiant auquel rattacher les equipements.
         $this->bien->equipements()->sync(array_map('intval', $this->equipements));
+        $this->bien->services()->sync(array_map('intval', $this->services));
 
         $this->televerserLesPhotos();
 
@@ -464,7 +507,8 @@ class BienFormulaire extends Component
         $ongletDuChamp = [
             'general' => ['reference', 'slug', 'titreFr', 'titreEn', 'sousTitreFr', 'sousTitreEn',
                 'accrocheFr', 'accrocheEn', 'descriptionFr', 'descriptionEn', 'type', 'offre',
-                'zone', 'quartier', 'statut', 'dateMiseEnLigne', 'enAvant', 'urgent'],
+                'zone', 'quartier', 'statut', 'dateMiseEnLigne', 'enAvant', 'urgent',
+                'services', 'estUneRealisation'],
             'caracteristiques' => ['statutJuridique', 'numeroTitre', 'prix', 'prixUnite',
                 'surfaceHabitable', 'surfaceTerrain', 'nombrePieces', 'nombreChambres',
                 'nombreSallesEau', 'equipements', 'nouvelEquipement'],
@@ -539,6 +583,7 @@ class BienFormulaire extends Component
             'zones' => Referentiel::deLaFamille('zones')->ordonnees()->get(),
             'statutsJuridiques' => Referentiel::deLaFamille('statuts_juridiques')->ordonnees()->get(),
             'equipementsProposes' => Referentiel::deLaFamille('equipements')->ordonnees()->get(),
+            'servicesProposes' => Service::orderBy('ordre')->orderBy('id')->get(),
             'offres' => Bien::offres(),
             'statuts' => Bien::statuts(),
             'unitesDePrix' => Bien::unitesDePrix(),

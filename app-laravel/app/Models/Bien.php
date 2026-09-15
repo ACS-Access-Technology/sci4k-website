@@ -32,12 +32,14 @@ class Bien extends Model
         'nombre_pieces', 'nombre_chambres', 'nombre_salles_eau',
         'meta_titre_fr', 'meta_titre_en', 'meta_description_fr', 'meta_description_en',
         'statut', 'date_mise_en_ligne', 'en_avant', 'urgent', 'auteur_id', 'ordre',
+        'est_une_realisation',
     ];
 
     protected $casts = [
         'date_mise_en_ligne' => 'date',
         'en_avant' => 'boolean',
         'urgent' => 'boolean',
+        'est_une_realisation' => 'boolean',
     ];
 
     /* --------------------------------------------------- vocabulaire */
@@ -113,12 +115,48 @@ class Bien extends Model
             ->orderBy('referentiels.id');
     }
 
+    /**
+     * Les activites de l'agence que ce bien illustre.
+     *
+     * @return BelongsToMany<Service, $this>
+     */
+    public function services(): BelongsToMany
+    {
+        return $this->belongsToMany(Service::class, 'bien_service')
+            ->orderBy('services.ordre')
+            ->orderBy('services.id');
+    }
+
     /* --------------------------------------------------- portees */
 
     /** Ce que le visiteur voit. Un bien vendu reste visible, mais marque. */
     public function scopePublies(Builder $requete): Builder
     {
         return $requete->whereIn('statut', [self::PUBLIE, self::VENDU]);
+    }
+
+    /**
+     * Ce que le CATALOGUE montre, par opposition a ce que le site expose.
+     *
+     * La distinction n'est pas un detail de nommage. Une realisation — un
+     * immeuble bati ou administre par l'agence — garde sa fiche, ses photos et
+     * sa place dans le plan du site : elle est bel et bien publiee. Elle n'a
+     * simplement rien a faire dans une grille de biens a vendre ou a louer,
+     * n'ayant ni prix ni visite a proposer.
+     *
+     * D'ou une portee distincte plutot qu'un durcissement de `publies()` :
+     * sur les sept requetes qui s'en servent, quatre veulent ecarter les
+     * realisations et deux — la fiche et le plan du site — doivent au
+     * contraire les voir. Modifier `publies()` aurait casse ces deux-la en
+     * silence.
+     */
+    public function scopeDuCatalogue(Builder $requete): Builder
+    {
+        // scopePublies() appele directement, et non « $requete->publies() » :
+        // la seconde forme passe par la resolution dynamique des portees, que
+        // l'analyse statique ne sait pas suivre. La definition de « publie »
+        // reste ainsi a un seul endroit.
+        return $this->scopePublies($requete)->where('est_une_realisation', false);
     }
 
     public function scopeOrdonnes(Builder $requete): Builder

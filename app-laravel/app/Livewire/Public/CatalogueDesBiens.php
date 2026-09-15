@@ -79,7 +79,7 @@ class CatalogueDesBiens extends Component
 
     public function ouvrirBien(int $id): void
     {
-        $this->bienOuvert = Bien::query()->publies()->with(['photos', 'equipements'])->findOrFail($id);
+        $this->bienOuvert = Bien::query()->duCatalogue()->with(['photos', 'equipements'])->findOrFail($id);
     }
 
     public function fermerBien(): void
@@ -142,7 +142,7 @@ class CatalogueDesBiens extends Component
         ));
 
         $biens = Bien::query()
-            ->publies()
+            ->duCatalogue()
             ->with('photos')
             ->when($type !== '', fn ($r) => $r->where('type', $type))
             ->when($zone !== '', fn ($r) => $r->where('zone', $zone))

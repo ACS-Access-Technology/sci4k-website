@@ -195,7 +195,13 @@ class PagePubliqueController extends Controller
 
         return view('public.services', [
             'banniere' => $enTetes->get('services.page'),
-            'services' => Service::visibles()->ordonnees()->get(),
+            // Les illustrations sont chargees d'avance : la page rend un
+            // panneau par service, et sans cela chacun declencherait sa propre
+            // requete. La limite tient a la fenetre, qui montre un apercu et
+            // non un second catalogue.
+            'services' => Service::visibles()->ordonnees()
+                ->with(['illustrations' => fn ($r) => $r->with('photos')])
+                ->get(),
             'etapes' => EtapeProcessus::where('visible', true)->orderBy('ordre')->orderBy('id')->get(),
             'enteteProcessus' => $enteteProcessus,
             'miseEnPageProcessus' => $enteteProcessus?->option('mise_en_page', 'frise') ?? 'frise',
