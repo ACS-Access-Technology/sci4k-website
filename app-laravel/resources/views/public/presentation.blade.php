@@ -41,6 +41,42 @@
   </div>
 </section>
 
+{{-- MOT DU DIRECTEUR GÉNÉRAL --}}
+<section class="presentation">
+  <div class="wrap pres-grid">
+    <div class="pres-media reveal">
+      <div class="frame">
+        <img src="{{ asset($visuelDirecteur?->fichier ?: 'images/presentation/silhouette.svg') }}"
+             alt="{{ $visuelDirecteur?->texteAlternatif($langue) ?: __('Portrait du Directeur Général') }}" loading="lazy">
+      </div>
+      {{-- Le compteur vient des options de la section. Sa valeur etait ecrite
+           en dur : « 14 quartiers » aurait vieilli en silence. --}}
+      <div class="float-card">
+        <b class="cnt" data-target="{{ (int) ($motDuDirecteur?->option('compteur_valeur') ?: 14) }}">0</b>
+        <span>{{ $motDuDirecteur?->option('compteur_libelle_'.$langue) ?: __("quartiers d'Abidjan couverts par notre réseau d'agents") }}</span>
+      </div>
+    </div>
+    <div class="pres-body">
+      @if ($motDuDirecteur?->etiquette($langue))
+        <div class="tag tag-accent reveal">{{ $motDuDirecteur->etiquette($langue) }}</div>
+      @endif
+      <h3 class="reveal">{{ $motDuDirecteur?->titre($langue) ?: __('Bâtir des lieux de vie, pas seulement des bâtiments.') }}</h3>
+
+      @foreach ($motDuDirecteur?->paragraphes($langue) ?: [] as $paragraphe)
+        <p class="reveal">{{ $paragraphe }}</p>
+      @endforeach
+
+      <div class="signature reveal">
+        <div>
+          <div class="sig-hand">TIEMOKO Regis</div>
+          <div class="sig-name">{{ $tDirecteur('signature_nom', __('Le Directeur Général')) }}</div>
+          <div class="sig-role">{{ $tDirecteur('signature_role', __('SCI4K — Société Civile Immobilière Abidjan')) }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 {{-- PRÉSENTATION DE L'ENTREPRISE --}}
 <section class="company-overview">
   <div class="wrap overview-grid">
@@ -82,42 +118,6 @@
       <img src="{{ asset($visuelApercu?->fichier ?: 'images/presentation/apercu.jpg') }}"
            alt="{{ $visuelApercu?->texteAlternatif($langue) ?: __('Immobilier Abidjan') }}"
            class="visuel-apercu" loading="lazy">
-    </div>
-  </div>
-</section>
-
-{{-- MOT DU DIRECTEUR GÉNÉRAL --}}
-<section class="presentation">
-  <div class="wrap pres-grid">
-    <div class="pres-media reveal">
-      <div class="frame">
-        <img src="{{ asset($visuelDirecteur?->fichier ?: 'images/presentation/silhouette.svg') }}"
-             alt="{{ $visuelDirecteur?->texteAlternatif($langue) ?: __('Portrait du Directeur Général') }}" loading="lazy">
-      </div>
-      {{-- Le compteur vient des options de la section. Sa valeur etait ecrite
-           en dur : « 14 quartiers » aurait vieilli en silence. --}}
-      <div class="float-card">
-        <b class="cnt" data-target="{{ (int) ($motDuDirecteur?->option('compteur_valeur') ?: 14) }}">0</b>
-        <span>{{ $motDuDirecteur?->option('compteur_libelle_'.$langue) ?: __("quartiers d'Abidjan couverts par notre réseau d'agents") }}</span>
-      </div>
-    </div>
-    <div class="pres-body">
-      @if ($motDuDirecteur?->etiquette($langue))
-        <div class="tag tag-accent reveal">{{ $motDuDirecteur->etiquette($langue) }}</div>
-      @endif
-      <h3 class="reveal">{{ $motDuDirecteur?->titre($langue) ?: __('Bâtir des lieux de vie, pas seulement des bâtiments.') }}</h3>
-
-      @foreach ($motDuDirecteur?->paragraphes($langue) ?: [] as $paragraphe)
-        <p class="reveal">{{ $paragraphe }}</p>
-      @endforeach
-
-      <div class="signature reveal">
-        <div>
-          <div class="sig-hand">TIEMOKO Regis</div>
-          <div class="sig-name">{{ $tDirecteur('signature_nom', __('Le Directeur Général')) }}</div>
-          <div class="sig-role">{{ $tDirecteur('signature_role', __('SCI4K — Société Civile Immobilière Abidjan')) }}</div>
-        </div>
-      </div>
     </div>
   </div>
 </section>
