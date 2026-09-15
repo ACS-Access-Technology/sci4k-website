@@ -62,10 +62,17 @@ return new class extends Migration
      * autres restent VIDES a dessein, et la frontiere entre les deux groupes
      * n'est pas la redondance mais la VERITE :
      *
-     *   « Achat » ramene la meme liste que « Vente ». C'est redondant, ce n'est
-     *   pas faux : un bien mis en vente est precisement un bien qu'on peut
-     *   acheter, et le visiteur qui cherche a acheter clique la. On le rattache
-     *   donc, les deux faces d'un meme fait valant mieux qu'une activite vide.
+     *   « Achat » et « Vente » ne s'adressent PAS a la meme personne. Achat,
+     *   c'est le client qui veut acquerir ; Vente, celui qui veut ceder son
+     *   bien et cherche un mandataire. Deux clienteles opposees, et non deux
+     *   faces d'un meme fait.
+     *
+     *   Ils partagent pourtant la meme liste aujourd'hui, pour deux raisons
+     *   distinctes : sous Achat, ces biens sont ce qu'on peut acquerir ; sous
+     *   Vente, ils sont le portefeuille que des proprietaires ont confie a
+     *   l'agence — la preuve que cherche un vendeur. Le jour ou des biens
+     *   passeront au statut « Vendu », ce sont EUX qui illustreront le mieux
+     *   la Vente : aucun n'y est encore.
      *
      *   « Construction » et « Administration de biens » n'ont AUCUN appui en
      *   base : rien ne dit qu'un immeuble a ete bati ou est administre par
