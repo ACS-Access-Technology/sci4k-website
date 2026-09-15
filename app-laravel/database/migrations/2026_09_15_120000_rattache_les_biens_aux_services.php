@@ -58,11 +58,21 @@ return new class extends Migration
     /**
      * Un point de depart, pas une verite.
      *
-     * Trois activites se deduisent sans ambiguite de ce que les biens portent
-     * deja. Les trois autres sont laissees VIDES a dessein : « Achat » et
-     * « Vente » designent le meme bien vu de deux cotes, et rien en base ne dit
-     * qu'un immeuble a ete bati ou est administre par l'agence. Les remplir
-     * aurait ete inventer. Tout se recoche de toute facon dans le backoffice.
+     * Quatre activites se deduisent de ce que les biens portent deja. Les deux
+     * autres restent VIDES a dessein, et la frontiere entre les deux groupes
+     * n'est pas la redondance mais la VERITE :
+     *
+     *   « Achat » ramene la meme liste que « Vente ». C'est redondant, ce n'est
+     *   pas faux : un bien mis en vente est precisement un bien qu'on peut
+     *   acheter, et le visiteur qui cherche a acheter clique la. On le rattache
+     *   donc, les deux faces d'un meme fait valant mieux qu'une activite vide.
+     *
+     *   « Construction » et « Administration de biens » n'ont AUCUN appui en
+     *   base : rien ne dit qu'un immeuble a ete bati ou est administre par
+     *   l'agence. Un immeuble de rapport peut tout aussi bien etre un
+     *   placement mis en vente par son proprietaire. Les remplir serait
+     *   inventer une reference commerciale, ce qu'une migration n'a pas a
+     *   faire. Elles se cochent a la main, par quelqu'un qui sait.
      */
     private function rattacheCeQuiEstCertain(): void
     {
@@ -71,6 +81,7 @@ return new class extends Migration
         $regles = [
             'foncier' => fn ($q) => $q->where('type', 'terrain'),
             'vente' => fn ($q) => $q->where('offre', 'vente'),
+            'achat' => fn ($q) => $q->where('offre', 'vente'),
             // « gestion » et non « gestion-location » : le slug est plus court
             // que le nom affiche, verifie en base.
             'gestion' => fn ($q) => $q->where('offre', 'location'),
