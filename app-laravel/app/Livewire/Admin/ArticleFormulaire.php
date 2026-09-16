@@ -6,6 +6,7 @@ use App\Livewire\Concerns\RemplitParTraduction;
 use App\Models\Article;
 use App\Models\Categorie;
 use App\Services\Traduction\Traducteur;
+use App\Support\ImageTeleversee;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -292,7 +293,7 @@ class ArticleFormulaire extends Component
         $ancienne = $this->couvertureActuelle;
 
         if ($this->couverture) {
-            $chemin = $this->couverture->store('actualites', 'public');
+            $chemin = ImageTeleversee::deposer($this->couverture, 'actualites');
             $this->effacerSiTeleversee($ancienne);
             $this->couvertureActuelle = 'storage/'.$chemin;
 

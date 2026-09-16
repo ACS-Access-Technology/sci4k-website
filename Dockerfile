@@ -57,10 +57,19 @@ RUN npm run build
 # --- L'application -----------------------------------------------------------
 FROM dunglas/frankenphp:php8.3
 
-# Les extensions exigees par composer et ses dependances. gd et intl ne sont pas
-# utilisees par le code — le recadrage des images se fait dans le navigateur —
-# mais Laravel les attend sur certains chemins, et leur cout est negligeable.
-RUN install-php-extensions pdo_mysql pdo_sqlite gd intl zip opcache
+# Les extensions exigees par composer et ses dependances.
+#
+# gd N'EST PLUS FACULTATIVE : App\Support\ImageTeleversee s'en sert pour
+# reduire et convertir chaque visuel televerse. Sans elle le depot fonctionne
+# encore — le fichier part tel quel, par repli deliberé — mais une fiche de
+# bien peut alors servir vingt megaoctets de photos.
+#
+# exif l'accompagne, et pour une raison precise : un telephone enregistre la
+# photo telle que le capteur l'a lue et joint une consigne de rotation. GD
+# ignore cette consigne et la perd a la reecriture. Sans exif, une photo prise
+# en portrait se publierait donc COUCHEE — la conversion aggraverait ce que le
+# stockage brut laissait passer.
+RUN install-php-extensions pdo_mysql pdo_sqlite gd exif intl zip opcache
 
 # rsync : tools/sync-frontoffice.sh s'en sert pour deposer les ressources du
 # site statique. Il est fourni sur macOS et sur les executeurs GitHub, mais pas

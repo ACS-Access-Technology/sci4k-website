@@ -7,6 +7,7 @@ use App\Models\Bien;
 use App\Models\Categorie;
 use App\Models\Service;
 use App\Services\Traduction\Traducteur;
+use App\Support\ImageTeleversee;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -306,7 +307,7 @@ class ServiceFormulaire extends Component
         $ancienne = $this->imageActuelle;
 
         if ($this->image) {
-            $chemin = $this->image->store('services', 'public');
+            $chemin = ImageTeleversee::deposer($this->image, 'services');
             $this->effacerSiTeleversee($ancienne);
             $this->imageActuelle = 'storage/'.$chemin;
 

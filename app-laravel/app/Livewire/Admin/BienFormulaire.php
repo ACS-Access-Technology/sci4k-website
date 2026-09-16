@@ -8,6 +8,7 @@ use App\Models\PhotoDeBien;
 use App\Models\Referentiel;
 use App\Models\Service;
 use App\Services\Traduction\Traducteur;
+use App\Support\ImageTeleversee;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -560,7 +561,7 @@ class BienFormulaire extends Component
                 break;
             }
 
-            $chemin = $fichier->store('biens', 'public');
+            $chemin = ImageTeleversee::deposer($fichier, 'biens');
 
             PhotoDeBien::create([
                 'bien_id' => $this->bien->id,

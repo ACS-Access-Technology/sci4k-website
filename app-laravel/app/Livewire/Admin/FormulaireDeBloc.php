@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\RemplitParTraduction;
 use App\Services\Traduction\Traducteur;
+use App\Support\ImageTeleversee;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -387,7 +388,7 @@ abstract class FormulaireDeBloc extends Component
         $ancien = $this->fichierActuel;
 
         if ($this->fichier) {
-            $chemin = $this->fichier->store($dossier, 'public');
+            $chemin = ImageTeleversee::deposer($this->fichier, $dossier);
             $this->effacerSiTeleverse($ancien, $dossier);
             $this->fichierActuel = 'storage/'.$chemin;
 

@@ -53,7 +53,17 @@ chaque fichier en gardant exactement le même nom : rien d'autre à modifier.
 | `blog/article-2.jpg` | Accueil + page Blog, article 2 | Mairie de Cocody |
 | `blog/article-3.jpg` | Accueil + page Blog, article 3 | Copropriétés Riviéra Golf |
 | `presentation/apercu.jpg` | Présentation, bloc Aperçu | Commune du Plateau |
-| `presentation/equipe.jpg` | Présentation, cadre Équipe | Mairie de Cocody |
+| `presentation/equipe.jpg` | ~~Présentation, cadre Équipe~~ — **plus utilisé** | Mairie de Cocody |
+
+**`presentation/equipe.jpg` n'a plus d'emplacement.** Le cadre « Équipe » de la
+page Présentation affiche désormais les membres saisis dans le backoffice, avec
+leur propre photo. Le fichier reste dans le dépôt mais plus aucune vue ne le
+lit : rien à y déposer.
+
+Quatre autres fichiers sans emplacement — `terrain_abidjan.jpg`,
+`images.jpg`, `images (4).jpg` et `image (2).svg` — ont été retirés le
+2026-09-16. Ils pesaient 308 Ko qui partaient à chaque déploiement sans
+qu'aucune page ne les demande.
 
 ## Deux points de vigilance
 
