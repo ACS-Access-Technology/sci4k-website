@@ -70,6 +70,19 @@ it('garde la fiche d\'une realisation accessible', function () {
     $this->get('/biens/residence-confiee')->assertOk()->assertSee('Résidence confiée');
 });
 
+it('ne propose pas de visite sur la fiche d\'une realisation', function () {
+    // Le serveur refuse deja d'y rattacher une demande : laisser le
+    // formulaire aurait promis un rendez-vous que personne n'honore.
+    $this->get('/biens/residence-confiee')
+        ->assertOk()
+        ->assertDontSee('formulaireVisite');
+
+    // Contre-epreuve : un bien du catalogue le propose toujours.
+    $this->get('/biens/lot-bonoua')
+        ->assertOk()
+        ->assertSee('formulaireVisite');
+});
+
 it('ne propose pas une realisation parmi les biens de la meme zone', function () {
     // Les deux biens partagent la zone. Presenter une realisation sous
     // « dans la meme zone » reviendrait a l'annoncer comme une offre.
