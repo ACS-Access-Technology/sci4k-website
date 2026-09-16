@@ -222,6 +222,37 @@ it('separe le catalogue des realisations dans la liste du backoffice', function 
         ->assertSee('Résidence confiée');
 });
 
+it('annonce ou le bien apparaitra, pour les quatre combinaisons', function () {
+    foreach (['administrateur', 'editeur', 'lecteur'] as $role) {
+        Role::findOrCreate($role, 'web');
+    }
+
+    $this->seed(ReferentielsSeeder::class);
+
+    $editeur = User::factory()->create(['statut' => User::ACTIF]);
+    $editeur->assignRole('editeur');
+
+    $ecran = Livewire::actingAs($editeur)->test(BienFormulaire::class);
+
+    // 1. Ni realisation, ni activite : au catalogue, et nulle part ailleurs.
+    $ecran->set('estUneRealisation', false)->set('services', [])
+        ->assertSee('dans le catalogue, sous aucune activité')
+        ->assertDontSee('n’apparaîtra nulle part');
+
+    // 2. Au catalogue ET sous une activite — le cas par defaut des six biens.
+    $ecran->set('services', [$this->foncier->id])
+        ->assertSee('dans le catalogue, et sous Foncier');
+
+    // 3. Realisation rattachee : sous l'activite seulement.
+    $ecran->set('estUneRealisation', true)
+        ->assertSee('sous Foncier uniquement, et pas dans le catalogue');
+
+    // 4. LE PIEGE : realisation sans activite. Le bien existe, sa fiche
+    //    repondrait, mais aucun lien du site n'y menerait.
+    $ecran->set('services', [])
+        ->assertSee('n’apparaîtra nulle part');
+});
+
 it('laisse vide une activite a laquelle rien n\'est rattache', function () {
     // Une activite sans bien ne doit pas emprunter ceux d'une autre : c'est
     // exactement ce qu'aurait produit une regle deduite des colonnes.

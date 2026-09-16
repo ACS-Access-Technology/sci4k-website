@@ -9,6 +9,7 @@ use App\Models\Referentiel;
 use App\Models\Service;
 use App\Services\Traduction\Traducteur;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -573,17 +574,55 @@ class BienFormulaire extends Component
         $this->nouvellesPhotos = [];
     }
 
+    /**
+     * Ou ce bien apparaitra, d'apres les deux controles qui en decident.
+     *
+     * Ces deux-la — la case « realisation » et les activites cochees — sont
+     * INDEPENDANTES, et leur combinaison n'etait ecrite nulle part : l'editeur
+     * devait la deduire. Pire, l'une des quatre combinaisons retire le bien du
+     * catalogue ET de toute activite : il existe, sa fiche repond, mais plus
+     * aucun lien du site n'y mene. Rien ne le signalait.
+     *
+     * On calcule donc le RESULTAT et on l'affiche, au lieu de laisser deviner
+     * la regle.
+     *
+     * @param  Collection<int, Service>  $servicesProposes
+     * @return array{auCatalogue: bool, activites: list<string>, nullePart: bool}
+     */
+    protected function emplacement($servicesProposes, string $langue): array
+    {
+        $coches = array_map('intval', $this->services);
+
+        $activites = $servicesProposes
+            ->whereIn('id', $coches)
+            ->map(fn (Service $service) => $service->nom($langue))
+            ->values()
+            ->all();
+
+        $auCatalogue = ! $this->estUneRealisation;
+
+        return [
+            'auCatalogue' => $auCatalogue,
+            'activites' => $activites,
+            'nullePart' => ! $auCatalogue && $activites === [],
+        ];
+    }
+
     public function render(): View
     {
+        $langue = app()->getLocale();
+        $servicesProposes = Service::orderBy('ordre')->orderBy('id')->get();
+
         return view('livewire.admin.bien-formulaire', [
             'estCreation' => $this->estCreation(),
-            'langue' => app()->getLocale(),
+            'langue' => $langue,
+            'emplacement' => $this->emplacement($servicesProposes, $langue),
             'traductionActive' => app(Traducteur::class)->disponible(),
             'types' => Referentiel::deLaFamille('types_de_bien')->ordonnees()->get(),
             'zones' => Referentiel::deLaFamille('zones')->ordonnees()->get(),
             'statutsJuridiques' => Referentiel::deLaFamille('statuts_juridiques')->ordonnees()->get(),
             'equipementsProposes' => Referentiel::deLaFamille('equipements')->ordonnees()->get(),
-            'servicesProposes' => Service::orderBy('ordre')->orderBy('id')->get(),
+            'servicesProposes' => $servicesProposes,
             'offres' => Bien::offres(),
             'statuts' => Bien::statuts(),
             'unitesDePrix' => Bien::unitesDePrix(),

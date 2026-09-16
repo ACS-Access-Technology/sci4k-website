@@ -133,7 +133,11 @@
                         <div class="mt-2 grid gap-x-4 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
                             @foreach ($servicesProposes as $service)
                                 <label class="flex items-center gap-2 text-sm" wire:key="svc-{{ $service->id }}">
-                                    <input type="checkbox" value="{{ $service->id }}" wire:model="services"
+                                    {{-- .live : la phrase de resume sous ces cases dit ou
+                                         le bien apparaitra. Differee, elle ne se mettrait
+                                         a jour qu'a l'enregistrement, donc trop tard pour
+                                         guider la saisie. --}}
+                                    <input type="checkbox" value="{{ $service->id }}" wire:model.live="services"
                                            @disabled(! $peutEcrire)
                                            class="rounded border-zinc-300 dark:border-zinc-600">
                                     <span @class(['text-zinc-400 line-through' => ! $service->visible])>{{ $service->nom($langue) }}</span>
@@ -148,7 +152,7 @@
                          elles : une realisation dont aucune activite n'est
                          cochee ne s'afficherait plus nulle part. --}}
                     <label class="mt-4 flex items-start gap-2 text-sm">
-                        <input type="checkbox" wire:model="estUneRealisation"
+                        <input type="checkbox" wire:model.live="estUneRealisation"
                                @disabled(! $peutEcrire)
                                class="mt-0.5 rounded border-zinc-300 dark:border-zinc-600">
                         <span>
@@ -158,6 +162,34 @@
                             </span>
                         </span>
                     </label>
+
+                    {{-- Le RESULTAT des deux controles ci-dessus, plutot que la
+                         regle a deduire. Les deux sont independants : la case
+                         decide si le bien quitte le catalogue, les activites
+                         sous quels metiers il parait. Quatre combinaisons donc,
+                         dont une qui ne menait nulle part sans que rien ne le
+                         dise. --}}
+                    @if ($emplacement['nullePart'])
+                        <p class="mt-4 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
+                            <span class="font-semibold">{{ __('Ce bien n’apparaîtra nulle part.') }}</span>
+                            {{ __('Cochez au moins une activité, ou décochez « Réalisation de référence ». Sa fiche resterait accessible, mais aucun lien du site n’y mènerait.') }}
+                        </p>
+                    @else
+                        {{-- Des phrases ENTIERES, et non des morceaux assembles.
+                             « et sous » puis la liste aurait fait deux cles a
+                             traduire separement, alors que l'ordre des mots
+                             change d'une langue a l'autre : le parametre laisse
+                             chaque langue composer sa phrase. --}}
+                        <p class="mt-4 rounded-lg bg-zinc-100 px-3 py-2 text-sm text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                            @if ($emplacement['auCatalogue'] && $emplacement['activites'])
+                                {{ __('Ce bien apparaîtra dans le catalogue, et sous :activites.', ['activites' => implode(', ', $emplacement['activites'])]) }}
+                            @elseif ($emplacement['auCatalogue'])
+                                {{ __('Ce bien apparaîtra dans le catalogue, sous aucune activité.') }}
+                            @else
+                                {{ __('Ce bien apparaîtra sous :activites uniquement, et pas dans le catalogue.', ['activites' => implode(', ', $emplacement['activites'])]) }}
+                            @endif
+                        </p>
+                    @endif
                 </div>
             @endif
 
