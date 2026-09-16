@@ -86,6 +86,15 @@
             @endforeach
         </select>
 
+        {{-- Sans ce filtre, une realisation etait indiscernable d'un bien du
+             catalogue dans la liste : meme ligne, meme pastille de statut, et
+             rien pour dire qu'elle ne paraitra jamais sur /biens. --}}
+        <select wire:model.live="nature" aria-label="{{ __('Nature') }}" class="{{ $classeChamp }}">
+            <option value="">{{ __('Catalogue et réalisations') }}</option>
+            <option value="catalogue">{{ __('Catalogue seul') }}</option>
+            <option value="realisation">{{ __('Réalisations seules') }}</option>
+        </select>
+
         <div class="flex gap-2">
             <select wire:model.live="tri" aria-label="{{ __('Trier les biens') }}" class="{{ $classeChamp }}">
                 <option value="recent">{{ __('Plus récent') }}</option>
@@ -136,6 +145,13 @@
                                         {{ $bien->titre($langue) }}
                                     </a>
                                     <span class="block truncate text-xs text-zinc-500 dark:text-zinc-400">
+                                        @if ($bien->est_une_realisation)
+                                            {{-- Sous le titre plutot qu'en colonne : c'est ce
+                                                 qu'on cherche en parcourant la liste du regard,
+                                                 et cela evite une colonne de plus, vide sur la
+                                                 grande majorite des lignes. --}}
+                                            <span class="mr-1 rounded bg-violet-100 px-1.5 py-0.5 font-medium text-violet-800 dark:bg-violet-950 dark:text-violet-200">{{ __('Réalisation') }}</span>
+                                        @endif
                                         {{ $bien->quartier }}@if ($bien->surface_habitable || $bien->surface_terrain) — {{ $bien->surface_habitable ?? $bien->surface_terrain }} m²@endif
                                     </span>
                                 </span>

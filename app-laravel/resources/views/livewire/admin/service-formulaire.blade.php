@@ -60,6 +60,50 @@
         </label>
     </div>
 
+    {{-- Le rattachement vu DEPUIS l'activite.
+         Le meme lien se pose depuis la fiche d'un bien, et les deux sens sont
+         utiles : en decrivant un bien on sait a quels metiers il se rattache ;
+         en garnissant une activite creuse on veut au contraire parcourir les
+         biens sans ouvrir chaque fiche l'une apres l'autre.
+
+         La liste defile dans sa propre boite : elle grandit avec le catalogue,
+         et sans hauteur bornee elle repousserait hors de l'ecran tous les
+         champs qui suivent. --}}
+    <div class="mt-6 border-t border-zinc-200 pt-6 dark:border-zinc-700">
+        <span class="text-sm font-medium">{{ __('Biens illustrant cette activité') }}</span>
+        <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            {{ __('Ils apparaîtront dans la fenêtre qui s’ouvre au clic sur ce service.') }}
+        </p>
+
+        @if ($biensProposes->isEmpty())
+            <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+                {{ __('Aucun bien enregistré pour le moment.') }}
+            </p>
+        @else
+            <div class="mt-2 max-h-72 overflow-y-auto rounded-lg border border-zinc-200 p-3 dark:border-zinc-700">
+                <div class="grid gap-x-4 gap-y-2 sm:grid-cols-2">
+                    @foreach ($biensProposes as $bienPropose)
+                        <label class="flex items-start gap-2 text-sm" wire:key="bien-{{ $bienPropose->id }}">
+                            <input type="checkbox" value="{{ $bienPropose->id }}" wire:model="biens"
+                                   class="mt-0.5 rounded border-zinc-300 dark:border-zinc-600">
+                            <span class="min-w-0">
+                                <span class="block truncate">{{ $bienPropose->titre($langue) }}</span>
+                                <span class="block truncate text-xs text-zinc-500 dark:text-zinc-400">
+                                    @if ($bienPropose->est_une_realisation)
+                                        <span class="mr-1 rounded bg-violet-100 px-1.5 py-0.5 font-medium text-violet-800 dark:bg-violet-950 dark:text-violet-200">{{ __('Réalisation') }}</span>
+                                    @endif
+                                    {{ $bienPropose->quartier }}
+                                </span>
+                            </span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        @error('biens.*') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+    </div>
+
     {{-- Choix ferme plutot que saisie libre : la vue publique rend ce tracé
          sans échappement, et un champ libre y ferait entrer n'importe quel
          balisage. Les pictogrammes proposés sont ceux déjà en base. --}}

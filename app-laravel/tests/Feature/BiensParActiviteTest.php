@@ -1,6 +1,8 @@
 <?php
 
 use App\Livewire\Admin\BienFormulaire;
+use App\Livewire\Admin\BienListe;
+use App\Livewire\Admin\ServiceFormulaire;
 use App\Livewire\Public\CatalogueDesBiens;
 use App\Models\Bien;
 use App\Models\DemandeDeVisite;
@@ -169,6 +171,55 @@ it('refuse une activite qui n\'existe pas', function () {
         ->set('services', [999999])
         ->call('enregistrer')
         ->assertHasErrors('services.0');
+});
+
+it('rattache des biens DEPUIS l\'ecran d\'une activite', function () {
+    // Le sens inverse du precedent. Il existe parce qu'on ne travaille pas de
+    // la meme facon selon ce qu'on a en tete : garnir une activite creuse sans
+    // ouvrir chaque fiche l'une apres l'autre.
+    foreach (['administrateur', 'editeur', 'lecteur'] as $role) {
+        Role::findOrCreate($role, 'web');
+    }
+
+    $editeur = User::factory()->create(['statut' => User::ACTIF]);
+    $editeur->assignRole('editeur');
+
+    Livewire::actingAs($editeur)
+        ->test(ServiceFormulaire::class, ['service' => $this->foncier])
+        ->assertSee('Biens illustrant cette activité')
+        // Le terrain y est deja ; on ajoute la realisation sans le retirer.
+        ->assertSet('biens', [$this->terrain->id])
+        ->set('biens', [$this->terrain->id, $this->reference->id])
+        ->call('enregistrer')
+        ->assertHasNoErrors();
+
+    expect($this->foncier->biens()->pluck('biens.id')->sort()->values()->all())
+        ->toBe(collect([$this->terrain->id, $this->reference->id])->sort()->values()->all());
+});
+
+it('separe le catalogue des realisations dans la liste du backoffice', function () {
+    foreach (['administrateur', 'editeur', 'lecteur'] as $role) {
+        Role::findOrCreate($role, 'web');
+    }
+
+    $this->seed(ReferentielsSeeder::class);
+
+    $editeur = User::factory()->create(['statut' => User::ACTIF]);
+    $editeur->assignRole('editeur');
+
+    // Sans ce filtre, les deux se ressemblaient trait pour trait dans la
+    // liste : meme ligne, meme pastille de statut, et rien pour dire qu'une
+    // realisation ne paraitra jamais sur /biens.
+    Livewire::actingAs($editeur)
+        ->test(BienListe::class)
+        ->assertSee('Lot Bonoua')
+        ->assertSee('Résidence confiée')
+        ->set('nature', 'catalogue')
+        ->assertSee('Lot Bonoua')
+        ->assertDontSee('Résidence confiée')
+        ->set('nature', 'realisation')
+        ->assertDontSee('Lot Bonoua')
+        ->assertSee('Résidence confiée');
 });
 
 it('laisse vide une activite a laquelle rien n\'est rattache', function () {
