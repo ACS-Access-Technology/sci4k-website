@@ -9,12 +9,23 @@ use Illuminate\Support\Str;
 /**
  * Ce qui arrive a une image entre le formulaire et le disque.
  *
- * LE DEFAUT CORRIGE. Les cinq ecrans qui acceptent un visuel appelaient
- * `$fichier->store(...)` : le fichier partait sur le disque TEL QUEL. Un bien
- * accepte dix photos de 2 Mo — une fiche pouvait donc servir vingt megaoctets,
- * et ce sont precisement les photos de l'agence, encore attendues, qui les
- * auraient apportes. Optimiser les images de maquette pendant que cette porte
- * restait ouverte aurait ete soigner le symptome le plus leger.
+ * CE QUI SE PASSE DEJA AVANT, et qu'il ne faut pas confondre avec ceci. Le
+ * navigateur reduit les images avant l'envoi (resources/js/recadrage-image.js) :
+ * le recadreur reencode tout ce qu'il touche, et les photos de biens, qui
+ * sautent le recadrage, sont ramenees a 1600 px en JPEG des qu'elles depassent
+ * 1,5 Mo ou 1600 px. Une photo de telephone de 5 Mo arrive donc ici a quelques
+ * centaines de Ko. Une premiere version de ce commentaire affirmait le
+ * contraire — des fichiers deposes « tels quels », une fiche a vingt
+ * megaoctets — faute d'avoir lu ce script : c'etait faux.
+ *
+ * CE QUE CETTE CLASSE AJOUTE, que le navigateur ne garantit pas :
+ *
+ *   - le WebP, un quart a un tiers plus leger que le JPEG recu ;
+ *   - la disparition de l'EXIF pour TOUTES les images. Le navigateur ne
+ *     reencode que ce qui depasse ses seuils : une photo de 1 Mo et de
+ *     1200 px passe intacte, position GPS comprise ;
+ *   - un filet pour ce qui contourne le navigateur — script en echec, format
+ *     qu'il ne sait pas decoder, envoi direct au serveur.
  *
  * TROIS TRAITEMENTS, dans cet ordre, et l'ordre compte :
  *
