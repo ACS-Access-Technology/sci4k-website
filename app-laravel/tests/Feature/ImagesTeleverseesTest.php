@@ -15,10 +15,9 @@ use Spatie\Permission\Models\Role;
 /*
  * Ce qui arrive a une image entre le formulaire et le disque.
  *
- * Les cinq ecrans qui acceptent un visuel deposaient le fichier TEL QUEL. Un
- * bien accepte dix photos de 2 Mo : une fiche pouvait servir vingt megaoctets,
- * et ce sont les photos de l'agence, encore attendues, qui les auraient
- * apportes.
+ * Ces tests envoient leurs fichiers DIRECTEMENT au serveur, sans passer par
+ * la reduction que fait le navigateur avant l'envoi — c'est justement le cas
+ * que ce traitement couvre : ce qui arrive sans avoir ete reduit.
  *
  * Les tests portent sur les trois decisions du traitement — reduire, convertir,
  * et ne JAMAIS perdre un televersement quand on ne sait pas le traiter.
@@ -111,8 +110,8 @@ it('ne perd pas un fichier illisible', function () {
 });
 
 it('traite les photos deposees depuis la fiche d\'un bien', function () {
-    // Le bout par lequel le defaut serait revenu : l'ecran appelait store()
-    // directement. Dix photos de 2 Mo faisaient vingt megaoctets sur une page.
+    // Le bout par lequel le traitement pourrait etre contourne : l'ecran
+    // appelait store() directement avant que ce passage n'existe.
     foreach (['administrateur', 'editeur', 'lecteur'] as $role) {
         Role::findOrCreate($role, 'web');
     }
