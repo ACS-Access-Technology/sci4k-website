@@ -96,7 +96,32 @@ WORKDIR /app
 
 COPY --from=dependances /app/vendor ./app-laravel/vendor
 
-COPY . .
+# Trois dossiers NOMMES, et non « COPY . . ».
+#
+# Copier tout le contexte faisait de .dockerignore la seule barriere entre le
+# poste qui deploie et l'image : un fichier qu'il oubliait partait en
+# production. C'est arrive — la base SQLite de developpement, table des
+# comptes comprise, a voyage dans chaque image jusqu'a ce que SonarCloud
+# signale la ligne (docker:S6470).
+#
+# Une liste de ce qu'on VEUT ne depend plus de ce qu'on a pense a exclure : les
+# notes .md de la racine, railway.json, vercel.json ou un fichier de
+# sauvegarde pose la par megarde n'y entrent pas, quoi que dise .dockerignore.
+# Celui-ci reste utile A L'INTERIEUR de ces dossiers — vendor/, .env, storage/,
+# la base locale — et continue de s'appliquer ici.
+#
+# Ce que chacun apporte, verifie contre la suite du fichier :
+#   app-laravel/            l'application ; vendor/ est deja pose au-dessus et
+#                           ecarte du contexte, donc pas ecrase ici.
+#   maquettes-frontoffice/  la source que sync-frontoffice.sh depose dans
+#                           public/, quelques lignes plus bas.
+#   tools/                  ce script-la, et celui du demarrage.
+# Aucun code execute en production ne lit hors d'app-laravel : verifie par une
+# recherche des chemins en « ../ » dans app/, config/, routes/, bootstrap/,
+# les vues, les migrations et les seeders.
+COPY app-laravel ./app-laravel
+COPY maquettes-frontoffice ./maquettes-frontoffice
+COPY tools ./tools
 
 # Les scripts de composer ont ete differes plus haut : le code n'etait pas
 # encore la. L'autoloader se recompose maintenant qu'il l'est.
