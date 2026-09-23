@@ -303,8 +303,12 @@
         <p class="prix-modale">{{ $bienOuvert->prixFormate() }}</p>
       @endif
 
-      {{-- Grille de specifications --}}
-      <div class="modal-specs-grid">
+      {{-- Grille de specifications.
+           Une liste de definitions : chaque caracteristique est un terme et sa
+           valeur. Elle s'ecrivait avec <label>, qui annonce un champ de
+           formulaire aux lecteurs d'ecran — il n'y en a aucun ici — et avec
+           <val>, qui n'existe pas en HTML. --}}
+      <dl class="modal-specs-grid">
         @foreach ([
           $tFiche('libelle_type', __('Type')) => $types->firstWhere('valeur', $bienOuvert->type)?->libelle($langue),
           $tFiche('libelle_surface', __('Surface')) => ($bienOuvert->surface_habitable ?? $bienOuvert->surface_terrain) ? (($bienOuvert->surface_habitable ?? $bienOuvert->surface_terrain).' m²') : null,
@@ -314,9 +318,9 @@
           $tFiche('libelle_statut_juridique', __('Statut juridique')) => $bienOuvert->statut_juridique,
           $tFiche('libelle_numero_titre', __('Numéro de titre')) => $bienOuvert->numero_titre,
         ] as $intitule => $valeur)
-          @if ($valeur)<div class="spec-item"><label>{{ $intitule }}</label><val>{{ $valeur }}</val></div>@endif
+          @if ($valeur)<div class="spec-item"><dt>{{ $intitule }}</dt><dd>{{ $valeur }}</dd></div>@endif
         @endforeach
-      </div>
+      </dl>
 
       {{-- Description --}}
       <div class="modal-description">

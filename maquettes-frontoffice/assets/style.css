@@ -1517,9 +1517,14 @@ html[data-theme="dark"] .article-date{ color:var(--dark-text-muted); }
     background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px;
   }
 
-.spec-item label{ display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:rgba(255,255,255,0.5); margin-bottom:4px; }
+/* dt et dd plutot que label et val : voir la grille dans biens.blade.php.
+   Les marges sont remises a zero parce que dl et dd en portent par defaut,
+   que label et val n'avaient pas — sans cela la grille aurait bouge. */
+.modal-specs-grid{ margin-top:0; }
 
-.spec-item val{ font-size:16px; font-weight:700; color:#fff; display:block; }
+.spec-item dt{ display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:rgba(255,255,255,0.5); margin:0 0 4px; }
+
+.spec-item dd{ font-size:16px; font-weight:700; color:#fff; display:block; margin:0; }
 
 .modal-description h4{ font-size:20px; color:var(--gold-300); margin-bottom:12px; font-family:'Montserrat',sans-serif;font-weight:800; }
 
