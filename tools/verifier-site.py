@@ -26,6 +26,28 @@ def pages_html(dossier):
     return sorted(glob(os.path.join(dossier, '*.html')))
 
 
+# Les balises et les selecteurs se lisent en DEUX temps : d'abord la balise
+# entiere, ensuite ses attributs. Une expression d'un seul tenant comme
+# « <[^>]*style="[^"]*"[^>]*> » laisse son premier « [^>]* » avaler l'attribut
+# que la suite cherche, et le moteur essaie alors chaque partage possible : un
+# cout quadratique sur un texte qui ne correspond pas (SonarCloud, python:S8786).
+BALISE = re.compile(r'<[^<>]*>')
+
+
+def selecteurs_css(css):
+    r"""Chaque suite de caracteres sans accolade qui precede une « { ».
+
+    Equivalent lineaire de re.findall(r'[^{}]+(?=\{)', css). Cette forme-la
+    reessayait a chaque position d'un long passage sans « { » : 2,5 secondes
+    pour 20 000 caracteres, le quadruple quand la taille double.
+    """
+    debut = 0
+    for accolade in re.finditer(r'[{}]', css):
+        if accolade.group() == '{' and accolade.start() > debut:
+            yield css[debut:accolade.start()]
+        debut = accolade.end()
+
+
 def chemin_depuis(base, ref):
     """Resout une reference relative, en decodant l'encodage d'URL."""
     ref = urllib.parse.unquote(ref.split('#')[0].split('?')[0])
@@ -129,7 +151,8 @@ def controle_chargement_script():
     """
     for page in pages_html(FRONT):
         s = lire(page)
-        for balise in re.findall(r'<script[^>]*src="[^"]*main\.js"[^>]*>', s):
+        scripts = (b for b in BALISE.findall(s) if b.startswith('<script'))
+        for balise in (b for b in scripts if re.search(r'\bsrc="[^"]*main\.js"', b)):
             if 'defer' not in balise and 'async' not in balise:
                 anomalies.append('script non differe dans %s : %s'
                                  % (os.path.basename(page), balise))
@@ -147,7 +170,7 @@ def controle_couleurs_inline():
     figees = re.compile(r'(?<!-)\bcolor\s*:\s*var\(--(navy-\d+|gold-(?:500|600))\)')
     for page in pages_html(FRONT):
         s = lire(page)
-        for balise in re.findall(r'<[^>]*style="[^"]*"[^>]*>', s):
+        for balise in (b for b in BALISE.findall(s) if re.search(r'\bstyle="[^"]*"', b)):
             m = figees.search(balise)
             if m:
                 anomalies.append('couleur figee en attribut style dans %s : --%s'
@@ -170,10 +193,10 @@ def controle_selecteurs_sombres_morts():
     il n'a ete vu qu'en mesurant le contraste a l'ecran. Le controle des
     attributs style ne pouvait pas le voir, ne regardant que le HTML.
     """
-    repete = re.compile(r'\[data-theme=(["\'])dark\1\]\s+[^{,]*\[data-theme=')
+    repete = re.compile(r'\[data-theme=(["\'])dark\1\]\s[^{,]*\[data-theme=')
     for feuille in sorted(glob(os.path.join(FRONT, 'assets', '*.css'))):
         s = lire(feuille)
-        for regle in re.findall(r'[^{}]+(?=\{)', s):
+        for regle in selecteurs_css(s):
             if repete.search(regle):
                 anomalies.append('selecteur de theme sombre mort dans %s : %s'
                                  % (os.path.basename(feuille), regle.strip()[:90]))
