@@ -30,6 +30,19 @@ app-laravel/storage/framework/sessions/*
 app-laravel/storage/framework/views/*
 app-laravel/storage/app/public/*
 
+# La base SQLite du poste de developpement. Elle n'etait exclue nulle part :
+# « COPY . . » la deposait dans chaque image de production, table des comptes
+# et mots de passe haches compris. Hors de public/, donc jamais servie par le
+# site — mais lisible par quiconque accede a l'image, et sans aucune utilite
+# en production, qui tourne sur MySQL. Signale par SonarCloud (docker:S6470).
+app-laravel/database/*.sqlite
+app-laravel/database/*.sqlite-*
+
+# Le disque « local » de Laravel, fait pour les fichiers qui ne doivent PAS
+# etre publics. Vide aujourd'hui ; exclu pour que le jour ou il ne l'est plus,
+# son contenu ne parte pas en production par le meme chemin.
+app-laravel/storage/app/private/*
+
 # Historique et outillage, inutiles a l'execution.
 .git/
 .github/

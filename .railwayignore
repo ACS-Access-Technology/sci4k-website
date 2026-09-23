@@ -30,6 +30,14 @@ docs/
 # Integration continue : elle tourne chez GitHub, pas dans l'image.
 .github/
 
+# Donnees du poste de developpement. .dockerignore les ecarte deja de l'image ;
+# les ecarter ICI evite en plus qu'elles traversent le reseau — la base SQLite
+# locale porte la table des comptes, elle n'a rien a faire chez un tiers.
+app-laravel/database/*.sqlite
+app-laravel/database/*.sqlite-*
+app-laravel/storage/app/private/
+app-laravel/.env
+
 # Outils et reglages locaux.
 .claude/
 .vscode/
