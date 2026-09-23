@@ -55,8 +55,11 @@ class BienPublicController extends Controller
             'typeLisible' => $etiquette('types_de_bien', $bien->type),
             'zoneLisible' => $etiquette('zones', $bien->zone),
             'statutJuridiqueLisible' => $etiquette('statuts_juridiques', $bien->statut_juridique),
-            // Trois biens de la meme zone, le bien courant exclu.
-            'similaires' => Bien::publies()
+            // Trois biens de la meme zone, le bien courant exclu. Du CATALOGUE
+            // et non simplement publies : proposer un immeuble qu'on administre
+            // sous « dans la meme zone » reviendrait a le presenter comme une
+            // offre, alors qu'il n'est ni a vendre ni a louer.
+            'similaires' => Bien::duCatalogue()
                 ->where('zone', $bien->zone)
                 ->whereKeyNot($bien->id)
                 ->with('photos')

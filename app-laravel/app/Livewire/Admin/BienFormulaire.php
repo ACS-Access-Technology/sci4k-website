@@ -6,8 +6,11 @@ use App\Livewire\Concerns\RemplitParTraduction;
 use App\Models\Bien;
 use App\Models\PhotoDeBien;
 use App\Models\Referentiel;
+use App\Models\Service;
 use App\Services\Traduction\Traducteur;
+use App\Support\ImageTeleversee;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -103,6 +106,27 @@ class BienFormulaire extends Component
     /** Saisie du champ « ajouter un équipement », vidée après chaque ajout. */
     public string $nouvelEquipement = '';
 
+    /**
+     * Les activites de l'agence que ce bien illustre, par identifiant.
+     *
+     * Rien en base ne permet de les deduire : « type = terrain » donnerait bien
+     * le Foncier, mais Achat et Vente designent le meme bien vu de deux cotes,
+     * et aucune colonne ne dit qu'un immeuble a ete bati ou est administre par
+     * l'agence. D'ou un choix pose ici, a la main.
+     *
+     * @var list<int>
+     */
+    public array $services = [];
+
+    /**
+     * Une reference, et non un bien a vendre.
+     *
+     * Un immeuble bati ou administre par l'agence merite ses photos et sa
+     * fiche, mais n'a ni prix ni visite a proposer : il quitte le catalogue
+     * tout en restant visible sous l'activite qu'il illustre.
+     */
+    public bool $estUneRealisation = false;
+
     public string $metaTitreFr = '';
 
     public string $metaTitreEn = '';
@@ -190,6 +214,8 @@ class BienFormulaire extends Component
         $this->nombreSallesEau = (string) ($bien->nombre_salles_eau ?? '');
 
         $this->equipements = $bien->equipements()->pluck('referentiels.id')->all();
+        $this->services = $bien->services()->pluck('services.id')->all();
+        $this->estUneRealisation = (bool) $bien->est_une_realisation;
 
         $this->metaTitreFr = (string) $bien->meta_titre_fr;
         $this->metaTitreEn = (string) $bien->meta_titre_en;
@@ -247,6 +273,10 @@ class BienFormulaire extends Component
             'equipements.*' => [Rule::in($this->identifiantsDesEquipements())],
             'nouvelEquipement' => ['nullable', 'string', 'max:120'],
 
+            'services' => ['array'],
+            'services.*' => [Rule::in($this->identifiantsDesServices())],
+            'estUneRealisation' => ['boolean'],
+
             'metaTitreFr' => ['nullable', 'string', 'max:70'],
             'metaTitreEn' => ['nullable', 'string', 'max:70'],
             'metaDescriptionFr' => ['nullable', 'string', 'max:160'],
@@ -269,6 +299,19 @@ class BienFormulaire extends Component
     protected function identifiantsDesEquipements(): array
     {
         return Referentiel::deLaFamille('equipements')->pluck('id')->all();
+    }
+
+    /**
+     * Les activites auxquelles un bien peut se rattacher.
+     *
+     * Toutes, y compris celles masquees du site : un service temporairement
+     * retire de la page publique garde ses biens, qui reapparaissent avec lui.
+     *
+     * @return list<int>
+     */
+    protected function identifiantsDesServices(): array
+    {
+        return Service::pluck('id')->all();
     }
 
     protected function validationAttributes(): array
@@ -422,6 +465,7 @@ class BienFormulaire extends Component
             'date_mise_en_ligne' => $this->dateMiseEnLigne ?: null,
             'en_avant' => $this->enAvant,
             'urgent' => $this->urgent,
+            'est_une_realisation' => $this->estUneRealisation,
         ];
 
         if ($this->bien?->exists) {
@@ -437,6 +481,7 @@ class BienFormulaire extends Component
         // sync() apres l'ecriture du bien, et pas avant : a la creation, il n'y
         // a pas encore d'identifiant auquel rattacher les equipements.
         $this->bien->equipements()->sync(array_map('intval', $this->equipements));
+        $this->bien->services()->sync(array_map('intval', $this->services));
 
         $this->televerserLesPhotos();
 
@@ -464,7 +509,8 @@ class BienFormulaire extends Component
         $ongletDuChamp = [
             'general' => ['reference', 'slug', 'titreFr', 'titreEn', 'sousTitreFr', 'sousTitreEn',
                 'accrocheFr', 'accrocheEn', 'descriptionFr', 'descriptionEn', 'type', 'offre',
-                'zone', 'quartier', 'statut', 'dateMiseEnLigne', 'enAvant', 'urgent'],
+                'zone', 'quartier', 'statut', 'dateMiseEnLigne', 'enAvant', 'urgent',
+                'services', 'estUneRealisation'],
             'caracteristiques' => ['statutJuridique', 'numeroTitre', 'prix', 'prixUnite',
                 'surfaceHabitable', 'surfaceTerrain', 'nombrePieces', 'nombreChambres',
                 'nombreSallesEau', 'equipements', 'nouvelEquipement'],
@@ -515,7 +561,7 @@ class BienFormulaire extends Component
                 break;
             }
 
-            $chemin = $fichier->store('biens', 'public');
+            $chemin = ImageTeleversee::deposer($fichier, 'biens');
 
             PhotoDeBien::create([
                 'bien_id' => $this->bien->id,
@@ -529,16 +575,55 @@ class BienFormulaire extends Component
         $this->nouvellesPhotos = [];
     }
 
+    /**
+     * Ou ce bien apparaitra, d'apres les deux controles qui en decident.
+     *
+     * Ces deux-la — la case « realisation » et les activites cochees — sont
+     * INDEPENDANTES, et leur combinaison n'etait ecrite nulle part : l'editeur
+     * devait la deduire. Pire, l'une des quatre combinaisons retire le bien du
+     * catalogue ET de toute activite : il existe, sa fiche repond, mais plus
+     * aucun lien du site n'y mene. Rien ne le signalait.
+     *
+     * On calcule donc le RESULTAT et on l'affiche, au lieu de laisser deviner
+     * la regle.
+     *
+     * @param  Collection<int, Service>  $servicesProposes
+     * @return array{auCatalogue: bool, activites: list<string>, nullePart: bool}
+     */
+    protected function emplacement($servicesProposes, string $langue): array
+    {
+        $coches = array_map('intval', $this->services);
+
+        $activites = $servicesProposes
+            ->whereIn('id', $coches)
+            ->map(fn (Service $service) => $service->nom($langue))
+            ->values()
+            ->all();
+
+        $auCatalogue = ! $this->estUneRealisation;
+
+        return [
+            'auCatalogue' => $auCatalogue,
+            'activites' => $activites,
+            'nullePart' => ! $auCatalogue && $activites === [],
+        ];
+    }
+
     public function render(): View
     {
+        $langue = app()->getLocale();
+        $servicesProposes = Service::orderBy('ordre')->orderBy('id')->get();
+
         return view('livewire.admin.bien-formulaire', [
             'estCreation' => $this->estCreation(),
-            'langue' => app()->getLocale(),
+            'langue' => $langue,
+            'emplacement' => $this->emplacement($servicesProposes, $langue),
             'traductionActive' => app(Traducteur::class)->disponible(),
             'types' => Referentiel::deLaFamille('types_de_bien')->ordonnees()->get(),
             'zones' => Referentiel::deLaFamille('zones')->ordonnees()->get(),
             'statutsJuridiques' => Referentiel::deLaFamille('statuts_juridiques')->ordonnees()->get(),
             'equipementsProposes' => Referentiel::deLaFamille('equipements')->ordonnees()->get(),
+            'servicesProposes' => $servicesProposes,
             'offres' => Bien::offres(),
             'statuts' => Bien::statuts(),
             'unitesDePrix' => Bien::unitesDePrix(),

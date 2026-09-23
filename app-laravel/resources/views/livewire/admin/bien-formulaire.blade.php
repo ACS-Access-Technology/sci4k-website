@@ -108,6 +108,89 @@
                         </label>
                     </div>
                 @endforeach
+
+                {{-- Les activites que ce bien illustre.
+                     Le site annoncait six metiers et n'en montrait qu'un : le
+                     catalogue est range par type de bien, jamais par activite.
+                     Ces cases alimentent la fenetre qui s'ouvre au clic sur un
+                     service, page « Nos Services ».
+
+                     Aucune deduction automatique n'etait possible : « Achat » et
+                     « Vente » designent le meme bien vu de deux cotes, et rien
+                     en base ne dit qu'un immeuble a ete bati ou est administre
+                     par l'agence. --}}
+                <div class="mt-6 border-t border-zinc-200 pt-6 dark:border-zinc-700">
+                    <span class="text-sm font-medium">{{ __('Activités illustrées') }}</span>
+                    <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                        {{ __('Ce bien apparaîtra sous chaque activité cochée, page « Nos Services ».') }}
+                    </p>
+
+                    @if ($servicesProposes->isEmpty())
+                        <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+                            {{ __('Aucun service enregistré pour le moment.') }}
+                        </p>
+                    @else
+                        <div class="mt-2 grid gap-x-4 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
+                            @foreach ($servicesProposes as $service)
+                                <label class="flex items-center gap-2 text-sm" wire:key="svc-{{ $service->id }}">
+                                    {{-- .live : la phrase de resume sous ces cases dit ou
+                                         le bien apparaitra. Differee, elle ne se mettrait
+                                         a jour qu'a l'enregistrement, donc trop tard pour
+                                         guider la saisie. --}}
+                                    <input type="checkbox" value="{{ $service->id }}" wire:model.live="services"
+                                           @disabled(! $peutEcrire)
+                                           class="rounded border-zinc-300 dark:border-zinc-600">
+                                    <span @class(['text-zinc-400 line-through' => ! $service->visible])>{{ $service->nom($langue) }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    @endif
+                    @error('services.*') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+
+                    {{-- Le caractere de reference, et non d'offre. Place ICI,
+                         sous les activites, parce qu'il n'a de sens qu'avec
+                         elles : une realisation dont aucune activite n'est
+                         cochee ne s'afficherait plus nulle part. --}}
+                    <label class="mt-4 flex items-start gap-2 text-sm">
+                        <input type="checkbox" wire:model.live="estUneRealisation"
+                               @disabled(! $peutEcrire)
+                               class="mt-0.5 rounded border-zinc-300 dark:border-zinc-600">
+                        <span>
+                            <span class="font-medium">{{ __('Réalisation de référence') }}</span>
+                            <span class="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
+                                {{ __('Un immeuble bâti ou administré par l’agence : il garde sa fiche et ses photos, mais quitte le catalogue et ne propose ni prix ni visite.') }}
+                            </span>
+                        </span>
+                    </label>
+
+                    {{-- Le RESULTAT des deux controles ci-dessus, plutot que la
+                         regle a deduire. Les deux sont independants : la case
+                         decide si le bien quitte le catalogue, les activites
+                         sous quels metiers il parait. Quatre combinaisons donc,
+                         dont une qui ne menait nulle part sans que rien ne le
+                         dise. --}}
+                    @if ($emplacement['nullePart'])
+                        <p class="mt-4 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
+                            <span class="font-semibold">{{ __('Ce bien n’apparaîtra nulle part.') }}</span>
+                            {{ __('Cochez au moins une activité, ou décochez « Réalisation de référence ». Sa fiche resterait accessible, mais aucun lien du site n’y mènerait.') }}
+                        </p>
+                    @else
+                        {{-- Des phrases ENTIERES, et non des morceaux assembles.
+                             « et sous » puis la liste aurait fait deux cles a
+                             traduire separement, alors que l'ordre des mots
+                             change d'une langue a l'autre : le parametre laisse
+                             chaque langue composer sa phrase. --}}
+                        <p class="mt-4 rounded-lg bg-zinc-100 px-3 py-2 text-sm text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                            @if ($emplacement['auCatalogue'] && $emplacement['activites'])
+                                {{ __('Ce bien apparaîtra dans le catalogue, et sous :activites.', ['activites' => implode(', ', $emplacement['activites'])]) }}
+                            @elseif ($emplacement['auCatalogue'])
+                                {{ __('Ce bien apparaîtra dans le catalogue, sous aucune activité.') }}
+                            @else
+                                {{ __('Ce bien apparaîtra sous :activites uniquement, et pas dans le catalogue.', ['activites' => implode(', ', $emplacement['activites'])]) }}
+                            @endif
+                        </p>
+                    @endif
+                </div>
             @endif
 
             {{-- ---------------------------------------- caractéristiques --}}

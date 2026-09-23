@@ -112,7 +112,13 @@
         {{-- La demande de visite part d'ICI, sur la fiche du bien : le
              visiteur n'a pas a recopier de quoi il parle, et l'agence sait
              immediatement quel bien est concerne. Elle arrive dans l'ecran
-             « Demandes de visite » du backoffice. --}}
+             « Demandes de visite » du backoffice.
+
+             PAS sur une realisation : un immeuble bati ou administre par
+             l'agence n'est ni a vendre ni a louer, et ne se visite donc pas.
+             Le serveur refuse deja d'y rattacher une demande — laisser le
+             formulaire aurait promis un rendez-vous que personne n'honore. --}}
+        @unless ($bien->est_une_realisation)
         <form id="formulaireVisite" class="contact-card formulaire-visite"
               data-bien="{{ $bien->slug }}" data-envoi="visite">
           <h3>{{ $tVisite('titre', __('Demander une visite')) }}</h3>
@@ -155,6 +161,7 @@
             {{ $tVisite('confirmation', __('Votre demande est enregistrée. Un conseiller vous rappelle sous 24 heures ouvrées.')) }}
           </p>
         </form>
+        @endunless
       </div>
     </div>
 

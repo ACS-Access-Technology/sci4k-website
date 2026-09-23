@@ -43,7 +43,8 @@ class DemandeDeVisiteController extends Controller
         // n'importe quelle ligne. Introuvable, la demande est conservee tout
         // de meme — mieux vaut un rendez-vous sans bien qu'un prospect perdu.
         $bien = $requete->filled('bien')
-            ? Bien::publies()->where('slug', $requete->string('bien'))->first()
+            // Du catalogue : une realisation ne se visite pas, elle se montre.
+            ? Bien::duCatalogue()->where('slug', $requete->string('bien'))->first()
             : null;
 
         $demande = DemandeDeVisite::create([

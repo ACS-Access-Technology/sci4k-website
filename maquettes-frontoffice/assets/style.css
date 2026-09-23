@@ -2385,6 +2385,55 @@ a.partner-logo-card:hover .p-name{color:var(--gold-600);}
   transition:background .3s ease-in-out,transform .3s ease-in-out;}
 .svc-panel-cta:hover{background:var(--gold-300);transform:translateY(-2px);}
 
+/* --- les biens qui illustrent une activite ------------------------------- *
+ * Une LISTE et non une grille de cartes : la fenetre est etroite, et son
+ * role est de prouver qu'une activite existe, pas de refaire le catalogue.
+ * Chaque ligne mene a la fiche, ou le visiteur trouvera le detail. */
+.svc-biens{margin:0 0 28px;border-top:1px solid var(--line);padding-top:22px;}
+.svc-biens-titre{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--gold-600);margin:0 0 14px;}
+.svc-biens-liste{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;}
+
+.svc-bien{display:flex;align-items:center;gap:14px;padding:10px;border-radius:12px;
+  text-decoration:none;color:inherit;transition:background .25s ease,transform .25s ease;}
+.svc-bien:hover{background:var(--cream-2);transform:translateX(3px);}
+
+/* Largeur FIXE sur la vignette : le titre d'un bien peut tenir sur une ou
+   deux lignes, et sans cela les images de la liste ne s'alignaient plus. */
+.svc-bien-visuel{flex:0 0 76px;width:76px;height:58px;border-radius:8px;overflow:hidden;
+  background:var(--cream-2);display:flex;align-items:center;justify-content:center;color:var(--navy-600);}
+.svc-bien-visuel svg{width:100%;height:100%;}
+
+.svc-bien-texte{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 auto;}
+.svc-bien-nom{font-weight:700;font-size:15px;color:var(--navy-950);}
+.svc-bien-meta{font-size:13px;color:var(--navy-600);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+.svc-bien-offre{flex:0 0 auto;font-size:11px;font-weight:800;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--gold-600);background:var(--gold-300);
+  padding:4px 10px;border-radius:100px;}
+
+[data-theme="dark"] .svc-biens{border-top-color:var(--dark-border);}
+[data-theme="dark"] .svc-biens-titre{color:var(--gold-300);}
+[data-theme="dark"] .svc-bien:hover{background:var(--dark-surface-2);}
+[data-theme="dark"] .svc-bien-visuel{background:var(--dark-surface-2);color:var(--dark-text-muted);}
+[data-theme="dark"] .svc-bien-nom{color:var(--dark-text);}
+[data-theme="dark"] .svc-bien-meta{color:var(--dark-text-muted);}
+[data-theme="dark"] .svc-bien-offre{color:var(--navy-950);background:var(--gold-500);}
+
+/* Sur telephone, la colonne de texte tombe sous les 160px : la coupure par
+   points de suspension y mangeait TOUS les sous-titres (« Villa moder… »).
+   On leur rend le droit de passer a la ligne — deux lignes lisibles valent
+   mieux qu'une ligne tronquee. La base de 120px garde la pastille sur la
+   meme ligne, sans marge calculee a la main. */
+@media (max-width:560px){
+  .svc-bien{flex-wrap:wrap;row-gap:6px;align-items:flex-start;}
+  .svc-bien-visuel{flex-basis:64px;width:64px;height:50px;}
+  .svc-bien-texte{flex:1 1 120px;}
+  .svc-bien-meta{white-space:normal;overflow:visible;}
+  .svc-bien-offre{margin-top:2px;}
+}
+
 [data-theme="dark"] .svc-modal-box{background:var(--dark-surface);}
 [data-theme="dark"] .svc-panel-title{color:var(--dark-text);}
 [data-theme="dark"] .svc-panel-desc,[data-theme="dark"] .svc-arg-text{color:var(--dark-text-muted);}

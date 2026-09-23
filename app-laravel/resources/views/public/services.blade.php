@@ -191,6 +191,49 @@
           @endforeach
         </ul>
       @endif
+      {{-- CE QUE L'ACTIVITE A PRODUIT.
+           Le site annoncait six metiers et n'en montrait qu'un : le catalogue
+           est range par type de bien et par offre, jamais par activite. Un
+           visiteur lisant « Administration de biens » n'avait donc rien a
+           regarder. Ces vignettes sont la reponse.
+
+           Le bloc est rendu ICI, dans le panneau source, et non ajoute par le
+           script : la fenetre recopie le panneau tel quel, donc rien du
+           mecanisme d'ouverture n'a eu a changer. --}}
+      @if ($service->illustrations->isNotEmpty())
+        <div class="svc-biens">
+          <h4 class="svc-biens-titre">{{ __('Nos biens sur cette activité') }}</h4>
+          <ul class="svc-biens-liste">
+            @foreach ($service->illustrations as $bien)
+              <li>
+                <a class="svc-bien" href="{{ route('biens.detail', $bien->slug) }}">
+                  <span class="svc-bien-visuel">
+                    @if ($bien->photos->isNotEmpty())
+                      <img src="{{ asset($bien->photos->first()->fichier) }}"
+                           alt="{{ $bien->photos->first()->texteAlternatif($langue) ?: $bien->titre($langue) }}"
+                           loading="lazy" class="visuel-couvrant">
+                    @else
+                      <x-public.illustration-bien :type="$bien->type" />
+                    @endif
+                  </span>
+                  <span class="svc-bien-texte">
+                    <span class="svc-bien-nom">{{ $bien->titre($langue) }}</span>
+                    <span class="svc-bien-meta">
+                      {{ $bien->sousTitre($langue) }}@if ($bien->sousTitre($langue) && $bien->quartier) — @endif{{ $bien->quartier }}
+                    </span>
+                  </span>
+                  {{-- Une realisation n'est ni a vendre ni a louer : afficher
+                       « Vente » dessus la ferait passer pour une offre. --}}
+                  @unless ($bien->est_une_realisation)
+                    <span class="svc-bien-offre">{{ \App\Models\Bien::offres()[$bien->offre] ?? $bien->offre }}</span>
+                  @endunless
+                </a>
+              </li>
+            @endforeach
+          </ul>
+        </div>
+      @endif
+
       <a class="svc-panel-cta" href="{{ route('contact.index', ['service' => $service->slug]) }}">{{ $service->libelleBouton($langue) }}</a>
     </div>
   @endforeach

@@ -6,6 +6,7 @@ use App\Livewire\Concerns\PorteDesTextesDeBloc;
 use App\Mail\EssaiDeMessagerie;
 use App\Models\Parametre;
 use App\Models\ReglageDeSection;
+use App\Support\ImageTeleversee;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -370,7 +371,7 @@ class Configuration extends Component
         foreach (['logo', 'favicon'] as $visuel) {
             if ($this->$visuel) {
                 $ancien = Parametre::lire($visuel);
-                $chemin = $this->$visuel->store(self::DOSSIER, 'public');
+                $chemin = ImageTeleversee::deposer($this->$visuel, self::DOSSIER);
 
                 Parametre::poser($visuel, 'storage/'.$chemin, 'general');
                 $this->effacerSiTeleverse($ancien);

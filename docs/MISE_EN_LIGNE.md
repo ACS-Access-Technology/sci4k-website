@@ -213,6 +213,34 @@ pas avant. Deux conditions l'accompagnent : les pages légales complètes (voir
 §4), puisqu'un site indexé est un site qui se visite, et un contenu réel
 plutôt que les biens de démonstration.
 
+### Le contenu de démonstration, et comment le retirer
+
+Deux jeux de contenu fictif cohabitent aujourd'hui dans la table `biens`, et
+aucun ne doit survivre au lancement.
+
+**Les six biens du catalogue** viennent de la maquette : ils étaient écrits en
+dur dans `frontoffice/assets/main.js` avant le passage sous Laravel, et ont été
+importés tels quels par `BiensSeeder`. Ils n'ont ni prix, ni référence, ni
+numéro de titre, ni photo — un bien réel a les quatre. À remplacer par le
+catalogue de l'agence.
+
+**Les six réalisations** des rubriques « Construction » et « Administration de
+biens » ont été écrites pour juger de la mise en page, faute de références
+réelles à montrer. Elles portent toutes une référence préfixée `DEMO-`,
+précisément pour rester reconnaissables une fois mêlées à du contenu vrai :
+
+```bash
+php artisan tinker --execute="App\Models\Bien::where('reference','like','DEMO-%')->delete();"
+```
+
+La suppression emporte les rattachements aux activités, la table de jointure
+étant en cascade. Les deux rubriques redeviennent alors vides — ce qui est
+l'état honnête tant que l'agence n'a pas fourni ses vraies références.
+
+**Pourquoi ce n'est pas un détail :** un visiteur ne distingue pas une fiche
+inventée d'une vraie. Publier « Résidence Akwaba · 24 lots gérés » sur le
+domaine définitif, c'est annoncer une référence commerciale qui n'existe pas.
+
 ### Ce qui est déjà correct
 
 Vérifié, rien à faire :

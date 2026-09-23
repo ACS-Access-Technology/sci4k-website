@@ -3,9 +3,11 @@
 namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\RemplitParTraduction;
+use App\Models\Bien;
 use App\Models\Categorie;
 use App\Models\Service;
 use App\Services\Traduction\Traducteur;
+use App\Support\ImageTeleversee;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -99,6 +101,19 @@ class ServiceFormulaire extends Component
 
     public bool $visible = true;
 
+    /**
+     * Les biens qui illustrent cette activite, par identifiant.
+     *
+     * Le meme lien se pose depuis la fiche d'un bien. Les deux sens existent
+     * parce qu'on ne travaille pas de la meme facon selon ce qu'on a en tete :
+     * en decrivant un bien, on sait a quels metiers il se rattache ; en
+     * garnissant une activite creuse, on veut au contraire parcourir les biens
+     * sans ouvrir chaque fiche l'une apres l'autre.
+     *
+     * @var list<int>
+     */
+    public array $biens = [];
+
     /** Langue du contenu saisi — sans rapport avec celle de l'interface. */
     public string $langueActive = 'fr';
 
@@ -144,6 +159,7 @@ class ServiceFormulaire extends Component
         $this->iconeSvg = $service->icone_svg ?? '';
         $this->categorieId = (string) $service->categorie_id;
         $this->visible = (bool) $service->visible;
+        $this->biens = $service->biens()->pluck('biens.id')->all();
     }
 
     /** Le service est-il en cours de creation ? */
@@ -163,6 +179,8 @@ class ServiceFormulaire extends Component
             'slug' => $this->estCreation()
                 ? ['required', 'string', 'max:190', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', 'unique:services,slug']
                 : ['nullable'],
+            'biens' => ['array'],
+            'biens.*' => [Rule::exists('biens', 'id')],
             'nomFr' => ['required', 'string', 'max:190'],
             'nomEn' => ['required', 'string', 'max:190'],
             'accrocheFr' => ['required', 'string', 'max:255'],
@@ -262,6 +280,10 @@ class ServiceFormulaire extends Component
             $this->service->update($donnees);
         }
 
+        // Apres la creation comme apres la mise a jour : le service n'a pas
+        // d'identifiant auquel rattacher des biens tant qu'il n'existe pas.
+        $this->service->biens()->sync(array_map('intval', $this->biens));
+
         $this->dispatch('toast', message: __('Service enregistré.'), variant: 'success');
 
         // On ne redirige pas : on previent la liste, qui se referme. Rediriger
@@ -285,7 +307,7 @@ class ServiceFormulaire extends Component
         $ancienne = $this->imageActuelle;
 
         if ($this->image) {
-            $chemin = $this->image->store('services', 'public');
+            $chemin = ImageTeleversee::deposer($this->image, 'services');
             $this->effacerSiTeleversee($ancienne);
             $this->imageActuelle = 'storage/'.$chemin;
 
@@ -344,6 +366,11 @@ class ServiceFormulaire extends Component
     {
         return view('livewire.admin.service-formulaire', [
             'categories' => Categorie::orderBy('ordre')->get(),
+            // Realisations d'abord : ce sont elles qu'on vient rattacher depuis
+            // cet ecran, une activite creuse etant le cas qui l'amene ici.
+            'biensProposes' => Bien::orderByDesc('est_une_realisation')
+                ->orderBy('titre_fr')
+                ->get(),
             'langue' => app()->getLocale(),
             'traductionActive' => app(Traducteur::class)->disponible(),
             'estCreation' => $this->estCreation(),

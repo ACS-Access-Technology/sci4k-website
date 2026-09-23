@@ -50,12 +50,15 @@ class BienListe extends Component
 
     public string $statut = '';
 
+    /** Catalogue, realisations, ou les deux. Voir le filtre du meme nom. */
+    public string $nature = '';
+
     public string $tri = 'recent';
 
     public ?string $message = null;
 
     /** @var list<string> */
-    protected array $filtres = ['recherche', 'type', 'offre', 'zone', 'pieces', 'surface', 'statut', 'tri'];
+    protected array $filtres = ['recherche', 'type', 'offre', 'zone', 'pieces', 'surface', 'statut', 'nature', 'tri'];
 
     public function updating($nom): void
     {
@@ -134,6 +137,11 @@ class BienListe extends Component
                     ->orWhere('reference', 'like', $motif)
                     ->orWhere('quartier', 'like', $motif));
             })
+            // « catalogue » et « realisation » partagent la table : seule cette
+            // colonne les separe, et sans filtre la liste melangeait les deux
+            // sans qu'aucune colonne ne le dise.
+            ->when($this->nature === 'catalogue', fn ($r) => $r->where('est_une_realisation', false))
+            ->when($this->nature === 'realisation', fn ($r) => $r->where('est_une_realisation', true))
             ->when($this->type !== '', fn ($r) => $r->where('type', $this->type))
             ->when($this->offre !== '', fn ($r) => $r->where('offre', $this->offre))
             ->when($this->zone !== '', fn ($r) => $r->where('zone', $this->zone))
