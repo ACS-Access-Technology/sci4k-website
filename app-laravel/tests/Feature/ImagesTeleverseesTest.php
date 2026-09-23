@@ -27,20 +27,28 @@ beforeEach(function () {
     Storage::fake('public');
 });
 
-/** Une image de la largeur demandee, assez bruitee pour ne pas se compresser a rien. */
-function imageDeLargeur(int $largeur, int $hauteur): string
+/**
+ * Une image de la largeur demandee, assez bruitee pour ne pas se compresser a rien.
+ *
+ * Le POIDS du resultat depend de la bibliotheque JPEG du systeme : a dessin
+ * egal, la photo 2400x1600 faisait moins de 2 Mo sous Windows et plus sous
+ * Linux, ou la CI la voyait refusee par la limite du formulaire. Le pas et la
+ * qualite se reglent donc par appel, pour garder chaque test loin des seuils
+ * qu'il ne cherche pas a eprouver.
+ */
+function imageDeLargeur(int $largeur, int $hauteur, int $pas = 4, int $qualite = 92): string
 {
     $image = imagecreatetruecolor($largeur, $hauteur);
 
-    for ($x = 0; $x < $largeur; $x += 4) {
-        for ($y = 0; $y < $hauteur; $y += 4) {
+    for ($x = 0; $x < $largeur; $x += $pas) {
+        for ($y = 0; $y < $hauteur; $y += $pas) {
             $couleur = imagecolorallocate($image, ($x * 7) % 255, ($y * 13) % 255, ($x + $y) % 255);
-            imagefilledrectangle($image, $x, $y, $x + 3, $y + 3, $couleur);
+            imagefilledrectangle($image, $x, $y, $x + $pas - 1, $y + $pas - 1, $couleur);
         }
     }
 
     ob_start();
-    imagejpeg($image, null, 92);
+    imagejpeg($image, null, $qualite);
     $contenu = (string) ob_get_clean();
     imagedestroy($image);
 
@@ -116,6 +124,14 @@ it('traite les photos deposees depuis la fiche d\'un bien', function () {
 
     $bien = Bien::factory()->create(['slug' => 'villa-photo', 'statut' => Bien::PUBLIE]);
 
+    // Plus large que la limite d'affichage, mais LEGERE : ce test porte sur
+    // le traitement, pas sur la limite de poids du formulaire. La condition
+    // est ecrite ici pour qu'un changement de plateforme qui la violerait
+    // echoue en le disant, au lieu d'un « Component has errors » a dechiffrer.
+    $source = imageDeLargeur(2400, 1600, pas: 16, qualite: 75);
+
+    expect(strlen($source))->toBeLessThan(1024 * 1024, 'La photo de test doit rester sous le Mo, loin de la limite du formulaire.');
+
     Livewire::actingAs($editeur)
         ->test(BienFormulaire::class, ['bien' => $bien])
         // La fabrique ne pose pas cette valeur, que le formulaire exige.
@@ -123,7 +139,7 @@ it('traite les photos deposees depuis la fiche d\'un bien', function () {
         // l'enregistrement.
         ->set('prixUnite', 'total')
         ->set('nouvellesPhotos', [
-            UploadedFile::fake()->createWithContent('photo.jpg', imageDeLargeur(2400, 1600)),
+            UploadedFile::fake()->createWithContent('photo.jpg', $source),
         ])
         ->call('enregistrer')
         ->assertHasNoErrors();
