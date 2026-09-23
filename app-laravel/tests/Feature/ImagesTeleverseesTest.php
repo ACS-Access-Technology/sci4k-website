@@ -8,6 +8,7 @@ use App\Support\ImageTeleversee;
 use Database\Seeders\ReferentielsSeeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
 
@@ -133,7 +134,7 @@ it('traite les photos deposees depuis la fiche d\'un bien', function () {
 
     // En base le chemin porte le prefixe « storage/ », qui designe l'adresse
     // publique et non l'emplacement sur le disque.
-    $surLeDisque = \Illuminate\Support\Str::after($photo->fichier, 'storage/');
+    $surLeDisque = Str::after($photo->fichier, 'storage/');
 
     [$largeur] = getimagesizefromstring(Storage::disk('public')->get($surLeDisque));
 
