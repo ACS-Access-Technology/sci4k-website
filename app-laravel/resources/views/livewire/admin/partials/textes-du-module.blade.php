@@ -21,7 +21,7 @@
         </p>
 
         {{-- wire:key : sans identite, changer de module rendait une NOUVELLE liste de
-     champs au meme endroit, et Livewire reutilisait les <input> existants — qui
+     champs au meme endroit, et Livewire reutilisait les « input » existants — qui
      gardaient la liaison du module precedent. Voir configuration.blade.php,
      ou ce defaut a depose un mot de passe sur le site public. --}}
         @foreach ($description['textes'] as $nom => $decrit)

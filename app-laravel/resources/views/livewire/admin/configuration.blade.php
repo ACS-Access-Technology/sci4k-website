@@ -82,7 +82,7 @@
 
                  Sans lui, changer d'onglet rendait une NOUVELLE liste de champs
                  a la meme place. Livewire compare l'ancien arbre au nouveau et,
-                 trouvant un <input> la ou il y en avait un, REUTILISE l'element
+                 trouvant un « input » la ou il y en avait un, REUTILISE l'element
                  au lieu de le remplacer — l'element gardant la liaison de
                  l'onglet precedent.
 
@@ -205,7 +205,7 @@
             <div class="grid gap-4 sm:grid-cols-2">
                 @foreach ([['logo', __('Logo'), $logoActuel], ['favicon', __('Favicon'), $faviconActuel]] as [$nom, $intitule, $actuel])
                     <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
-                        <span class="text-sm font-medium">{{ $intitule }}</span>
+                        <span id="titre-visuel-{{ $nom }}" class="text-sm font-medium">{{ $intitule }}</span>
 
                         <div class="mt-2 flex items-center gap-3">
                             @if ($actuel)
@@ -216,7 +216,7 @@
                                 </span>
                             @endif
 
-                            <input type="file" wire:model="{{ $nom }}" class="text-sm">
+                            <input type="file" wire:model="{{ $nom }}" aria-labelledby="titre-visuel-{{ $nom }}" class="text-sm">
                         </div>
 
                         @error($nom) <span class="mt-1 block text-sm text-red-600">{{ $message }}</span> @enderror

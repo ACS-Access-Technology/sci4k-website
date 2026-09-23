@@ -136,7 +136,7 @@
                         <input type="checkbox" wire:click="basculerTache({{ $tache->id }})"
                                @checked($tache->terminee) @disabled(! $peutEcrire)
                                class="mt-0.5 rounded border-zinc-300"
-                               aria-label="{{ __('Marquer comme faite') }}">
+                               aria-label="{{ __('Marquer comme faite : :tache', ['tache' => $tache->texte]) }}">
 
                         <span @class([
                             'min-w-0 flex-1 text-sm',
@@ -169,6 +169,7 @@
                 <div class="border-t border-zinc-200 p-3 dark:border-zinc-700">
                     <div class="flex gap-2">
                         <input type="text" wire:model="nouvelleTache" wire:keydown.enter="ajouterTache"
+                               aria-label="{{ __('Nouvelle tâche') }}"
                                placeholder="{{ __('Une tâche à ne pas oublier…') }}" class="{{ $champ }}">
                         <input type="date" wire:model="nouvelleEcheance" class="{{ $champ }} w-auto"
                                aria-label="{{ __('Échéance') }}">

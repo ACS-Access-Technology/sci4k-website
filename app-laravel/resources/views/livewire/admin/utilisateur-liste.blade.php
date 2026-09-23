@@ -77,17 +77,28 @@
         </form>
     @endif
 
-    <div class="flex flex-wrap gap-3">
-        <input type="search" wire:model.live.debounce.300ms="recherche"
-               placeholder="{{ __('Un nom, une adresse…') }}" class="{{ $classeChamp }} sm:max-w-xs">
+    {{-- Les filtres dans le composant commun, a libelles VISIBLES.
+         Cet ecran les alignait sur une simple rangee, chaque champ reduit a son
+         texte indicatif : un lecteur d'ecran annoncait « zone de recherche » ou
+         « liste deroulante » sans dire laquelle, et le texte indicatif disparait
+         des qu'on commence a taper. Six autres ecrans utilisaient deja ce
+         composant ; les identifiants sont prefixes, pour qu'aucun ne double
+         celui d'un autre ecran embarque sur la meme page. --}}
+    <x-admin.barre-filtres>
+        <x-admin.champ-filtre :intitule="__('Rechercher')" pour="filtre-comptes-recherche">
+            <input type="search" id="filtre-comptes-recherche" wire:model.live.debounce.300ms="recherche"
+                   placeholder="{{ __('Un nom, une adresse…') }}" class="{{ $classeChamp }}">
+        </x-admin.champ-filtre>
 
-        <select wire:model.live="roleFiltre" class="{{ $classeChamp }} sm:max-w-48">
-            <option value="">{{ __('Tous les rôles') }}</option>
-            @foreach ($roles as $nom => $description)
-                <option value="{{ $nom }}">{{ ucfirst($nom) }}</option>
-            @endforeach
-        </select>
-    </div>
+        <x-admin.champ-filtre :intitule="__('Rôle')" pour="filtre-comptes-role">
+            <select id="filtre-comptes-role" wire:model.live="roleFiltre" class="{{ $classeChamp }}">
+                <option value="">{{ __('Tous les rôles') }}</option>
+                @foreach ($roles as $nom => $description)
+                    <option value="{{ $nom }}">{{ ucfirst($nom) }}</option>
+                @endforeach
+            </select>
+        </x-admin.champ-filtre>
+    </x-admin.barre-filtres>
 
     <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
         <table class="w-full text-left text-sm">
@@ -134,6 +145,7 @@
                             @php($roleActuel = $compte->roles->pluck('name')->first())
 
                             <select wire:change="changerLeRole({{ $compte->id }}, $event.target.value)"
+                                    aria-label="{{ __('Rôle de :nom', ['nom' => $compte->name]) }}"
                                     @disabled($compte->id === $moiMeme)
                                     class="rounded-lg border border-zinc-300 px-2 py-1 text-xs disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-950">
                                 @if (! $roleActuel)

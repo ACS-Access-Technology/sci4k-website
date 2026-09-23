@@ -329,7 +329,7 @@
                              c'est la garantie qu'on y renonce. Entree valide,
                              sans soumettre le formulaire entier. --}}
                         <div class="mt-3 flex gap-2">
-                            <input type="text" wire:model="nouvelEquipement"
+                            <input type="text" wire:model="nouvelEquipement" aria-label="{{ __('Nouvel équipement') }}"
                                    wire:keydown.enter.prevent="ajouterEquipement"
                                    class="{{ $champ }} mt-0"
                                    placeholder="{{ __('Ajouter un équipement — ex. Piscine') }}">

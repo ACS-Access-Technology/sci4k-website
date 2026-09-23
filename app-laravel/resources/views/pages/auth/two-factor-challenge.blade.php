@@ -93,10 +93,16 @@
 
                 <div class="mt-5 space-x-0.5 text-sm leading-5 text-center">
                     <span class="opacity-50">{{ __('or you can') }}</span>
-                    <div class="inline font-medium underline cursor-pointer opacity-80">
-                        <span x-show="!showRecoveryInput" @click="toggleInput()">{{ __('login using a recovery code') }}</span>
-                        <span x-show="showRecoveryInput" @click="toggleInput()">{{ __('login using an authentication code') }}</span>
-                    </div>
+                    {{-- Un BOUTON, et non deux span cliquables. Un span ne recoit
+                         pas le focus : au clavier, on ne pouvait pas basculer
+                         vers le code de secours — c'est-a-dire que l'editeur qui
+                         a perdu son telephone, et ne se sert pas d'une souris,
+                         restait enferme dehors. --}}
+                    <button type="button" @click="toggleInput()"
+                            class="inline cursor-pointer rounded font-medium underline opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2">
+                        <span x-show="!showRecoveryInput">{{ __('login using a recovery code') }}</span>
+                        <span x-show="showRecoveryInput">{{ __('login using an authentication code') }}</span>
+                    </button>
                 </div>
             </form>
         </div>

@@ -3,7 +3,7 @@
   de connexion est le premier ecran que voit un editeur : elle doit dire chez
   qui il entre.
 
-  Un <img> plutot qu'un SVG : le logo est un fichier fourni par le client,
+  Un « img » plutot qu'un SVG : le logo est un fichier fourni par le client,
   deposé dans public/images/ par tools/sync-frontoffice.sh, le meme que servent
   les pages publiques et la barre laterale. Les classes fill-current et
   text-* que passent encore les gabarits d'authentification n'ont plus d'effet

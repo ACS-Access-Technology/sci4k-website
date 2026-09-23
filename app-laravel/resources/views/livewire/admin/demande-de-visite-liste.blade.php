@@ -17,24 +17,37 @@
         <p class="rounded-lg border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm dark:border-zinc-700 dark:bg-zinc-900">{{ $message }}</p>
     @endif
 
-    <div class="flex flex-wrap gap-3">
-        <input type="search" wire:model.live.debounce.300ms="recherche"
-               placeholder="{{ __('Un nom, un téléphone, un bien…') }}" class="{{ $classeChamp }} sm:max-w-xs">
+    {{-- Les filtres dans le composant commun, a libelles VISIBLES.
+         Cet ecran les alignait sur une simple rangee, chaque champ reduit a son
+         texte indicatif : un lecteur d'ecran annoncait « zone de recherche » ou
+         « liste deroulante » sans dire laquelle, et le texte indicatif disparait
+         des qu'on commence a taper. Six autres ecrans utilisaient deja ce
+         composant ; les identifiants sont prefixes, pour qu'aucun ne double
+         celui d'un autre ecran embarque sur la meme page. --}}
+    <x-admin.barre-filtres>
+        <x-admin.champ-filtre :intitule="__('Rechercher')" pour="filtre-visites-recherche">
+            <input type="search" id="filtre-visites-recherche" wire:model.live.debounce.300ms="recherche"
+                   placeholder="{{ __('Un nom, un téléphone, un bien…') }}" class="{{ $classeChamp }}">
+        </x-admin.champ-filtre>
 
-        <select wire:model.live="statut" class="{{ $classeChamp }} sm:max-w-48">
-            <option value="">{{ __('Tous les statuts') }}</option>
-            @foreach ($statuts as $cle => $intitule)
-                <option value="{{ $cle }}">{{ $intitule }}</option>
-            @endforeach
-        </select>
+        <x-admin.champ-filtre :intitule="__('Statut')" pour="filtre-visites-statut">
+            <select id="filtre-visites-statut" wire:model.live="statut" class="{{ $classeChamp }}">
+                <option value="">{{ __('Tous les statuts') }}</option>
+                @foreach ($statuts as $cle => $intitule)
+                    <option value="{{ $cle }}">{{ $intitule }}</option>
+                @endforeach
+            </select>
+        </x-admin.champ-filtre>
 
-        <select wire:model.live="assigne" class="{{ $classeChamp }} sm:max-w-48">
-            <option value="">{{ __('Tous les collaborateurs') }}</option>
-            @foreach ($collaborateurs as $collaborateur)
-                <option value="{{ $collaborateur->id }}">{{ $collaborateur->name }}</option>
-            @endforeach
-        </select>
-    </div>
+        <x-admin.champ-filtre :intitule="__('Confié à')" pour="filtre-visites-assigne">
+            <select id="filtre-visites-assigne" wire:model.live="assigne" class="{{ $classeChamp }}">
+                <option value="">{{ __('Tous les collaborateurs') }}</option>
+                @foreach ($collaborateurs as $collaborateur)
+                    <option value="{{ $collaborateur->id }}">{{ $collaborateur->name }}</option>
+                @endforeach
+            </select>
+        </x-admin.champ-filtre>
+    </x-admin.barre-filtres>
 
     <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
         <table class="w-full text-left text-sm">
@@ -93,6 +106,7 @@
 
                         <td class="px-4 py-3">
                             <select wire:change="changerLeStatut({{ $demande->id }}, $event.target.value)"
+                                    aria-label="{{ __('Statut de la demande de :nom', ['nom' => $demande->nom]) }}"
                                     @disabled(! $peutEcrire)
                                     class="rounded-lg border border-zinc-300 px-2 py-1 text-xs disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-950">
                                 @foreach ($statuts as $cle => $intitule)
@@ -103,6 +117,7 @@
 
                         <td class="px-4 py-3">
                             <select wire:change="assigner({{ $demande->id }}, $event.target.value)"
+                                    aria-label="{{ __('Personne chargée de la demande de :nom', ['nom' => $demande->nom]) }}"
                                     @disabled(! $peutEcrire)
                                     class="rounded-lg border border-zinc-300 px-2 py-1 text-xs disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-950">
                                 <option value="" @selected(! $demande->assigne_a)>{{ __('Personne') }}</option>

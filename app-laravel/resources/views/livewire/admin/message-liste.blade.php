@@ -24,17 +24,28 @@
         </p>
     @endif
 
-    <div class="flex flex-wrap gap-3">
-        <input type="search" wire:model.live.debounce.300ms="recherche"
-               placeholder="{{ __('Un nom, un sujet, un mot du message…') }}" class="{{ $classeChamp }} sm:max-w-xs">
+    {{-- Les filtres dans le composant commun, a libelles VISIBLES.
+         Cet ecran les alignait sur une simple rangee, chaque champ reduit a son
+         texte indicatif : un lecteur d'ecran annoncait « zone de recherche » ou
+         « liste deroulante » sans dire laquelle, et le texte indicatif disparait
+         des qu'on commence a taper. Six autres ecrans utilisaient deja ce
+         composant ; les identifiants sont prefixes, pour qu'aucun ne double
+         celui d'un autre ecran embarque sur la meme page. --}}
+    <x-admin.barre-filtres>
+        <x-admin.champ-filtre :intitule="__('Rechercher')" pour="filtre-messages-recherche">
+            <input type="search" id="filtre-messages-recherche" wire:model.live.debounce.300ms="recherche"
+                   placeholder="{{ __('Un nom, un sujet, un mot du message…') }}" class="{{ $classeChamp }}">
+        </x-admin.champ-filtre>
 
-        <select wire:model.live="filtre" class="{{ $classeChamp }} sm:max-w-48">
-            <option value="">{{ __('Tous') }}</option>
-            @foreach ($statuts as $valeur => $intitule)
-                <option value="{{ $valeur }}">{{ $intitule }}</option>
-            @endforeach
-        </select>
-    </div>
+        <x-admin.champ-filtre :intitule="__('Statut')" pour="filtre-messages-statut">
+            <select id="filtre-messages-statut" wire:model.live="filtre" class="{{ $classeChamp }}">
+                <option value="">{{ __('Tous') }}</option>
+                @foreach ($statuts as $valeur => $intitule)
+                    <option value="{{ $valeur }}">{{ $intitule }}</option>
+                @endforeach
+            </select>
+        </x-admin.champ-filtre>
+    </x-admin.barre-filtres>
 
     <div class="grid gap-4 lg:grid-cols-5">
 
@@ -103,6 +114,7 @@
                         <dt class="text-xs text-zinc-500 dark:text-zinc-400">{{ __('Statut') }}</dt>
                         <dd>
                             <select wire:change="changerLeStatut({{ $ouvertement->id }}, $event.target.value)"
+                                    aria-label="{{ __('Statut') }}"
                                     @disabled(! $peutEcrire)
                                     class="mt-1 rounded-lg border border-zinc-300 px-2 py-1 text-xs disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-950">
                                 @foreach ($statuts as $valeur => $intitule)
@@ -138,6 +150,7 @@
                         <dt class="text-xs text-zinc-500 dark:text-zinc-400">{{ __('Confié à') }}</dt>
                         <dd>
                             <select wire:change="assigner({{ $ouvertement->id }}, $event.target.value)"
+                                    aria-label="{{ __('Confié à') }}"
                                     @disabled(! $peutEcrire)
                                     class="mt-1 rounded-lg border border-zinc-300 px-2 py-1 text-xs disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-950">
                                 <option value="" @selected(! $ouvertement->assigne_a)>{{ __('Personne') }}</option>

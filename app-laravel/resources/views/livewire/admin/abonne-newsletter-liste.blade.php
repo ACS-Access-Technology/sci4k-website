@@ -34,15 +34,28 @@
         </p>
     @endif
 
-    <div class="flex flex-wrap items-center gap-3">
-        <input type="search" wire:model.live.debounce.300ms="recherche"
-               placeholder="{{ __('Une adresse…') }}" class="{{ $classeChamp }} sm:max-w-xs">
+    {{-- Les filtres dans le composant commun, a libelles VISIBLES.
+         Cet ecran les alignait sur une simple rangee, chaque champ reduit a son
+         texte indicatif : un lecteur d'ecran annoncait « zone de recherche » ou
+         « liste deroulante » sans dire laquelle, et le texte indicatif disparait
+         des qu'on commence a taper. Six autres ecrans utilisaient deja ce
+         composant ; les identifiants sont prefixes, pour qu'aucun ne double
+         celui d'un autre ecran embarque sur la meme page. --}}
+    <x-admin.barre-filtres>
+        <x-admin.champ-filtre :intitule="__('Rechercher')" pour="filtre-abonnes-recherche">
+            <input type="search" id="filtre-abonnes-recherche" wire:model.live.debounce.300ms="recherche"
+                   placeholder="{{ __('Une adresse…') }}" class="{{ $classeChamp }}">
+        </x-admin.champ-filtre>
 
-        <label class="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-            <input type="checkbox" wire:model.live="avecDesinscrits" class="size-4 rounded border-zinc-300 dark:border-zinc-600">
-            {{ __('Afficher les désinscrits') }}
-        </label>
-    </div>
+        {{-- La case garde son propre libelle, qui l'enveloppe : elle se place en
+             bas de sa cellule pour s'aligner sur les champs voisins. --}}
+        <div class="flex items-end">
+            <label class="flex items-center gap-2 pb-2 text-sm text-zinc-600 dark:text-zinc-300">
+                <input type="checkbox" wire:model.live="avecDesinscrits" class="size-4 rounded border-zinc-300 dark:border-zinc-600">
+                {{ __('Afficher les désinscrits') }}
+            </label>
+        </div>
+    </x-admin.barre-filtres>
 
     <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
         <table class="w-full text-left text-sm">
