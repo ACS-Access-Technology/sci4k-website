@@ -15,14 +15,14 @@ echo "== Demarrage de SCI4K =="
 
 # APP_KEY manquante : l'application demarre mais ne dechiffre plus ni cookies ni
 # sessions, et l'erreur qui s'ensuit n'a rien d'evident. Mieux vaut la dire ici.
-if [ -z "${APP_KEY:-}" ]; then
+if [[ -z "${APP_KEY:-}" ]]; then
     echo "ERREUR : APP_KEY est vide." >&2
     echo "  Generer une cle avec « php artisan key:generate --show » sur un poste" >&2
     echo "  de developpement, puis la poser en variable d'environnement." >&2
     exit 1
 fi
 
-if [ "${APP_DEBUG:-false}" = "true" ] && [ "${APP_ENV:-}" = "production" ]; then
+if [[ "${APP_DEBUG:-false}" = "true" ]] && [[ "${APP_ENV:-}" = "production" ]]; then
     echo "AVERTISSEMENT : APP_DEBUG=true avec APP_ENV=production." >&2
     echo "  La page d'erreur exposera la trace d'execution, les requetes SQL et" >&2
     echo "  les variables d'environnement au premier visiteur venu." >&2
@@ -38,7 +38,7 @@ php artisan storage:link 2>/dev/null || echo "  lien de storage deja en place"
 # deux instances qui demarrent ensemble les lanceraient en meme temps. Laravel
 # pose un verrou, mais le jour ou ce site tournera sur plusieurs instances, il
 # faudra les sortir d'ici.
-if [ "${MIGRER_AU_DEMARRAGE:-true}" = "true" ]; then
+if [[ "${MIGRER_AU_DEMARRAGE:-true}" = "true" ]]; then
     echo "== Migrations =="
     php artisan migrate --force --no-interaction
 fi
@@ -60,7 +60,7 @@ php artisan view:cache
 # d'entretien tourneraient en double. PLANIFICATEUR_INTEGRE=false le desactive,
 # pour le jour ou le site tournera derriere plusieurs instances et ou un service
 # de cron dedie prendra le relais.
-if [ "${PLANIFICATEUR_INTEGRE:-true}" = "true" ]; then
+if [[ "${PLANIFICATEUR_INTEGRE:-true}" = "true" ]]; then
     echo "== Planificateur =="
     php artisan schedule:work >/dev/null 2>&1 &
     echo "  demarre (pid $!)"
