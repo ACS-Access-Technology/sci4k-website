@@ -149,8 +149,13 @@
             @forelse ($lignes as $cle => $ligne)
                 <fieldset wire:key="ligne-{{ $cle }}"
                           class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
+                    {{-- La legende en PREMIER enfant du fieldset : placee dans le
+                         div, elle ne nommait plus le groupe, et un lecteur
+                         d'ecran enchainait les champs de chaque ligne sans dire
+                         a laquelle ils appartenaient. Masquee a l'ecran, sa
+                         place ne change rien au rendu. --}}
+                    <legend class="sr-only">{{ $intituleRang }} {{ $loop->iteration }}</legend>
                     <div class="flex items-start justify-between gap-3">
-                        <legend class="sr-only">{{ $intituleRang }} {{ $loop->iteration }}</legend>
 
                         <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-700 dark:bg-zinc-700 dark:text-zinc-200">
                             {{ $loop->iteration }}

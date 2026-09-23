@@ -22,7 +22,7 @@
     Applies the stored light/dark/system appearance before first paint, so
     there is no flash of the wrong theme while Alpine boots. First-party
     replacement for Flux's `@fluxAppearance` directive (removed with the
-    `livewire/flux` package) — only touches localStorage and the <html>
+    `livewire/flux` package) — only touches localStorage and the « html »
     class, same behaviour as resources/js/app.js's Alpine store.
 --}}
 <style>

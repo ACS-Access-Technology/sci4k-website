@@ -26,7 +26,6 @@
 --}}
 <dialog
     id="modal-{{ $name }}"
-    role="dialog"
     aria-modal="true"
     {{ $attributes->class('m-auto w-full rounded-xl border border-zinc-200 bg-white p-6 text-zinc-900 shadow-xl backdrop:bg-black/50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white') }}
 >

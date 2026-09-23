@@ -157,7 +157,7 @@
     @endforeach
 
     <div class="space-y-3 rounded border border-zinc-200 p-4 dark:border-zinc-700">
-        <span class="block text-sm font-medium">{{ __('Image de couverture') }}</span>
+        <span id="titre-couverture-article" class="block text-sm font-medium">{{ __('Image de couverture') }}</span>
 
         {{-- L'apercu n'est demande que si le fichier est valide : temporaryUrl()
              leve une exception sur un type non previsualisable, et la page
@@ -178,7 +178,7 @@
             <p class="text-sm text-zinc-500">{{ __('Aucune image.') }}</p>
         @endif
 
-        <input type="file" wire:model="couverture" accept="image/*" class="block w-full text-sm">
+        <input type="file" wire:model="couverture" accept="image/*" aria-labelledby="titre-couverture-article" class="block w-full text-sm">
         <span class="block text-xs text-zinc-500">{{ __('JPEG, PNG ou WebP, 4 Mo au maximum.') }}</span>
         <div wire:loading wire:target="couverture" class="text-xs text-zinc-500">{{ __('Envoi en cours…') }}</div>
         @error('couverture') <span class="block text-sm text-red-600">{{ $message }}</span> @enderror

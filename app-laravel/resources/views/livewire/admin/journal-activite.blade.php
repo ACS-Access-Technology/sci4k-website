@@ -15,21 +15,32 @@
         {{ __('Qui a fait quoi, et quand. Cette page ne se modifie pas.') }}
     </p>
 
-    <div class="flex flex-wrap gap-3">
-        <select wire:model.live="action" class="{{ $classeChamp }} sm:max-w-56">
-            <option value="">{{ __('Toutes les actions') }}</option>
-            @foreach ($actions as $valeur => $intitule)
-                <option value="{{ $valeur }}">{{ $intitule }}</option>
-            @endforeach
-        </select>
+    {{-- Les filtres dans le composant commun, a libelles VISIBLES.
+         Cet ecran les alignait sur une simple rangee, chaque champ reduit a son
+         texte indicatif : un lecteur d'ecran annoncait « zone de recherche » ou
+         « liste deroulante » sans dire laquelle, et le texte indicatif disparait
+         des qu'on commence a taper. Six autres ecrans utilisaient deja ce
+         composant ; les identifiants sont prefixes, pour qu'aucun ne double
+         celui d'un autre ecran embarque sur la meme page. --}}
+    <x-admin.barre-filtres>
+        <x-admin.champ-filtre :intitule="__('Action')" pour="filtre-journal-action">
+            <select id="filtre-journal-action" wire:model.live="action" class="{{ $classeChamp }}">
+                <option value="">{{ __('Toutes les actions') }}</option>
+                @foreach ($actions as $valeur => $intitule)
+                    <option value="{{ $valeur }}">{{ $intitule }}</option>
+                @endforeach
+            </select>
+        </x-admin.champ-filtre>
 
-        <select wire:model.live="auteur" class="{{ $classeChamp }} sm:max-w-56">
-            <option value="">{{ __('Tous les auteurs') }}</option>
-            @foreach ($auteurs as $compte)
-                <option value="{{ $compte->id }}">{{ $compte->name }}</option>
-            @endforeach
-        </select>
-    </div>
+        <x-admin.champ-filtre :intitule="__('Auteur')" pour="filtre-journal-auteur">
+            <select id="filtre-journal-auteur" wire:model.live="auteur" class="{{ $classeChamp }}">
+                <option value="">{{ __('Tous les auteurs') }}</option>
+                @foreach ($auteurs as $compte)
+                    <option value="{{ $compte->id }}">{{ $compte->name }}</option>
+                @endforeach
+            </select>
+        </x-admin.champ-filtre>
+    </x-admin.barre-filtres>
 
     <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
         <table class="w-full text-left text-sm">
