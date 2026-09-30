@@ -89,7 +89,9 @@ Les cases indiquent l'état au moment de cette documentation, pas une promesse d
 ## 7. Vérifications minimales après chaque lot
 
 Les quatre contrôles de l'intégration continue, dans l'ordre où elle les
-lance. Ils sont **bloquants** sur `master`, `preprod` et `dev`.
+lance. Ils tournent sur `master`, `preprod` et `dev` ; ils ne bloquent une
+fusion qu'une fois les protections de branche posées dans GitHub (voir
+`docs/BRANCHES_ET_DEPLOIEMENT.md`).
 
 ```bash
 python3 tools/verifier-site.py                 # references, donnees structurees, formulaires
@@ -103,7 +105,8 @@ php artisan test                               # la suite complete
 ```
 
 Les tests sont rejoués deux fois en intégration : sur SQLite, rapide, puis sur
-MySQL, le moteur réellement servi en production. Les écarts de dialecte — le
+MySQL 9.7, la version supportée (et, le temps de la transition, sur 9.4, celle
+que sert encore la production). Les écarts de dialecte — le
 type énuméré des statuts au premier chef — ne se voient pas autrement.
 
 Vérifier également manuellement les vues desktop et mobile, la console JavaScript, les chemins d'images, le clavier dans les modales et l'absence de références Laravel résiduelles dans les favicons.

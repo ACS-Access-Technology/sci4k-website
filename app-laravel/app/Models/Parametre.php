@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Once;
 
 /**
  * Un reglage general du site, sous forme de cle et de valeur.
@@ -41,8 +43,29 @@ class Parametre extends Model
     {
         // Le cache est vide a l'ecriture comme a l'effacement : un reglage
         // enregistre doit se voir sur le site sans attendre une expiration.
-        static::saved(fn () => Cache::forget(self::CACHE));
-        static::deleted(fn () => Cache::forget(self::CACHE));
+        // La memoire de requete aussi : un ecran qui enregistre puis relit
+        // dans la meme requete doit lire la nouvelle valeur.
+        static::saved(fn () => self::oublier());
+        static::deleted(fn () => self::oublier());
+    }
+
+    protected static function oublier(): void
+    {
+        Cache::forget(self::CACHE);
+        Once::flush();
+    }
+
+    /**
+     * La table des reglages existe-t-elle ? Une fois par requete.
+     *
+     * La question se pose parce que le site doit rester servable sur une base
+     * qui n'a pas encore recu ses migrations. Elle etait posee avant CHAQUE
+     * lecture d'un reglage : une trentaine de fois par page, et sur MySQL
+     * chacune interroge information_schema.
+     */
+    public static function tableDisponible(): bool
+    {
+        return once(fn () => Schema::hasTable('parametres'));
     }
 
     /** Ce reglage porte-t-il un secret ? */
@@ -58,9 +81,13 @@ class Parametre extends Model
      */
     public static function tous(): array
     {
-        return Cache::rememberForever(self::CACHE, fn () => static::query()
+        // Le cache seul ne suffisait pas : avec le pilote « database » de la
+        // production, chaque lecture EST une requete SQL — une trentaine par
+        // page. once() garde le resultat pour la requete en cours ; le
+        // middleware OublieLaMemoireDeLaRequete le vide a la suivante.
+        return once(fn () => Cache::rememberForever(self::CACHE, fn () => static::query()
             ->pluck('valeur', 'cle')
-            ->all());
+            ->all()));
     }
 
     /**

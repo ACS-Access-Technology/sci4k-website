@@ -59,8 +59,12 @@ it('ne marque plus les actualites comme actives sur une autre page', function ()
 it('sert les liens legaux du pied depuis la base', function () {
     $corps = $this->get('/presentation')->getContent();
 
-    expect($corps)->toContain('/mentions-legales.html')
-        ->and($corps)->toContain('/politique-confidentialite.html');
+    // Les entrees d'origine portent encore les anciennes adresses en .html ;
+    // le lien, lui, mene directement a la page, sans le detour du 301.
+    expect($corps)->toContain('href="'.route('mentions-legales.index').'"')
+        ->and($corps)->toContain('href="'.route('politique-confidentialite.index').'"')
+        ->and($corps)->not->toContain('mentions-legales.html')
+        ->and($corps)->not->toContain('politique-confidentialite.html');
 });
 
 it('rend inerte une cible devenue invalide', function () {

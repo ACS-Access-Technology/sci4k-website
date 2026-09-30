@@ -7,10 +7,8 @@
  * aucun ne depend d'un reglage : ils valent pour toutes les pages, publiques
  * comme administratives.
  *
- * La politique de securite du contenu n'en fait PAS partie. Elle demande
- * « unsafe-inline » tant que les gabarits portent des gestionnaires en ligne,
- * et elle casserait le chat ou les statistiques le jour ou on les active. Elle
- * fera l'objet d'un lot a elle, en mode observation d'abord.
+ * La politique de securite du contenu est posee par le meme middleware ; elle
+ * a ses propres tests, dans PolitiqueDeContenuTest.
  */
 
 it('pose les en-tetes sur une page publique', function () {
@@ -31,6 +29,17 @@ it('pose les en-tetes sur une page publique', function () {
         ->toContain('camera=()')
         ->toContain('microphone=()')
         ->toContain('geolocation=()');
+});
+
+/*
+ * Une adresse sans route n'entre jamais dans le groupe « web » : tant que le
+ * middleware y vivait, la page introuvable partait sans aucun en-tete.
+ */
+it('pose les en-tetes sur une adresse sans route', function () {
+    $this->get('/adresse-sans-route')
+        ->assertNotFound()
+        ->assertHeader('X-Frame-Options', 'DENY')
+        ->assertHeader('X-Content-Type-Options', 'nosniff');
 });
 
 it('pose les memes en-tetes sur le backoffice', function () {

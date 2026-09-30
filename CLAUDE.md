@@ -50,7 +50,10 @@ les traductions. Un test échoue si une clé manque aux deux.
 `railway up --service sci4k` lancé à la main. Pousser sur `master` ne change
 rien au site en ligne.
 
-Branches : `dev` pour travailler, puis `preprod`, puis `master`.
+Branches : `dev` pour travailler, puis `preprod`, puis `master`, par demandes
+de fusion et sans raccourci. Avant tout `railway up` :
+`./tools/verifier-avant-deploiement.sh`, qui refuse tout ce qui n'est pas
+`master` tel que la CI l'a validé. Voir `docs/BRANCHES_ET_DEPLOIEMENT.md`.
 
 Trois défauts de portabilité ont été corrigés et ne doivent pas revenir —
 `railway up` téléverse l'arbre de travail Windows, pas un clone git :

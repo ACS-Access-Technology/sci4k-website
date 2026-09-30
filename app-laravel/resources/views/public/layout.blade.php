@@ -52,16 +52,16 @@
      Trois valeurs possibles depuis que le backoffice et le site partagent la
      meme preference : « system » suit le reglage du poste, et l'ignorer ici
      aurait affiche le clair a un visiteur dont le poste est en sombre. --}}
-<script>(function(){try{var t=localStorage.getItem('sci4k-theme')||'light';
+<script @nonce>(function(){try{var t=localStorage.getItem('sci4k-theme')||'light';
 var sombre=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
 document.documentElement.setAttribute('data-theme',sombre?'dark':'light');}catch(e){}})();</script>
 {{-- La langue servie fait foi : sans cet alignement, main.js rappliquerait au
      chargement celle qu'il a gardee en memoire et re-basculerait les pages
      statiques dans l'autre sens a la premiere visite suivante. --}}
-<script>(function(){try{localStorage.setItem('sci4k-lang', '{{ app()->getLocale() }}');}catch(e){}})();</script>
+<script @nonce>(function(){try{localStorage.setItem('sci4k-lang', '{{ app()->getLocale() }}');}catch(e){}})();</script>
 <link rel="stylesheet" href="{{ \App\Support\Ressource::url('assets/images.css') }}">
 @if ($variablesImagesDeFond)
-<style>
+<style @nonce>
 :root {
 @foreach ($variablesImagesDeFond as $slugImage => $urlImage)
   --img-{{ $slugImage }}: url('{{ $urlImage }}');
@@ -71,8 +71,9 @@ document.documentElement.setAttribute('data-theme',sombre?'dark':'light');}catch
 @endif
 <link rel="stylesheet" href="{{ \App\Support\Ressource::url('assets/style.css') }}">
 @if ($googleAnalytics)
+@php(\App\Support\PolitiqueDeContenu::autoriser('google-analytics'))
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ urlencode($googleAnalytics) }}"></script>
-<script>
+<script @nonce>
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
@@ -91,7 +92,8 @@ gtag('config', '{{ $googleAnalytics }}');
 {{-- defer indispensable : sans lui le bouton flottant reste inerte, corrige en aout 2026. --}}
 <script src="{{ \App\Support\Ressource::url('assets/main.js') }}" defer></script>
 @if ($tawkActif && $tawkIdentifiant)
-<script>
+@php(\App\Support\PolitiqueDeContenu::autoriser('tawk'))
+<script @nonce>
 var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
 (function(){
 var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];

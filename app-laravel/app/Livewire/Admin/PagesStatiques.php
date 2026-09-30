@@ -93,10 +93,17 @@ class PagesStatiques extends Component
      * Un compte sans droit d'edition pouvait donc, en fixant la propriete
      * publique $page depuis le navigateur, semer autant de lignes qu'il
      * voulait sur des slugs que le site public ne sert jamais.
+     *
+     * RESERVE AUX ADMINISTRATEURS. Le lien de cet ecran n'apparaissait deja
+     * qu'a eux, sous « Reglages » ; le composant, lui, admettait aussi les
+     * editeurs. Or ce HTML est rendu sans echappement chez tout visiteur, et
+     * il porte les obligations legales de l'agence : l'ecran rejoint les
+     * autres reglages. Le role est verifie ICI et non seulement sur la route,
+     * Livewire ne rejouant pas le middleware sur /livewire/update.
      */
     protected function charger(): void
     {
-        abort_unless(auth()->user()?->hasAnyRole(['administrateur', 'editeur']), 403);
+        abort_unless(auth()->user()?->hasRole('administrateur'), 403);
         abort_unless(in_array($this->page, PageStatique::slugsEditables(), true), 404);
 
         $page = PageStatique::firstOrCreate(['slug' => $this->page], [
@@ -114,7 +121,7 @@ class PagesStatiques extends Component
 
     public function enregistrer(): void
     {
-        abort_unless(auth()->user()?->hasAnyRole(['administrateur', 'editeur']), 403);
+        abort_unless(auth()->user()?->hasRole('administrateur'), 403);
         abort_unless(in_array($this->page, PageStatique::slugsEditables(), true), 404);
         $this->validate([
             'titreFr' => ['required', 'string', 'max:190'],

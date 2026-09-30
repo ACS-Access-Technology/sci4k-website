@@ -35,8 +35,14 @@ class MessageDeContactController extends Controller
     {
         $valide = $requete->validate([
             'nom' => ['required', 'string', 'max:120'],
-            'telephone' => ['nullable', 'string', 'max:40'],
-            'email' => ['nullable', 'email', 'max:160'],
+            // UN MOYEN DE REPONDRE, AU MOINS. Les deux etaient facultatifs :
+            // un message sans l'un ni l'autre arrivait dans la boite de
+            // l'agence sans aucune facon de rappeler son auteur. L'un OU
+            // l'autre suffit — exiger les deux ferait perdre la demande d'un
+            // visiteur qui n'a pas d'e-mail, ou qui ne veut pas donner son
+            // numero.
+            'telephone' => ['nullable', 'required_without:email', 'string', 'max:40'],
+            'email' => ['nullable', 'required_without:telephone', 'email', 'max:160'],
             'sujet' => ['nullable', 'string', 'max:190'],
             'message' => ['required', 'string', 'max:5000'],
             // La question de FAQ arrive par le meme point d'entree : c'est le
@@ -47,6 +53,11 @@ class MessageDeContactController extends Controller
             'site_web' => ['prohibited'],
         ], [
             'site_web.prohibited' => __('Envoi refusé.'),
+            // Le message par defaut de Laravel (« The telephone field is
+            // required when email is not present ») parle au developpeur, pas
+            // au visiteur.
+            'telephone.required_without' => __('Indiquez une adresse e-mail ou un numéro de téléphone pour que nous puissions vous répondre.'),
+            'email.required_without' => __('Indiquez une adresse e-mail ou un numéro de téléphone pour que nous puissions vous répondre.'),
         ]);
 
         $message = MessageDeContact::create($valide);

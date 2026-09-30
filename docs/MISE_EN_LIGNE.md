@@ -17,16 +17,16 @@ quelqu'un d'autre**. Le dernier groupe ne dépend d'aucun code.
 |---|---|---|
 | Hébergement PHP **8.3** ou plus | `composer.json` exige `^8.3` | Refus d'installation sous 8.2 |
 | Extensions PHP | `mbstring`, `pdo_mysql`, `gd`, `intl` | Étape « Installer PHP » de la CI |
-| **MySQL 8.0** | `DB_CONNECTION=mysql`, testé contre `mysql:8.0` | Le type énuméré des statuts diverge sur les moteurs plus anciens |
+| **MySQL 9.7** (LTS) | `DB_CONNECTION=mysql`, testé contre `mysql:9.7` ; `php artisan base:verifier-version` compare le serveur joint | 8.0 n'est plus supporté par Oracle depuis avril 2026, et les versions « Innovation » (9.4…) ne le sont que quelques mois — voir `app/Support/MoteurDeBase.php` |
 | Accès **SSH** ou équivalent | `composer install`, `artisan migrate`, `storage:link` | Un hébergement FTP seul ne suffit pas |
 | **Node 20** au moment de la construction | `npm run build` produit le manifeste Vite | Peut se faire ailleurs et être téléversé |
 | Un **domaine** | — | — |
 | Un **certificat HTTPS** | Le cookie de session doit porter `Secure` | Voir §3 |
-| Un **compte SMTP** | 6 courriels partent de l'application | Voir §3 |
-| Un **accès cron** | `schedule:run` chaque minute | Sans lui la table des visites croît sans borne |
+| Un **compte SMTP** | 6 courriels partent de l'application, plus la réinitialisation de mot de passe (Fortify) | Voir §3 |
+| Un **accès cron** | `schedule:run` chaque minute — sauf en conteneur, où le planificateur tourne à côté du serveur | Sans lui la table des visites croît sans borne |
 
 L'application ne réclame **ni Redis, ni superviseur de file d'attente** :
-aucune classe n'implémente `ShouldQueue` et les huit envois de courriel sont
+aucune classe n'implémente `ShouldQueue` et les six envois de courriel sont
 synchrones. `QUEUE_CONNECTION=database` est présent mais inerte.
 
 Elle réclame en revanche **une ligne de cron**. Deux tâches quotidiennes
@@ -40,9 +40,19 @@ croître sans borne :
 ```
 
 Chaque minute, oui : c'est Laravel qui décide ensuite quoi lancer, et il n'y a
-que deux tâches, à 3 h 10 et 3 h 40. Les deux sont rejouables sans risque ;
-celle de la fréquentation rattrape en outre les jours manqués, donc un cron
-interrompu quelques jours se répare tout seul à la reprise.
+que deux tâches, à 3 h 10 et 3 h 40. Une ligne à `10 3 * * *` ne suffirait
+pas : `schedule:run` n'exécute que ce qui est dû à la minute même, la purge de
+3 h 40 ne tournerait jamais. Les deux sont rejouables sans risque ; celle de la
+fréquentation rattrape en outre les jours manqués, donc un cron interrompu
+quelques jours se répare tout seul à la reprise.
+
+**En conteneur (Railway), aucune ligne de cron** : le planificateur tourne à
+côté du serveur, relancé s'il s'arrête. Voir `docs/DEPLOIEMENT_RAILWAY.md`.
+
+**Savoir si l'entretien tourne** : le panneau « Entretien automatique » du
+tableau de bord de l'administration, en alerte au-delà de 26 h sans passe
+réussie ; et, si `SENTRY_LARAVEL_DSN` est renseigné, les moniteurs Sentry
+Crons, qui préviennent d'eux-mêmes.
 
 ## 2. La séquence de déploiement
 
@@ -67,8 +77,12 @@ cp .env.production.example .env
 #    puis renseigner ce qui y est marque « A RENSEIGNER »
 php artisan key:generate
 
-# 5. La base
+# 5. La base, son ossature, puis le premier administrateur. db:seed ne cree
+#    aucun compte et ne seme aucun contenu fictif ; sur une base deja remplie,
+#    il ne modifie rien. Le mot de passe se saisit au clavier.
 php artisan migrate --force
+php artisan db:seed --force
+php artisan compte:creer-administrateur
 
 # 6. Le lien des images televersees. Sans lui, toute image ajoutee depuis le
 #    backoffice est ecrite mais ne s'affiche jamais : le code ecrit
@@ -180,11 +194,19 @@ Relevés en lisant la configuration. Les cinq premiers sont bloquants.
 
 7. **`SENTRY_LARAVEL_DSN`** est facultatif mais vivement conseillé : sans lui,
    une erreur en production n'est signalée à personne et ne se découvre que
-   par un visiteur qui se plaint. Aucune donnée personnelle n'est transmise —
-   `send_default_pii` reste à `false`, donc ni adresse IP, ni en-têtes, ni
-   corps de requête. Seul l'identifiant interne du compte backoffice connecté
-   accompagne le rapport, ce qui laisse la politique de confidentialité vraie
-   telle qu'elle est écrite.
+   par un visiteur qui se plaint. Aucune donnée personnelle n'est transmise :
+   ni adresse IP, ni navigateur, ni corps de requête, ni chaîne de requête, ni
+   valeur saisie — pas même dans un message d'erreur SQL. `send_default_pii`
+   à `false` n'y suffisait pas : le détail, et le test qui intercepte ce qui
+   part réellement, sont dans `app/Support/SentryAvantEnvoi.php`. Seul
+   l'identifiant interne du compte backoffice connecté accompagne le rapport,
+   ce qui laisse la politique de confidentialité vraie telle qu'elle est
+   écrite.
+
+   Poser aussi **`SENTRY_ENVIRONMENT`** : sans lui, Sentry reprend `APP_ENV`,
+   et l'instance d'essai — en `APP_ENV=production` — mêlerait ses erreurs à
+   celles du site définitif. La version (release) se renseigne seule sur
+   Railway ; ailleurs, `SENTRY_RELEASE`.
 
 8. **`DEEPL_API_KEY`** reste facultatif : sans clé, la traduction automatique
    des articles se tait et les deux langues se saisissent à la main.
@@ -245,7 +267,7 @@ domaine définitif, c'est annoncer une référence commerciale qui n'existe pas.
 
 Vérifié, rien à faire :
 
-- Les huit envois de courriel sont enveloppés dans `try/catch` avec `report()`,
+- Les six envois de courriel sont enveloppés dans `try/catch` avec `report()`,
   et le message est enregistré en base **avant** l'envoi. Un SMTP en panne ne
   perd donc aucune demande — elle attend dans le backoffice.
 - `/up` reste ouvert quand le mode maintenance est actif : la sonde de
@@ -268,9 +290,12 @@ ligne autant que le reste.
 | Textes juridiques définitifs (mentions légales, politique de confidentialité) | La direction |
 
 L'intégration continue, elle, tourne : les contrôles de non-régression et les
-tests Laravel s'exécutent sur les trois branches et passent. Un check
-supplémentaire vient de SonarCloud, hors GitHub Actions, sur la qualité du
-code.
+tests Laravel s'exécutent sur les trois branches et passent, l'audit des
+dépendances et le contrôle du flux des branches s'y ajoutent. Aucun ne bloque
+encore une fusion : les protections de branche restent à poser dans GitHub
+(`docs/BRANCHES_ET_DEPLOIEMENT.md`). Un check supplémentaire vient de
+SonarCloud, hors GitHub Actions, sur la qualité du code ; il est informatif, et
+sa « Quality Gate » échoue au 30 septembre 2026.
 
 ## 5. Les branches
 
@@ -281,6 +306,10 @@ Trois branches permanentes chez `acs`, alignées sur le même commit :
 | `dev` | La branche de travail |
 | `preprod` | Préproduction |
 | `master` | **La production.** C'est depuis elle que le site se déploie. |
+
+Le flux `dev` → `preprod` → `master` est obligatoire, et la mise en ligne passe
+par `./tools/verifier-avant-deploiement.sh` : voir
+`docs/BRANCHES_ET_DEPLOIEMENT.md`.
 
 Il n'y a **pas** de branche `prod`, et c'est délibéré : `master` tient ce
 rôle. Une quatrième branche qui suivrait `master` pas à pas n'ajouterait

@@ -4,6 +4,7 @@
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.9 4.44-9.9 9.9 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.9-4.44 9.9-9.9 0-2.64-1.03-5.12-2.9-6.99A9.82 9.82 0 0 0 12.04 2z"/></svg>
   </a>
   @if ($chatActif)
+    @php(\App\Support\PolitiqueDeContenu::autoriser('tawk'))
     <button class="fab-action fab-chat" type="button" id="fabChat" aria-label="{{ $t('aria_chat', __('Ouvrir le chat en ligne')) }}" title="{{ $t('titre_chat', __('Chat en ligne')) }}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     </button>

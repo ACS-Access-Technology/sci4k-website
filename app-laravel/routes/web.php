@@ -12,6 +12,8 @@ use App\Http\Controllers\PagePubliqueController;
 use App\Http\Controllers\PlanDuSiteController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SecurityTxtController;
+use App\Http\Middleware\EnregistreVisite;
+use App\Http\Middleware\FermeLeSitePublic;
 use App\Livewire\Admin\AbonneNewsletterListe;
 use App\Livewire\Admin\Configuration;
 use App\Livewire\Admin\DemandeDeVisiteListe;
@@ -34,6 +36,7 @@ use App\Livewire\Admin\UtilisateurListe;
 use App\Livewire\Public\CatalogueDesBiens;
 use App\Support\TachesDEntretien;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -135,6 +138,15 @@ Route::permanentRedirect('/faq.html', '/faq');
 Route::permanentRedirect('/presentation.html', '/presentation');
 Route::permanentRedirect('/contact.html', '/contact');
 
+// Les deux pages legales, servies comme fichiers statiques jusqu'a la phase 6 :
+// ce sont les adresses que le pied de page du site publiait. Les fichiers ne
+// sont plus copies dans public/ (tools/sync-frontoffice.sh), sans quoi le
+// serveur les servirait avant d'atteindre ces routes. Aucune version anglaise
+// de ces adresses n'a jamais existe : le site statique changeait de langue
+// sans changer d'adresse.
+Route::permanentRedirect('/mentions-legales.html', '/mentions-legales');
+Route::permanentRedirect('/politique-confidentialite.html', '/politique-confidentialite');
+
 // Le SEUL point d'ecriture ouvert au public. La limitation de debit y remplace
 // l'authentification : le formulaire vit dans une page statique de public/, qui
 // ne traverse pas la session et n'a donc pas de jeton CSRF a presenter. Le
@@ -198,7 +210,11 @@ Route::middleware(['auth', 'verified', 'role:administrateur|editeur|redacteur|le
     // Le tableau de bord etait une vue statique aux quatre rectangles haches
     // du starter kit. Il compte desormais le contenu, d'ou un composant.
     Route::get('dashboard', TableauDeBord::class)->name('dashboard');
-    Route::get('/admin/pages-editables', PagesStatiques::class)->name('admin.pages-statiques');
+    // Les pages legales sont du HTML rendu tel quel et engagent l'agence :
+    // reservees aux administrateurs, comme les autres reglages.
+    Route::get('/admin/pages-editables', PagesStatiques::class)
+        ->middleware('role:administrateur')
+        ->name('admin.pages-statiques');
 });
 
 Route::middleware(['auth', 'role:administrateur|editeur|redacteur|lecteur'])
@@ -265,16 +281,52 @@ Route::middleware(['auth', 'role:administrateur|editeur|redacteur|lecteur'])
 // -ci n'execute que ce qui est du a la minute courante, et un appel decale
 // d'une minute suffirait a ce que l'entretien ne tourne jamais, sans erreur ni
 // trace.
+//
+// Quatre protections, chacune verifiee par RouteDePlanificationTest :
+//
+// - 500 SI UNE COMMANDE ECHOUE. Elle repondait 200 quoi qu'il arrive : le
+//   declencheur croyait l'entretien fait alors que l'agregation venait
+//   d'echouer. Les commandes suivantes tournent quand meme — la purge du
+//   journal ne depend pas de la frequentation.
+// - UN VERROU, partage par toutes les instances (le cache) : un second appel
+//   pendant qu'une passe tourne repond 409 sans rien relancer.
+// - HORS FREQUENTATION : un appel de robot n'est pas une page vue.
+// - OUVERTE SITE FERME : le mode maintenance coupe le site public, pas son
+//   entretien.
 Route::get('/_taches-planifiees', function () {
     $secret = config('app.cron_secret');
 
     abort_unless($secret && hash_equals((string) $secret, (string) request()->bearerToken()), 404);
 
-    foreach (TachesDEntretien::COMMANDES as $commande) {
-        Artisan::call($commande);
+    // Une heure : de quoi couvrir une passe, et liberer le verrou d'un
+    // processus tue en cours de route.
+    $verrou = Cache::lock('taches-d-entretien', 3600);
+
+    if (! $verrou->get()) {
+        return response()->json(['message' => 'Entretien deja en cours.'], 409);
     }
 
-    return response()->noContent(200);
-})->name('taches-planifiees');
+    $echecs = [];
+
+    try {
+        foreach (TachesDEntretien::COMMANDES as $commande) {
+            try {
+                if (Artisan::call($commande) !== 0) {
+                    $echecs[] = $commande;
+                }
+            } catch (Throwable $erreur) {
+                report($erreur);
+                $echecs[] = $commande;
+            }
+        }
+    } finally {
+        $verrou->release();
+    }
+
+    return $echecs === []
+        ? response()->noContent(200)
+        : response()->json(['echecs' => $echecs], 500);
+})->name('taches-planifiees')
+    ->withoutMiddleware([EnregistreVisite::class, FermeLeSitePublic::class]);
 
 require __DIR__.'/settings.php';

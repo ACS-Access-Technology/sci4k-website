@@ -28,6 +28,9 @@ app-laravel/storage/logs/*
 app-laravel/storage/framework/cache/*
 app-laravel/storage/framework/sessions/*
 app-laravel/storage/framework/views/*
+# Les disques factices des tests (fichiers televerses de Livewire, a chaque
+# execution de la suite) : ils partaient dans l'image de production.
+app-laravel/storage/framework/testing/
 app-laravel/storage/app/public/*
 
 # La base SQLite du poste de developpement. Elle n'etait exclue nulle part :

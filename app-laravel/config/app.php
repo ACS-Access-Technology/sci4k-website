@@ -43,6 +43,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Politique de securite du contenu : observation
+    |--------------------------------------------------------------------------
+    |
+    | Bloquante par defaut. CSP_OBSERVATION=true l'envoie en
+    | « Content-Security-Policy-Report-Only » : le navigateur signale dans sa
+    | console ce qu'il AURAIT bloque, sans rien bloquer. De quoi verifier une
+    | integration tierce (chat, statistiques) sur l'environnement d'essai sans
+    | la casser. Voir App\Support\PolitiqueDeContenu.
+    |
+    */
+
+    'csp_observation' => (bool) env('CSP_OBSERVATION', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application URL
     |--------------------------------------------------------------------------
     |

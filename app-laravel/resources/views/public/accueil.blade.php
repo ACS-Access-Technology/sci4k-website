@@ -189,7 +189,7 @@
             @if ($annonce->texte($langue))
               <p>{{ $annonce->texte($langue) }}</p>
             @endif
-            <a href="{{ $annonce->cible_bouton ?: '/biens' }}" class="cta-btn">
+            <a href="{{ $annonce->lienDuBouton('biens.index') }}" class="cta-btn">
               <span>{{ $annonce->libelleBouton($langue) ?: __('Voir les parcelles') }}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
             </a>
@@ -211,7 +211,7 @@
             <p>{{ $banderole->texte($langue) }}</p>
           @endif
         </div>
-        <a href="{{ $banderole->cible_bouton ?: '/biens.html' }}" class="cta-btn cta-banderole">
+        <a href="{{ $banderole->lienDuBouton('biens.index') }}" class="cta-btn cta-banderole">
           <span>{{ $banderole->libelleBouton($langue) ?: __('Consulter les biens') }}</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
         </a>
@@ -347,7 +347,7 @@
           @continue(blank($paragraphe))
           <p class="svc-panel-desc">{{ $paragraphe }}</p>
         @endforeach
-        <a class="svc-panel-cta" href="/contact.html">{{ $service->libelleBouton($langue) }}</a>
+        <a class="svc-panel-cta" href="{{ route('contact.index', ['service' => $service->slug]) }}">{{ $service->libelleBouton($langue) }}</a>
       </div>
     @endforeach
   </div>

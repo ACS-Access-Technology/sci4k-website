@@ -116,3 +116,60 @@ it('reste complet quand la configuration est muette', function () {
     $reponse->assertSee('Cocody, Cité des Arts', false);
     $reponse->assertSee('id="contactForm"', false);
 });
+
+/* ------------------------------------------------ un moyen de repondre */
+
+/** Les attributs d'un champ du formulaire, lus dans la page rendue. */
+function champDuContact(string $html, string $id): DOMElement
+{
+    $document = new DOMDocument;
+    @$document->loadHTML('<?xml encoding="UTF-8">'.$html);
+
+    return $document->getElementById($id);
+}
+
+/**
+ * Telephone OU e-mail. Le navigateur exigeait les deux (« required » sur
+ * chacun), le serveur aucun : aucun des deux ne l'est plus a lui seul, et
+ * main.js bloque l'envoi quand les deux sont vides, avec le message que porte
+ * le formulaire. Le nom et le message, eux, restent exiges.
+ */
+it('n exige plus le telephone et l e-mail a la fois', function (string $adresse) {
+    $html = $this->get($adresse)->assertOk()->getContent();
+
+    expect(champDuContact($html, 'contactPhone')->hasAttribute('required'))->toBeFalse()
+        ->and(champDuContact($html, 'contactEmail')->hasAttribute('required'))->toBeFalse()
+        ->and(champDuContact($html, 'contactName')->hasAttribute('required'))->toBeTrue()
+        ->and(champDuContact($html, 'messageTextarea')->hasAttribute('required'))->toBeTrue()
+        // Le champ piege est toujours la.
+        ->and(champDuContact($html, 'contactSiteWeb'))->not->toBeNull();
+})->with(['/contact', '/en/contact']);
+
+it('annonce la regle dans la langue de la page', function (string $adresse, string $attendu) {
+    $html = $this->get($adresse)->getContent();
+
+    expect(champDuContact($html, 'contactForm')->getAttribute('data-erreur-coordonnees'))->toBe($attendu);
+})->with([
+    'francais' => ['/contact', 'Indiquez une adresse e-mail ou un numéro de téléphone pour que nous puissions vous répondre.'],
+    'anglais' => ['/en/contact', 'Please give an email address or a phone number so that we can reply to you.'],
+]);
+
+it('laisse l agence reformuler le message', function () {
+    ReglageDeSection::updateOrCreate(['slug' => 'contact.form'], [
+        'titre_fr' => 'Écrivez-nous',
+        'options' => ['erreur_coordonnees_fr' => 'Un téléphone ou un e-mail, s’il vous plaît.'],
+    ]);
+
+    $html = $this->get('/contact')->getContent();
+
+    expect(champDuContact($html, 'contactForm')->getAttribute('data-erreur-coordonnees'))
+        ->toBe('Un téléphone ou un e-mail, s’il vous plaît.');
+});
+
+/** Le script qui applique la regle cote navigateur est bien celui du site. */
+it('fait appliquer la regle par main.js', function () {
+    $script = file_get_contents(base_path('../maquettes-frontoffice/assets/main.js'));
+
+    expect($script)->toContain("getAttribute('data-erreur-coordonnees')")
+        ->toContain('setCustomValidity');
+});

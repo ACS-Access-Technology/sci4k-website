@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -11,40 +10,41 @@ class DatabaseSeeder extends Seeder
     use WithoutModelEvents;
 
     /**
-     * Seed the application's database.
+     * Ce que `php artisan db:seed` pose : de quoi faire tourner le site, et
+     * rien d'autre. Sur de la production comme ailleurs.
+     *
+     * AUCUN COMPTE. Ce seeder creait « test@example.com », mot de passe
+     * « password », actif : un identifiant public sur toute base qui l'avait
+     * recu. Le premier administrateur se cree desormais expressement, avec un
+     * mot de passe que personne d'autre ne connait :
+     *
+     *     php artisan compte:creer-administrateur
+     *
+     * Trois natures de donnees, trois portes :
+     *
+     *   - la STRUCTURE (roles, categories, referentiels, menus, services, FAQ,
+     *     textes des sections) : ici. Rejouable sans risque — elle ne remplit
+     *     que des tables vides, voir StructureSeeder ;
+     *   - la DEMONSTRATION (contenu de la maquette, biens et realisations
+     *     fictifs) : `db:seed --class=DemonstrationSeeder`, jamais par defaut ;
+     *   - les donnees de TEST : les fabriques de database/factories, que seuls
+     *     les tests emploient.
+     *
+     * Les seeders d'import restent disponibles pour realigner expressement les
+     * textes sur database/data/ — ce qui DEFAIT les corrections faites depuis
+     * l'administration :
+     *
+     *   php artisan db:seed --class=ServiceFaqSeeder
+     *   php artisan db:seed --class=BlocsDeContenuSeeder
+     *   php artisan db:seed --class=ReferentielsSeeder
+     *   php artisan db:seed --class=MenusSeeder
+     *   php artisan db:seed --class=CommunesDuBandeauSeeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-
-        // Seuls les referentiels sont semes ici : roles et categories, qui ne
-        // portent aucun texte editorial.
-        //
-        // Les seeders d'IMPORT en sont volontairement absents —
-        // ArticleImportSeeder depuis le lot 1, ServiceFaqSeeder et
-        // BlocsDeContenuSeeder depuis le lot 2. Ils reecrivent le contenu du
-        // site depuis les fichiers de database/data/, ce qui est le comportement
-        // voulu quand on les lance expressement, et destructeur quand un
-        // `db:seed` de routine les emporte : les corrections faites depuis
-        // l'administration seraient defaites sans que personne ne le demande.
-        //
-        // ReferentielsSeeder les rejoint : il reecrit les libelles francais et
-        // anglais a chaque passage, donc il defairait le renommage d'une zone
-        // ou d'un type de bien fait depuis l'administration.
-        //
-        //   php artisan db:seed --class=ServiceFaqSeeder
-        //   php artisan db:seed --class=BlocsDeContenuSeeder
-        //   php artisan db:seed --class=ReferentielsSeeder
-        //   php artisan db:seed --class=MenusSeeder
-        //   php artisan db:seed --class=CommunesDuBandeauSeeder
         $this->call([
             RoleSeeder::class,
-            CategorieSeeder::class,
+            StructureSeeder::class,
         ]);
     }
 }

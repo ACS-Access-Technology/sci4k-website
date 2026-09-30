@@ -46,13 +46,13 @@
 <link rel="alternate" hreflang="fr" href="{{ $adresseFr }}">
 <link rel="alternate" hreflang="en" href="{{ \App\Http\Controllers\LangueController::traduireLeChemin(request()->path(), 'en') }}">
 <link rel="alternate" hreflang="x-default" href="{{ $adresseFr }}">
-<script>(function(){try{var t=localStorage.getItem('sci4k-theme')||'light';
+<script @nonce>(function(){try{var t=localStorage.getItem('sci4k-theme')||'light';
 var sombre=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
 document.documentElement.setAttribute('data-theme',sombre?'dark':'light');}catch(e){}})();</script>
-<script>(function(){try{localStorage.setItem('sci4k-lang', '{{ app()->getLocale() }}');}catch(e){}})();</script>
+<script @nonce>(function(){try{localStorage.setItem('sci4k-lang', '{{ app()->getLocale() }}');}catch(e){}})();</script>
 <link rel="stylesheet" href="{{ \App\Support\Ressource::url('assets/images.css') }}">
 @if ($variablesImagesDeFond)
-<style>
+<style @nonce>
 :root {
 @foreach ($variablesImagesDeFond as $slugImage => $urlImage)
   --img-{{ $slugImage }}: url('{{ $urlImage }}');
@@ -62,8 +62,9 @@ document.documentElement.setAttribute('data-theme',sombre?'dark':'light');}catch
 @endif
 <link rel="stylesheet" href="{{ \App\Support\Ressource::url('assets/style.css') }}">
 @if ($googleAnalytics)
+@php(\App\Support\PolitiqueDeContenu::autoriser('google-analytics'))
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ urlencode($googleAnalytics) }}"></script>
-<script>
+<script @nonce>
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
@@ -81,7 +82,8 @@ gtag('config', '{{ $googleAnalytics }}');
 @include('public.partials.flottants')
 <script src="{{ \App\Support\Ressource::url('assets/main.js') }}" defer></script>
 @if ($tawkActif && $tawkIdentifiant)
-<script>
+@php(\App\Support\PolitiqueDeContenu::autoriser('tawk'))
+<script @nonce>
 var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
 (function(){
 var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];

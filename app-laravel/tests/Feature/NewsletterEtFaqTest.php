@@ -51,7 +51,7 @@ it('enregistre une question posee depuis la FAQ', function () {
 it('marque contact par defaut quand la source n est pas dite', function () {
     Mail::fake();
 
-    $this->postJson('/messages', ['nom' => 'Léon', 'message' => 'Bonjour'])->assertCreated();
+    $this->postJson('/messages', ['nom' => 'Léon', 'email' => 'leon@exemple.ci', 'message' => 'Bonjour'])->assertCreated();
 
     expect(MessageDeContact::first()->source)->toBe(MessageDeContact::DE_CONTACT);
 });
@@ -61,9 +61,10 @@ it('refuse une source inventee', function () {
 
     $this->postJson('/messages', [
         'nom' => 'Intrus',
+        'email' => 'intrus@exemple.ci',
         'message' => 'Bonjour',
         'source' => 'formulaire-fantome',
-    ])->assertStatus(422);
+    ])->assertStatus(422)->assertJsonValidationErrorFor('source');
 
     expect(MessageDeContact::count())->toBe(0);
 });
