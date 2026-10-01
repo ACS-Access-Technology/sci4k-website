@@ -333,11 +333,12 @@ ligne autant que le reste.
 
 L'intégration continue, elle, tourne : les contrôles de non-régression et les
 tests Laravel s'exécutent sur les trois branches et passent, l'audit des
-dépendances et le contrôle du flux des branches s'y ajoutent. Aucun ne bloque
-encore une fusion : les protections de branche restent à poser dans GitHub
-(`docs/BRANCHES_ET_DEPLOIEMENT.md`). Un check supplémentaire vient de
-SonarCloud, hors GitHub Actions, sur la qualité du code ; il est informatif, et
-sa « Quality Gate » échoue au 30 septembre 2026.
+dépendances et le contrôle du flux des branches s'y ajoutent. Depuis le
+1er octobre 2026, les protections de branche sont posées dans GitHub : ces
+cinq checks bloquent toute fusion vers `preprod` et `master`, administrateurs
+compris (`docs/BRANCHES_ET_DEPLOIEMENT.md`). Un check supplémentaire vient de
+SonarCloud, hors GitHub Actions, sur la qualité du code ; il est informatif,
+absent des règles, et sa « Quality Gate » échoue au 1er octobre 2026.
 
 ## 5. Les branches
 

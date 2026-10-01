@@ -202,6 +202,15 @@ vérification.
 
 ## 13. Appliquer les protections dans GitHub (à la main)
 
+**Fait le 1er octobre 2026**, et vérifié dans l'API de GitHub : `master` et
+`preprod` exigent les cinq checks ci-dessous, sans contournement possible ;
+`dev` interdit la suppression et la réécriture forcée. La procédure reste
+ici pour un nouveau dépôt, ou si une règle devait être refaite.
+
+Le check `Flux des branches` n'apparaît dans la liste de GitHub qu'après
+avoir tourné une fois : ouvrir d'abord une demande de fusion `dev` →
+`preprod`.
+
 Rien de ceci n'est fait par le dépôt : il faut un compte **administrateur** du
 dépôt `ACS-Access-Technology/sci4k-website`.
 

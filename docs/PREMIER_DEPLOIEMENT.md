@@ -88,7 +88,10 @@ retour arrière (`down()`).
    l'identique (voir `.env.production.example`). Les passkeys déjà créées
    continuent de fonctionner, et `APP_KEY` peut ensuite changer sans les
    détruire.
-5. **Les règles GitHub** du § 13 de `BRANCHES_ET_DEPLOIEMENT.md`.
+5. **Les règles GitHub** du § 13 de `BRANCHES_ET_DEPLOIEMENT.md` — posées
+   le 1er octobre 2026 et vérifiées dans l'API : `master` et `preprod`
+   exigent les cinq checks, administrateurs compris ; `dev` interdit la
+   suppression et la réécriture forcée.
 
 Recommandés avant le premier déploiement, bloquants avant le domaine
 définitif :

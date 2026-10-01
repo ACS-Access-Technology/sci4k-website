@@ -91,8 +91,9 @@ Les cases indiquent l'état au moment de cette documentation, pas une promesse d
 ## 7. Vérifications minimales après chaque lot
 
 Les quatre contrôles de l'intégration continue, dans l'ordre où elle les
-lance. Ils tournent sur `master`, `preprod` et `dev` ; ils ne bloquent une
-fusion qu'une fois les protections de branche posées dans GitHub (voir
+lance. Ils tournent sur `master`, `preprod` et `dev`, et bloquent toute
+fusion vers `preprod` et `master` depuis que les protections de branche sont
+posées dans GitHub, le 1er octobre 2026 (voir
 `docs/BRANCHES_ET_DEPLOIEMENT.md`).
 
 ```bash
