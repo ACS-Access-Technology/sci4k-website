@@ -108,8 +108,8 @@ php artisan test                               # la suite complete
 ```
 
 Les tests sont rejoués deux fois en intégration : sur SQLite, rapide, puis sur
-MySQL 9.7, la version supportée (et, le temps de la transition, sur 9.4, celle
-que sert encore la production). Les écarts de dialecte — le
+MySQL 9.7.2, la version supportée et celle de la production. Les écarts de
+dialecte — le
 type énuméré des statuts au premier chef — ne se voient pas autrement.
 
 Vérifier également manuellement les vues desktop et mobile, la console JavaScript, les chemins d'images, le clavier dans les modales et l'absence de références Laravel résiduelles dans les favicons.

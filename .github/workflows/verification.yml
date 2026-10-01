@@ -50,28 +50,19 @@ jobs:
     # dit pourquoi). Changer cette image sans changer la constante fait echouer
     # l'etape « Version de MySQL » ci-dessous : les deux vont ensemble.
     #
-    # La CI testait 8.0 pendant que la production tournait sur 9.4, et rien ne
-    # le signalait. Tant que la production n'est pas passee en 9.7, la suite
-    # est AUSSI rejouee contre 9.4, le moteur qu'elle sert reellement.
+    # L'image est epinglee sur la version EXACTE de la production
+    # (docs/DEPLOIEMENT_RAILWAY.md, § 2) : la CI teste ce que sert le site, et
+    # non la derniere 9.7 parue. Monter la production d'un correctif, c'est
+    # changer les deux ensemble. La CI a teste 8.0 pendant que la production
+    # tournait sur 9.4, sans que rien ne le signale ; la production est en
+    # 9.7.2 depuis le 1er octobre 2026.
     services:
       mysql:
-        image: mysql:9.7
+        image: mysql:9.7.2
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: sci4k_test
         ports: ['3306:3306']
-        options: >-
-          --health-cmd="mysqladmin ping" --health-interval=10s
-          --health-timeout=5s --health-retries=5
-
-      # TRANSITOIRE : a retirer, avec l'etape qui l'emploie, des que la
-      # production tourne sur MySQL 9.7.
-      mysql-production-actuelle:
-        image: mysql:9.4
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: sci4k_test
-        ports: ['3307:3306']
         options: >-
           --health-cmd="mysqladmin ping" --health-interval=10s
           --health-timeout=5s --health-retries=5
@@ -170,14 +161,3 @@ jobs:
           DB_USERNAME: root
           DB_PASSWORD: root
         run: php artisan base:verifier-version
-
-      # TRANSITOIRE, comme le service qu'elle emploie.
-      - name: Tests sur MySQL 9.4, la production actuelle
-        env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: '3307'
-          DB_DATABASE: sci4k_test
-          DB_USERNAME: root
-          DB_PASSWORD: root
-        run: php artisan test

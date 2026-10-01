@@ -76,7 +76,7 @@ GitHub, c'est-à-dire le `name:` du job :
 | Check | Workflow | Ce qu'il vérifie |
 |---|---|---|
 | `Contrôles de non-régression` | `verification.yml` | Références, données structurées, formulaires, maquettes du backoffice |
-| `Tests Laravel` | `verification.yml` | Pint, phpstan, la suite sur SQLite, MySQL 9.7 et 9.4 |
+| `Tests Laravel` | `verification.yml` | Pint, phpstan, la suite sur SQLite et MySQL 9.7.2 |
 | `Paquets PHP` | `audit-dependances.yml` | Failles connues des paquets PHP livrés (voir `SECURITE_DEPENDANCES.md`) |
 | `Paquets npm` | `audit-dependances.yml` | Failles hautes et critiques des paquets npm |
 | `Flux des branches` | `flux-des-branches.yml` | L'origine de la demande : `dev` vers `preprod`, `preprod` vers `master` |

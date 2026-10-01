@@ -152,13 +152,13 @@ php artisan test                # la suite complete
 
 Ces quatre contrôles tournent dans l'intégration continue à chaque poussée sur
 `master`, `preprod` et `dev`, et sur chaque demande de fusion. Ils ne
-**bloquent** une fusion qu'une fois déclarés obligatoires dans les protections
-de branche de GitHub, à poser à la main — voir
-`docs/BRANCHES_ET_DEPLOIEMENT.md`. Les tests y sont rejoués deux fois : sur SQLite,
+**bloquent** toute fusion vers `preprod` et `master` : ils sont déclarés
+obligatoires dans les protections de branche de GitHub, posées le
+1er octobre 2026 — voir `docs/BRANCHES_ET_DEPLOIEMENT.md`. Les tests y sont rejoués deux fois : sur SQLite,
 rapide, puis sur MySQL 9.7, la version supportée — les écarts de dialecte ne
 se voient pas autrement. `php artisan base:verifier-version` vérifie ensuite
-que l'image testée est bien cette version. Tant que la production tourne
-encore sur MySQL 9.4, la suite est aussi rejouée contre 9.4.
+que l'image testée est bien cette version — `mysql:9.7.2`, exactement celle
+de la production.
 
 Un second workflow, `audit-dependances.yml`, confronte `composer.lock` et
 `package-lock.json` aux failles publiées — aussi chaque lundi, sans changement

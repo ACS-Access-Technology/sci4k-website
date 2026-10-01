@@ -107,27 +107,28 @@ Le projet supporte et teste **MySQL 9.7** (LTS). Au démarrage, le conteneur de
 l'application compare la version jointe à celle-ci et écrit un
 **AVERTISSEMENT** dans les journaux en cas d'écart ; il démarre quand même.
 
-État vérifié le 1er octobre 2026 sur le service `MySQL-1Luf` :
+État vérifié le 1er octobre 2026 sur le service `MySQL-1Luf`, après la
+migration du jour :
 
-- **MySQL 9.4.0**, version « Innovation » plus supportée par Oracle depuis
-  octobre 2025 (journal de démarrage : « Version: '9.4.0' ») ;
-- **image épinglée sur `mysql:9.4.0`** le 1er octobre
-  (`railway service source connect --image mysql:9.4.0`). La source disait
-  `mysql:9`. Le changement a redéployé MySQL une fois, sur la même empreinte
-  (`sha256:135bc87c…`) : aucune montée de version, données reprises du
-  volume, site vérifié aussitôt ;
-- **une mise à jour automatique était armée** : Railway signale la faille
-  CVE-2026-21964 (gravité « HIGH ») sur 9.4.0, et avait programmé la montée
-  vers `mysql:9` — 9.7.2 — au créneau du samedi 3 octobre, sans sauvegarde
-  possible sur ce plan. Elle est **suspendue jusqu'au 15 octobre 2026,
-  10 h 05 UTC** (mutation `serviceInstanceAutoUpdateSnooze` de l'API, sans
-  redéploiement). La politique elle-même se lit dans la configuration de
-  l'environnement (`railway api`, champ `config`), pas dans
-  `railway autoupdate`, qui ne concerne que la CLI.
+- **MySQL 9.7.2** (LTS), journal de démarrage : « Version: '9.7.2' » ;
+- **image épinglée sur `mysql:9.7.2`**, empreinte `sha256:e2bde46db656…`
+  (`railway service source connect --image mysql:9.7.2 --service MySQL-1Luf`),
+  la même que celle de la CI (`verification.yml`) ;
+- **mises à jour automatiques de l'image désactivées** (`type: disabled`). Un
+  avis de faille armé par Railway (CVE-2026-21964, sur 9.4.0, vers
+  `mysql:9`) a été écarté après la migration, qui en était la correction
+  (mutation `serviceInstanceVulnRemediationDismiss`). La politique se lit dans
+  la configuration de l'environnement (`railway api`, champ `config` —
+  filtrer : elle contient les variables), pas dans `railway autoupdate`, qui
+  ne concerne que la CLI.
 
-Passer à 9.7 corrige la faille et rejoint la version testée. C'est une
-opération de production distincte, avec sauvegarde préalable, à faire avant
-le 15 octobre : `PREMIER_DEPLOIEMENT.md`, §2.
+La migration elle-même — 9.4.0 vers 9.7.2, sauvegarde, répétition,
+vérifications — est consignée dans `PREMIER_DEPLOIEMENT.md`, §9.
+
+**Ne jamais utiliser *Rollback* sur le service MySQL** pour revenir à 9.4 :
+Railway le propose encore, mais MySQL ne sait pas redescendre d'une version
+sur des données déjà migrées. Le retour en arrière passe par la sauvegarde
+(`PREMIER_DEPLOIEMENT.md`, §7.4).
 
 ### 3. Poser les variables
 

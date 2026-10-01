@@ -25,11 +25,11 @@ Projet `energetic-courtesy`, environnement `production`.
 | Élément | État | Nature |
 |---|---|---|
 | Service `sci4k` | sans source : alimenté par `railway up` ; domaine `sci4k-production.up.railway.app` ; dernier déploiement le 23 septembre, **ancien code** (sans politique de contenu, `/mentions-legales.html` encore servi) | vérifié |
-| Service `MySQL-1Luf` | **MySQL 9.4.0** (journal de démarrage) ; image épinglée sur `mysql:9.4.0` le 1er octobre, même empreinte qu'avant | vérifié |
-| Mise à jour automatique de MySQL | **armée par Railway** pour la faille CVE-2026-21964 (gravité « HIGH ») vers `mysql:9`, soit 9.7.2 ; **suspendue jusqu'au 15 octobre 2026, 10 h 05 UTC** (§2) | vérifié |
+| Service `MySQL-1Luf` | **MySQL 9.7.2** depuis le 1er octobre, 17 h 20 UTC (§9) ; image épinglée sur `mysql:9.7.2` ; avant : 9.4.0 | vérifié |
+| Mise à jour automatique de MySQL | **désactivée** ; l'avis de faille CVE-2026-21964 armé par Railway sur 9.4.0 a été écarté, la migration en étant la correction | vérifié |
 | Service `sci4k-website` | **supprimé le 1er octobre** : reliquat relié au dépôt GitHub, sans variable, sans volume, sans usage | vérifié |
 | Volume `sci4k-volume` | fichiers téléversés, 39 Mo sur 500, monté sur `sci4k` | vérifié |
-| Volume `mysql-volume-gNQa` | données MySQL, 184 Mo sur 500, monté sur `MySQL-1Luf` | vérifié |
+| Volume `mysql-volume-gNQa` | données MySQL, 168 Mo sur 500 après la migration (184 avant), monté sur `MySQL-1Luf` | vérifié |
 | Volume `mysql-volume` | 147 Mo, rattaché à aucun service, créé le 7 septembre à 19 h 25 — onze minutes avant celui de `MySQL-1Luf` | vérifié |
 | Contenu de `mysql-volume` | un premier service MySQL, remplacé au bout de onze minutes ; 147 Mo est la taille d'un répertoire MySQL 9 tout juste initialisé : vraisemblablement vide de données du site | déduit |
 | Plan Railway | **Hobby** | vérifié (API) |
@@ -75,15 +75,12 @@ retour arrière (`down()`).
    Fait le 1er octobre 2026 : sauvegarde de la production (47 tables,
    archive intacte), restaurée dans un MySQL 9.4.0 local — données
    identiques à l'octet près, après réexport.
-3. **La faille de MySQL 9.4.0, avant le 15 octobre.** Railway signale
-   CVE-2026-21964, gravité « HIGH », et a programmé la montée vers 9.7.2 —
-   la version que le projet supporte et teste. Elle est suspendue jusqu'au
-   15 octobre, 10 h 05 UTC, parce qu'elle se serait faite sans sauvegarde. À
-   cette date, si rien n'est décidé, elle repart au créneau suivant (samedi
-   10 h – 24 h, dimanche 0 h – 18 h UTC). Le bon chemin : sauvegarder, puis
-   faire cette montée de version volontairement, en surveillant le
-   démarrage. Une nouvelle suspension (14 jours au plus) ne fait que la
-   repousser.
+3. **La faille de MySQL 9.4.0** (CVE-2026-21964, gravité « HIGH », signalée
+   par Railway) — **corrigée le 1er octobre 2026** par la migration vers
+   MySQL 9.7.2, faite volontairement, après sauvegarde et répétition (§9).
+   Railway l'avait programmée pour le samedi 3 octobre, sans sauvegarde
+   possible ; elle avait d'abord été suspendue, puis l'avis a été écarté et
+   les mises à jour automatiques désactivées.
 4. **`PASSKEYS_USER_HANDLE_SECRET`** = la valeur **actuelle** de `APP_KEY`, à
    l'identique (voir `.env.production.example`). Les passkeys déjà créées
    continuent de fonctionner, et `APP_KEY` peut ensuite changer sans les
@@ -214,16 +211,15 @@ l'écran). Dans l'ordre, on doit lire :
 == Migrations ==
   2026_09_29_120000_cree_les_executions_d_entretien ........ DONE
 == Base de donnees ==
-MySQL 9.4.0 : le projet supporte et teste MySQL 9.7. …
-AVERTISSEMENT : version de MySQL non supportee (voir ci-dessus).
+MySQL 9.7.2 : version supportée (9.7).
 == Caches ==
 == Planificateur ==
 == Pret ==
 ```
 
-L'avertissement sur MySQL 9.4.0 est **attendu** tant que la base n'a pas été
-montée en 9.7. Tout autre `AVERTISSEMENT` ou `ERREUR` arrête la procédure :
-§7.
+Depuis la migration du 1er octobre, plus aucun avertissement de version
+n'est attendu (répété sur une copie de la production, §9). Tout
+`AVERTISSEMENT` ou `ERREUR` arrête la procédure : §7.
 
 Le conteneur **refuse de démarrer** — et le déploiement échoue, l'ancien
 restant en ligne — si `APP_KEY` est vide ou si `APP_DEBUG` vaut autre chose
@@ -249,7 +245,7 @@ Sur l'adresse du service :
    tout changement de version de MySQL) :
 
    ```bash
-   docker run -d --name restauration -e MYSQL_ROOT_PASSWORD=essai-local mysql:9.4.0
+   docker run -d --name restauration -e MYSQL_ROOT_PASSWORD=essai-local mysql:9.7.2
    # attendre « ready for connections » dans « docker logs restauration »
    zcat "base-$horodatage.sql.gz" | docker exec -i restauration sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot'
    docker exec restauration sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -e "SELECT COUNT(*) FROM railway.migrations; SELECT COUNT(*) FROM railway.biens"'
@@ -310,6 +306,17 @@ Sur ce plan, la seule source est l'archive de la §4.1 : la rejouer dans
 passée en entrée de `railway ssh`. Non éprouvé en production. Sauvegarder
 l'état courant avant, même dégradé.
 
+### 7.4 Le service MySQL : jamais *Rollback*
+
+Railway propose *Rollback* sur les anciens déploiements de `MySQL-1Luf`,
+dont ceux en 9.4. **Ne pas s'en servir** : MySQL ne sait pas redescendre de
+version sur des données déjà migrées en 9.7 — le serveur 9.4 refuserait de
+démarrer, ou pire. Revenir en arrière, c'est restaurer la sauvegarde prise
+avant la migration (§9) dans un MySQL neuf : l'opération remplace toutes les
+données saisies depuis (§7.3), et demande un répertoire de données vide —
+donc de vider le volume ou d'en monter un autre, une décision explicite, que
+le plan (trois volumes au plus, tous pris) rend plus lourde encore.
+
 ## 8. Points d'attention
 
 - **Une seule réplique** pour `sci4k` : le volume l'impose, et le
@@ -326,3 +333,70 @@ l'état courant avant, même dégradé.
 - **`railway autoupdate`** règle les mises à jour de la CLI elle-même, pas
   celles d'une image : la politique de MySQL se lit dans la configuration de
   l'environnement.
+
+## 9. Migration MySQL 9.4.0 → 9.7.2 (1er octobre 2026)
+
+**Pourquoi.** MySQL 9.4.0, version « Innovation », n'était plus supportée par
+Oracle et portait une faille signalée par Railway (CVE-2026-21964, gravité
+« HIGH »). Railway avait armé une montée automatique vers `mysql:9` pour le
+samedi 3 octobre, sans sauvegarde possible sur ce plan. Le projet supporte et
+teste 9.7, la LTS. La documentation d'Oracle admet le passage d'une série
+Innovation à la LTS suivante sur place (*In-place upgrade*).
+
+| | Avant | Après |
+|---|---|---|
+| Version | 9.4.0 | **9.7.2** |
+| Image | `mysql:9.4.0`, `sha256:135bc87c…` | `mysql:9.7.2`, `sha256:e2bde46d…` (celle de la CI) |
+| Tables | 47 | 47 |
+| Schéma (412 colonnes, 155 index, 22 clés étrangères) | référence | identique (empreintes) |
+| Contenu (`CHECKSUM TABLE`) | référence | identique sur toutes les tables stables |
+| Migrations Laravel | 45 passées, aucune en attente | 45, aucune en attente |
+| Planificateur | un `schedule:work` | un `schedule:work` |
+| Volume MySQL | 184 Mo | 168 Mo (réorganisation interne, données vérifiées) |
+| Mises à jour automatiques | armées vers `mysql:9` | désactivées |
+
+**Sauvegarde.** `mysqldump` par `railway ssh` (§4.1), juste avant :
+`~/sauvegardes-sci4k/base-20261001-1715-avant-mysql-9.7.sql.gz`, 86 Ko,
+47 tables dont 38 avec des données, ni procédure, ni trigger, ni événement
+(il n'y en a aucun), archive intacte, empreinte SHA-256 conservée à côté.
+
+**Répétition, sur un poste, avant de toucher à la production.** La
+sauvegarde restaurée dans `mysql:9.4` (empreinte de la production), avec la
+commande de démarrage exacte de Railway ; arrêt propre ; même répertoire de
+données relancé en `mysql:9.7.2` : « Server upgrade from '90400' to '90702'
+completed » en 5 s. Puis, comparés à la production : les 47 tables, toutes
+leurs lignes, le schéma complet, les sommes de contrôle du contenu —
+identiques. L'image du site a démarré dessus : migration nouvelle jouée,
+« version supportée », pages en ligne, écriture en base, aucune exception.
+Mémoire de MySQL 9.7.2 : 372 Mo, sous la limite de 1 Go. Tout a été supprimé
+ensuite.
+
+**Migration.**
+`railway service source connect --image mysql:9.7.2 --service MySQL-1Luf` à
+17 h 19 min 50 s UTC. Railway a redéployé le service sur le même volume,
+sans rien d'autre : démarrage de 9.7.2 à 17 h 20 min 09 s, mise à niveau
+« 90400 → 90702 » de 17 h 20 min 14 s à 17 h 20 min 22 s, puis « ready for
+connections ». Aucune variable de l'application modifiée, aucun redéploiement
+du site.
+
+**Coupure.** Mesurée par une sonde toutes les 2 s sur `/up` et `/biens` :
+les pages qui lisent la base ont répondu 500 de 17 h 20 min 06 s à
+17 h 20 min 17 s, environ 12 s ; `/up`, qui n'y touche pas, est resté en
+ligne sauf une réponse perdue. Les journaux du site portent quatre erreurs,
+toutes dans cette fenêtre — des connexions refusées, et une requête restée
+bloquée pendant la coupure jusqu'à son délai de 30 s. Aucune depuis.
+
+**Vérifications après.** Version, 47 tables, schéma et contenu identiques à
+la référence ; `sessions` a baissé (sessions expirées purgées par Laravel :
+la plus ancienne restante a moins de 120 min) et `visites` a monté (identifiants
+continus, aucun trou) ; pages publiques et connexion en 200 ; le site écrit
+en base ; planificateur en place ; suite de tests rejouée sur MySQL 9.7.2, en
+local et en CI.
+
+**Retour arrière.** Pas par *Rollback* (§7.4). Par la sauvegarde ci-dessus,
+restaurable — éprouvé le même jour, sur 9.4.0 comme sur 9.7.2 : c'est une
+décision explicite, qui efface les saisies postérieures.
+
+**Limites.** La sauvegarde vit sur le poste qui l'a prise, seule copie hors
+de Railway. La coupure d'une dizaine de secondes est inhérente au plan : un
+volume interdit d'avoir deux instances de MySQL à la fois.

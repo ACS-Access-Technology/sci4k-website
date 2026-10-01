@@ -38,8 +38,22 @@ it('epingle MySQL sur une version exacte', function () {
     $plateforme = documentDuDepot('docs/DEPLOIEMENT_RAILWAY.md');
 
     expect($plateforme)->toContain("**Épingler l'image sur une version exacte**, jamais sur `mysql:9`")
-        ->toContain('railway service source connect --image mysql:9.4.0')
-        ->and(documentDuDepot('docs/PREMIER_DEPLOIEMENT.md'))->toContain('suspendue jusqu\'au 15 octobre');
+        ->toContain('**Ne jamais utiliser *Rollback* sur le service MySQL**')
+        ->and(documentDuDepot('docs/PREMIER_DEPLOIEMENT.md'))->toContain('### 7.4 Le service MySQL : jamais *Rollback*');
+});
+
+/*
+ * La CI teste la version exacte que sert la production : une seule version,
+ * ecrite deux fois. Monter l'une sans l'autre, et la CI validerait un moteur
+ * que le site n'emploie pas — c'est ainsi qu'elle a teste 8.0 pendant que la
+ * production tournait sur 9.4.
+ */
+it('teste en CI la version de MySQL epinglee en production', function () {
+    preg_match('/railway service source connect --image mysql:(\d+\.\d+\.\d+)/', documentDuDepot('docs/DEPLOIEMENT_RAILWAY.md'), $production);
+    preg_match_all('/^\s+image: mysql:(\S+)$/m', documentDuDepot('.github/workflows/verification.yml'), $ci);
+
+    expect($production[1] ?? null)->not->toBeNull('aucune version epinglee dans la documentation')
+        ->and($ci[1])->toBe([$production[1]]);
 });
 
 it('sauvegarde avant de mettre en ligne, hors du depot, sans mot de passe en clair', function () {
