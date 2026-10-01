@@ -9,9 +9,27 @@ Le document sépare trois choses qui se confondent facilement : ce qu'il faut
 **commander**, ce qu'il faut **régler**, et ce qu'il faut **attendre de
 quelqu'un d'autre**. Le dernier groupe ne dépend d'aucun code.
 
+**La stratégie de déploiement retenue est unique** : un conteneur sur Railway,
+mis en ligne par `railway up` depuis `master`, après
+`tools/verifier-avant-deploiement.sh`. La procédure de chaque mise en ligne —
+sauvegardes, vérifications, retour arrière — est dans
+`PREMIER_DEPLOIEMENT.md` ; la plateforme, dans `DEPLOIEMENT_RAILWAY.md`. Le
+passage au domaine définitif suit la même voie : ce document en liste les
+réglages (§3) et ce qu'il faut obtenir de tiers (§4).
+
+Le §1 et le §2 décrivent un **hébergement classique** (SSH, cron). Ils sont
+gardés en plan de repli, pour le jour où la plateforme changerait ; ils ne
+servent pas aujourd'hui.
+
 ---
 
-## 1. Ce qu'il faut commander
+## 1. Ce qu'il faut commander (hébergement classique, plan de repli)
+
+En conteneur, l'image apporte PHP, ses extensions et Node ; le planificateur
+tourne à côté du serveur. Le projet Railway est sur le plan Hobby, dont les
+limites — aucune sauvegarde de volume, notamment — sont dans
+`PREMIER_DEPLOIEMENT.md`, §1. Restent à obtenir : le domaine, et un compte
+SMTP.
 
 | Élément | Contrainte vérifiée | D'où vient la contrainte |
 |---|---|---|
@@ -54,7 +72,7 @@ tableau de bord de l'administration, en alerte au-delà de 26 h sans passe
 réussie ; et, si `SENTRY_LARAVEL_DSN` est renseigné, les moniteurs Sentry
 Crons, qui préviennent d'eux-mêmes.
 
-## 2. La séquence de déploiement
+## 2. La séquence de déploiement (hébergement classique, plan de repli)
 
 Dans cet ordre. Chaque étape a une raison d'être avant la suivante.
 
@@ -183,14 +201,30 @@ Relevés en lisant la configuration. Les cinq premiers sont bloquants.
 4. **SMTP réel.** Sous `MAIL_MAILER=log`, les courriels sont écrits dans le
    journal et ne partent pas : accusé d'un message de contact, alerte d'une
    demande de visite, avis d'un nouveau commentaire, réponse à un message,
-   invitation d'un compte du backoffice, message d'essai. L'écran
-   Configuration comporte un bouton d'essai pour vérifier les identifiants.
+   invitation d'un compte du backoffice, message d'essai. `log` n'est pas une
+   configuration de production. Variables : `MAIL_MAILER=smtp`, `MAIL_HOST`,
+   `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, et **`MAIL_FROM_ADDRESS`** —
+   une adresse du domaine de l'agence, autorisée par le fournisseur (SPF,
+   DKIM) ; vide, Laravel envoie au nom de `hello@example.com`. L'écran
+   Configuration peut aussi porter le serveur, et comporte un bouton d'essai ;
+   il ne s'applique qu'aux pages, pas aux commandes console. Les identifiants
+   se posent dans les variables du service, jamais dans un fichier du dépôt.
 
 5. **`php artisan storage:link`.** Voir l'étape 6 ci-dessus.
 
-6. **Journalisation.** `LOG_STACK=daily` et `LOG_LEVEL=warning`. Le gabarit de
-   développement écrit dans un fichier unique que rien ne fait tourner, au
-   niveau `debug` — donc chaque requête SQL. Il sature le disque à terme.
+6. **Journalisation.** `LOG_STACK=stderr` et `LOG_LEVEL=warning` : en
+   conteneur, Railway collecte la sortie d'erreur, et un fichier écrit dans le
+   conteneur disparaîtrait au redéploiement. Sur hébergement classique,
+   `LOG_STACK=daily`. Jamais le réglage du gabarit de développement : un
+   fichier unique que rien ne fait tourner, au niveau `debug` — donc chaque
+   requête SQL, avec ses valeurs.
+
+   **`PASSKEYS_USER_HANDLE_SECRET`** : vide, c'est `APP_KEY` qui en tient lieu,
+   et changer `APP_KEY` rend alors inutilisables toutes les passkeys. Y poser
+   la valeur actuelle de `APP_KEY` les en détache sans rien casser. Le domaine
+   définitif, lui, les invalidera de toute façon : l'identifiant de « partie
+   de confiance » est l'hôte de `APP_URL`. Détail dans
+   `.env.production.example`.
 
 7. **`SENTRY_LARAVEL_DSN`** est facultatif mais vivement conseillé : sans lui,
    une erreur en production n'est signalée à personne et ne se découvre que
@@ -206,7 +240,15 @@ Relevés en lisant la configuration. Les cinq premiers sont bloquants.
    Poser aussi **`SENTRY_ENVIRONMENT`** : sans lui, Sentry reprend `APP_ENV`,
    et l'instance d'essai — en `APP_ENV=production` — mêlerait ses erreurs à
    celles du site définitif. La version (release) se renseigne seule sur
-   Railway ; ailleurs, `SENTRY_RELEASE`.
+   Railway : l'identifiant du déploiement, `railway up` ne transmettant pas de
+   commit ; ailleurs, `SENTRY_RELEASE`. `SENTRY_TRACES_SAMPLE_RATE` reste à
+   `0` : les traces consomment le quota bien plus vite que les erreurs.
+
+   À préparer avant la mise en ligne définitive : un projet Sentry (PHP /
+   Laravel), son DSN posé dans les variables du service, et deux alertes —
+   toute nouvelle erreur, et les moniteurs Crons `sci4k-frequentation-agreger`
+   et `sci4k-journal-purger`, créés d'eux-mêmes au premier signal. Un essai :
+   `php artisan sentry:test`, sous `www-data`, depuis la console du service.
 
 8. **`DEEPL_API_KEY`** reste facultatif : sans clé, la traduction automatique
    des articles se tait et les deux langues se saisissent à la main.

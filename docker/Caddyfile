@@ -84,6 +84,21 @@
 	@televerses path /storage/*
 	header @televerses ?Content-Security-Policy "default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; sandbox"
 
+	# Aucun fichier PHP sous /storage ne s'execute, ni ne se telecharge.
+	# php_server execute TOUT fichier .php qu'il trouve sous public/, et
+	# public/storage mene au volume des televersements. Le backoffice n'y
+	# ecrit que des images ; mais une faille dans ce controle, ou un fichier
+	# depose autrement sur le volume, y deviendrait du code execute sur le
+	# serveur. Constate avant correction : /storage/essai.php s'executait.
+	#
+	# « respond » passe avant php_server dans l'ordre des directives. Le
+	# motif vise « .php » n'importe ou apres /storage/, en toutes casses :
+	# /storage/x.php/suite executerait x.php (decoupage du chemin), et
+	# /storage/x.PHP ne doit pas passer. Sans ancre en tete, //storage/...
+	# est couvert aussi.
+	@php_televerse path_regexp (?i)/storage/.*\.php
+	respond @php_televerse 404
+
 	{$CADDY_SERVER_EXTRA_DIRECTIVES}
 
 	php_server

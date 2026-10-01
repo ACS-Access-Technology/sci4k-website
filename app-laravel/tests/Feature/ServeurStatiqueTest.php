@@ -29,6 +29,22 @@ it('n execute jamais un fichier televerse comme une page', function () {
         ->toMatch('/header @televerses \?Content-Security-Policy "[^"]*default-src \'none\'[^"]*sandbox"/');
 });
 
+/*
+ * php_server execute tout fichier .php trouve sous public/, et /storage mene
+ * au volume des televersements. L'essai en conteneur (rapport de la phase 14)
+ * a verifie les variantes : casse, suite de chemin, double barre, encodage.
+ */
+it('n execute aucun fichier PHP depose sous storage', function () {
+    $caddy = caddyfile();
+
+    expect($caddy)->toContain('@php_televerse path_regexp (?i)/storage/.*\.php')
+        ->toContain('respond @php_televerse 404');
+
+    // Avant php_server dans le fichier, par lisibilite ; Caddy les ordonne
+    // de toute facon selon l'ordre des directives, « respond » en premier.
+    expect(strpos($caddy, 'respond @php_televerse'))->toBeLessThan(strrpos($caddy, "\tphp_server"));
+});
+
 it('n emporte pas les fichiers des tests dans l image', function () {
     $ignores = array_map('trim', file(base_path('../.dockerignore')));
 

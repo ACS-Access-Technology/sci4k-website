@@ -193,7 +193,9 @@ dans GitHub : `docs/BRANCHES_ET_DEPLOIEMENT.md`.
 
 | Fichier | Objet |
 |---|---|
-| `docs/MISE_EN_LIGNE.md` | Ce que le déploiement demande, et les réglages de production |
+| `docs/PREMIER_DEPLOIEMENT.md` | Chaque mise en ligne : sauvegardes, vérifications, retour arrière, bloquants |
+| `docs/DEPLOIEMENT_RAILWAY.md` | La plateforme : services, variables, volume, MySQL |
+| `docs/MISE_EN_LIGNE.md` | Les réglages de production, ce qu'il faut obtenir de tiers, et l'hébergement classique en repli |
 | `docs/BRANCHES_ET_DEPLOIEMENT.md` | Flux des branches, demandes de fusion, protections GitHub, vérification avant mise en ligne |
 | `docs/RELAIS_PROJET.md` | Reprise du contexte projet |
 | `ECARTS_FRONT_BACKOFFICE.md` | Confrontation du site public au périmètre couvert par l'administration |
@@ -210,4 +212,5 @@ Aucun ne se règle en programmant.
 - Le nom du **directeur de publication**, et l'autorisation d'afficher les
   **logos des partenaires**.
 - Six visuels sont provisoires (voir `A-REMPLACER.md`).
-- Domaine, hébergement, HTTPS, SMTP, sauvegardes : voir `docs/MISE_EN_LIGNE.md`.
+- Domaine, HTTPS, SMTP : voir `docs/MISE_EN_LIGNE.md` ; plan Railway,
+  sauvegardes et retour arrière : `docs/PREMIER_DEPLOIEMENT.md`.

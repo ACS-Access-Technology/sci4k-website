@@ -48,12 +48,15 @@ les traductions. Un test échoue si une clé manque aux deux.
 
 **Aucun déploiement automatique depuis GitHub.** La mise en ligne est un
 `railway up --service sci4k` lancé à la main. Pousser sur `master` ne change
-rien au site en ligne.
+rien au site en ligne. C'est la seule stratégie de déploiement : la séquence
+d'hébergement classique de `docs/MISE_EN_LIGNE.md` n'est qu'un plan de repli.
 
 Branches : `dev` pour travailler, puis `preprod`, puis `master`, par demandes
 de fusion et sans raccourci. Avant tout `railway up` :
 `./tools/verifier-avant-deploiement.sh`, qui refuse tout ce qui n'est pas
 `master` tel que la CI l'a validé. Voir `docs/BRANCHES_ET_DEPLOIEMENT.md`.
+Et avant lui, sauvegarder la base et les fichiers ; la procédure complète,
+retour arrière compris : `docs/PREMIER_DEPLOIEMENT.md`.
 
 Trois défauts de portabilité ont été corrigés et ne doivent pas revenir —
 `railway up` téléverse l'arbre de travail Windows, pas un clone git :

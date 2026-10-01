@@ -1,9 +1,21 @@
-# Mise en ligne d'essai sur Railway
+# Railway : la plateforme du site
 
-Pour **éprouver le site en conditions réelles**, sans engagement et sans
-toucher au code. La mise en production, elle, suit `MISE_EN_LIGNE.md`.
+**Le site se déploie en conteneur sur Railway, par `railway up` lancé à la
+main depuis `master`.** C'est la seule stratégie de déploiement du projet :
+l'environnement d'essai actuel et le futur site définitif la suivent tous
+deux. Ce document décrit la plateforme ; la procédure d'une mise en ligne,
+sauvegardes et retour arrière compris, est dans `PREMIER_DEPLOIEMENT.md`.
 
-Railway offre 5 $ de crédit sur 30 jours, sans carte bancaire, puis 5 $/mois.
+`MISE_EN_LIGNE.md` garde, en plan de repli, la séquence d'un hébergement
+classique — pour le jour où la plateforme changerait. Elle ne sert pas
+aujourd'hui.
+
+**Le plan Railway compte.** Le projet est sur le plan **Hobby** (lu dans
+l'API le 1er octobre 2026), avec des limites serrées : trois volumes de
+500 Mo, 1 Go de mémoire par conteneur, journaux gardés sept jours, retour
+arrière possible 72 h — et **aucune sauvegarde de volume**. La seule
+sauvegarde de la base est donc `mysqldump`. Le tableau complet et ses
+conséquences : `PREMIER_DEPLOIEMENT.md`, §1.
 
 ## Pourquoi Railway plutôt que Vercel
 
@@ -33,14 +45,27 @@ php-fpm à assembler.
 
 ## Les étapes
 
-### 1. Créer le projet
+### 1. Créer le projet et le service
 
-Sur [railway.com](https://railway.com) : *New Project* → *Deploy from GitHub
-repo* → choisir `ACS-Access-Technology/sci4k-website`.
+Sur [railway.com](https://railway.com) : *New Project* → *Empty Project*, puis
+*New* → *Empty Service*, nommé `sci4k`.
 
-Railway détecte le `Dockerfile` et le `railway.json`. **Ne pas définir de
-racine** : la construction a besoin de `maquettes-frontoffice/`, qui vit à la
-racine du dépôt.
+**Le service n'est relié à AUCUN dépôt GitHub.** Son code n'arrive que par
+`railway up`, lancé après `tools/verifier-avant-deploiement.sh` (voir « Chaque
+mise en ligne »). Un service relié à GitHub déploierait à chaque poussée sur
+la branche suivie, sans passer par ce contrôle : une modification qui n'a pas
+suivi `dev` → `preprod` → `master`, ou dont la CI a échoué, partirait en ligne.
+
+`railway up` téléverse le dossier de travail ; Railway y détecte le
+`Dockerfile` et le `railway.json`. **Ne pas définir de racine** : la
+construction a besoin de `maquettes-frontoffice/`, qui vit à la racine du
+dépôt.
+
+État vérifié le 1er octobre 2026 (projet `energetic-courtesy`, environnement
+`production`) : le service `sci4k` n'a pas de source — conforme. Un second
+service, `sci4k-website`, relié au dépôt GitHub (branche `master`), reliquat
+de la première mise en place sans variable ni volume, a été **supprimé** ce
+jour-là. Il ne doit pas être recréé.
 
 #### `railway.json` cesse d'être lu le 1er décembre 2026
 
@@ -72,14 +97,37 @@ vérifiés sur un déploiement, `railway.json` peut être retiré du dépôt.
 *New* → *Database* → *Add MySQL*. Railway injecte alors les variables de
 connexion dans le projet.
 
-**Vérifier la version de l'image** dans les réglages du service MySQL : le
-projet supporte et teste **MySQL 9.7** (LTS). Le service créé pour l'essai
-tourne sur `mysql:9.4`, version « Innovation » qui n'est plus supportée par
-Oracle depuis octobre 2025. Au démarrage, le conteneur de l'application
-compare la version jointe à celle qui est supportée et écrit un
+**Épingler l'image sur une version exacte**, jamais sur `mysql:9` ni
+`mysql:latest` : une étiquette flottante fait monter la base de version au
+premier redéploiement venu, sans que personne l'ait décidé. Et désactiver les
+mises à jour automatiques de l'image (*Settings* → *Source* → *Configure Auto
+Updates*).
+
+Le projet supporte et teste **MySQL 9.7** (LTS). Au démarrage, le conteneur de
+l'application compare la version jointe à celle-ci et écrit un
 **AVERTISSEMENT** dans les journaux en cas d'écart ; il démarre quand même.
-Passer un service existant de 9.4 à 9.7 est une opération de production, avec
-sauvegarde préalable : elle ne se fait pas depuis ce document.
+
+État vérifié le 1er octobre 2026 sur le service `MySQL-1Luf` :
+
+- **MySQL 9.4.0**, version « Innovation » plus supportée par Oracle depuis
+  octobre 2025 (journal de démarrage : « Version: '9.4.0' ») ;
+- **image épinglée sur `mysql:9.4.0`** le 1er octobre
+  (`railway service source connect --image mysql:9.4.0`). La source disait
+  `mysql:9`. Le changement a redéployé MySQL une fois, sur la même empreinte
+  (`sha256:135bc87c…`) : aucune montée de version, données reprises du
+  volume, site vérifié aussitôt ;
+- **une mise à jour automatique était armée** : Railway signale la faille
+  CVE-2026-21964 (gravité « HIGH ») sur 9.4.0, et avait programmé la montée
+  vers `mysql:9` — 9.7.2 — au créneau du samedi 3 octobre, sans sauvegarde
+  possible sur ce plan. Elle est **suspendue jusqu'au 15 octobre 2026,
+  10 h 05 UTC** (mutation `serviceInstanceAutoUpdateSnooze` de l'API, sans
+  redéploiement). La politique elle-même se lit dans la configuration de
+  l'environnement (`railway api`, champ `config`), pas dans
+  `railway autoupdate`, qui ne concerne que la CLI.
+
+Passer à 9.7 corrige la faille et rejoint la version testée. C'est une
+opération de production distincte, avec sauvegarde préalable, à faire avant
+le 15 octobre : `PREMIER_DEPLOIEMENT.md`, §2.
 
 ### 3. Poser les variables
 
@@ -88,9 +136,14 @@ Dans les *Variables* du service web :
 ```
 APP_NAME=SCI4K
 APP_ENV=production
-APP_DEBUG=false
+APP_DEBUG=false              # toute autre valeur : le conteneur refuse de démarrer
 APP_KEY=                     # php artisan key:generate --show, puis recopier
-APP_URL=https://…            # l'adresse que Railway attribue
+APP_URL=https://…            # l'adresse que Railway attribue, puis le domaine
+
+# Le secret des passkeys. Vide : APP_KEY — et changer APP_KEY invalide alors
+# toutes les passkeys. Y poser la valeur ACTUELLE de APP_KEY les en détache
+# sans rien casser. Détail dans .env.production.example.
+PASSKEYS_USER_HANDLE_SECRET=
 
 APP_LOCALE=fr
 APP_FALLBACK_LOCALE=en
@@ -108,7 +161,8 @@ CACHE_STORE=database
 QUEUE_CONNECTION=database
 
 LOG_CHANNEL=stack
-LOG_STACK=stderr             # Railway collecte la sortie standard
+LOG_STACK=stderr             # Railway collecte la sortie d'erreur
+LOG_LEVEL=warning            # « debug » écrirait chaque requête SQL, valeurs comprises
 
 # Railway termine le TLS devant l'application. Sans cette ligne, isSecure()
 # répond faux : les liens repartent en http, le cookie de session n'est jamais
@@ -116,12 +170,25 @@ LOG_STACK=stderr             # Railway collecte la sortie standard
 # seule adresse — les quatre formulaires publics fermeraient au cinquième envoi.
 TRUSTED_PROXIES=*
 
-MAIL_MAILER=log              # pour un essai ; SMTP réel en production
+# Le courrier. MAIL_MAILER=log n'envoie RIEN — il écrit les courriels dans le
+# journal : ce n'est pas une configuration de production. Les identifiants
+# viennent du fournisseur SMTP de l'agence ; ils se posent ici, jamais dans
+# un fichier du dépôt. MAIL_FROM_ADDRESS vide : hello@example.com.
+MAIL_MAILER=smtp
+MAIL_SCHEME=smtp
+MAIL_HOST=
+MAIL_PORT=587
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_FROM_ADDRESS=           # une adresse du domaine de l'agence
+MAIL_FROM_NAME=SCI4K
 
-# Facultatif, vivement conseillé : le rapport d'erreurs. Sans DSN, rien ne
-# part. SENTRY_ENVIRONMENT sépare l'essai du site définitif (sans lui : APP_ENV,
-# donc « production » pour l'essai aussi). La version se renseigne seule :
-# RAILWAY_DEPLOYMENT_ID, ou le commit pour un déploiement parti de GitHub.
+# Le rapport d'erreurs. Sans DSN, rien ne part, et personne n'est prévenu
+# d'une erreur ni d'un entretien de nuit manqué. SENTRY_ENVIRONMENT sépare
+# l'essai du site définitif (sans lui : APP_ENV, donc « production » pour
+# l'essai aussi). La version se renseigne seule : « railway up » ne transmet
+# pas de commit, Sentry reçoit l'identifiant du déploiement. Ne pas poser
+# SENTRY_TRACES_SAMPLE_RATE au-delà de 0 sans regarder le quota.
 # SENTRY_LARAVEL_DSN=
 # SENTRY_ENVIRONMENT=essai
 
@@ -227,12 +294,13 @@ validé — branche, fichiers modifiés ou non suivis, écart avec `origin/maste
 checks absents ou en échec. Détail et conduite à tenir :
 `docs/BRANCHES_ET_DEPLOIEMENT.md`.
 
-**À vérifier au moment du déploiement** : la §1 crée le service « depuis le
-dépôt GitHub », alors que `CLAUDE.md` décrit une mise en ligne par
-`railway up` uniquement. Si le service est relié à GitHub **avec déploiement
-automatique**, une poussée sur la branche suivie déploie sans passer par ce
-script : le déploiement automatique doit alors être désactivé dans *Settings*
-du service, ou ce document corrigé. Non tranché dans le dépôt.
+**Avant chaque mise en ligne, sauvegarder** la base et les fichiers
+téléversés ; **après**, vérifier. La procédure complète — sauvegardes,
+contrôles, retour arrière — est dans `PREMIER_DEPLOIEMENT.md`.
+
+**Aucune poussée sur GitHub ne déploie quoi que ce soit** : le service `sci4k`
+n'a pas de source, et le seul service relié au dépôt, `sci4k-website`, a été
+supprimé le 1er octobre 2026 (voir §1).
 
 ## Vérifier que ça marche
 

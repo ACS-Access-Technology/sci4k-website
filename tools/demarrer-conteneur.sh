@@ -8,6 +8,29 @@
 
 set -euo pipefail
 
+# --- APP_DEBUG : refus, quel que soit APP_ENV ---------------------------------
+#
+# Le mode debogage affiche, sur la page d'erreur, la trace d'execution, les
+# requetes SQL et les variables d'environnement — mots de passe compris — au
+# premier visiteur qui declenche une erreur. Ce conteneur ne sert qu'un site en
+# ligne : il ne demarre pas avec, que APP_ENV dise « production » ou non. Pour
+# deboguer, le poste de developpement.
+#
+# La lecture reproduit celle de Laravel, (bool) env('APP_DEBUG') : « false »,
+# « 0 », « null », « empty » et le vide valent faux ; TOUTE autre valeur vaut
+# vrai — « 1 », « yes », « on », et meme « no ». Une valeur inattendue est donc
+# refusee, jamais toleree. Le controle precede tout le reste, root compris.
+debogage="$(printf '%s' "${APP_DEBUG:-}" | tr '[:upper:]' '[:lower:]')"
+case "$debogage" in
+    "" | false | "(false)" | 0 | null | "(null)" | empty | "(empty)") ;;
+    *)
+        echo "ERREUR : APP_DEBUG=${APP_DEBUG} — le mode debogage est interdit dans ce conteneur." >&2
+        echo "  Il exposerait la trace d'execution, les requetes SQL et les variables" >&2
+        echo "  d'environnement au premier visiteur venu. Poser APP_DEBUG=false." >&2
+        exit 1
+        ;;
+esac
+
 app=/app/app-laravel
 cd "$app"
 
@@ -54,12 +77,6 @@ if [[ -z "${APP_KEY:-}" ]]; then
     echo "  Generer une cle avec « php artisan key:generate --show » sur un poste" >&2
     echo "  de developpement, puis la poser en variable d'environnement." >&2
     exit 1
-fi
-
-if [[ "${APP_DEBUG:-false}" = "true" ]] && [[ "${APP_ENV:-}" = "production" ]]; then
-    echo "AVERTISSEMENT : APP_DEBUG=true avec APP_ENV=production." >&2
-    echo "  La page d'erreur exposera la trace d'execution, les requetes SQL et" >&2
-    echo "  les variables d'environnement au premier visiteur venu." >&2
 fi
 
 # Le lien des fichiers televerses. Sans lui, toute image ajoutee depuis le

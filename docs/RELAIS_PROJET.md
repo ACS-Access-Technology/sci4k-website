@@ -4,7 +4,9 @@
 >
 > Dernière mise à jour : 7 septembre 2026
 >
-> Dépôt : `https://github.com/yutomase99-blip/sci4k-website`
+> Dépôt : `https://github.com/ACS-Access-Technology/sci4k-website`
+>
+> Mise en ligne : `railway up` depuis `master`, voir `docs/PREMIER_DEPLOIEMENT.md`
 
 ## 1. Résumé du projet
 
