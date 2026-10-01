@@ -72,8 +72,9 @@ retour arrière (`down()`).
    courant — dans le dépôt, si c'est de là qu'on la lance.
 
 2. **Une sauvegarde de la base, restaurée une fois** (§4, puis §6 point 8).
-   La sauvegarde est faite (1er octobre, 47 tables, archive intacte) ; la
-   restauration reste à éprouver sur cette archive-là.
+   Fait le 1er octobre 2026 : sauvegarde de la production (47 tables,
+   archive intacte), restaurée dans un MySQL 9.4.0 local — données
+   identiques à l'octet près, après réexport.
 3. **La faille de MySQL 9.4.0, avant le 15 octobre.** Railway signale
    CVE-2026-21964, gravité « HIGH », et a programmé la montée vers 9.7.2 —
    la version que le projet supporte et teste. Elle est suspendue jusqu'au
@@ -160,8 +161,16 @@ depuis la base restaurée.
 
 **Faite en production le 1er octobre 2026** : `base-20261001-1039.sql.gz`,
 85 Ko, 47 tables, archive intacte, « Dump completed » en dernière ligne. Le
-transport par `railway ssh` est donc éprouvé ; la restauration de cette
-archive-là reste à faire (§6, point 8).
+transport par `railway ssh` est donc éprouvé.
+
+**Restaurée le même jour** dans un MySQL 9.4.0 local et jetable : rechargée
+sans erreur, puis réexportée. Les 38 lignes de données ont la même empreinte
+dans les deux exports ; le schéma aussi, à une mention près — ce serveur
+écrit `CHARACTER SET utf8mb4` en toutes lettres devant la même collation.
+L'image du site a ensuite démarré sur cette copie, en **répétition générale
+du premier déploiement** : la seule migration nouvelle a tourné (49 ms), les
+pages publiques ont répondu, les 6 biens étaient là. Les conteneurs, et avec
+eux la copie des données, ont été supprimés aussitôt.
 
 ### 4.2 Les fichiers téléversés
 
