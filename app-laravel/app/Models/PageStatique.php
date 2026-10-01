@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\HtmlEditorial;
 use Illuminate\Database\Eloquent\Model;
 
 class PageStatique extends Model
@@ -52,8 +53,23 @@ class PageStatique extends Model
         return $this->{'titre_'.$langue} ?: $this->titre_fr;
     }
 
+    /**
+     * Le contenu tel que le visiteur le recoit : filtre, donc sur a rendre sans
+     * echappement.
+     *
+     * Le filtre joue ICI, a la sortie, et non a l'enregistrement. Il reencode
+     * le texte — une apostrophe devient &#039;, une arobase &#64; — ce qui ne
+     * change rien a l'ecran du visiteur mais remplirait d'entites illisibles
+     * le champ HTML de l'administrateur. La base garde donc la source telle
+     * qu'elle a ete tapee, et tout ce qui la rend passe par ici : y compris un
+     * texte saisi avant ce filtre, ou verse par une migration.
+     *
+     * Le resultat contient des entites : qui en tire du texte brut (la
+     * description de la page) doit les decoder, sans quoi l'echappement de
+     * Blade les afficherait telles quelles.
+     */
     public function contenu(string $langue = 'fr'): string
     {
-        return $this->{'contenu_'.$langue} ?: $this->contenu_fr;
+        return HtmlEditorial::nettoyer($this->{'contenu_'.$langue} ?: $this->contenu_fr);
     }
 }

@@ -1262,6 +1262,36 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('contactForm').reset();
     window.scrollTo({ top: document.querySelector('.contact-card').offsetTop - 120, behavior: sci4kDefilement() });
   };
+
+  /* UN MOYEN DE REPONDRE, AU MOINS : telephone OU e-mail.
+     Les deux champs portaient « required » : le navigateur exigeait les deux,
+     alors qu'un seul suffit a rappeler le visiteur — et le serveur, lui,
+     n'en exigeait aucun. La regle est desormais la meme des deux cotes
+     (required_without sur le serveur).
+     La validite est posee sur le telephone : le navigateur bloque l'envoi et
+     affiche le message, dans la langue de la page, tant que les deux champs
+     sont vides. Le message vient du formulaire, donc du backoffice. */
+  (function () {
+    var formulaire = document.getElementById('contactForm');
+    if (!formulaire) return;
+    var telephone = formulaire.elements.telephone;
+    var email = formulaire.elements.email;
+    if (!telephone || !email || !telephone.setCustomValidity) return;
+
+    var message = formulaire.getAttribute('data-erreur-coordonnees')
+      || 'Indiquez une adresse e-mail ou un numéro de téléphone.';
+
+    function verifier() {
+      var aucun = !telephone.value.trim() && !email.value.trim();
+      telephone.setCustomValidity(aucun ? message : '');
+    }
+
+    telephone.addEventListener('input', verifier);
+    email.addEventListener('input', verifier);
+    /* Apres un envoi reussi, reset() vide les champs sans evenement « input ». */
+    formulaire.addEventListener('reset', function () { setTimeout(verifier, 0); });
+    verifier();
+  })();
 })();
 
 /* ---- Page: FAQ (faq.html) ---- */

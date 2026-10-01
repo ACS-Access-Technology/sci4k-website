@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\CollectionOrdonnable;
 use App\Models\Concerns\JournaliseSesChangements;
 use App\Models\Concerns\TraduitParColonnes;
+use App\Routing\GenerateurDUrlBilingue;
 use App\Support\Media;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -96,6 +97,28 @@ class Encart extends Model
     public function libelleBouton(string $langue = 'fr'): string
     {
         return $this->texteDansLaLangue('libelle_bouton', $langue);
+    }
+
+    /**
+     * L'adresse du bouton, dans la langue de la page.
+     *
+     * La cible est saisie depuis l'administration — « /biens », « /contact »,
+     * une adresse complete — et les vues l'ecrivaient telle quelle, avec un
+     * repli code en dur (« /biens.html »). Sur une page anglaise, le bouton
+     * ramenait donc au francais. Le repli est desormais un NOM de route, et la
+     * cible saisie passe par le meme traitement que les menus.
+     *
+     * Meme garde que les menus aussi : le champ n'etait valide que comme texte,
+     * et un « javascript:… » saisi la aurait ete execute au clic du visiteur.
+     * Une cible refusee retombe sur le repli.
+     */
+    public function lienDuBouton(string $routeParDefaut): string
+    {
+        $cible = trim((string) $this->cible_bouton);
+
+        return GenerateurDUrlBilingue::localiser(
+            EntreeDeMenu::cibleAcceptable($cible) ? $cible : $routeParDefaut
+        );
     }
 
     /**

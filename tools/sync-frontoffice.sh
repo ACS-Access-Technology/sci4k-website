@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 #
 # Depose dans app-laravel/public/ les ressources du site statique : feuilles de
-# style, script, images, et les pages non encore portees en Blade.
+# style, script et images. Les pages HTML des maquettes sont toutes portees en
+# Blade et exclues de la copie (liste plus bas) ; une page ajoutee aux
+# maquettes sans y figurer serait copiee, et servie avant Laravel.
 #
 #     ./tools/sync-frontoffice.sh
 #
@@ -49,7 +51,19 @@ fi
 source_fo="$racine/maquettes-frontoffice"
 cible="$racine/app-laravel/public"
 
-exclues=("index.html" "actualites.html" "actualite-detail.html" "services.html" "faq.html" "presentation.html" "biens.html" "contact.html")
+# Les deux pages legales en font partie. Copiees dans public/, elles etaient
+# servies par le serveur AVANT Laravel : /politique-confidentialite.html
+# montrait une ancienne version du texte, corrigee depuis en base, et aucune
+# redirection vers /mentions-legales ne pouvait s'appliquer. Leur source reste
+# dans maquettes-frontoffice/ : c'est la que PagePubliqueController va chercher
+# la page d'origine tant que la version en base n'est pas publiee.
+#
+# 404.html et 500.html aussi. Les pages d'erreur du site sont des vues Blade
+# (resources/views/errors/) ; ces deux fichiers n'etaient servis que comme
+# pages ORDINAIRES, a leur propre adresse, avec une reponse 200 — une fausse
+# page d'erreur que rien ne distinguait d'un contenu indexable. Exclues, ces
+# adresses repondent desormais par la vraie page introuvable, en 404.
+exclues=("index.html" "actualites.html" "actualite-detail.html" "services.html" "faq.html" "presentation.html" "biens.html" "contact.html" "mentions-legales.html" "politique-confidentialite.html" "404.html" "500.html")
 
 echo "Synchronisation depuis $source_fo"
 
@@ -69,7 +83,7 @@ for page in "$source_fo"/*.html; do
         [[ "$nom" = "$exclue" ]] && ignoree=1
     done
     if [[ "$ignoree" -eq 1 ]]; then
-        echo "  $nom : exclue, servie par Laravel"
+        echo "  $nom : exclue, Laravel repond a cette adresse"
         rm -f "$cible/$nom"
         continue
     fi

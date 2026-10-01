@@ -43,7 +43,7 @@
     <div class="legal-block">
       <p>{{ __('Vous pouvez reprendre par l’une de ces pages :') }}</p>
       <p>
-        <a href="{{ url('/') }}">{{ __('Accueil') }}</a><br>
+        <a href="{{ route('home') }}">{{ __('Accueil') }}</a><br>
         <a href="{{ route('biens.index') }}">{{ __('Biens immobiliers') }}</a><br>
         <a href="{{ route('actualites.index') }}">{{ __('Actualités') }}</a><br>
         <a href="{{ route('contact.index') }}">{{ __('Contact') }}</a>

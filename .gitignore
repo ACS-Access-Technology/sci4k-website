@@ -26,8 +26,14 @@ app-laravel/.env
 app-laravel/public/build/
 app-laravel/storage/*.key
 
-# Worktrees git locaux. Un worktree contient un fichier .git, que git
-# enregistre alors comme gitlink (mode 160000) : le dossier apparait
-# eternellement « modifie » puisque le worktree avance et que le SHA grave
-# dans la branche ne bouge pas. Ce sont des checkouts locaux, pas du contenu.
-.claude/worktrees/
+# Reglages locaux de Claude Code : permissions accordees sur ce poste, serveur
+# de previsualisation, competence « verifier » ecrite pour ce poste (elle porte
+# le chemin de son PHP). Rien de cela ne vaut pour un autre poste, et
+# settings.local.json enumere des commandes autorisees qui n'ont pas a etre
+# publiees. CLAUDE.md, a la racine, reste versionne : il n'est pas dans ce
+# dossier.
+#
+# Le dossier couvre aussi les worktrees git locaux (.claude/worktrees/), qui
+# y etaient ignores seuls : un worktree contient un fichier .git, que git
+# enregistrait comme gitlink (mode 160000), eternellement « modifie ».
+.claude/

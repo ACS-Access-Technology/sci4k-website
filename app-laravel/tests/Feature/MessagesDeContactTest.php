@@ -66,6 +66,73 @@ it('accepte un message sans adresse e-mail', function () {
     expect(MessageDeContact::first()->email)->toBeNull();
 });
 
+/* ------------------------------------------------- un moyen de repondre */
+
+/**
+ * Telephone OU e-mail : au moins l'un des deux.
+ *
+ * Les deux etaient facultatifs cote serveur — un message sans aucun moyen de
+ * rappeler son auteur entrait dans la boite de l'agence — pendant que le
+ * navigateur, lui, exigeait les deux. La regle est desormais la meme partout :
+ * l'un ou l'autre suffit, aucun ne suffit pas.
+ */
+it('accepte un message des qu un moyen de repondre est donne', function (array $coordonnees) {
+    Mail::fake();
+
+    $this->postJson('/messages', ['nom' => 'Awa', 'message' => 'Rappelez-moi.'] + $coordonnees)
+        ->assertCreated();
+
+    $message = MessageDeContact::sole();
+    expect($message->email)->toBe($coordonnees['email'] ?? null)
+        ->and($message->telephone)->toBe($coordonnees['telephone'] ?? null);
+})->with([
+    'e-mail seul' => [['email' => 'awa@exemple.ci']],
+    'telephone seul' => [['telephone' => '+225 07 08 11 22 33']],
+    'les deux' => [['email' => 'awa@exemple.ci', 'telephone' => '+225 07 08 11 22 33']],
+]);
+
+it('refuse un message sans aucun moyen de repondre', function (array $coordonnees) {
+    Mail::fake();
+
+    $reponse = $this->postJson('/messages', ['nom' => 'Awa', 'message' => 'Rappelez-moi.'] + $coordonnees)
+        ->assertStatus(422)
+        ->assertJsonValidationErrors(['email', 'telephone']);
+
+    // Une phrase pour le visiteur, pas « The telephone field is required when
+    // email is not present ».
+    $phrase = 'Indiquez une adresse e-mail ou un numéro de téléphone pour que nous puissions vous répondre.';
+    expect($reponse->json('errors.telephone.0'))->toBe($phrase)
+        ->and($reponse->json('errors.email.0'))->toBe($phrase)
+        ->and(MessageDeContact::count())->toBe(0);
+    Mail::assertNothingSent();
+})->with([
+    'champs absents' => [[]],
+    'champs vides' => [['email' => '', 'telephone' => '']],
+    'espaces seulement' => [['email' => '   ', 'telephone' => '  ']],
+]);
+
+it('garde les regles propres a chaque champ', function (array $coordonnees, string $fautif) {
+    $this->postJson('/messages', ['nom' => 'Awa', 'message' => 'Rappelez-moi.'] + $coordonnees)
+        ->assertStatus(422)
+        ->assertJsonValidationErrorFor($fautif)
+        ->assertJsonMissingValidationErrors([$fautif === 'email' ? 'telephone' : 'email']);
+
+    expect(MessageDeContact::count())->toBe(0);
+})->with([
+    'e-mail invalide, telephone valide' => [['email' => 'pas-une-adresse', 'telephone' => '+225 07 08 11 22 33'], 'email'],
+    'e-mail invalide, sans telephone' => [['email' => 'pas-une-adresse'], 'email'],
+    'telephone trop long, e-mail valide' => [['email' => 'awa@exemple.ci', 'telephone' => str_repeat('0', 41)], 'telephone'],
+]);
+
+it('traduit le message pour un visiteur anglophone', function () {
+    // Le formulaire poste sans prefixe de langue : c'est la session qui la
+    // porte pour ce point d'entree, comme pour le backoffice.
+    $this->withSession(['langue' => 'en'])
+        ->postJson('/messages', ['nom' => 'Awa', 'message' => 'Call me back.'])
+        ->assertStatus(422)
+        ->assertJsonPath('errors.telephone.0', 'Please give an email address or a phone number so that we can reply to you.');
+});
+
 it('refuse un message sans nom ni contenu', function () {
     $this->postJson('/messages', ['nom' => '', 'message' => ''])
         ->assertStatus(422);
@@ -80,9 +147,10 @@ it('refuse un envoi qui remplit le champ piege', function () {
     // humain ne voit pas.
     $this->postJson('/messages', [
         'nom' => 'Robot',
+        'email' => 'robot@spam.example',
         'message' => 'Achetez des montres',
         'site_web' => 'http://spam.example',
-    ])->assertStatus(422);
+    ])->assertStatus(422)->assertJsonValidationErrorFor('site_web');
 
     expect(MessageDeContact::count())->toBe(0);
     Mail::assertNothingSent();
@@ -91,8 +159,9 @@ it('refuse un envoi qui remplit le champ piege', function () {
 it('borne la longueur du message', function () {
     $this->postJson('/messages', [
         'nom' => 'Trop long',
+        'telephone' => '+225 01 02 03 04 05',
         'message' => str_repeat('a', 5001),
-    ])->assertStatus(422);
+    ])->assertStatus(422)->assertJsonValidationErrorFor('message');
 
     expect(MessageDeContact::count())->toBe(0);
 });
@@ -103,11 +172,11 @@ it('limite le debit des envois', function () {
     // Cinq passent, le sixieme est refuse : sans cela, un envoi automatise
     // remplirait la table en quelques secondes.
     for ($i = 0; $i < 5; $i++) {
-        $this->postJson('/messages', ['nom' => "Envoi $i", 'message' => 'Bonjour'])
+        $this->postJson('/messages', ['nom' => "Envoi $i", 'telephone' => '0102030405', 'message' => 'Bonjour'])
             ->assertCreated();
     }
 
-    $this->postJson('/messages', ['nom' => 'De trop', 'message' => 'Bonjour'])
+    $this->postJson('/messages', ['nom' => 'De trop', 'telephone' => '0102030405', 'message' => 'Bonjour'])
         ->assertStatus(429);
 
     expect(MessageDeContact::count())->toBe(5);
@@ -118,6 +187,7 @@ it('ne renvoie ni le contenu recu ni l identifiant cree', function () {
 
     $reponse = $this->postJson('/messages', [
         'nom' => 'Léon Kouassi',
+        'email' => 'leon@exemple.ci',
         'message' => 'Un texte reconnaissable',
     ]);
 
@@ -131,7 +201,7 @@ it('previent l agence quand un destinataire est configure', function () {
     Mail::fake();
     Parametre::poser('destinataire_formulaire', 'agence@sci4k.test', 'contact');
 
-    $this->postJson('/messages', ['nom' => 'Léon', 'message' => 'Bonjour'])->assertCreated();
+    $this->postJson('/messages', ['nom' => 'Léon', 'email' => 'leon@exemple.ci', 'message' => 'Bonjour'])->assertCreated();
 
     Mail::assertSent(NouveauMessageDeContact::class, fn ($m) => $m->hasTo('agence@sci4k.test'));
 });
@@ -141,7 +211,7 @@ it('enregistre quand meme si aucun destinataire n est configure', function () {
 
     // Le backoffice est la source de verite : un courriel non parti ne doit pas
     // faire perdre le message.
-    $this->postJson('/messages', ['nom' => 'Léon', 'message' => 'Bonjour'])->assertCreated();
+    $this->postJson('/messages', ['nom' => 'Léon', 'email' => 'leon@exemple.ci', 'message' => 'Bonjour'])->assertCreated();
 
     expect(MessageDeContact::count())->toBe(1);
     Mail::assertNothingSent();
@@ -315,7 +385,7 @@ it('n inscrit pas les messages au journal des activites', function () {
 
     // Le journal rend compte de ce que font les COMPTES du backoffice. Une
     // ligne par visiteur le remplirait de bruit.
-    $this->postJson('/messages', ['nom' => 'Léon', 'message' => 'Bonjour'])->assertCreated();
+    $this->postJson('/messages', ['nom' => 'Léon', 'email' => 'leon@exemple.ci', 'message' => 'Bonjour'])->assertCreated();
 
     expect(ActiviteJournalisee::count())->toBe($avant);
 });

@@ -70,7 +70,12 @@
 
         <div class="alert-success" id="successAlert">{{ $texte('confirmation', __("Votre message est prêt : la conversation WhatsApp s'ouvre dans un nouvel onglet. Appuyez sur Envoyer pour le transmettre à SCI4K.")) }}</div>
 
-        <form id="contactForm" data-envoi="contact">
+        {{-- Telephone OU e-mail : l'un des deux suffit. Aucun des deux champs
+             n'est donc « required » ; main.js refuse l'envoi quand les deux
+             sont vides, avec ce message, et le serveur applique la meme regle
+             (required_without). --}}
+        <form id="contactForm" data-envoi="contact"
+              data-erreur-coordonnees="{{ $texte('erreur_coordonnees', __('Indiquez une adresse e-mail ou un numéro de téléphone pour que nous puissions vous répondre.')) }}">
           {{-- Champ piege : invisible et hors du parcours au clavier, un humain
                ne le remplit jamais. Un robot remplit tout ce qu'il trouve, et
                le serveur refuse alors l'envoi. --}}
@@ -85,15 +90,15 @@
               <input type="text" id="contactName" name="nom" required autocomplete="name" maxlength="80" placeholder="{{ $texte('exemple_nom', __('Ex: Jean Kouassi')) }}">
             </div>
             <div class="form-group">
-              <label for="contactPhone">{{ $texte('libelle_telephone', __('Téléphone *')) }}</label>
-              <input type="tel" id="contactPhone" name="telephone" required autocomplete="tel" maxlength="30" placeholder="{{ $texte('exemple_telephone', '+225 07 00 00 00 00') }}">
+              <label for="contactPhone">{{ $texte('libelle_telephone', __('Téléphone')) }}</label>
+              <input type="tel" id="contactPhone" name="telephone" autocomplete="tel" maxlength="30" placeholder="{{ $texte('exemple_telephone', '+225 07 00 00 00 00') }}">
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
-              <label for="contactEmail">{{ $texte('libelle_email', __('Adresse Email *')) }}</label>
-              <input type="email" id="contactEmail" name="email" required autocomplete="email" maxlength="100" placeholder="{{ $texte('exemple_email', 'j.kouassi@email.com') }}">
+              <label for="contactEmail">{{ $texte('libelle_email', __('Adresse Email')) }}</label>
+              <input type="email" id="contactEmail" name="email" autocomplete="email" maxlength="100" placeholder="{{ $texte('exemple_email', 'j.kouassi@email.com') }}">
             </div>
             <div class="form-group">
               @php($libelleSujet = $texte('libelle_sujet', __('Sujet de votre demande')))
@@ -174,6 +179,7 @@
           <span>{{ $tCarte('libelle_lien', __('Ouvrir dans Google Maps')) }}</span>
         </a>
       </div>
+      @php(\App\Support\PolitiqueDeContenu::autoriser('google-maps'))
       <iframe
         title="{{ str_replace(':nom', $nomDuSite, $tCarte('titre_cadre', __('Localisation de :nom', ['nom' => ':nom']))) }}"
         src="https://www.google.com/maps?q={{ urlencode($coordonneesCarte) }}&z=15&hl={{ $langue }}&output=embed"
@@ -189,6 +195,6 @@
      alors que l'aide du reglage annonce « c'est celui vers lequel le
      formulaire de contact ouvre la conversation ». Pose AVANT main.js, qui est
      charge en fin de page avec defer. --}}
-<script>window.SCI4K_WHATSAPP = @json($whatsappPublic);</script>
+<script @nonce>window.SCI4K_WHATSAPP = @json($whatsappPublic);</script>
 
 @endsection

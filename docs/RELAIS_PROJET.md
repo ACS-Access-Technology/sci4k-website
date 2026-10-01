@@ -4,7 +4,9 @@
 >
 > Dernière mise à jour : 7 septembre 2026
 >
-> Dépôt : `https://github.com/yutomase99-blip/sci4k-website`
+> Dépôt : `https://github.com/ACS-Access-Technology/sci4k-website`
+>
+> Mise en ligne : `railway up` depuis `master`, voir `docs/PREMIER_DEPLOIEMENT.md`
 
 ## 1. Résumé du projet
 
@@ -89,7 +91,10 @@ Les cases indiquent l'état au moment de cette documentation, pas une promesse d
 ## 7. Vérifications minimales après chaque lot
 
 Les quatre contrôles de l'intégration continue, dans l'ordre où elle les
-lance. Ils sont **bloquants** sur `master`, `preprod` et `dev`.
+lance. Ils tournent sur `master`, `preprod` et `dev`, et bloquent toute
+fusion vers `preprod` et `master` depuis que les protections de branche sont
+posées dans GitHub, le 1er octobre 2026 (voir
+`docs/BRANCHES_ET_DEPLOIEMENT.md`).
 
 ```bash
 python3 tools/verifier-site.py                 # references, donnees structurees, formulaires
@@ -103,7 +108,8 @@ php artisan test                               # la suite complete
 ```
 
 Les tests sont rejoués deux fois en intégration : sur SQLite, rapide, puis sur
-MySQL, le moteur réellement servi en production. Les écarts de dialecte — le
+MySQL 9.7.2, la version supportée et celle de la production. Les écarts de
+dialecte — le
 type énuméré des statuts au premier chef — ne se voient pas autrement.
 
 Vérifier également manuellement les vues desktop et mobile, la console JavaScript, les chemins d'images, le clavier dans les modales et l'absence de références Laravel résiduelles dans les favicons.

@@ -18,6 +18,7 @@ use App\Models\Service;
 use App\Models\Tache;
 use App\Models\Temoignage;
 use App\Models\Valeur;
+use App\Support\TachesDEntretien;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -280,6 +281,17 @@ class TableauDeBord extends Component
             ];
         }
 
+        // L'entretien de nuit a cesse de tourner, ou vient d'echouer. Rien
+        // d'autre ne le dirait : le site continue de s'afficher, et seules la
+        // frequentation et le journal grossissent en silence.
+        if (collect($this->entretien())->contains(fn ($tache) => $tache['en_retard'] || $tache['en_echec'])) {
+            $aFaire[] = [
+                'texte' => __('L’entretien automatique ne tourne plus normalement'),
+                'detail' => __('Voir le panneau « Entretien automatique » ci-dessous.'),
+                'route' => null,
+            ];
+        }
+
         $brouillons = Article::where('statut', 'brouillon')->count();
 
         if ($brouillons > 0) {
@@ -325,6 +337,18 @@ class TableauDeBord extends Component
         }
 
         return $aFaire;
+    }
+
+    /* ------------------------------------------------------ entretien */
+
+    /**
+     * La derniere passe de chaque tache d'entretien. Voir TachesDEntretien.
+     *
+     * @return list<array<string, mixed>>
+     */
+    protected function entretien(): array
+    {
+        return once(fn () => TachesDEntretien::etat());
     }
 
     /* ------------------------------------------------------- activite */
@@ -375,6 +399,8 @@ class TableauDeBord extends Component
             'aTraiter' => $this->aTraiter(),
             'recents' => $this->activiteRecente(),
             'aVenir' => $this->aVenir(),
+            'entretien' => $this->entretien(),
+            'retardAdmis' => TachesDEntretien::RETARD_ADMIS_EN_HEURES,
             'peutEcrire' => $this->peutEcrire(),
             'langue' => app()->getLocale(),
         ])->title(__('Tableau de bord'));

@@ -3,6 +3,7 @@
 use App\Http\Middleware\AppliqueLangue;
 use App\Http\Middleware\EnregistreVisite;
 use App\Http\Middleware\FermeLeSitePublic;
+use App\Http\Middleware\OublieLaMemoireDeLaRequete;
 use App\Http\Middleware\PoseLesEnTetesDeSecurite;
 use App\Http\Middleware\RefuseLesComptesDesactives;
 use Illuminate\Foundation\Application;
@@ -32,13 +33,21 @@ return Application::configure(basePath: dirname(__DIR__))
         // restee inerte precisement la ou elle sert. Elle vit dans
         // AppServiceProvider, qui lit config().
 
-        // Les en-tetes de securite sont poses sur TOUTE reponse du groupe web,
-        // publique comme administrative. En tete de liste : ils doivent valoir
-        // meme quand un middleware suivant interrompt la chaine — une
-        // redirection vers la connexion, une page de maintenance, un refus.
-        $middleware->web(prepend: [
-            PoseLesEnTetesDeSecurite::class,
-        ]);
+        // Les en-tetes de securite sont poses sur TOUTE reponse, publique comme
+        // administrative. En tete de liste : ils doivent valoir meme quand un
+        // middleware suivant interrompt la chaine — une redirection vers la
+        // connexion, une page de maintenance, un refus.
+        //
+        // Dans la pile GLOBALE, et non plus dans le groupe web : une adresse
+        // qui ne correspond a aucune route n'entre jamais dans ce groupe, et
+        // la page « introuvable » partait sans aucun de ces en-tetes — ni
+        // politique de contenu, ni X-Frame-Options.
+        $middleware->prepend(PoseLesEnTetesDeSecurite::class);
+
+        // La memoire de requete (once()) est videe au debut de CHAQUE
+        // requete, avant tout middleware qui lirait un reglage. Voir la classe.
+        // Prepose en dernier, elle passe donc avant les en-tetes.
+        $middleware->prepend(OublieLaMemoireDeLaRequete::class);
 
         $middleware->web(append: [
             AppliqueLangue::class,

@@ -9,19 +9,32 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// La table des visites recevait une ligne par page vue et rien ne l'en
-// empechait. Cette commande la borne : elle agrege les jours clos, puis purge
-// le detail au-dela de la retention.
+// L'entretien de nuit : agregation de la frequentation, puis purge du journal
+// d'activite. Les commandes et leurs heures vivent dans TachesDEntretien, la
+// seule liste qui fasse foi — la route des plateformes sans cron la lit aussi.
 //
-// A 3 h 10 : le jour a change depuis longtemps, et l'heure creuse evite que la
-// purge ne croise le trafic. Une minute decalee plutot que l'heure ronde, ou se
-// pressent toutes les taches de tous les heberges.
+// QUI APPELLE CE PLANIFICATEUR : dans le conteneur, « artisan schedule:work »,
+// lance et relance par tools/demarrer-conteneur.sh. Sur un hebergement
+// classique, une ligne de crontab chaque minute — voir docs/MISE_EN_LIGNE.md.
 //
-// SANS CRON, RIEN DE CECI NE TOURNE. L'hebergement doit porter la ligne qui
-// appelle « php artisan schedule:run » chaque minute — voir docs/MISE_EN_LIGNE.md.
-Schedule::command(TachesDEntretien::COMMANDES[0])->dailyAt('03:10');
-
-// Le journal d'activite recevait une ligne par action d'administration et rien
-// ne l'effaçait. Une demi-heure apres l'agregation de la frequentation, pour
-// que les deux entretiens ne se disputent pas la base.
-Schedule::command(TachesDEntretien::COMMANDES[1])->dailyAt('03:40');
+// withoutOverlapping(60) : pas de seconde passe tant que la premiere tourne.
+// Le verrou expire apres une heure, et non apres les 24 h par defaut : un
+// conteneur arrete en pleine passe laisserait sinon un verrou qui ferait
+// sauter celle du lendemain.
+//
+// onOneServer() : si le site tourne un jour sur plusieurs instances, chacune
+// avec son planificateur, une seule execute la tache. Le verrou vit dans le
+// cache partage (CACHE_STORE=database en production, table cache_locks).
+//
+// sentryMonitor() : Sentry recoit un signal au debut et a la fin de chaque
+// passe, et previent si une passe manque ou echoue. Inerte sans
+// SENTRY_LARAVEL_DSN — le paquet desactive alors l'envoi. Les moniteurs se
+// creent chez Sentry au premier signal. 10 minutes de marge au demarrage, 30
+// de duree maximale : chaque passe dure quelques secondes.
+foreach (TachesDEntretien::HEURES as $commande => $heure) {
+    Schedule::command($commande)
+        ->dailyAt($heure)
+        ->withoutOverlapping(60)
+        ->onOneServer()
+        ->sentryMonitor(TachesDEntretien::moniteur($commande), checkInMargin: 10, maxRuntime: 30);
+}
