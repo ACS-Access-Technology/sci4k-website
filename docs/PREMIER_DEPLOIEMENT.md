@@ -56,17 +56,24 @@ retour arrière (`down()`).
 
 ## 2. Les bloquants, avant le premier déploiement
 
-1. **Une clé SSH enregistrée auprès de Railway.** Sans elle, aucune
-   sauvegarde de la base n'est possible : le plan n'en fait pas, et
-   `mysqldump` passe par `railway ssh`. C'est un réglage de sécurité du
-   compte, à faire par son titulaire, une fois :
+1. **Une clé SSH enregistrée auprès de Railway** — faite le 1er octobre
+   2026 (`~/.ssh/id_ed25519`, sans passphrase, pour que les sauvegardes
+   tournent sans saisie). Sans elle, aucune sauvegarde n'est possible : le
+   plan n'en fait pas, et `mysqldump` passe par `railway ssh`. Sur un autre
+   poste, une fois :
 
    ```bash
-   ssh-keygen -t ed25519
+   ssh-keygen -t ed25519        # Entrée à chaque question
    railway ssh keys add
    ```
 
+   À la première question de `ssh-keygen` (l'emplacement du fichier),
+   répondre Entrée : un nom tapé là crée la clé privée dans le dossier
+   courant — dans le dépôt, si c'est de là qu'on la lance.
+
 2. **Une sauvegarde de la base, restaurée une fois** (§4, puis §6 point 8).
+   La sauvegarde est faite (1er octobre, 47 tables, archive intacte) ; la
+   restauration reste à éprouver sur cette archive-là.
 3. **La faille de MySQL 9.4.0, avant le 15 octobre.** Railway signale
    CVE-2026-21964, gravité « HIGH », et a programmé la montée vers 9.7.2 —
    la version que le projet supporte et teste. Elle est suspendue jusqu'au
@@ -149,19 +156,28 @@ Pourquoi ainsi :
 (empreinte identique à la production), le schéma réel migré et semé, avec
 `docker exec` à la place de `railway ssh` : archive intacte, restauration
 dans une base neuve, `CHECKSUM TABLE` identique sur les 48 tables, site servi
-depuis la base restaurée. **Non éprouvé** : le transport par `railway ssh`
-lui-même, faute de clé SSH. La première sauvegarde réelle tient lieu
-d'essai — d'où la vérification de la §6.
+depuis la base restaurée.
+
+**Faite en production le 1er octobre 2026** : `base-20261001-1039.sql.gz`,
+85 Ko, 47 tables, archive intacte, « Dump completed » en dernière ligne. Le
+transport par `railway ssh` est donc éprouvé ; la restauration de cette
+archive-là reste à faire (§6, point 8).
 
 ### 4.2 Les fichiers téléversés
 
 ```bash
-railway volume files --volume sci4k-volume download / "fichiers-$horodatage"
+MSYS_NO_PATHCONV=1 railway volume files --volume sci4k-volume download / "fichiers-$horodatage"
 ```
 
-Même clé SSH. Non éprouvé. Les fichiers ne sont pas modifiés par un
-déploiement ; les sauvegarder protège d'une perte du volume, pas d'une mise
-en ligne ratée.
+Même clé SSH. `MSYS_NO_PATHCONV=1` ne sert que sous Git Bash, sur Windows :
+sans lui, le `/` devient `C:/Program Files/Git/` avant d'atteindre Railway,
+et la commande échoue.
+
+**Faite le 1er octobre 2026** : 23 fichiers, 4,4 Mo, le compte exact du
+volume relevé dans le conteneur (`find`, `du`). Les 39 Mo qu'affiche Railway
+pour ce volume sont ceux du système de fichiers, pas des fichiers. Les
+fichiers ne sont pas modifiés par un déploiement ; les sauvegarder protège
+d'une perte du volume, pas d'une mise en ligne ratée.
 
 ### 4.3 Ce que Railway ne fait pas sur ce plan
 
