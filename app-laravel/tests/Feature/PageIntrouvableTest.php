@@ -56,3 +56,21 @@ it('repond en anglais sous le prefixe anglais', function () {
         ->assertNotFound()
         ->assertSee('Page not found', false);
 });
+
+/*
+ * Les anciennes pages d'erreur de la maquette, 404.html et 500.html, etaient
+ * copiees dans public/ et servies a leur propre adresse avec une reponse 200 :
+ * de fausses pages d'erreur, indexables comme n'importe quel contenu. Elles ne
+ * sont plus copiees ; leur adresse repond par la vraie page introuvable.
+ */
+it('ne copie plus les anciennes pages d erreur dans public', function () {
+    $script = file_get_contents(base_path('../tools/sync-frontoffice.sh'));
+
+    preg_match('/^exclues=\((.*)\)$/m', $script, $liste);
+
+    expect($liste[1])->toContain('"404.html"')->toContain('"500.html"');
+});
+
+it('repond 404 a l adresse des anciennes pages d erreur', function (string $adresse) {
+    $this->get($adresse)->assertNotFound()->assertSee('SCI4K', false);
+})->with(['/404.html', '/500.html']);

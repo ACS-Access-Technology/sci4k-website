@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\CollectionOrdonnable;
 use App\Models\Concerns\JournaliseSesChangements;
 use App\Models\Concerns\TraduitParColonnes;
+use App\Routing\GenerateurDUrlBilingue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -116,16 +117,18 @@ class EntreeDeMenu extends Model
      * Rend « # » plutot qu'une cible douteuse : une entree devenue invalide —
      * route renommee, donnee ancienne — doit degrader le lien, jamais le
      * rendre dangereux.
+     *
+     * Un CHEMIN saisi est rendu dans la langue de la page. Les menus d'origine
+     * en portent plusieurs — « / », « /biens.html », « /contact.html » — qui,
+     * rendus tels quels, ramenaient le visiteur anglais au francais depuis la
+     * navigation, le pied de page et les liens legaux. Voir
+     * GenerateurDUrlBilingue::adresseInterne().
      */
     public function lien(): string
     {
         $cible = trim((string) $this->cible);
 
-        if (Route::has($cible)) {
-            return route($cible);
-        }
-
-        return static::cibleAcceptable($cible) ? $cible : '#';
+        return static::cibleAcceptable($cible) ? GenerateurDUrlBilingue::localiser($cible) : '#';
     }
 
     /**

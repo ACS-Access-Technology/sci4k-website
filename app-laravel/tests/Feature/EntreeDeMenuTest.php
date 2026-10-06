@@ -63,8 +63,16 @@ it('resout un nom de route en adresse', function () {
     expect($entree->lien())->toBe(route('services.index'));
 });
 
-it('rend un chemin interne tel quel', function () {
-    $entree = new EntreeDeMenu(['cible' => '/biens.html']);
+/**
+ * Un chemin interne est rendu vers la page qu'il designe, dans la langue en
+ * cours. Une ancienne adresse redirigee mene directement a la page moderne.
+ */
+it('rend un chemin interne vers sa page moderne', function () {
+    expect((new EntreeDeMenu(['cible' => '/biens.html']))->lien())->toBe(route('biens.index'))
+        ->and((new EntreeDeMenu(['cible' => '/services']))->lien())->toBe(route('services.index'));
+});
 
-    expect($entree->lien())->toBe('/biens.html');
+it('rend tel quel un chemin qu aucune route ne sert', function () {
+    // Fichier servi directement par le serveur : aucune route a retrouver.
+    expect((new EntreeDeMenu(['cible' => '/images/plan-du-quartier.pdf']))->lien())->toBe('/images/plan-du-quartier.pdf');
 });

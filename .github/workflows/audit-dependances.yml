@@ -1,0 +1,90 @@
+name: Audit des dépendances
+
+# Les failles connues des paquets PHP et npm, confrontees aux fichiers de
+# verrouillage (composer.lock, package-lock.json).
+#
+# Un workflow a part, et non une etape de « Vérification du site » : une faille
+# est publiee un jour quelconque, sur un paquet deja installe, sans que le code
+# ne change. D'ou le passage hebdomadaire — qui ne rejoue pas la suite de tests,
+# ce qu'un simple ajout de declencheur a l'autre workflow aurait fait.
+#
+# CE QUI BLOQUE, ET POURQUOI — le detail est dans docs/SECURITE_DEPENDANCES.md :
+#
+# - PHP : toute faille d'un paquet LIVRE en production (require, sans
+#   require-dev), quelle que soit sa gravite. C'est le code qui repond aux
+#   visiteurs ; la correction est presque toujours une mise a jour mineure.
+#   Les outils de developpement (Pest, Pint, phpstan) ne partent pas dans
+#   l'image (composer install --no-dev) : signales, pas bloquants.
+# - npm : les failles hautes et critiques. Tous les paquets sont declares en
+#   « dependencies », outils de construction compris : --omit=dev ne trierait
+#   rien. Le seul qui atteint le navigateur est @laravel/passkeys ; les autres
+#   (Vite, Tailwind) ne tournent qu'a la construction, et leurs failles
+#   faibles ou moyennes visent pour l'essentiel le serveur de developpement.
+#   Signalees, pas bloquantes.
+# - Un paquet ABANDONNE n'est pas une faille : signale, jamais bloquant.
+
+on:
+  push:
+    branches: [master, preprod, dev]
+  pull_request:
+  schedule:
+    # Le lundi a 5 h 17 (UTC). S'execute sur la branche par defaut, master :
+    # celle que sert la production.
+    - cron: '17 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  composer:
+    name: Paquets PHP
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app-laravel
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Meme action, meme empreinte que dans verification.yml.
+      - name: Installer PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer:v2
+
+      # --locked : l'audit lit composer.lock, rien n'est installe. C'est ce
+      # fichier que la construction de l'image rejoue a l'identique.
+      - name: Paquets livrés en production (bloquant)
+        run: composer audit --locked --no-dev --abandoned=report
+
+      - name: Outils de développement (signalé, non bloquant)
+        run: |
+          composer audit --locked --abandoned=report || \
+            echo "::warning::composer audit signale une faille dans un outil de developpement (require-dev). Non livre en production : a traiter, sans urgence."
+
+  npm:
+    name: Paquets npm
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app-laravel
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # npm audit lit package-lock.json : aucune installation necessaire.
+      - name: Failles hautes et critiques (bloquant)
+        run: npm audit --audit-level=high
+
+      - name: Toutes gravités (signalé, non bloquant)
+        run: |
+          npm audit || \
+            echo "::warning::npm audit signale une faille faible ou moyenne. Voir docs/SECURITE_DEPENDANCES.md avant de la traiter."

@@ -11,9 +11,13 @@ use App\Models\Service;
 use App\Routing\GenerateurDUrlBilingue;
 use App\Services\Traduction\Traducteur;
 use App\Services\Traduction\TraducteurDeepL;
+use App\Support\PolitiqueDeContenu;
+use App\Support\TachesDEntretien;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Events\Authenticated;
+use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Http\Middleware\TrustProxies;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -37,6 +41,10 @@ class AppServiceProvider extends ServiceProvider
         );
 
         $this->remplacerLeGenerateurDUrl();
+
+        // Une seule politique par requete : les vues y declarent les services
+        // tiers qu'elles chargent, le middleware la lit une fois la page rendue.
+        $this->app->singleton(PolitiqueDeContenu::class);
     }
 
     /**
@@ -90,6 +98,37 @@ class AppServiceProvider extends ServiceProvider
         $this->appliquerLeFuseauHoraire();
         $this->composerLePiedDePage();
         $this->appliquerLaMessagerieEnregistree();
+        $this->declarerLeNonceDesScripts();
+        $this->noterLesExecutionsDEntretien();
+    }
+
+    /**
+     * Chaque fin de tache d'entretien laisse sa trace, lue par le tableau de
+     * bord.
+     *
+     * Ecoutee ici, a la fin de la COMMANDE, et non dans le planificateur : la
+     * meme commande part aussi de la route des plateformes sans cron, ou d'une
+     * console. Toutes doivent compter, sans quoi le tableau de bord signalerait
+     * un retard la ou l'entretien a bel et bien tourne.
+     */
+    protected function noterLesExecutionsDEntretien(): void
+    {
+        Event::listen(CommandFinished::class, function (CommandFinished $fin): void {
+            TachesDEntretien::noter((string) $fin->command, $fin->exitCode);
+        });
+    }
+
+    /**
+     * @nonce, sur chaque <script> et <style> ecrit en ligne dans une vue.
+     *
+     * Sans lui, la politique de securite du contenu les bloque : elle
+     * n'execute que ce qui vient du site ou porte le nonce de la requete. Le
+     * nonce est celui de Vite, que Vite et Livewire posent deja d'eux-memes sur
+     * leurs propres balises.
+     */
+    protected function declarerLeNonceDesScripts(): void
+    {
+        Blade::directive('nonce', fn () => "<?php echo 'nonce=\"'.e(\\Illuminate\\Support\\Facades\\Vite::cspNonce()).'\"'; ?>");
     }
 
     /**
@@ -281,7 +320,7 @@ class AppServiceProvider extends ServiceProvider
                 'logoPublic' => $this->parametre('logo', 'images/image (3).png'),
                 'ctaHeaderActif' => $this->parametreActif('cta_header_actif', true),
                 'ctaHeaderLibelle' => $this->parametre('cta_header_libelle_'.app()->getLocale(), __('Nous contacter')),
-                'ctaHeaderUrl' => $this->parametre('cta_header_url', route('contact.index')),
+                'ctaHeaderUrl' => $this->cibleDuBoutonDEntete(),
             ]);
         });
 
@@ -343,6 +382,24 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
+     * La cible du bouton de l'en-tete, dans la langue de la page.
+     *
+     * Saisie dans « Configuration », elle etait ecrite telle quelle : un
+     * « /contact » renvoyait le visiteur anglais vers la page francaise, sur
+     * toutes les pages du site. Elle passe desormais par le meme traitement
+     * que les menus — et par la meme garde, un « javascript:… » retombant sur
+     * la page de contact.
+     */
+    protected function cibleDuBoutonDEntete(): string
+    {
+        $cible = trim((string) $this->parametre('cta_header_url', ''));
+
+        return GenerateurDUrlBilingue::localiser(
+            EntreeDeMenu::cibleAcceptable($cible) ? $cible : 'contact.index'
+        );
+    }
+
+    /**
      * Les entrees visibles d'un menu, dans l'ordre.
      *
      * Rend une collection VIDE si la table n'existe pas encore — pendant une
@@ -359,10 +416,21 @@ class AppServiceProvider extends ServiceProvider
         }
     }
 
+    /**
+     * La table existe-t-elle ? Une fois par requete et par table.
+     *
+     * Le site doit rester servable sur une base sans migrations, d'ou la
+     * question ; elle n'a pas a etre reposee a chaque partiel.
+     */
+    protected function tableExiste(string $table): bool
+    {
+        return once(fn () => Schema::hasTable($table));
+    }
+
     protected function parametre(string $cle, mixed $defaut = null): mixed
     {
         try {
-            return Schema::hasTable('parametres') ? Parametre::lire($cle, $defaut) : $defaut;
+            return Parametre::tableDisponible() ? Parametre::lire($cle, $defaut) : $defaut;
         } catch (\Throwable) {
             return $defaut;
         }
@@ -378,24 +446,30 @@ class AppServiceProvider extends ServiceProvider
      */
     protected function textesDeLHabillage(): ?ReglageDeSection
     {
-        // PAS de memoisation statique ici. Une variable `static` vit aussi
-        // longtemps que le processus, pas que la requete : elle figeait la
-        // premiere lecture — un `null` sur une base encore vide — et l'editeur
-        // ne voyait plus jamais ses textes apparaitre. Trois lectures d'une
-        // ligne indexee coutent moins cher qu'un cache qui ment.
-        try {
-            return Schema::hasTable('reglages_de_section')
-                ? ReglageDeSection::where('slug', Menus::SECTION)->first()
-                : null;
-        } catch (\Throwable) {
-            return null;
-        }
+        // PAS de variable `static` ici. Elle vit aussi longtemps que le
+        // processus, pas que la requete : elle figeait la premiere lecture —
+        // un `null` sur une base encore vide — et l'editeur ne voyait plus
+        // jamais ses textes apparaitre.
+        //
+        // once() n'a pas ce defaut : sa memoire est videe au debut de chaque
+        // requete (OublieLaMemoireDeLaRequete). Elle evite de relire la meme
+        // ligne pour chaque vue publique rendue — le composer « public.* »
+        // l'appelle pour la page, la mise en page et chaque partiel.
+        return once(function () {
+            try {
+                return $this->tableExiste('reglages_de_section')
+                    ? ReglageDeSection::where('slug', Menus::SECTION)->first()
+                    : null;
+            } catch (\Throwable) {
+                return null;
+            }
+        });
     }
 
     protected function parametreActif(string $cle, bool $defaut = false): bool
     {
         try {
-            return Schema::hasTable('parametres') ? Parametre::actif($cle, $defaut) : $defaut;
+            return Parametre::tableDisponible() ? Parametre::actif($cle, $defaut) : $defaut;
         } catch (\Throwable) {
             return $defaut;
         }
@@ -413,7 +487,7 @@ class AppServiceProvider extends ServiceProvider
     protected function variablesImagesDeFond(): array
     {
         try {
-            if (! Schema::hasTable('images_de_fond')) {
+            if (! $this->tableExiste('images_de_fond')) {
                 return [];
             }
 

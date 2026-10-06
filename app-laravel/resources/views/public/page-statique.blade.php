@@ -1,7 +1,12 @@
 @extends('public.layout')
 
 @section('titre', $page->titre($langue))
-@section('description', Str::limit(strip_tags($page->contenu($langue)), 155))
+{{-- contenu() rend des entites (&#039;) ; @section les echapperait une seconde fois. --}}
+{{-- La description est tiree du texte lui-meme, SANS ses titres de section :
+     elle commencait par « 1. Qui sommes-nous », sauts de ligne compris, dans
+     ce que Google affiche sous le lien. --}}
+@php($texteSansTitres = preg_replace('#<h[1-6][^>]*>.*?</h[1-6]>#si', ' ', $page->contenu($langue)))
+@section('description', Str::limit(Str::squish(html_entity_decode(strip_tags($texteSansTitres), ENT_QUOTES | ENT_HTML5, 'UTF-8')), 155))
 @section('classe-page', 'page-statique')
 
 @section('contenu')
@@ -27,8 +32,9 @@
 <section class="legal-section">
   <div class="wrap">
     {{-- Le contenu est saisi en HTML depuis le backoffice, par un
-         administrateur ou un editeur : il est rendu tel quel, comme l'etaient
-         les pages d'origine. --}}
+         administrateur. contenu() le passe par HtmlEditorial : seules les
+         balises editoriales survivent, sans script ni attribut d'evenement.
+         C'est ce filtre, et lui seul, qui rend ce {!! !!} acceptable. --}}
     {!! $page->contenu($langue) !!}
   </div>
 </section>

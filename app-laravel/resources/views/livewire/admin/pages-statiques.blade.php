@@ -9,6 +9,14 @@
         <p class="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200" role="status">
             {{ __("Ce contenu est vide : le site sert encore la page d'origine. Elle sera remplacée dès que vous enregistrerez un texte ici.") }}
         </p>
+    {{-- Meme repli quand la page n'est pas publiee : l'avertissement ne
+         parlait que du contenu vide, si bien qu'un brouillon rempli mais non
+         publie laissait croire a l'administrateur que son texte etait en
+         ligne. --}}
+    @elseif (! $publie)
+        <p class="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200" role="status">
+            {{ __("Cette page n'est pas publiée : le site sert encore la page d'origine. Cochez « Page publiée » et enregistrez pour mettre ce texte en ligne.") }}
+        </p>
     @endif
 
     <form wire:submit="enregistrer" class="space-y-4">

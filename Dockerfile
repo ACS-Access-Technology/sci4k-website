@@ -129,8 +129,8 @@ RUN cd app-laravel && composer dump-autoload --optimize --no-dev
 
 COPY --from=ressources /construction/public/build ./app-laravel/public/build
 
-# Depose dans public/ les styles, le script, les images et les pages non encore
-# portees en Blade.
+# Depose dans public/ les styles, le script et les images du site. Les pages
+# HTML des maquettes, toutes portees en Blade, sont exclues de la copie.
 #
 # Le chmod n'est pas superflu. Git enregistre bien ce script en 100755, mais
 # « railway up » televerse le DOSSIER DE TRAVAIL, pas le depot : depuis
@@ -147,13 +147,29 @@ RUN chmod +x ./tools/sync-frontoffice.sh && ./tools/sync-frontoffice.sh
 # par la plateforme, sinon les images televersees disparaissent au redeploiement.
 # Ces dossiers sont crees ici pour que l'application demarre meme sans volume,
 # le temps d'un essai.
+#
+# LE SITE TOURNE SOUS www-data (uid 33), et non plus sous root. L'utilisateur
+# existe deja dans l'image — c'est celui de PHP sous Debian — et n'a pas de
+# shell de connexion : rien a creer. Il n'ECRIT que la ou Laravel doit ecrire :
+#
+#   storage/          journaux, vues compilees, fichiers televerses
+#   bootstrap/cache/  configuration et routes mises en cache au demarrage
+#   /data/caddy, /config/caddy   l'etat que Caddy garde entre deux requetes
+#
+# Tout le reste — le code, vendor/, public/ — reste a root, en lecture seule
+# pour lui : une faille dans l'application ne peut pas reecrire l'application.
+# Pas de chmod : les droits d'usine (755 pour les dossiers, 644 pour les
+# fichiers) suffisent des lors que www-data en est proprietaire.
+#
+# Le lien public/storage est pose ICI, pendant qu'on est root : au demarrage,
+# www-data ne peut plus ecrire dans public/. Relatif, il reste valable quel
+# que soit le dossier ou l'image est montee.
 RUN mkdir -p app-laravel/storage/framework/{cache,sessions,views} \
              app-laravel/storage/app/public \
              app-laravel/storage/logs \
-    # 775 et non 777 : le conteneur tourne sous root, qui possede ces dossiers,
-    # et le volume monte par la plateforme l'est aussi. Donner l'ecriture au
-    # reste du monde n'ouvrait donc rien d'utile — seulement un chemin de plus.
-    && chmod -R 775 app-laravel/storage app-laravel/bootstrap/cache
+    && ln -sfn ../storage/app/public app-laravel/public/storage \
+    && chown -R www-data:www-data app-laravel/storage app-laravel/bootstrap/cache \
+                                  /data/caddy /config/caddy
 
 ENV SERVER_NAME=:8080
 ENV SERVER_ROOT=/app/app-laravel/public
@@ -163,4 +179,14 @@ EXPOSE 8080
 COPY tools/demarrer-conteneur.sh /usr/local/bin/demarrer
 RUN chmod +x /usr/local/bin/demarrer
 
+# Pas de « USER www-data » ici, deliberement : le volume que Railway monte
+# sur storage/app/public appartient a root, et sa documentation le dit —
+# « Docker images that run as a non-root UID by default will have
+# permissions issues » avec un volume. Lance directement sous www-data, le
+# site ne pourrait plus enregistrer une seule image.
+#
+# Le script de demarrage commence donc sous root, le temps de rendre le volume
+# a www-data, puis ABANDONNE ses privileges (setpriv) avant toute commande de
+# l'application : migrations, caches, planificateur et serveur tournent tous
+# sous www-data, et plus aucun processus du conteneur ne reste root.
 CMD ["/usr/local/bin/demarrer"]

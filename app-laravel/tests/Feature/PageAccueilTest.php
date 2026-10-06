@@ -192,7 +192,10 @@ it('affiche la banderole d appel a l action', function () {
     $reponse = $this->get('/')->assertOk();
 
     $reponse->assertSee('Prêt à concrétiser votre projet ?');
-    $reponse->assertSee('/biens.html', false);
+    // La cible saisie est l'ancienne adresse : le bouton mene directement a la
+    // page moderne, sans le detour de la redirection.
+    $reponse->assertSee('href="'.route('biens.index').'"', false);
+    $reponse->assertDontSee('/biens.html', false);
 });
 
 it('escamote une section vide plutot que d afficher un titre seul', function () {

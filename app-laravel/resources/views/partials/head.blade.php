@@ -25,12 +25,12 @@
     `livewire/flux` package) — only touches localStorage and the « html »
     class, same behaviour as resources/js/app.js's Alpine store.
 --}}
-<style>
+<style @nonce>
     :root.dark {
         color-scheme: dark;
     }
 </style>
-<script>
+<script @nonce>
     (function () {
         // Meme cle que le site public : la preference d'apparence est celle du
         // produit entier. « appearance » est l'ancienne cle du backoffice, lue

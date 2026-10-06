@@ -1,0 +1,42 @@
+name: Flux des branches
+
+# Le flux obligatoire : dev → preprod → master. Une demande de fusion vers
+# preprod doit venir de dev ; vers master, de preprod. Aucune exception, pas
+# meme pour un correctif urgent. Voir docs/BRANCHES_ET_DEPLOIEMENT.md.
+#
+# GitHub ne sait pas imposer la branche d'ORIGINE d'une demande de fusion : ce
+# job le fait, et devient bloquant une fois declare obligatoire dans les
+# protections de preprod et de master (a configurer a la main).
+#
+# « edited » en plus des evenements par defaut : une demande ouverte vers
+# preprod puis REORIENTEE vers master garderait sinon le resultat vert calcule
+# pour preprod. Le changement de cible relance le controle.
+#
+# Seules preprod et master sont filtrees ici : vers toute autre branche, le
+# workflow ne tourne pas, et rien n'est exige.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+    branches: [preprod, master]
+
+permissions:
+  contents: read
+
+jobs:
+  flux:
+    name: Flux des branches
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Les noms de branche passent par l'environnement, jamais interpoles dans
+      # le script : un nom de branche est choisi par qui ouvre la demande.
+      - name: Origine et cible de la demande
+        env:
+          SOURCE: ${{ github.head_ref }}
+          CIBLE: ${{ github.base_ref }}
+          DEPOT_SOURCE: ${{ github.event.pull_request.head.repo.full_name }}
+          DEPOT_CIBLE: ${{ github.repository }}
+        run: bash tools/verifier-flux-des-branches.sh "$SOURCE" "$CIBLE" "$DEPOT_SOURCE" "$DEPOT_CIBLE"

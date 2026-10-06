@@ -72,10 +72,15 @@ return new class extends Migration
     {
         foreach ($this->correspondances() as $famille => $paires) {
             foreach ($sens($paires) as $avant => $apres) {
+                // (string) : array_flip() fait des cles « 1 », « 3 », « 5 » des
+                // ENTIERS PHP. MySQL comparait alors la colonne texte a un
+                // nombre, convertissait « 1-2 » en DOUBLE et refusait en mode
+                // strict — le retour arriere echouait sur toute base semee.
+                // SQLite, plus coulant, laissait passer.
                 DB::table('referentiels')
                     ->where('famille', $famille)
-                    ->where('valeur', $avant)
-                    ->update(['valeur' => $apres]);
+                    ->where('valeur', (string) $avant)
+                    ->update(['valeur' => (string) $apres]);
             }
         }
     }

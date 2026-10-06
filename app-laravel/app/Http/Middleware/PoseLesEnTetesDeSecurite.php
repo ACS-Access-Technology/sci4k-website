@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\PolitiqueDeContenu;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,18 +14,23 @@ use Symfony\Component\HttpFoundation\Response;
  * aucun ne depend d'un reglage : ils valent pour toutes les pages, publiques
  * comme administratives.
  *
- * CE QUI N'EST PAS ICI : la politique de securite du contenu. Elle demanderait
- * « unsafe-inline » tant que les gabarits portent des gestionnaires en ligne
- * (onsubmit="…") et des styles en ligne herites des maquettes, et elle
- * bloquerait le chat ou les statistiques le jour ou l'editeur les active depuis
- * l'ecran Configuration — sans un mot, ce qui est le pire des defauts. Elle
- * fera l'objet d'un lot a elle, en mode observation d'abord.
+ * La politique de securite du contenu (CSP) en fait partie. Sa composition,
+ * et ses trois exceptions, sont decrites dans App\Support\PolitiqueDeContenu :
+ * ce middleware ne fait que lui ouvrir la requete — un nonce neuf, avant que
+ * les vues ne le lisent — et poser l'en-tete une fois la page rendue, quand on
+ * sait ce qu'elle charge.
  */
 class PoseLesEnTetesDeSecurite
 {
+    public function __construct(protected PolitiqueDeContenu $politique) {}
+
     public function handle(Request $requete, Closure $suite): Response
     {
+        $this->politique->nouvelleRequete();
+
         $reponse = $suite($requete);
+
+        $reponse->headers->set($this->politique->nomDeLEnTete(), $this->politique->enTete());
 
         // Un navigateur ne devine plus le type d'un fichier : une image
         // televersee qui contiendrait du script ne sera pas executee comme tel.

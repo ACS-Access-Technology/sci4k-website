@@ -54,10 +54,17 @@ class PageContact extends Component
     public const TEXTES_DU_FORMULAIRE = [
         'libelle_nom' => ['intitule' => 'Libellé du champ « nom »', 'defaut' => 'Nom complet *'],
         'exemple_nom' => ['intitule' => 'Exemple dans le champ « nom »', 'defaut' => 'Ex: Jean Kouassi'],
-        'libelle_telephone' => ['intitule' => 'Libellé du champ « téléphone »', 'defaut' => 'Téléphone *'],
+        // Plus d'asterisque sur le telephone ni sur l'e-mail : l'un OU l'autre
+        // suffit, et l'asterisque sur les deux annonçait le contraire.
+        'libelle_telephone' => ['intitule' => 'Libellé du champ « téléphone »', 'defaut' => 'Téléphone'],
         'exemple_telephone' => ['intitule' => 'Exemple dans le champ « téléphone »', 'defaut' => '+225 07 00 00 00 00'],
-        'libelle_email' => ['intitule' => 'Libellé du champ « email »', 'defaut' => 'Adresse Email *'],
+        'libelle_email' => ['intitule' => 'Libellé du champ « email »', 'defaut' => 'Adresse Email'],
         'exemple_email' => ['intitule' => 'Exemple dans le champ « email »', 'defaut' => 'j.kouassi@email.com'],
+        'erreur_coordonnees' => [
+            'intitule' => 'Message si ni e-mail ni téléphone n’est indiqué',
+            'defaut' => 'Indiquez une adresse e-mail ou un numéro de téléphone pour que nous puissions vous répondre.',
+            'long' => true,
+        ],
         'libelle_sujet' => ['intitule' => 'Libellé du champ « sujet »', 'defaut' => 'Sujet de votre demande'],
         'sujets' => [
             'intitule' => 'Sujets proposés (un par ligne)',

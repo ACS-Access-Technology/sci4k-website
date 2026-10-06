@@ -37,6 +37,10 @@ app-laravel/database/*.sqlite
 app-laravel/database/*.sqlite-*
 app-laravel/storage/app/private/
 app-laravel/.env
+# Journaux et disques factices des tests : rien de cela n'a a traverser le
+# reseau.
+app-laravel/storage/logs/
+app-laravel/storage/framework/testing/
 
 # Outils et reglages locaux.
 .claude/

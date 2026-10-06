@@ -7,7 +7,6 @@ use App\Models\Parametre;
 use App\Models\ReglageDeSection;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -66,7 +65,7 @@ class FermeLeSitePublic
     protected function siteFerme(): bool
     {
         try {
-            return Schema::hasTable('parametres') && Parametre::actif('mode_maintenance', false);
+            return Parametre::tableDisponible() && Parametre::actif('mode_maintenance', false);
         } catch (\Throwable) {
             // Une base injoignable ne doit pas fermer le site : le defaut est
             // toujours « ouvert ».

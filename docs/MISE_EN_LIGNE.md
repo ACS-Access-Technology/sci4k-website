@@ -9,24 +9,42 @@ Le document sépare trois choses qui se confondent facilement : ce qu'il faut
 **commander**, ce qu'il faut **régler**, et ce qu'il faut **attendre de
 quelqu'un d'autre**. Le dernier groupe ne dépend d'aucun code.
 
+**La stratégie de déploiement retenue est unique** : un conteneur sur Railway,
+mis en ligne par `railway up` depuis `master`, après
+`tools/verifier-avant-deploiement.sh`. La procédure de chaque mise en ligne —
+sauvegardes, vérifications, retour arrière — est dans
+`PREMIER_DEPLOIEMENT.md` ; la plateforme, dans `DEPLOIEMENT_RAILWAY.md`. Le
+passage au domaine définitif suit la même voie : ce document en liste les
+réglages (§3) et ce qu'il faut obtenir de tiers (§4).
+
+Le §1 et le §2 décrivent un **hébergement classique** (SSH, cron). Ils sont
+gardés en plan de repli, pour le jour où la plateforme changerait ; ils ne
+servent pas aujourd'hui.
+
 ---
 
-## 1. Ce qu'il faut commander
+## 1. Ce qu'il faut commander (hébergement classique, plan de repli)
+
+En conteneur, l'image apporte PHP, ses extensions et Node ; le planificateur
+tourne à côté du serveur. Le projet Railway est sur le plan Hobby, dont les
+limites — aucune sauvegarde de volume, notamment — sont dans
+`PREMIER_DEPLOIEMENT.md`, §1. Restent à obtenir : le domaine, et un compte
+SMTP.
 
 | Élément | Contrainte vérifiée | D'où vient la contrainte |
 |---|---|---|
 | Hébergement PHP **8.3** ou plus | `composer.json` exige `^8.3` | Refus d'installation sous 8.2 |
 | Extensions PHP | `mbstring`, `pdo_mysql`, `gd`, `intl` | Étape « Installer PHP » de la CI |
-| **MySQL 8.0** | `DB_CONNECTION=mysql`, testé contre `mysql:8.0` | Le type énuméré des statuts diverge sur les moteurs plus anciens |
+| **MySQL 9.7** (LTS) | `DB_CONNECTION=mysql`, testé contre `mysql:9.7` ; `php artisan base:verifier-version` compare le serveur joint | 8.0 n'est plus supporté par Oracle depuis avril 2026, et les versions « Innovation » (9.4…) ne le sont que quelques mois — voir `app/Support/MoteurDeBase.php` |
 | Accès **SSH** ou équivalent | `composer install`, `artisan migrate`, `storage:link` | Un hébergement FTP seul ne suffit pas |
 | **Node 20** au moment de la construction | `npm run build` produit le manifeste Vite | Peut se faire ailleurs et être téléversé |
 | Un **domaine** | — | — |
 | Un **certificat HTTPS** | Le cookie de session doit porter `Secure` | Voir §3 |
-| Un **compte SMTP** | 6 courriels partent de l'application | Voir §3 |
-| Un **accès cron** | `schedule:run` chaque minute | Sans lui la table des visites croît sans borne |
+| Un **compte SMTP** | 6 courriels partent de l'application, plus la réinitialisation de mot de passe (Fortify) | Voir §3 |
+| Un **accès cron** | `schedule:run` chaque minute — sauf en conteneur, où le planificateur tourne à côté du serveur | Sans lui la table des visites croît sans borne |
 
 L'application ne réclame **ni Redis, ni superviseur de file d'attente** :
-aucune classe n'implémente `ShouldQueue` et les huit envois de courriel sont
+aucune classe n'implémente `ShouldQueue` et les six envois de courriel sont
 synchrones. `QUEUE_CONNECTION=database` est présent mais inerte.
 
 Elle réclame en revanche **une ligne de cron**. Deux tâches quotidiennes
@@ -40,11 +58,21 @@ croître sans borne :
 ```
 
 Chaque minute, oui : c'est Laravel qui décide ensuite quoi lancer, et il n'y a
-que deux tâches, à 3 h 10 et 3 h 40. Les deux sont rejouables sans risque ;
-celle de la fréquentation rattrape en outre les jours manqués, donc un cron
-interrompu quelques jours se répare tout seul à la reprise.
+que deux tâches, à 3 h 10 et 3 h 40. Une ligne à `10 3 * * *` ne suffirait
+pas : `schedule:run` n'exécute que ce qui est dû à la minute même, la purge de
+3 h 40 ne tournerait jamais. Les deux sont rejouables sans risque ; celle de la
+fréquentation rattrape en outre les jours manqués, donc un cron interrompu
+quelques jours se répare tout seul à la reprise.
 
-## 2. La séquence de déploiement
+**En conteneur (Railway), aucune ligne de cron** : le planificateur tourne à
+côté du serveur, relancé s'il s'arrête. Voir `docs/DEPLOIEMENT_RAILWAY.md`.
+
+**Savoir si l'entretien tourne** : le panneau « Entretien automatique » du
+tableau de bord de l'administration, en alerte au-delà de 26 h sans passe
+réussie ; et, si `SENTRY_LARAVEL_DSN` est renseigné, les moniteurs Sentry
+Crons, qui préviennent d'eux-mêmes.
+
+## 2. La séquence de déploiement (hébergement classique, plan de repli)
 
 Dans cet ordre. Chaque étape a une raison d'être avant la suivante.
 
@@ -67,8 +95,12 @@ cp .env.production.example .env
 #    puis renseigner ce qui y est marque « A RENSEIGNER »
 php artisan key:generate
 
-# 5. La base
+# 5. La base, son ossature, puis le premier administrateur. db:seed ne cree
+#    aucun compte et ne seme aucun contenu fictif ; sur une base deja remplie,
+#    il ne modifie rien. Le mot de passe se saisit au clavier.
 php artisan migrate --force
+php artisan db:seed --force
+php artisan compte:creer-administrateur
 
 # 6. Le lien des images televersees. Sans lui, toute image ajoutee depuis le
 #    backoffice est ecrite mais ne s'affiche jamais : le code ecrit
@@ -169,22 +201,54 @@ Relevés en lisant la configuration. Les cinq premiers sont bloquants.
 4. **SMTP réel.** Sous `MAIL_MAILER=log`, les courriels sont écrits dans le
    journal et ne partent pas : accusé d'un message de contact, alerte d'une
    demande de visite, avis d'un nouveau commentaire, réponse à un message,
-   invitation d'un compte du backoffice, message d'essai. L'écran
-   Configuration comporte un bouton d'essai pour vérifier les identifiants.
+   invitation d'un compte du backoffice, message d'essai. `log` n'est pas une
+   configuration de production. Variables : `MAIL_MAILER=smtp`, `MAIL_HOST`,
+   `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, et **`MAIL_FROM_ADDRESS`** —
+   une adresse du domaine de l'agence, autorisée par le fournisseur (SPF,
+   DKIM) ; vide, Laravel envoie au nom de `hello@example.com`. L'écran
+   Configuration peut aussi porter le serveur, et comporte un bouton d'essai ;
+   il ne s'applique qu'aux pages, pas aux commandes console. Les identifiants
+   se posent dans les variables du service, jamais dans un fichier du dépôt.
 
 5. **`php artisan storage:link`.** Voir l'étape 6 ci-dessus.
 
-6. **Journalisation.** `LOG_STACK=daily` et `LOG_LEVEL=warning`. Le gabarit de
-   développement écrit dans un fichier unique que rien ne fait tourner, au
-   niveau `debug` — donc chaque requête SQL. Il sature le disque à terme.
+6. **Journalisation.** `LOG_STACK=stderr` et `LOG_LEVEL=warning` : en
+   conteneur, Railway collecte la sortie d'erreur, et un fichier écrit dans le
+   conteneur disparaîtrait au redéploiement. Sur hébergement classique,
+   `LOG_STACK=daily`. Jamais le réglage du gabarit de développement : un
+   fichier unique que rien ne fait tourner, au niveau `debug` — donc chaque
+   requête SQL, avec ses valeurs.
+
+   **`PASSKEYS_USER_HANDLE_SECRET`** : vide, c'est `APP_KEY` qui en tient lieu,
+   et changer `APP_KEY` rend alors inutilisables toutes les passkeys. Y poser
+   la valeur actuelle de `APP_KEY` les en détache sans rien casser. Le domaine
+   définitif, lui, les invalidera de toute façon : l'identifiant de « partie
+   de confiance » est l'hôte de `APP_URL`. Détail dans
+   `.env.production.example`.
 
 7. **`SENTRY_LARAVEL_DSN`** est facultatif mais vivement conseillé : sans lui,
    une erreur en production n'est signalée à personne et ne se découvre que
-   par un visiteur qui se plaint. Aucune donnée personnelle n'est transmise —
-   `send_default_pii` reste à `false`, donc ni adresse IP, ni en-têtes, ni
-   corps de requête. Seul l'identifiant interne du compte backoffice connecté
-   accompagne le rapport, ce qui laisse la politique de confidentialité vraie
-   telle qu'elle est écrite.
+   par un visiteur qui se plaint. Aucune donnée personnelle n'est transmise :
+   ni adresse IP, ni navigateur, ni corps de requête, ni chaîne de requête, ni
+   valeur saisie — pas même dans un message d'erreur SQL. `send_default_pii`
+   à `false` n'y suffisait pas : le détail, et le test qui intercepte ce qui
+   part réellement, sont dans `app/Support/SentryAvantEnvoi.php`. Seul
+   l'identifiant interne du compte backoffice connecté accompagne le rapport,
+   ce qui laisse la politique de confidentialité vraie telle qu'elle est
+   écrite.
+
+   Poser aussi **`SENTRY_ENVIRONMENT`** : sans lui, Sentry reprend `APP_ENV`,
+   et l'instance d'essai — en `APP_ENV=production` — mêlerait ses erreurs à
+   celles du site définitif. La version (release) se renseigne seule sur
+   Railway : l'identifiant du déploiement, `railway up` ne transmettant pas de
+   commit ; ailleurs, `SENTRY_RELEASE`. `SENTRY_TRACES_SAMPLE_RATE` reste à
+   `0` : les traces consomment le quota bien plus vite que les erreurs.
+
+   À préparer avant la mise en ligne définitive : un projet Sentry (PHP /
+   Laravel), son DSN posé dans les variables du service, et deux alertes —
+   toute nouvelle erreur, et les moniteurs Crons `sci4k-frequentation-agreger`
+   et `sci4k-journal-purger`, créés d'eux-mêmes au premier signal. Un essai :
+   `php artisan sentry:test`, sous `www-data`, depuis la console du service.
 
 8. **`DEEPL_API_KEY`** reste facultatif : sans clé, la traduction automatique
    des articles se tait et les deux langues se saisissent à la main.
@@ -241,11 +305,28 @@ l'état honnête tant que l'agence n'a pas fourni ses vraies références.
 inventée d'une vraie. Publier « Résidence Akwaba · 24 lots gérés » sur le
 domaine définitif, c'est annoncer une référence commerciale qui n'existe pas.
 
+**État réel de la production, relevé le 6 octobre 2026** (base en lecture
+seule, rapprochée des données de la maquette, `database/data/*.json`) :
+
+| Contenu | Origine | Retouché depuis le 7 septembre ? | Statut |
+|---|---|---|---|
+| 12 articles | maquette, tous | non | démonstration — à retirer |
+| 3 témoignages (« Mireille K. », « Serge D. », « Aïcha Y. ») | maquette | non | démonstration — à retirer |
+| 3 chiffres clés (120 biens, 8 ans, 96 %) | maquette | non | démonstration — à retirer ou à remplacer par des chiffres réels |
+| 7 partenaires et leurs logos | maquette | non | à retirer, sauf accord écrit de chaque organisme |
+| 6 biens | maquette (« Villa Les Palmiers » renommé « Villa F6 ») | **oui**, les 15, 23 et 30 septembre | retravaillés par l'agence : **décision de l'agence**, bien par bien |
+| Équipe (3 personnes) | **pas la maquette** (qui en nomme 4 autres) | oui, les 11 et 28 septembre | **contenu réel — à garder** |
+| Réalisations `DEMO-` | — | — | aucune en production |
+
+Rien n'a été supprimé. Le retrait se fait **après** une sauvegarde
+(`PREMIER_DEPLOIEMENT.md`, §4), de préférence depuis le backoffice, table par
+table, et seulement sur décision de l'agence pour les biens.
+
 ### Ce qui est déjà correct
 
 Vérifié, rien à faire :
 
-- Les huit envois de courriel sont enveloppés dans `try/catch` avec `report()`,
+- Les six envois de courriel sont enveloppés dans `try/catch` avec `report()`,
   et le message est enregistré en base **avant** l'envoi. Un SMTP en panne ne
   perd donc aucune demande — elle attend dans le backoffice.
 - `/up` reste ouvert quand le mode maintenance est actif : la sonde de
@@ -268,9 +349,13 @@ ligne autant que le reste.
 | Textes juridiques définitifs (mentions légales, politique de confidentialité) | La direction |
 
 L'intégration continue, elle, tourne : les contrôles de non-régression et les
-tests Laravel s'exécutent sur les trois branches et passent. Un check
-supplémentaire vient de SonarCloud, hors GitHub Actions, sur la qualité du
-code.
+tests Laravel s'exécutent sur les trois branches et passent, l'audit des
+dépendances et le contrôle du flux des branches s'y ajoutent. Depuis le
+1er octobre 2026, les protections de branche sont posées dans GitHub : ces
+cinq checks bloquent toute fusion vers `preprod` et `master`, administrateurs
+compris (`docs/BRANCHES_ET_DEPLOIEMENT.md`). Un check supplémentaire vient de
+SonarCloud, hors GitHub Actions, sur la qualité du code ; il est informatif,
+absent des règles, et sa « Quality Gate » échoue au 1er octobre 2026.
 
 ## 5. Les branches
 
@@ -281,6 +366,10 @@ Trois branches permanentes chez `acs`, alignées sur le même commit :
 | `dev` | La branche de travail |
 | `preprod` | Préproduction |
 | `master` | **La production.** C'est depuis elle que le site se déploie. |
+
+Le flux `dev` → `preprod` → `master` est obligatoire, et la mise en ligne passe
+par `./tools/verifier-avant-deploiement.sh` : voir
+`docs/BRANCHES_ET_DEPLOIEMENT.md`.
 
 Il n'y a **pas** de branche `prod`, et c'est délibéré : `master` tient ce
 rôle. Une quatrième branche qui suivrait `master` pas à pas n'ajouterait
@@ -297,3 +386,29 @@ semaines plus tôt.
 Ce clone a été retiré. La leçon vaut d'être retenue : un dépôt imbriqué
 répond aux commandes git à la place du vrai, avec ses propres références
 périmées, sans que rien ne le signale.
+
+## 6. Lancement définitif : état au 6 octobre 2026
+
+Le site d'essai suit la procédure de `PREMIER_DEPLOIEMENT.md`. Le lancement
+sur le domaine définitif demande en plus ce qui suit. **Aucun de ces points
+n'est du code, sauf le retrait du contenu, préparé ci-dessus.**
+
+| Prérequis | État vérifié | Ce qui manque, et à qui le demander |
+|---|---|---|
+| Domaine, DNS, HTTPS | aucun domaine sur Railway (seulement `sci4k-production.up.railway.app`), aucun dans le dépôt | le nom de domaine retenu et l'accès à sa zone DNS — la direction. Railway fournit le certificat dès que le DNS pointe (1 domaine personnalisé inclus dans le plan) |
+| Mentions légales | la page porte encore des éléments à compléter | RCCM, compte contribuable, directeur de publication, hébergeur (Railway Corporation, à faire valider), textes validés — le client et la direction |
+| Politique de confidentialité | rédigée ; à faire valider | validation juridique — la direction |
+| Six visuels provisoires | identifiés, fichier de destination compris : `maquettes-frontoffice/images/A-REMPLACER.md` | six photographies de l'agence, aux mêmes noms de fichier |
+| Logos des partenaires | 7 organismes affichés, aucun accord écrit connu | un accord écrit par organisme, ou leur retrait |
+| Courrier | serveur SMTP et adresse d'expéditeur **renseignés dans le backoffice** ; jamais essayés | un essai depuis *Configuration* → bouton d'envoi d'essai, par un compte administrateur ; `MAIL_FROM_ADDRESS` en variable pour les commandes console |
+| Sentry | aucun DSN | un projet Sentry et son DSN, posés en variable (`SENTRY_LARAVEL_DSN`, `SENTRY_ENVIRONMENT=production`) |
+| Contenu de démonstration | inventorié ci-dessus (§3) | la décision de l'agence sur les biens ; le reste se retire après sauvegarde |
+| Indexation | désactivée (`autoriser_indexation = 0`) — juste tant qu'on est en essai | la cocher le jour où le domaine définitif répond, pas avant |
+| Sauvegardes | `mysqldump` par `railway ssh`, éprouvé et restauré ; aucune sauvegarde Railway sur ce plan | une copie hors de ce poste (stockage de l'agence) |
+| Réglages de `railway.json` | encore lus jusqu'au 1er décembre 2026 | à reporter dans l'écran Railway avant cette date (`DEPLOIEMENT_RAILWAY.md`, §1) |
+
+**Le jour J, dans l'ordre :** sauvegarde ; domaine posé et vérifié en HTTPS ;
+`APP_URL` sur le domaine ; contenu de démonstration retiré ; mentions légales
+et photos en place ; essai d'envoi de courriel ; Sentry reçoit l'erreur de
+`php artisan sentry:test` ; indexation cochée ; `robots.txt` et plan du site
+vérifiés sur le domaine.
