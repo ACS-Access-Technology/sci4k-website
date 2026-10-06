@@ -395,12 +395,12 @@ n'est du code, sauf le retrait du contenu, préparé ci-dessus.**
 
 | Prérequis | État vérifié | Ce qui manque, et à qui le demander |
 |---|---|---|
-| Domaine, DNS, HTTPS | aucun domaine sur Railway (seulement `sci4k-production.up.railway.app`), aucun dans le dépôt | le nom de domaine retenu et l'accès à sa zone DNS — la direction. Railway fournit le certificat dès que le DNS pointe (1 domaine personnalisé inclus dans le plan) |
+| Domaine, DNS, HTTPS | `sci4k.com` sert aujourd'hui le WordPress de SCI 4K ; pré-production sur `nouveau.sci4k.com` créée sur Railway, en attente des deux enregistrements DNS dans Plesk | voir `DOMAINE_ET_BASCULE.md` : enregistrements, bascule vers `www.sci4k.com`, retour arrière |
 | Mentions légales | la page porte encore des éléments à compléter | RCCM, compte contribuable, directeur de publication, hébergeur (Railway Corporation, à faire valider), textes validés — le client et la direction |
 | Politique de confidentialité | rédigée ; à faire valider | validation juridique — la direction |
 | Six visuels provisoires | identifiés, fichier de destination compris : `maquettes-frontoffice/images/A-REMPLACER.md` | six photographies de l'agence, aux mêmes noms de fichier |
 | Logos des partenaires | 7 organismes affichés, aucun accord écrit connu | un accord écrit par organisme, ou leur retrait |
-| Courrier | serveur SMTP et adresse d'expéditeur **renseignés dans le backoffice** ; jamais essayés | un essai depuis *Configuration* → bouton d'envoi d'essai, par un compte administrateur ; `MAIL_FROM_ADDRESS` en variable pour les commandes console |
+| Courrier | Resend, expéditeur d'essai `onboarding@resend.dev` — **pas une configuration de production** (`DOMAINE_ET_BASCULE.md`, §6) | un essai depuis *Configuration* → bouton d'envoi d'essai, par un compte administrateur ; `MAIL_FROM_ADDRESS` en variable pour les commandes console |
 | Sentry | aucun DSN | un projet Sentry et son DSN, posés en variable (`SENTRY_LARAVEL_DSN`, `SENTRY_ENVIRONMENT=production`) |
 | Contenu de démonstration | inventorié ci-dessus (§3) | la décision de l'agence sur les biens ; le reste se retire après sauvegarde |
 | Indexation | désactivée (`autoriser_indexation = 0`) — juste tant qu'on est en essai | la cocher le jour où le domaine définitif répond, pas avant |
