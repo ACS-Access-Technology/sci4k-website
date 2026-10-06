@@ -400,3 +400,50 @@ décision explicite, qui efface les saisies postérieures.
 **Limites.** La sauvegarde vit sur le poste qui l'a prise, seule copie hors
 de Railway. La coupure d'une dizaine de secondes est inhérente au plan : un
 volume interdit d'avoir deux instances de MySQL à la fois.
+
+## 10. Premier déploiement du nouveau code (6 octobre 2026)
+
+**Version déployée :** `master` = `d7dfa1c` (demande #5, `preprod` → `master`),
+par `railway up --service sci4k` à 11 h 52 UTC, après
+`tools/verifier-avant-deploiement.sh` (« Tout est vert »). Déploiement
+Railway `60989f78`, en `SUCCESS` ; le précédent, `ce4139dc` (code du
+23 septembre), reste restaurable par *Rollback* (`canRollback: true`).
+
+**Sauvegarde juste avant :** base (`mysqldump`, MySQL 9.7.2, 47 tables,
+archive intacte, empreinte SHA-256) et fichiers téléversés (23 fichiers,
+4,4 Mo), dans `~/sauvegardes-sci4k/`. Le test de restauration local n'a pas
+pu être refait ce jour-là — Docker Desktop ne démarrait pas sur ce poste ;
+la même méthode avait été restaurée à l'identique trois fois le 1er octobre.
+
+**Démarrage, d'après le journal :** utilisateur `www-data` (uid 33) ; une
+seule migration, `2026_09_29_120000_cree_les_executions_d_entretien`
+(57 ms) ; « MySQL 9.7.2 : version supportée » ; caches ; planificateur
+démarré ; « Prêt ».
+
+**Coupure :** une sonde toutes les 3 s n'a perdu qu'une réponse de `/up`, à
+la bascule (11 h 54 min 48 s) ; `/biens` est resté en 200 de bout en bout.
+
+**Vérifications après :**
+
+| Contrôle | Résultat |
+|---|---|
+| Pages françaises et anglaises | 200 ; les 48 liens internes distincts des pages principales, FR et EN, en 200 |
+| Nouveau code en ligne | politique de contenu avec `nonce-`, HSTS, `X-Frame-Options: DENY` ; `/storage/*.php` en 404 ; `/mentions-legales.html` redirigé (301) |
+| Ressources | styles, scripts, images du site et fichier téléversé en 200 (ce dernier avec sa politique `sandbox`) |
+| Console du navigateur (Chrome) | aucun message, ni erreur ni violation de la politique de contenu, sur l'accueil et `/en/biens` |
+| Livewire | filtre « Villa & Duplex » sur `/biens` : requête `livewire-…/update` en 200, liste passée de 6 à 2 biens |
+| Formulaires | contact (`/messages`), lettre d'information, demande de visite : un envoi vide est refusé (422, messages en français) ; aucun enregistrement créé |
+| Contact | enregistre le message, puis ouvre WhatsApp — comportement voulu (`main.js`) |
+| Authentification | `/admin` sans session renvoie vers `/login` ; un compte inexistant est refusé (422) ; aucune connexion réelle faite |
+| Base | 48 tables (+ `executions_d_entretien`), 46 migrations ; toutes les autres tables identiques à l'état d'avant |
+| Planificateur | `schedule:work --whisper` en marche ; la première passe de nuit (3 h 10 UTC) se lira au panneau « Entretien automatique » |
+| Journaux | aucune erreur depuis le déploiement |
+
+**Réglages de `railway.json` reportés sur le service** le même jour, par
+l'API de Railway : healthcheck `/up`, 120 s, redémarrage `ON_FAILURE`,
+3 essais — relus après coup, sans redéploiement. Le fichier peut cesser
+d'être lu le 1er décembre sans rien changer.
+
+**Non vérifié faute d'accès :** une connexion réelle au backoffice, un
+téléversement depuis le backoffice, l'envoi d'un courriel réel.
+

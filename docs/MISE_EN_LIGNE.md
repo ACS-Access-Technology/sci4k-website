@@ -405,7 +405,7 @@ n'est du code, sauf le retrait du contenu, préparé ci-dessus.**
 | Contenu de démonstration | inventorié ci-dessus (§3) | la décision de l'agence sur les biens ; le reste se retire après sauvegarde |
 | Indexation | désactivée (`autoriser_indexation = 0`) — juste tant qu'on est en essai | la cocher le jour où le domaine définitif répond, pas avant |
 | Sauvegardes | `mysqldump` par `railway ssh`, éprouvé et restauré ; aucune sauvegarde Railway sur ce plan | une copie hors de ce poste (stockage de l'agence) |
-| Réglages de `railway.json` | encore lus jusqu'au 1er décembre 2026 | à reporter dans l'écran Railway avant cette date (`DEPLOIEMENT_RAILWAY.md`, §1) |
+| Réglages de `railway.json` | **reportés sur le service le 6 octobre 2026** | rien ; retirer le fichier au prochain déploiement |
 
 **Le jour J, dans l'ordre :** sauvegarde ; domaine posé et vérifié en HTTPS ;
 `APP_URL` sur le domaine ; contenu de démonstration retiré ; mentions légales

@@ -113,3 +113,18 @@ it('controle chaque demande de fusion vers preprod et master', function () {
     preg_match('/run: (.+)$/m', $workflow, $commande);
     expect($commande[1])->not->toContain('${{');
 });
+
+/*
+ * Dependabot vise la branche par defaut, master, si rien ne lui dit le
+ * contraire : ses demandes sauteraient dev et preprod, et le check « Flux des
+ * branches » les refuserait toutes. La demande #7 l'a montre.
+ */
+it('fait passer les mises a jour de Dependabot par dev', function () {
+    $configuration = (string) file_get_contents(racineDuDepot('.github/dependabot.yml'));
+
+    preg_match_all('/^\s+- package-ecosystem:/m', $configuration, $ecosystemes);
+    preg_match_all('/^\s+target-branch: "dev"\r?$/m', $configuration, $cibles);
+
+    expect(count($ecosystemes[0]))->toBeGreaterThan(0)
+        ->and(count($cibles[0]))->toBe(count($ecosystemes[0]));
+});
