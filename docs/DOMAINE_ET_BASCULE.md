@@ -130,6 +130,13 @@ serveur `smtp.resend.com` (port 2587, TLS), expéditeur
 délivre qu'au propriétaire du compte Resend. **Ce n'est pas une
 configuration de production.**
 
+**Constaté le 6 octobre 2026, depuis le conteneur :** `smtp.gmail.com` sur
+587 et 465, et `smtp-relay.gmail.com` sur 587, ne répondent pas (délai
+dépassé) ; seul `smtp.resend.com:2587` passe. Le plan Hobby de Railway bloque
+les ports SMTP usuels. Google Workspace par SMTP suppose donc le plan Pro.
+Le destinataire des notifications (*Configuration* → *Contact*) est vide :
+les formulaires s'enregistrent, mais personne n'est prévenu.
+
 Pour envoyer au nom de `@sci4k.com` en passant la politique SPF/DMARC
 stricte, deux voies :
 

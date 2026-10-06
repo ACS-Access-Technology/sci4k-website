@@ -395,16 +395,17 @@ n'est du code, sauf le retrait du contenu, préparé ci-dessus.**
 
 | Prérequis | État vérifié | Ce qui manque, et à qui le demander |
 |---|---|---|
-| Domaine, DNS, HTTPS | `sci4k.com` sert aujourd'hui le WordPress de SCI 4K ; pré-production sur `nouveau.sci4k.com` créée sur Railway, en attente des deux enregistrements DNS dans Plesk | voir `DOMAINE_ET_BASCULE.md` : enregistrements, bascule vers `www.sci4k.com`, retour arrière |
-| Mentions légales | la page porte encore des éléments à compléter | RCCM, compte contribuable, directeur de publication, hébergeur (Railway Corporation, à faire valider), textes validés — le client et la direction |
+| Domaine, DNS, HTTPS | `sci4k.com` sert toujours le WordPress de SCI 4K ; **pré-production en service sur `https://nouveau.sci4k.com`** (certificat Let's Encrypt, `APP_URL` posé) ; le WordPress a 11 sauvegardes hebdomadaires Plesk, la dernière le 4 octobre | la bascule : `DOMAINE_ET_BASCULE.md`, §4 ; télécharger une sauvegarde Plesk hors du serveur juste avant |
+| Mentions légales | directeur de publication renseigné ; restent « [à compléter] » : RCCM, compte contribuable, hébergeur ; capital social absent de la page | RCCM, compte contribuable, capital social — la direction. Hébergeur, relevé à la source (conditions de Railway) : Railway Corporation, 548 Market St PMB 68956, San Francisco, California 94104, États-Unis |
 | Politique de confidentialité | rédigée ; à faire valider | validation juridique — la direction |
 | Six visuels provisoires | identifiés, fichier de destination compris : `maquettes-frontoffice/images/A-REMPLACER.md` | six photographies de l'agence, aux mêmes noms de fichier |
 | Logos des partenaires | 7 organismes affichés, aucun accord écrit connu | un accord écrit par organisme, ou leur retrait |
-| Courrier | Resend, expéditeur d'essai `onboarding@resend.dev` — **pas une configuration de production** (`DOMAINE_ET_BASCULE.md`, §6) | un essai depuis *Configuration* → bouton d'envoi d'essai, par un compte administrateur ; `MAIL_FROM_ADDRESS` en variable pour les commandes console |
+| Courrier | Resend, expéditeur d'essai `onboarding@resend.dev` — **pas une configuration de production** ; destinataire des formulaires **vide** : aucune notification ne part ; le plan Hobby de Railway **bloque les ports SMTP 587 et 465** (`DOMAINE_ET_BASCULE.md`, §6) | choisir entre Resend avec `sci4k.com` vérifié et Railway Pro + Google Workspace ; renseigner le destinataire ; puis l'envoi d'essai de *Configuration* |
 | Sentry | aucun DSN | un projet Sentry et son DSN, posés en variable (`SENTRY_LARAVEL_DSN`, `SENTRY_ENVIRONMENT=production`) |
-| Contenu de démonstration | inventorié ci-dessus (§3) | la décision de l'agence sur les biens ; le reste se retire après sauvegarde |
+| Contenu de démonstration | **retiré le 6 octobre** : 5 biens fictifs, 12 articles (et leurs 8 commentaires). Gardés à la demande de l'agence : 3 avis, 3 chiffres clés. Restent : les 11 demandes de visite, **toutes des essais** (« test 1 », « qsdfrgtyui »…), et l'adresse du seul bien réel, `/biens/villa-test` | décision de l'agence sur les 11 demandes d'essai ; une adresse définitive pour la Villa F6 |
 | Indexation | désactivée (`autoriser_indexation = 0`) — juste tant qu'on est en essai | la cocher le jour où le domaine définitif répond, pas avant |
 | Sauvegardes | `mysqldump` par `railway ssh`, éprouvé et restauré ; aucune sauvegarde Railway sur ce plan | une copie hors de ce poste (stockage de l'agence) |
+| Clé d'application | **tournée le 6 octobre** (l'ancienne était apparue dans un journal local) ; `PASSKEYS_USER_HANDLE_SECRET` désormais distinct ; l'ancienne clé reste dans `APP_PREVIOUS_KEYS` pour relire le mot de passe SMTP enregistré | retirer `APP_PREVIOUS_KEYS` une fois le mot de passe SMTP ressaisi dans *Configuration* |
 | Réglages de `railway.json` | **reportés sur le service le 6 octobre 2026** | rien ; retirer le fichier au prochain déploiement |
 
 **Le jour J, dans l'ordre :** sauvegarde ; domaine posé et vérifié en HTTPS ;
