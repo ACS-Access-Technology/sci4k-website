@@ -6,7 +6,6 @@ use App\Http\Controllers\LangueController;
 use App\Models\Parametre;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -103,7 +102,7 @@ class AppliqueLangue
     protected function langueParDefaut(): string
     {
         try {
-            return Schema::hasTable('parametres')
+            return Parametre::tableDisponible()
                 ? (string) Parametre::lire('langue_par_defaut', 'fr')
                 : 'fr';
         } catch (\Throwable) {

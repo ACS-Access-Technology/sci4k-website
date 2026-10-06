@@ -73,7 +73,9 @@ it('corrige les affirmations devenues fausses sur les cookies', function () {
 
     // La mesure de frequentation n'etait pas declaree du tout.
     $reponse->assertSee('fréquentation', false);
-    $reponse->assertSee("Aucune adresse IP n'est conservée", false);
+    // Forme echappee : le filtre des pages legales (HtmlEditorial) rend
+    // l'apostrophe en &#039;, que le navigateur affiche a l'identique.
+    $reponse->assertSee("Aucune adresse IP n'est conservée");
 });
 
 /**

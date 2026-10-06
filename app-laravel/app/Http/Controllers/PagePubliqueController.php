@@ -19,7 +19,9 @@ use App\Models\ReglageDeSection;
 use App\Models\Service;
 use App\Models\Temoignage;
 use App\Models\Valeur;
+use App\Routing\GenerateurDUrlBilingue;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Vite;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class PagePubliqueController extends Controller
@@ -52,7 +54,11 @@ class PagePubliqueController extends Controller
         $langue = app()->getLocale();
 
         if (! $page || trim($page->contenu($langue)) === '') {
-            $fichier = public_path($slug.'.html');
+            // La page d'origine est lue a sa SOURCE, et non plus dans public/ :
+            // copiee la, le serveur la servait directement a l'adresse .html,
+            // qui doit desormais rediriger. Le dossier est present dans
+            // l'image (voir le Dockerfile) comme sur un poste de developpement.
+            $fichier = base_path('../maquettes-frontoffice/'.$slug.'.html');
 
             abort_unless(is_file($fichier), 404);
 
@@ -71,9 +77,15 @@ class PagePubliqueController extends Controller
 
             abort_if($contenu === false, 404);
 
+            $contenu = $this->adapterLaPageDAttente($contenu, $langue);
+
+            // noindex : c'est une page d'attente, faite pour patienter jusqu'a
+            // la publication de la vraie page. Elle ne doit pas etre indexee a
+            // sa place.
             return response($contenu, 200, [
                 'Content-Type' => 'text/html; charset=UTF-8',
                 'Cache-Control' => 'no-cache, must-revalidate',
+                'X-Robots-Tag' => 'noindex',
             ]);
         }
 
@@ -85,6 +97,60 @@ class PagePubliqueController extends Controller
             // « Pages éditables », et non dans le contenu de chacune.
             'gabarit' => ReglageDeSection::where('slug', PagesStatiques::SECTION)->first(),
         ]);
+    }
+
+    /**
+     * La page d'origine, ecrite pour le site statique, rendue a l'adresse et
+     * dans la langue ou elle est servie.
+     *
+     * Le meme fichier sert /mentions-legales et /en/mentions-legales. Tel
+     * quel, il se comportait mal aux deux adresses :
+     *
+     * - ses chemins etaient RELATIFS (assets/style.css) : sous /en/, ils
+     *   pointaient vers /en/assets/… et la page s'affichait sans style ni
+     *   script ;
+     * - sa langue venait de la memoire du navigateur, et non de l'adresse :
+     *   main.js appliquait la derniere langue choisie, si bien qu'un visiteur
+     *   arrive des pages anglaises lisait /mentions-legales en anglais ;
+     * - sa canonique designait l'ancienne adresse en .html, sur un domaine
+     *   qui n'est pas encore le sien.
+     *
+     * Le contenu juridique n'est pas touche : le francais est celui du
+     * fichier, l'anglais celui que main.js tient deja pour cette page.
+     */
+    protected function adapterLaPageDAttente(string $contenu, string $langue): string
+    {
+        $nonce = e((string) Vite::cspNonce());
+
+        // Son script en ligne — le theme sombre, pose avant le premier rendu —
+        // recoit le nonce de la requete : ecrit hors de Blade, il serait
+        // bloque par la politique de securite du contenu.
+        $contenu = str_replace('<script>', '<script nonce="'.$nonce.'">', $contenu);
+
+        $contenu = (string) preg_replace('/<html lang="[a-z]+">/', '<html lang="'.$langue.'">', $contenu, 1);
+        $contenu = (string) preg_replace('/\s*<link rel="canonical"[^>]*>/', '', $contenu);
+
+        // La langue de l'adresse fait foi. Posee AVANT main.js, qui la lit au
+        // chargement pour traduire la page.
+        $contenu = (string) preg_replace(
+            '#</head>#',
+            '<script nonce="'.$nonce.'">(function(){try{localStorage.setItem(\'sci4k-lang\', \''.$langue.'\');}catch(e){}})();</script>'."\n</head>",
+            $contenu,
+            1,
+        );
+
+        // Chemins absolus. Les liens vers les anciennes pages (.html) passent
+        // par le generateur bilingue, qui suit leurs redirections : ils menent
+        // a la page de la langue courante, et non a /en/contact.html.
+        return (string) preg_replace_callback(
+            '/\b(href|src)="(?!\/|#|[a-z][a-z0-9+.-]*:)([^"]+)"/i',
+            function (array $trouve): string {
+                $chemin = '/'.$trouve[2];
+
+                return $trouve[1].'="'.e(str_ends_with($chemin, '.html') ? GenerateurDUrlBilingue::localiser($chemin) : $chemin, false).'"';
+            },
+            $contenu,
+        );
     }
 
     /**

@@ -19,7 +19,8 @@ la source de vérité des styles, des images et du script du site public.
 ## L'application
 
 Laravel 13, Livewire 4, Fortify pour l'authentification, spatie/laravel-permission
-pour les rôles. PHP 8.3 et MySQL 8.
+pour les rôles. PHP 8.3 et **MySQL 9.7 LTS** — la raison du choix, et le
+contrôle qui l'impose, sont dans `app/Support/MoteurDeBase.php`.
 
 ```bash
 cd app-laravel
@@ -27,14 +28,29 @@ composer install
 npm ci && npm run build
 cp .env.example .env && php artisan key:generate
 php artisan migrate --seed
+php artisan compte:creer-administrateur
 php artisan storage:link
 cd .. && ./tools/sync-frontoffice.sh
 cd app-laravel && php artisan serve
 ```
 
+`db:seed` pose l'**ossature** du site — rôles, catégories, référentiels,
+menus, services, FAQ, textes des sections — et **aucun compte**. Rejoué sur une
+base en service, il ne modifie rien : il ne remplit que des tables vides.
+
+`compte:creer-administrateur` crée le premier compte ; le mot de passe est
+saisi au clavier, jamais passé en argument.
+
+Pour voir des pages pleines en développement — témoignages, équipe, articles,
+biens et réalisations de la maquette, **fictifs** :
+`php artisan db:seed --class=DemonstrationSeeder`. Jamais lancé par défaut ; en
+production, il demande confirmation et ne sème rien sans réponse.
+
 `./tools/sync-frontoffice.sh` **est indispensable après chaque clonage** : il
-dépose dans `app-laravel/public/` les styles, le script, les images et les
-pages non encore portées en Blade. Ces copies ne sont pas versionnées — la
+dépose dans `app-laravel/public/` les styles, le script et les images. Les
+douze pages HTML des maquettes, toutes portées en Blade, sont exclues de la
+copie : servies avant Laravel, elles masqueraient les routes. Ces copies ne
+sont pas versionnées — la
 source unique reste `maquettes-frontoffice/`, et verser un second exemplaire
 des mêmes fichiers garantirait qu'un jour l'un soit corrigé et l'autre oublié.
 
@@ -92,13 +108,17 @@ pas réussi à compter. Le journal d'activité garde un an :
 `php artisan journal:purger` retire ce qui dépasse — sans agrégat, un journal
 d'audit répondant à « qui a touché à quoi » qu'un résumé ne remplacerait pas.
 
-Les deux sont planifiées et **exigent une ligne de cron en production** : voir
-`docs/MISE_EN_LIGNE.md`.
+Les deux sont planifiées. En conteneur, le planificateur tourne à côté du
+serveur ; sur un hébergement classique, **elles exigent une ligne de cron** :
+voir `docs/MISE_EN_LIGNE.md`. Le tableau de bord signale un entretien qui ne
+tourne plus.
 
 **Rapport d'erreurs.** Sentry est branché mais inerte sans `SENTRY_LARAVEL_DSN`,
 comme la traduction automatique l'est sans sa clé. Aucune donnée personnelle
-n'est transmise : `send_default_pii` reste à `false`, et seul l'identifiant
-interne du compte backoffice connecté accompagne un rapport.
+n'est transmise — ni IP, ni navigateur, ni valeur saisie, ce que
+`send_default_pii` à `false` ne garantissait pas seul : voir
+`app/Support/SentryAvantEnvoi.php`. Seul l'identifiant interne du compte
+backoffice connecté accompagne un rapport.
 
 ## Les maquettes d'administration
 
@@ -130,10 +150,29 @@ cd app-laravel
 php artisan test                # la suite complete
 ```
 
-Ces quatre contrôles sont **bloquants** dans l'intégration continue, sur
-`master`, `preprod` et `dev`. Les tests y sont rejoués deux fois : sur SQLite,
-rapide, puis sur MySQL, le moteur réellement servi en production — les écarts
-de dialecte ne se voient pas autrement.
+Ces quatre contrôles tournent dans l'intégration continue à chaque poussée sur
+`master`, `preprod` et `dev`, et sur chaque demande de fusion. Ils ne
+**bloquent** toute fusion vers `preprod` et `master` : ils sont déclarés
+obligatoires dans les protections de branche de GitHub, posées le
+1er octobre 2026 — voir `docs/BRANCHES_ET_DEPLOIEMENT.md`. Les tests y sont rejoués deux fois : sur SQLite,
+rapide, puis sur MySQL 9.7, la version supportée — les écarts de dialecte ne
+se voient pas autrement. `php artisan base:verifier-version` vérifie ensuite
+que l'image testée est bien cette version — `mysql:9.7.2`, exactement celle
+de la production.
+
+Un second workflow, `audit-dependances.yml`, confronte `composer.lock` et
+`package-lock.json` aux failles publiées — aussi chaque lundi, sans changement
+de code. Ce qui bloque et ce qui est seulement signalé, et comment traiter une
+alerte : `docs/SECURITE_DEPENDANCES.md`.
+
+**Limite connue, non bloquante — retour arrière sous SQLite.** Sur MySQL,
+`php artisan migrate:reset` défait les 45 migrations puis les rejoue sans
+erreur (vérifié sur 8.0, 8.4, 9.4 et 9.7). Sous SQLite, il échoue en cours de
+route, sur l'index `abonnes_newsletter_jeton_unique` : SQLite ne sait pas
+retirer une colonne qui porte encore un index. Cela ne touche que la base de
+développement locale, jamais la production MySQL ; pour repartir de zéro en
+local, `php artisan migrate:fresh` (qui supprime les tables au lieu de défaire
+les migrations) fonctionne.
 
 ## Branches
 
@@ -143,11 +182,21 @@ de dialecte ne se voient pas autrement.
 | `preprod` | Préproduction |
 | `master` | **La production.** Il n'y a pas de branche `prod` : `master` tient ce rôle. |
 
+Le flux est obligatoire : `dev` → `preprod` → `master`, par demandes de fusion,
+correctifs urgents compris ; le workflow « Flux des branches » refuse toute
+autre origine. Avant chaque mise en ligne,
+`./tools/verifier-avant-deploiement.sh` vérifie que le dossier de travail est
+bien `master`, tel que la CI l'a validé. Le détail, et les protections à poser
+dans GitHub : `docs/BRANCHES_ET_DEPLOIEMENT.md`.
+
 ## Documents
 
 | Fichier | Objet |
 |---|---|
-| `docs/MISE_EN_LIGNE.md` | Ce que le déploiement demande, et les réglages de production |
+| `docs/PREMIER_DEPLOIEMENT.md` | Chaque mise en ligne : sauvegardes, vérifications, retour arrière, bloquants |
+| `docs/DEPLOIEMENT_RAILWAY.md` | La plateforme : services, variables, volume, MySQL |
+| `docs/MISE_EN_LIGNE.md` | Les réglages de production, ce qu'il faut obtenir de tiers, et l'hébergement classique en repli |
+| `docs/BRANCHES_ET_DEPLOIEMENT.md` | Flux des branches, demandes de fusion, protections GitHub, vérification avant mise en ligne |
 | `docs/RELAIS_PROJET.md` | Reprise du contexte projet |
 | `ECARTS_FRONT_BACKOFFICE.md` | Confrontation du site public au périmètre couvert par l'administration |
 | `BACKOFFICE_SECTIONS.md` | Champs attendus, section par section |
@@ -163,4 +212,5 @@ Aucun ne se règle en programmant.
 - Le nom du **directeur de publication**, et l'autorisation d'afficher les
   **logos des partenaires**.
 - Six visuels sont provisoires (voir `A-REMPLACER.md`).
-- Domaine, hébergement, HTTPS, SMTP, sauvegardes : voir `docs/MISE_EN_LIGNE.md`.
+- Domaine, HTTPS, SMTP : voir `docs/MISE_EN_LIGNE.md` ; plan Railway,
+  sauvegardes et retour arrière : `docs/PREMIER_DEPLOIEMENT.md`.

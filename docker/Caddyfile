@@ -63,6 +63,42 @@
 	# propres en-tetes dessus, et les matchers ci-dessus ne visent que des
 	# dossiers de fichiers statiques.
 
+	# --- En-tetes de securite des fichiers servis ici --------------------
+	#
+	# Les fichiers statiques et televerses ne passent pas par PHP : ils ne
+	# recevaient AUCUN des en-tetes que Laravel pose sur les pages
+	# (PoseLesEnTetesDeSecurite). Le « ? » ne les pose que s'ils manquent :
+	# les pages gardent les leurs, identiques.
+	header {
+		?X-Content-Type-Options nosniff
+		?Referrer-Policy strict-origin-when-cross-origin
+		?X-Frame-Options DENY
+	}
+
+	# Les fichiers televerses depuis le backoffice ne s'executent jamais
+	# comme une page. L'ecran Configuration accepte un favicon en SVG, et un
+	# SVG ouvert directement peut porter du script, qui tournerait sous
+	# l'origine du site. « sandbox » l'en empeche ; affiche dans une page
+	# par <img>, le fichier n'est pas concerne. Une adresse /storage/ sans
+	# fichier finit chez Laravel, dont la page 404 garde sa propre politique.
+	@televerses path /storage/*
+	header @televerses ?Content-Security-Policy "default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; sandbox"
+
+	# Aucun fichier PHP sous /storage ne s'execute, ni ne se telecharge.
+	# php_server execute TOUT fichier .php qu'il trouve sous public/, et
+	# public/storage mene au volume des televersements. Le backoffice n'y
+	# ecrit que des images ; mais une faille dans ce controle, ou un fichier
+	# depose autrement sur le volume, y deviendrait du code execute sur le
+	# serveur. Constate avant correction : /storage/essai.php s'executait.
+	#
+	# « respond » passe avant php_server dans l'ordre des directives. Le
+	# motif vise « .php » n'importe ou apres /storage/, en toutes casses :
+	# /storage/x.php/suite executerait x.php (decoupage du chemin), et
+	# /storage/x.PHP ne doit pas passer. Sans ancre en tete, //storage/...
+	# est couvert aussi.
+	@php_televerse path_regexp (?i)/storage/.*\.php
+	respond @php_televerse 404
+
 	{$CADDY_SERVER_EXTRA_DIRECTIVES}
 
 	php_server

@@ -102,6 +102,6 @@
   main.js retombait sur le numero ecrit en dur dans le script, et le numero
   regle dans « Configuration » etait ignore par ce seul formulaire.
 --}}
-<script>window.SCI4K_WHATSAPP = @json($whatsappPublic);</script>
+<script @nonce>window.SCI4K_WHATSAPP = @json($whatsappPublic);</script>
 
 @endsection

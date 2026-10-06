@@ -189,7 +189,7 @@
            sur le formulaire. Sans JavaScript, le formulaire reste utilisable :
            il depose alors un commentaire de premier niveau, ce qui est le cas
            courant. --}}
-      <script>
+      <script @nonce>
         (function () {
           var parent = document.getElementById('commentParent');
           var bandeau = document.getElementById('commentReplying');

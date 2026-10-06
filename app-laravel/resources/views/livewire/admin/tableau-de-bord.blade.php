@@ -275,6 +275,44 @@
         </div>
     </div>
 
+    {{-- L'entretien de nuit : la derniere passe de chaque tache. Le
+         planificateur tournait sans laisser de trace ; s'il s'arretait, rien
+         ne le montrait. En alerte au-dela du delai admis, ou si la derniere
+         tentative a echoue. --}}
+    @php($libellesEntretien = [
+        'frequentation:agreger' => __('Agrégation de la fréquentation'),
+        'journal:purger' => __('Purge du journal d’activité'),
+    ])
+    <div class="rounded-xl border border-zinc-200 dark:border-zinc-700" id="entretien-automatique">
+        <div class="border-b border-zinc-200 px-5 py-4 dark:border-zinc-700">
+            <h2 class="text-sm font-semibold text-zinc-900 dark:text-white">{{ __('Entretien automatique') }}</h2>
+            <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                {{ __('Chaque nuit. En alerte après :heures h sans exécution réussie.', ['heures' => $retardAdmis]) }}
+            </p>
+        </div>
+        <ul class="divide-y divide-zinc-200 dark:divide-zinc-700">
+            @foreach ($entretien as $tache)
+                @php($enAlerte = $tache['en_retard'] || $tache['en_echec'])
+                <li class="flex flex-wrap items-center justify-between gap-2 px-5 py-3" data-tache="{{ $tache['commande'] }}" data-alerte="{{ $enAlerte ? 'oui' : 'non' }}">
+                    <span class="text-sm font-medium text-zinc-900 dark:text-white">{{ $libellesEntretien[$tache['commande']] ?? $tache['commande'] }}</span>
+                    <span @class([
+                        'rounded-full px-2.5 py-0.5 text-xs font-medium',
+                        'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300' => $enAlerte,
+                        'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300' => ! $enAlerte,
+                    ])>
+                        @if ($tache['en_echec'])
+                            {{ __('Dernière tentative en échec :quand', ['quand' => $tache['dernier_echec']->diffForHumans()]) }}
+                        @elseif ($tache['derniere_reussite'] === null)
+                            {{ __('Aucune exécution enregistrée') }}
+                        @else
+                            {{ __('Dernier entretien :quand', ['quand' => $tache['derniere_reussite']->diffForHumans()]) }}
+                        @endif
+                    </span>
+                </li>
+            @endforeach
+        </ul>
+    </div>
+
     {{-- Les trois panneaux de la maquette qui attendent leur lot. Ils gardent
          leur place et disent ce qu'ils porteront : un emplacement vide laisse
          croire à un oubli, un graphique inventé serait pire. --}}

@@ -14,14 +14,15 @@ coût de ce choix.
 | Service | Pourquoi | Ordre de prix |
 |---|---|---|
 | **Vercel** | L'application | 0 € (Hobby) à 20 $/mois (Pro) |
-| **Une base MySQL 8** managée | Vercel n'en héberge pas | 15–25 €/mois |
+| **Une base MySQL 9.7** managée | Vercel n'en héberge pas | 15–25 €/mois |
 | **Un stockage objet S3** | Le disque de Vercel est en lecture seule | ~1 €/mois |
 
 Pour le stockage, **Cloudflare R2** est le plus adapté : compatible S3, pas de
 frais de sortie — ce qui compte pour un site qui sert des images — et gratuit
 en dessous de 10 Go.
 
-Pour la base, tout MySQL 8 accessible depuis l'extérieur convient. **Choisir la
+Pour la base, tout MySQL 9.7 (LTS) accessible depuis l'extérieur convient —
+la version que teste la CI. **Choisir la
 région la plus proche de celle des fonctions Vercel** : chaque interaction du
 backoffice fait un aller-retour Livewire, et chaque aller-retour interroge la
 base. Une base sur un autre continent se sent immédiatement.
