@@ -305,6 +305,23 @@ l'état honnête tant que l'agence n'a pas fourni ses vraies références.
 inventée d'une vraie. Publier « Résidence Akwaba · 24 lots gérés » sur le
 domaine définitif, c'est annoncer une référence commerciale qui n'existe pas.
 
+**État réel de la production, relevé le 6 octobre 2026** (base en lecture
+seule, rapprochée des données de la maquette, `database/data/*.json`) :
+
+| Contenu | Origine | Retouché depuis le 7 septembre ? | Statut |
+|---|---|---|---|
+| 12 articles | maquette, tous | non | démonstration — à retirer |
+| 3 témoignages (« Mireille K. », « Serge D. », « Aïcha Y. ») | maquette | non | démonstration — à retirer |
+| 3 chiffres clés (120 biens, 8 ans, 96 %) | maquette | non | démonstration — à retirer ou à remplacer par des chiffres réels |
+| 7 partenaires et leurs logos | maquette | non | à retirer, sauf accord écrit de chaque organisme |
+| 6 biens | maquette (« Villa Les Palmiers » renommé « Villa F6 ») | **oui**, les 15, 23 et 30 septembre | retravaillés par l'agence : **décision de l'agence**, bien par bien |
+| Équipe (3 personnes) | **pas la maquette** (qui en nomme 4 autres) | oui, les 11 et 28 septembre | **contenu réel — à garder** |
+| Réalisations `DEMO-` | — | — | aucune en production |
+
+Rien n'a été supprimé. Le retrait se fait **après** une sauvegarde
+(`PREMIER_DEPLOIEMENT.md`, §4), de préférence depuis le backoffice, table par
+table, et seulement sur décision de l'agence pour les biens.
+
 ### Ce qui est déjà correct
 
 Vérifié, rien à faire :
@@ -369,3 +386,29 @@ semaines plus tôt.
 Ce clone a été retiré. La leçon vaut d'être retenue : un dépôt imbriqué
 répond aux commandes git à la place du vrai, avec ses propres références
 périmées, sans que rien ne le signale.
+
+## 6. Lancement définitif : état au 6 octobre 2026
+
+Le site d'essai suit la procédure de `PREMIER_DEPLOIEMENT.md`. Le lancement
+sur le domaine définitif demande en plus ce qui suit. **Aucun de ces points
+n'est du code, sauf le retrait du contenu, préparé ci-dessus.**
+
+| Prérequis | État vérifié | Ce qui manque, et à qui le demander |
+|---|---|---|
+| Domaine, DNS, HTTPS | aucun domaine sur Railway (seulement `sci4k-production.up.railway.app`), aucun dans le dépôt | le nom de domaine retenu et l'accès à sa zone DNS — la direction. Railway fournit le certificat dès que le DNS pointe (1 domaine personnalisé inclus dans le plan) |
+| Mentions légales | la page porte encore des éléments à compléter | RCCM, compte contribuable, directeur de publication, hébergeur (Railway Corporation, à faire valider), textes validés — le client et la direction |
+| Politique de confidentialité | rédigée ; à faire valider | validation juridique — la direction |
+| Six visuels provisoires | identifiés, fichier de destination compris : `maquettes-frontoffice/images/A-REMPLACER.md` | six photographies de l'agence, aux mêmes noms de fichier |
+| Logos des partenaires | 7 organismes affichés, aucun accord écrit connu | un accord écrit par organisme, ou leur retrait |
+| Courrier | serveur SMTP et adresse d'expéditeur **renseignés dans le backoffice** ; jamais essayés | un essai depuis *Configuration* → bouton d'envoi d'essai, par un compte administrateur ; `MAIL_FROM_ADDRESS` en variable pour les commandes console |
+| Sentry | aucun DSN | un projet Sentry et son DSN, posés en variable (`SENTRY_LARAVEL_DSN`, `SENTRY_ENVIRONMENT=production`) |
+| Contenu de démonstration | inventorié ci-dessus (§3) | la décision de l'agence sur les biens ; le reste se retire après sauvegarde |
+| Indexation | désactivée (`autoriser_indexation = 0`) — juste tant qu'on est en essai | la cocher le jour où le domaine définitif répond, pas avant |
+| Sauvegardes | `mysqldump` par `railway ssh`, éprouvé et restauré ; aucune sauvegarde Railway sur ce plan | une copie hors de ce poste (stockage de l'agence) |
+| Réglages de `railway.json` | encore lus jusqu'au 1er décembre 2026 | à reporter dans l'écran Railway avant cette date (`DEPLOIEMENT_RAILWAY.md`, §1) |
+
+**Le jour J, dans l'ordre :** sauvegarde ; domaine posé et vérifié en HTTPS ;
+`APP_URL` sur le domaine ; contenu de démonstration retiré ; mentions légales
+et photos en place ; essai d'envoi de courriel ; Sentry reçoit l'erreur de
+`php artisan sentry:test` ; indexation cochée ; `robots.txt` et plan du site
+vérifiés sur le domaine.
