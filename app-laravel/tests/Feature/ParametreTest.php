@@ -69,12 +69,12 @@ it('chiffre le mot de passe SMTP dans la colonne', function () {
 });
 
 it('ne chiffre pas les reglages ordinaires', function () {
-    Parametre::poser('smtp_identifiant', 'contact@sci4k.com', 'messagerie');
+    Parametre::poser('smtp_identifiant', 'info@acsgroupe.ci', 'messagerie');
 
     // Chiffrer ce qui n'est pas secret rendrait la base illisible pour un
     // administrateur legitime, sans rien proteger.
     expect(DB::table('parametres')->where('cle', 'smtp_identifiant')->value('valeur'))
-        ->toBe('contact@sci4k.com');
+        ->toBe('info@acsgroupe.ci');
 });
 
 it('rend le defaut plutot que d exploser si le secret est indechiffrable', function () {

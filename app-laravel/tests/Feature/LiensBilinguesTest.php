@@ -219,7 +219,7 @@ it('laisse passer ce qui n est pas une page bilingue', function (string $cible) 
     expect(GenerateurDUrlBilingue::localiser($cible))->toBe($cible);
 })->with([
     'externe' => ['https://www.exemple.ci/page'],
-    'courriel' => ['mailto:contact@sci4k.com'],
+    'courriel' => ['mailto:info@acsgroupe.ci'],
     'ancre' => ['#contact'],
     'fichier servi par le serveur' => ['/images/plan-du-quartier.pdf'],
     'adresse inconnue' => ['/nulle-part'],

@@ -181,6 +181,21 @@ suppression. Cette adresse est aussi celle que le site publie. À faire :
 créer la boîte ou l'alias dans Workspace, puis retirer l'adresse de la liste
 de suppression de Resend.
 
+**Décision du 6 octobre 2026 : la réception passe sur `info@acsgroupe.ci`**,
+la boîte Google Workspace que l'entreprise relève réellement. `contact@sci4k.com`
+n'est plus utilisée, ni créée. Expédition inchangée : `noreply@sci4k.com` par
+Resend.
+
+| Rôle | Adresse | Où |
+|---|---|---|
+| Destinataire de toutes les notifications (contact, visites, commentaires) et adresse de réponse des réponses aux visiteurs | `info@acsgroupe.ci` | *Configuration* → `destinataire_formulaire` |
+| Adresse publique (pied de page, page Contact, page de maintenance, `security.txt`, schema.org) | `info@acsgroupe.ci` | *Configuration* → `email_public` ; repli dans le code : `Parametre::EMAIL_PUBLIC_PAR_DEFAUT` |
+| Expéditeur | `noreply@sci4k.com` | *Configuration* → `expediteur_adresse` ; `MAIL_FROM_ADDRESS` sur Railway |
+
+Essais du même jour : formulaire de contact et demande de visite, tous deux
+**« Delivered »** vers `info@acsgroupe.ci` dans Resend ; aucun envoi vers
+`contact@sci4k.com`.
+
 **Retour arrière Resend** : supprimer les trois enregistrements ci-dessus
 dans Plesk ; remettre l'ancien expéditeur dans *Configuration*.
 

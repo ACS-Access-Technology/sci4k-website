@@ -346,7 +346,7 @@ class PagePubliqueController extends Controller
             'premiereLigneAdresse' => $lignesAdresse[1] ?? ($lignesAdresse[0] ?? ''),
             'resteDeLAdresse' => implode(' — ', array_diff($lignesAdresse, [$lignesAdresse[1] ?? null])),
             'telephonePublic' => Parametre::lire('telephone', '+225 07 06 16 50 29'),
-            'emailPublic' => Parametre::lire('email_public', 'contact@sci4k.com'),
+            'emailPublic' => Parametre::lire('email_public', Parametre::EMAIL_PUBLIC_PAR_DEFAUT),
             'horaires' => Parametre::lire('horaires', implode("\n", [
                 __('Lundi — Vendredi : 08h00 - 18h00'),
                 __('Samedi : 09h00 - 13h00'),
