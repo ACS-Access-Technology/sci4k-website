@@ -35,7 +35,7 @@ class SecurityTxtController extends Controller
 
     public function __invoke(): Response
     {
-        $contact = (string) Parametre::lire('email_public', 'contact@sci4k.com');
+        $contact = (string) Parametre::lire('email_public', Parametre::EMAIL_PUBLIC_PAR_DEFAUT);
 
         $lignes = [
             '# Signalement de vulnérabilité — '.Parametre::lire('nom_du_site', 'SCI4K'),

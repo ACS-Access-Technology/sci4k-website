@@ -39,6 +39,17 @@ class Parametre extends Model
      */
     public const SECRETES = ['smtp_mot_de_passe'];
 
+    /**
+     * L'adresse de contact publique, quand l'ecran Configuration n'en porte
+     * aucune.
+     *
+     * C'est la boite Google Workspace que l'agence releve reellement. Elle
+     * etait recopiee en quatre endroits, sous la forme contact@sci4k.com —
+     * une adresse qui n'existe pas : les courriels des visiteurs revenaient
+     * en erreur. Une seule constante, pour que cela ne puisse plus diverger.
+     */
+    public const EMAIL_PUBLIC_PAR_DEFAUT = 'info@acsgroupe.ci';
+
     protected static function booted(): void
     {
         // Le cache est vide a l'ecriture comme a l'effacement : un reglage
