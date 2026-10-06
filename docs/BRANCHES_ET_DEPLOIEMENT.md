@@ -63,10 +63,16 @@ tourne sur l'événement `pull_request`).
 | Administrateurs soumis aux règles | oui | oui | oui |
 | Contournement (« bypass ») | aucun | aucun | aucun |
 
-**État actuel (30 septembre 2026) : aucune de ces protections n'est posée.**
-Les trois branches sont sans protection et aucun ruleset n'existe — vérifié par
-l'API de GitHub. Tant qu'elles ne le sont pas, une CI en échec n'empêche ni une
-poussée, ni une fusion : elle se voit, c'est tout.
+**État constaté le 6 octobre 2026** : les trois règles sont posées
+(protection de branche classique, pas de ruleset), conformes au tableau
+ci-dessus **sauf sur un point** : la règle de `master` exige **une
+approbation** (*Require approvals* coché), alors que la décision est **zéro**.
+`preprod` est conforme (la demande #4 y a été fusionnée sans approbation).
+Conséquence : une demande vers `master` ouverte par le seul compte
+administrateur ne peut pas être fusionnée — GitHub interdit d'approuver sa
+propre demande, et le contournement est désactivé. À corriger dans *Settings*
+→ *Branches* → règle `master` → *Edit* : décocher *Require approvals*,
+sans toucher au reste.
 
 ## 6. Les checks obligatoires
 
