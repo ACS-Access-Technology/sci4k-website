@@ -50,7 +50,8 @@ it('epingle MySQL sur une version exacte', function () {
  */
 it('teste en CI la version de MySQL epinglee en production', function () {
     preg_match('/railway service source connect --image mysql:(\d+\.\d+\.\d+)/', documentDuDepot('docs/DEPLOIEMENT_RAILWAY.md'), $production);
-    preg_match_all('/^\s+image: mysql:(\S+)$/m', documentDuDepot('.github/workflows/verification.yml'), $ci);
+    // « \r? » : sur un poste Windows, git rend ce fichier en CRLF.
+    preg_match_all('/^\s+image: mysql:(\S+)\r?$/m', documentDuDepot('.github/workflows/verification.yml'), $ci);
 
     expect($production[1] ?? null)->not->toBeNull('aucune version epinglee dans la documentation')
         ->and($ci[1])->toBe([$production[1]]);
