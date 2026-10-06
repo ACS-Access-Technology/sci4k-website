@@ -396,7 +396,7 @@ n'est du code, sauf le retrait du contenu, préparé ci-dessus.**
 | Prérequis | État vérifié | Ce qui manque, et à qui le demander |
 |---|---|---|
 | Domaine, DNS, HTTPS | `sci4k.com` sert toujours le WordPress de SCI 4K ; **pré-production en service sur `https://nouveau.sci4k.com`** (certificat Let's Encrypt, `APP_URL` posé) ; le WordPress a 11 sauvegardes hebdomadaires Plesk, la dernière le 4 octobre | la bascule : `DOMAINE_ET_BASCULE.md`, §4 ; télécharger une sauvegarde Plesk hors du serveur juste avant |
-| Mentions légales | directeur de publication renseigné ; restent « [à compléter] » : RCCM, compte contribuable, hébergeur ; capital social absent de la page | RCCM, compte contribuable, capital social — la direction. Hébergeur **renseigné** dans `maquettes-frontoffice/mentions-legales.html` (en ligne au prochain déploiement) |
+| Mentions légales | **complètes le 6 octobre** : RCCM CI-ABJ-03-2024-B40-00161, NCC 2606288Y, capital 10 000 000 FCFA, directeur de publication, hébergeur (FR et EN) | rien ; le brouillon de la base (non publié) reste plus ancien que la page servie |
 | Politique de confidentialité | rédigée ; à faire valider | validation juridique — la direction |
 | Six visuels provisoires | identifiés, fichier de destination compris : `maquettes-frontoffice/images/A-REMPLACER.md` | six photographies de l'agence, aux mêmes noms de fichier |
 | Logos des partenaires | 7 organismes affichés, aucun accord écrit connu | un accord écrit par organisme, ou leur retrait |
