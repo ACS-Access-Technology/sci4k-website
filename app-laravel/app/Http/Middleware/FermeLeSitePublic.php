@@ -54,7 +54,7 @@ class FermeLeSitePublic
         return response()
             ->view('public.maintenance', [
                 'telephonePublic' => Parametre::lire('telephone', '+225 07 06 16 50 29'),
-                'emailPublic' => Parametre::lire('email_public', 'contact@sci4k.com'),
+                'emailPublic' => Parametre::lire('email_public', Parametre::EMAIL_PUBLIC_PAR_DEFAUT),
                 // Les textes de la page, editables depuis « Configuration →
                 // Général », sous la case qui ferme le site.
                 'textes' => ReglageDeSection::where('slug', Configuration::SECTION_MAINTENANCE)->first(),

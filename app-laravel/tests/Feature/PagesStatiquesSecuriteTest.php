@@ -119,7 +119,7 @@ it('garde le HTML editorial legitime', function () {
   <ul><li>Un</li><li>Deux</li></ul>
   <ol><li>Premier</li></ol>
   <p>RCCM : <span class="legal-placeholder">[à compléter]</span></p>
-  <p><a href="mailto:contact@sci4k.com">Écrire</a>, <a href="/politique-confidentialite">lire</a>,
+  <p><a href="mailto:info@acsgroupe.ci">Écrire</a>, <a href="/politique-confidentialite">lire</a>,
      <a href="https://www.exemple.ci/page">visiter</a>, <a href="tel:+2250700000000">appeler</a>.</p>
 </div>
 HTML;
@@ -127,7 +127,7 @@ HTML;
     $propre = HtmlEditorial::nettoyer($html);
 
     foreach (['<div class="legal-block">', '<h2>', '<strong>gras</strong>', '<em>', '<br />', '<h3>', '<h4>',
-        '<ul><li>Un</li>', '<ol>', '<span class="legal-placeholder">', 'href="mailto:contact',
+        '<ul><li>Un</li>', '<ol>', '<span class="legal-placeholder">', 'href="mailto:info',
         'href="/politique-confidentialite"', 'href="https://www.exemple.ci/page"', 'href="tel:'] as $attendu) {
         expect($propre)->toContain($attendu);
     }
@@ -164,7 +164,7 @@ it('ne tronque pas une page longue', function () {
  */
 it('ne double pas l echappement dans la description de la page', function () {
     PageStatique::where('slug', 'politique-confidentialite')->update([
-        'contenu_fr' => "<p>Ce site n'est pas un test. Écrire à contact@sci4k.com.</p>",
+        'contenu_fr' => "<p>Ce site n'est pas un test. Écrire à info@acsgroupe.ci.</p>",
         'publie' => true,
     ]);
 

@@ -28,7 +28,7 @@
             'image' => $racine.'/images/image%20(3).png',
             'description' => 'Société Civile Immobilière basée à Abidjan : achat, vente, location, construction et gestion de patrimoine immobilier.',
             'telephone' => '+2250706165029',
-            'email' => 'contact@sci4k.com',
+            'email' => \App\Models\Parametre::lire('email_public', \App\Models\Parametre::EMAIL_PUBLIC_PAR_DEFAUT),
             'address' => [
                 '@type' => 'PostalAddress',
                 'streetAddress' => 'Cité des Arts, Résidence Paon, 3ème étage',

@@ -395,16 +395,17 @@ n'est du code, sauf le retrait du contenu, préparé ci-dessus.**
 
 | Prérequis | État vérifié | Ce qui manque, et à qui le demander |
 |---|---|---|
-| Domaine, DNS, HTTPS | aucun domaine sur Railway (seulement `sci4k-production.up.railway.app`), aucun dans le dépôt | le nom de domaine retenu et l'accès à sa zone DNS — la direction. Railway fournit le certificat dès que le DNS pointe (1 domaine personnalisé inclus dans le plan) |
-| Mentions légales | la page porte encore des éléments à compléter | RCCM, compte contribuable, directeur de publication, hébergeur (Railway Corporation, à faire valider), textes validés — le client et la direction |
+| Domaine, DNS, HTTPS | `sci4k.com` sert toujours le WordPress de SCI 4K ; **pré-production en service sur `https://nouveau.sci4k.com`** (certificat Let's Encrypt, `APP_URL` posé) ; le WordPress a 11 sauvegardes hebdomadaires Plesk, la dernière le 4 octobre | la bascule : `DOMAINE_ET_BASCULE.md`, §4 ; télécharger une sauvegarde Plesk hors du serveur juste avant |
+| Mentions légales | directeur de publication renseigné ; restent « [à compléter] » : RCCM, compte contribuable, hébergeur ; capital social absent de la page | RCCM, compte contribuable, capital social — la direction. Hébergeur **renseigné** dans `maquettes-frontoffice/mentions-legales.html` (en ligne au prochain déploiement) |
 | Politique de confidentialité | rédigée ; à faire valider | validation juridique — la direction |
 | Six visuels provisoires | identifiés, fichier de destination compris : `maquettes-frontoffice/images/A-REMPLACER.md` | six photographies de l'agence, aux mêmes noms de fichier |
 | Logos des partenaires | 7 organismes affichés, aucun accord écrit connu | un accord écrit par organisme, ou leur retrait |
-| Courrier | serveur SMTP et adresse d'expéditeur **renseignés dans le backoffice** ; jamais essayés | un essai depuis *Configuration* → bouton d'envoi d'essai, par un compte administrateur ; `MAIL_FROM_ADDRESS` en variable pour les commandes console |
+| Courrier | Resend, expéditeur d'essai `onboarding@resend.dev` — **pas une configuration de production** ; destinataire des formulaires **vide** : aucune notification ne part ; le plan Hobby de Railway **bloque les ports SMTP 587 et 465** (`DOMAINE_ET_BASCULE.md`, §6) | **fait le 6 octobre** : `sci4k.com` vérifié dans Resend, expéditeur `noreply@sci4k.com`, réception et adresse publique `info@acsgroupe.ci` (`contact@sci4k.com` abandonnée, elle n'existait pas) ; contact et visite livrés. Reste : vérifier la boîte, nouvelle clé API Resend |
 | Sentry | aucun DSN | un projet Sentry et son DSN, posés en variable (`SENTRY_LARAVEL_DSN`, `SENTRY_ENVIRONMENT=production`) |
-| Contenu de démonstration | inventorié ci-dessus (§3) | la décision de l'agence sur les biens ; le reste se retire après sauvegarde |
+| Contenu de démonstration | **retiré le 6 octobre** : 5 biens fictifs, 12 articles (et leurs 8 commentaires). Gardés à la demande de l'agence : 3 avis, 3 chiffres clés. Les 11 demandes de visite d'essai **supprimées** le 6 octobre ; la Villa F6 est passée de `/biens/villa-test` à `/biens/villa-f6`. Les 14 messages de contact d'essai (recette, équipe ACS) **supprimés** le 6 octobre, sauvegarde faite juste avant | rien |
 | Indexation | désactivée (`autoriser_indexation = 0`) — juste tant qu'on est en essai | la cocher le jour où le domaine définitif répond, pas avant |
 | Sauvegardes | `mysqldump` par `railway ssh`, éprouvé et restauré ; aucune sauvegarde Railway sur ce plan | une copie hors de ce poste (stockage de l'agence) |
+| Clé d'application | **tournée le 6 octobre** (l'ancienne était apparue dans un journal local) ; `PASSKEYS_USER_HANDLE_SECRET` désormais distinct ; l'ancienne clé reste dans `APP_PREVIOUS_KEYS` pour relire le mot de passe SMTP enregistré | retirer `APP_PREVIOUS_KEYS` une fois le mot de passe SMTP ressaisi dans *Configuration* |
 | Réglages de `railway.json` | **reportés sur le service le 6 octobre 2026** | rien ; retirer le fichier au prochain déploiement |
 
 **Le jour J, dans l'ordre :** sauvegarde ; domaine posé et vérifié en HTTPS ;

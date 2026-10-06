@@ -173,3 +173,23 @@ it('fait appliquer la regle par main.js', function () {
     expect($script)->toContain("getAttribute('data-erreur-coordonnees')")
         ->toContain('setCustomValidity');
 });
+
+/**
+ * Sans adresse saisie, le site retombait sur contact@sci4k.com — une boite
+ * qui n'existe pas chez Google Workspace : les courriels des visiteurs
+ * revenaient en erreur. Le repli est la boite que l'agence releve, et les
+ * donnees structurees suivent la meme adresse que la page.
+ */
+it('affiche l adresse relevee par l agence quand aucune n est configuree', function () {
+    $page = $this->get('/contact')->assertOk()->getContent();
+
+    expect($page)->toContain('info@acsgroupe.ci')
+        ->toContain('"email": "info@acsgroupe.ci"')
+        ->not->toContain('contact@sci4k.com');
+});
+
+it('reprend l adresse configuree dans les donnees structurees', function () {
+    Parametre::poser('email_public', 'essai@sci4k.test');
+
+    expect($this->get('/contact')->getContent())->toContain('"email": "essai@sci4k.test"');
+});
