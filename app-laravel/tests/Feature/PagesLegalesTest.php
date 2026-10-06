@@ -310,3 +310,24 @@ it('tire une description propre du texte de la page', function (string $adresse)
         ->not->toMatch('/\s{2,}|\n/')
         ->not->toMatch('/^\s*\d+\./');
 })->with(['/politique-confidentialite', '/en/politique-confidentialite']);
+
+/**
+ * Les mentions servies tant que le brouillon de la base n'est pas publie :
+ * celles du fichier d'origine. Les trois identifiants legaux y figurent dans
+ * les deux langues — le francais dans la page, l'anglais dans le dictionnaire
+ * de main.js — et plus aucune case « a completer ».
+ */
+it('porte les identifiants legaux de la societe dans les deux langues', function () {
+    $page = $this->get('/mentions-legales')->assertOk()->getContent();
+    $script = (string) file_get_contents(base_path('../maquettes-frontoffice/assets/main.js'));
+
+    foreach ([$page, $script] as $source) {
+        expect($source)->toContain('CI-ABJ-03-2024-B40-00161')
+            ->toContain('2606288Y')
+            ->toContain('10 000 000 FCFA');
+    }
+
+    expect($page)->not->toContain('legal-placeholder');
+    expect($script)->toContain('share capital of 10 000 000 FCFA')
+        ->not->toContain('[to be completed]');
+});
