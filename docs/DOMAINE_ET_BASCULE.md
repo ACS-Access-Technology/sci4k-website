@@ -212,3 +212,38 @@ perte du serveur les emporterait avec le site. Avant la bascule, en
 télécharger une hors du serveur (*Gestionnaire de sauvegardes* → la
 sauvegarde → *Télécharger*), ou configurer un stockage distant.
 
+## 8. Bascule publique — phase A faite (6 octobre 2026, 20 h 10 – 20 h 30 UTC)
+
+Bascule en **deux phases**, décidée pour éviter une boucle de redirection :
+l'ancien `www` (CNAME `sci4k.com`) avait une durée de vie de 24 h, et le
+WordPress renvoie `www.sci4k.com/…` vers `sci4k.com/…`. Rediriger aussitôt
+`sci4k.com` vers `www` aurait fait tourner en rond, pendant 24 h, tout
+visiteur dont le résolveur gardait l'ancien `www`.
+
+**Phase A (faite)**
+
+| Étape | Résultat |
+|---|---|
+| État avant, sauvegardé | `~/sauvegardes-sci4k/bascule-20261006-2000-etat-avant.md` |
+| Railway | `nouveau.sci4k.com` retiré ; `www.sci4k.com` ajouté (id `c0309451…`) |
+| Plesk DNS, `www` | CNAME `sci4k.com.` (TTL 86400) → **`s1vxivt9.up.railway.app.`, TTL 3600** (retour arrière en une heure) |
+| Plesk DNS, ajout | TXT `_railway-verify.www` = `railway-verify=a5527706f0c521fa259321a16d50fb92ce22400ec8b163a469e08596620afbd6` |
+| Inchangés, relus | `@`, MX, SPF, DMARC, DKIM (Google, Resend), vérification Google |
+| Railway | domaine vérifié ; certificat Let's Encrypt valide jusqu'au 4 janvier 2027 |
+| `APP_URL` | `https://www.sci4k.com` ; redéploiement `052b690b` en `SUCCESS` |
+| Contrôles | 23 adresses publiques en 200 ; `http://www` → 301 `https://www` (chemin et requête conservés) ; plan du site : 18 adresses en `https://www.sci4k.com` ; aucun lien interne cassé (51) ; aucune référence à `nouveau.sci4k.com` ; liens générés hors requête (courriels, passkeys) en `www` ; contact et visite livrés à `info@acsgroupe.ci` ; `Disallow: /` et `noindex, nofollow` maintenus |
+
+`sci4k.com` sert toujours le WordPress. `nouveau.sci4k.com` ne répond plus
+(domaine retiré de Railway) ; ses deux enregistrements restent dans Plesk,
+sans effet.
+
+**Phase B (à faire, pas avant le 7 octobre 2026 vers 21 h UTC)** : dans
+Plesk, redirection 301 de `sci4k.com/*` vers `https://www.sci4k.com/*`, sans
+toucher au WordPress ni à la messagerie ; puis contrôle des quatre variantes
+(`http`/`https`, avec et sans `www`) et de l'absence de boucle. Ensuite
+seulement : indexation.
+
+**Retour arrière de la phase A** : Plesk, `www` = CNAME `sci4k.com.` ; retirer
+`_railway-verify.www` ; Railway, `APP_URL` sur l'adresse Railway. Effet en
+une heure au plus (TTL 3600). Le WordPress n'a pas été modifié.
+
