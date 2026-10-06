@@ -53,6 +53,23 @@ domain status nouveau.sci4k.com --service sci4k`, puis le site sur
 vérifié, puis passe à `https://nouveau.sci4k.com` (liens des courriels, plan
 du site, identifiant des passkeys).
 
+**Fait le 6 octobre 2026.** Les deux enregistrements ont été ajoutés dans
+Plesk (les 20 existants relus avant et après : MX, SPF, DMARC, vérification
+Google et `www` inchangés) ; Railway a vérifié le domaine et émis le
+certificat. `APP_URL=https://nouveau.sci4k.com` posé le même jour (aucune
+passkey n'existait, rien n'a été invalidé) ; redéploiement `470a1692` en
+`SUCCESS`. Contrôlé : pages FR/EN, `/up`, filtres Livewire, plan du site
+(18 adresses, toutes sur `nouveau.sci4k.com`), liens générés hors requête
+(réinitialisation de mot de passe, fichiers téléversés), `robots.txt`
+(`Disallow: /`) et `noindex, nofollow`.
+
+L'adresse `sci4k-production.up.railway.app` répond toujours, avec sa propre
+URL canonique (tirée de la requête). Sans conséquence tant que l'indexation
+est fermée ; à rediriger vers le domaine définitif au moment de la bascule.
+
+WooCommerce, relu dans l'administration le même jour : **aucune commande**,
+et deux comptes seulement, tous deux administrateurs — aucun compte client.
+
 ## 3. Deux contraintes qui décident de la bascule
 
 1. **Un domaine racine** (`sci4k.com`, sans `www`) ne peut pointer vers
