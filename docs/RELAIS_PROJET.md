@@ -136,12 +136,15 @@ Vérifier également manuellement les vues desktop et mobile, la console JavaScr
 - **01/10/2026** : phase 14 (sauvegardes `mysqldump` par `railway ssh`, PHP bloqué sous `/storage`, refus de `APP_DEBUG`, `docs/PREMIER_DEPLOIEMENT.md`) ; base de production montée de MySQL 9.4.0 à 9.7.2 après sauvegarde et répétition (`PREMIER_DEPLOIEMENT.md`, §9) ; mises à jour automatiques de l'image désactivées ; service résiduel `sci4k-website` supprimé ; protections de branche posées dans GitHub.
 - **06/10/2026** : faille haute `source-map-js` corrigée (`995e7ca`), garde de version MySQL rendue tolérante au CRLF (`bde2652`) ; demande #4 `dev` → `preprod` fusionnée (`b95ca82`) ; demande #5 `preprod` → `master` ouverte, checks obligatoires verts, **fusion bloquée** par l'approbation qu'exige la règle de `master`, contraire à la décision (zéro, `BRANCHES_ET_DEPLOIEMENT.md`, §5). Prérequis du lancement définitif inventoriés, contenu de démonstration classé (`MISE_EN_LIGNE.md`, §3 et §6).
 
-## 10. Point de reprise (6 octobre 2026)
+- **06/10/2026 (suite)** : règle `master` remise à zéro approbation ; demande #5 fusionnée (`d7dfa1c`) ; nouveau code déployé sur le site d'essai et vérifié (pages FR/EN, liens, Livewire, formulaires, authentification, base, journaux) ; réglages de `railway.json` reportés sur le service.
+
+## 10. Point de reprise (6 octobre 2026, après le déploiement)
 
 À relire avant toute action ; tout est vérifiable depuis le dépôt, GitHub et la CLI Railway.
 
-1. **Débloquer `master`** : décocher *Require approvals* sur la règle `master` (décision : zéro approbation), puis fusionner la demande #5.
-2. **Mettre à jour le site d'essai**, dans l'ordre de `PREMIER_DEPLOIEMENT.md` : `git switch master && git pull` ; sauvegarde base et fichiers (§4) ; `./tools/verifier-avant-deploiement.sh && railway up --service sci4k` ; journal de démarrage attendu (§5) ; contrôles (§6). Retour arrière : *Rollback* Railway sur le service `sci4k` (jamais sur MySQL).
-3. **Lancement définitif** : la liste de `MISE_EN_LIGNE.md`, §6 — domaine, mentions légales, photos, accords de logos, essai de courriel, Sentry, retrait du contenu de démonstration sur décision de l'agence, indexation en dernier.
+**État de référence :** demandes #4, #5 et #6 fusionnées ; `master` = `d7dfa1c`, déployé sur le site d'essai (déploiement Railway `60989f78`, vérifié : `PREMIER_DEPLOIEMENT.md`, §10). Base MySQL 9.7.2. Règle `master` conforme à la décision (zéro approbation, cinq checks). Réglages de `railway.json` reportés sur le service. Dernière sauvegarde : `~/sauvegardes-sci4k/base-20261006-*-avant-deploiement-d7dfa1c.sql.gz` et `fichiers-20261006-*-avant-deploiement/`.
 
-État de référence : `dev` = `preprod` (contenu identique) ; `master` en retard de 10 commits ; production sur l'ancien code du 23 septembre, base MySQL 9.7.2 ; dernière sauvegarde : `~/sauvegardes-sci4k/base-20261001-1715-avant-mysql-9.7.sql.gz` (à refaire avant tout déploiement).
+1. **Le lendemain** : panneau « Entretien automatique » du tableau de bord — les deux passes de nuit doivent y être en vert.
+2. **Retour arrière, si besoin** : *Rollback* Railway sur `sci4k` vers `ce4139dc` (disponible 72 h), jamais sur MySQL.
+3. **Lancement définitif** : la liste de `MISE_EN_LIGNE.md`, §6 — domaine, mentions légales, photos, accords de logos, décision sur les biens, essai de courriel, Sentry ; indexation en dernier.
+4. **Docker Desktop** ne démarre plus sur ce poste (socket `AppData\Local\Docker\run\dockerInference` bloqué) : un redémarrage de Windows le règle ; il ne sert qu'aux essais locaux.

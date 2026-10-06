@@ -92,6 +92,11 @@ d'elle-même, et la commande de démarrage est déjà celle de l'image
 (`CMD ["/usr/local/bin/demarrer"]`). Une fois les quatre réglages saisis et
 vérifiés sur un déploiement, `railway.json` peut être retiré du dépôt.
 
+**Fait le 6 octobre 2026** sur le service `sci4k`, par l'API de Railway
+(`serviceInstanceUpdate`), et relu : `/up`, 120 s, `ON_FAILURE`, 3. Le
+fichier et l'écran disent désormais la même chose ; le retirer reste à faire
+au prochain déploiement, une fois ces valeurs vues à l'œuvre sans lui.
+
 ### 2. Ajouter MySQL
 
 *New* → *Database* → *Add MySQL*. Railway injecte alors les variables de

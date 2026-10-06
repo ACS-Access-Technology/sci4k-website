@@ -2,6 +2,10 @@ version: 2
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
+    # Les mises a jour suivent le flux dev -> preprod -> master comme le
+    # reste : sans cette ligne, Dependabot vise la branche par defaut,
+    # master, et le check « Flux des branches » refuse ses demandes.
+    target-branch: "dev"
     schedule:
       interval: "weekly"
     cooldown:
