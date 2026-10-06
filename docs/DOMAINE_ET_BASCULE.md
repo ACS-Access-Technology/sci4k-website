@@ -152,3 +152,48 @@ stricte, deux voies :
 Dans les deux cas, ensuite : un vrai essai de chaque formulaire (contact,
 lettre d'information, demande de visite), réception vérifiée et en-têtes
 d'authentification (SPF, DKIM, DMARC « pass ») relus.
+
+### État au 6 octobre 2026 (soir)
+
+**Domaine `sci4k.com` vérifié dans Resend** (région Irlande). Trois
+enregistrements **ajoutés** dans Plesk, valeurs relues dans l'écran de
+Resend (la clé DKIM validée comme clé RSA de 1 024 bits avant saisie) :
+
+| Type | Nom | Valeur |
+|---|---|---|
+| TXT | `resend._domainkey` | `p=MIGfMA0GCSqGSIb3…IDAQAB` (clé publique DKIM de Resend) |
+| CNAME | `rsend` | `rsend-euw1.forge.rmta.net` |
+| CNAME | `send` | `send.forge.rmta.net` |
+
+MX, SPF, DMARC et vérification Google relus après : inchangés. La signature
+DKIM porte `d=sci4k.com`, ce qui satisfait le DMARC strict (`adkim=s`) sans
+toucher au SPF.
+
+Configuration (*Configuration* → *Messagerie* / *Contact*) : expéditeur
+`noreply@sci4k.com`, destinataire des formulaires `contact@sci4k.com`.
+Variables Railway `MAIL_FROM_ADDRESS=noreply@sci4k.com` et
+`MAIL_FROM_NAME=SCI4K`. Essai depuis *Configuration* : **délivré**.
+
+**`contact@sci4k.com` n'existe pas chez Google Workspace** : la notification
+d'essai est revenue en erreur permanente (« The email account that you tried
+to reach does not exist »), et Resend a placé l'adresse sur sa liste de
+suppression. Cette adresse est aussi celle que le site publie. À faire :
+créer la boîte ou l'alias dans Workspace, puis retirer l'adresse de la liste
+de suppression de Resend.
+
+**Retour arrière Resend** : supprimer les trois enregistrements ci-dessus
+dans Plesk ; remettre l'ancien expéditeur dans *Configuration*.
+
+## 7. Sauvegardes du WordPress (point de restauration)
+
+Plesk, *Gestionnaire de sauvegardes* de `sci4k.com` : **11 sauvegardes
+planifiées hebdomadaires** « All configuration and content », du 26 juillet
+au 4 octobre 2026 (1,10 Go au total) ; complètes les 26 juillet, 23 août et
+20 septembre (≈ 258 Mo), incrémentales entre-temps. La page de restauration
+de celle du 4 octobre s'ouvre sans avertissement d'intégrité.
+
+**Elles sont toutes stockées sur le serveur lui-même** (`type=local`) : une
+perte du serveur les emporterait avec le site. Avant la bascule, en
+télécharger une hors du serveur (*Gestionnaire de sauvegardes* → la
+sauvegarde → *Télécharger*), ou configurer un stockage distant.
+
