@@ -237,11 +237,31 @@ visiteur dont le résolveur gardait l'ancien `www`.
 (domaine retiré de Railway) ; ses deux enregistrements restent dans Plesk,
 sans effet.
 
-**Phase B (à faire, pas avant le 7 octobre 2026 vers 21 h UTC)** : dans
-Plesk, redirection 301 de `sci4k.com/*` vers `https://www.sci4k.com/*`, sans
-toucher au WordPress ni à la messagerie ; puis contrôle des quatre variantes
-(`http`/`https`, avec et sans `www`) et de l'absence de boucle. Ensuite
-seulement : indexation.
+**Phase B (faite le 7 octobre 2026, 20 h 25 UTC)**
+
+Préalable vérifié à 20 h 18 UTC : `www.sci4k.com` résolu vers Railway par la
+box Orange `192.168.1.1`, le résolveur du poste, Google, Quad9 et Cloudflare
+— plus aucun cache de l'ancien `www`, donc aucune boucle possible.
+
+| | |
+|---|---|
+| Modification **unique** | Plesk → `sci4k.com` → *Paramètres d'hébergement* → **Domaine préféré : `Aucun` → `www.sci4k.com`** (redirection 301 intégrée à Plesk) |
+| Non modifiés | DNS (zone identique au relevé d'avant), WordPress (fichiers et base), certificats, SSL, redirection HTTP→HTTPS, messagerie |
+| `http://sci4k.com/` | 301 → `https://www.sci4k.com/` → 200, nouveau site (un seul saut) |
+| `https://sci4k.com/biens/villa-f6?foo=bar` | 301 → `https://www.sci4k.com/biens/villa-f6?foo=bar` → 200 |
+| `https://sci4k.com/wp-login.php` | 301 → `https://www.sci4k.com/wp-login.php` → 404 : plus aucun WordPress servi |
+| Relevés | `~/sauvegardes-sci4k/bascule-20261007-2018-avant-phase-B.md`, `…-phase-B-faite.md` |
+
+Le certificat de `sci4k.com` (Let's Encrypt, `*.sci4k.com` et `sci4k.com`,
+jusqu'au 10 décembre 2026) se renouvelle par validation DNS — un joker
+l'exige — et non par `/.well-known/acme-challenge/`, désormais redirigé. À
+contrôler début décembre.
+
+**Retour arrière de la phase B** : *Domaine préféré* → `Aucun`. Le WordPress,
+intact, répond de nouveau sur `sci4k.com`.
+
+Reste : l'indexation, à n'activer que sur instruction (case « Autoriser
+l'indexation » du backoffice, puis le plan du site dans la Search Console).
 
 **Retour arrière de la phase A** : Plesk, `www` = CNAME `sci4k.com.` ; retirer
 `_railway-verify.www` ; Railway, `APP_URL` sur l'adresse Railway. Effet en
