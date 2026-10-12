@@ -91,6 +91,12 @@ class PlanDuSiteController extends Controller
                 continue;
             }
 
+            // Sans aucun article publie, la page des actualites n'a rien a offrir
+            // aux moteurs (elle est marquee noindex) : elle sort du plan.
+            if ($route === 'actualites.index' && ! Article::publies()->exists()) {
+                continue;
+            }
+
             $entrees[] = [
                 'url' => route($route),
                 'date' => $aujourdhui,
