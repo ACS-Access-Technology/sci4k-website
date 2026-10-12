@@ -68,17 +68,22 @@ Trois défauts de portabilité ont été corrigés et ne doivent pas revenir —
 - `.railwayignore` allège le téléversement, qu'une coupure réseau fait
   repartir de zéro.
 
-## Ce qui n'est pas prêt pour le domaine définitif
+## Où en est la production
 
-L'instance en ligne est un **environnement d'essai**, sur adresse provisoire et
-volontairement non indexé. Avant le vrai lancement, voir `docs/MISE_EN_LIGNE.md` :
+Le site est **en ligne** sur `https://www.sci4k.com` (Railway) ; `sci4k.com`
+redirige en 301 depuis Plesk. L'**indexation est volontairement bloquée**
+(case « Autoriser l'indexation » décochée, `noindex`) : ne la cocher que sur
+instruction. L'état détaillé, les points ouverts et le retour arrière sont dans
+`docs/DOMAINE_ET_BASCULE.md` (§8, §9) et `docs/MISE_EN_LIGNE.md` (§6).
 
-- du contenu de démonstration à retirer — les biens repris de la maquette, et
-  les fiches préfixées `DEMO-` ;
-- la case « Autoriser l'indexation », à ne cocher qu'une fois le domaine en
-  place ;
-- des mentions légales incomplètes, faute de RCCM, de directeur de publication
-  et d'hébergeur déclaré.
+Trois choses à ne pas présumer résolues sans les relire :
+
+- les trois témoignages et les trois chiffres clés sont des données de
+  démonstration, à remplacer ou à masquer avant l'indexation ;
+- les mentions légales ne sont complètes que dans la page d'attente tant que
+  `mentions-legales:publier` n'a pas été lancée ;
+- les sauvegardes sont manuelles tant que la sauvegarde externe
+  (`docs/SAUVEGARDES.md`) n'est pas activée.
 
 ## Une distinction à ne pas confondre
 
