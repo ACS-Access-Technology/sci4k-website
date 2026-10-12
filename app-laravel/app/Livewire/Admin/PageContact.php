@@ -59,7 +59,7 @@ class PageContact extends Component
         'libelle_telephone' => ['intitule' => 'Libellé du champ « téléphone »', 'defaut' => 'Téléphone'],
         'exemple_telephone' => ['intitule' => 'Exemple dans le champ « téléphone »', 'defaut' => '+225 07 00 00 00 00'],
         'libelle_email' => ['intitule' => 'Libellé du champ « email »', 'defaut' => 'Adresse Email'],
-        'exemple_email' => ['intitule' => 'Exemple dans le champ « email »', 'defaut' => 'j.kouassi@email.com'],
+        'exemple_email' => ['intitule' => 'Exemple dans le champ « email »', 'defaut' => 'nom@exemple.ci'],
         'erreur_coordonnees' => [
             'intitule' => 'Message si ni e-mail ni téléphone n’est indiqué',
             'defaut' => 'Indiquez une adresse e-mail ou un numéro de téléphone pour que nous puissions vous répondre.',

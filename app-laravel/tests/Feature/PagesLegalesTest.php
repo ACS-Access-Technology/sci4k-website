@@ -331,3 +331,18 @@ it('porte les identifiants legaux de la societe dans les deux langues', function
     expect($script)->toContain('share capital of 10 000 000 FCFA')
         ->not->toContain('[to be completed]');
 });
+
+/**
+ * contact@sci4k.com n'existe pas chez Google Workspace : les courriels qui lui
+ * etaient ecrits revenaient en erreur. La migration qui verse les pages
+ * legales ecrivait pourtant cette adresse — une installation neuve, ou une
+ * restauration, la republiait. L'adresse de contact est info@acsgroupe.ci.
+ */
+it('ne verse aucune adresse inexistante dans les pages legales', function () {
+    foreach (PageStatique::all() as $page) {
+        expect($page->contenu_fr.$page->contenu_en)->not->toContain('@sci4k.com');
+    }
+
+    expect(PageStatique::where('slug', 'politique-confidentialite')->value('contenu_fr'))
+        ->toContain('mailto:info@acsgroupe.ci');
+});

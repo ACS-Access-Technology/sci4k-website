@@ -79,7 +79,7 @@
           </div>
           <div class="ask-form-group">
             <label for="askEmail">{{ $texte('libelle_email', __('Adresse Email *')) }}</label>
-            <input type="email" id="askEmail" name="email" required autocomplete="email" maxlength="100" placeholder="{{ $texte('exemple_email', 'j.kouassi@email.com') }}">
+            <input type="email" id="askEmail" name="email" required autocomplete="email" maxlength="100" placeholder="{{ $texte('exemple_email', 'nom@exemple.ci') }}">
           </div>
         </div>
         <div class="ask-form-group">
