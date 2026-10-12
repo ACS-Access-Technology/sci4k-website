@@ -38,3 +38,14 @@ foreach (TachesDEntretien::HEURES as $commande => $heure) {
         ->onOneServer()
         ->sentryMonitor(TachesDEntretien::moniteur($commande), checkInMargin: 10, maxRuntime: 30);
 }
+
+// Sauvegarde externe quotidienne. Inerte tant que SAUVEGARDE_ACTIVE n'est pas
+// vrai : voir config/sauvegarde.php et docs/SAUVEGARDES.md. Pas de
+// sentryMonitor : l'alerte est un signal externe (SAUVEGARDE_PING_URL), qui
+// vaut aussi quand tout le conteneur est arrete.
+if (config('sauvegarde.active')) {
+    Schedule::command('sauvegarde:externe')
+        ->dailyAt(config('sauvegarde.heure'))
+        ->withoutOverlapping(60)
+        ->onOneServer();
+}

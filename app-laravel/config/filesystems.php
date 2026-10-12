@@ -77,6 +77,28 @@ return [
             'report' => false,
         ],
 
+        // Les sauvegardes externes (config/sauvegarde.php). Compatible S3 :
+        // Cloudflare R2, Backblaze B2, Scaleway... Le jeton ne doit pouvoir
+        // qu'ECRIRE et LIRE, jamais supprimer : l'expiration se regle cote
+        // fournisseur. « throw » : une erreur de depot doit se voir.
+        'sauvegardes' => [
+            'driver' => 's3',
+            'key' => env('SAUVEGARDE_S3_KEY'),
+            'secret' => env('SAUVEGARDE_S3_SECRET'),
+            'region' => env('SAUVEGARDE_S3_REGION', 'auto'),
+            'bucket' => env('SAUVEGARDE_S3_BUCKET'),
+            'endpoint' => env('SAUVEGARDE_S3_ENDPOINT'),
+            'use_path_style_endpoint' => true,
+            'visibility' => 'private',
+            // Les fournisseurs compatibles S3 (B2, R2) ne gerent pas toujours les
+            // sommes de controle que le SDK ajoute par defaut : seulement si
+            // l'operation les exige.
+            'request_checksum_calculation' => 'when_required',
+            'response_checksum_validation' => 'when_required',
+            'throw' => true,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
