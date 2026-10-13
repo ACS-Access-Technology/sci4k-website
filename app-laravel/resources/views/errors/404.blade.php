@@ -42,10 +42,10 @@
   <div class="wrap">
     <div class="legal-block">
       <p>{{ __('Vous pouvez reprendre par l’une de ces pages :') }}</p>
-      <p>
-        <a href="{{ route('home') }}">{{ __('Accueil') }}</a><br>
-        <a href="{{ route('biens.index') }}">{{ __('Biens immobiliers') }}</a><br>
-        <a href="{{ route('actualites.index') }}">{{ __('Actualités') }}</a><br>
+      <p class="liens-de-reprise">
+        <a href="{{ route('home') }}">{{ __('Accueil') }}</a>
+        <a href="{{ route('biens.index') }}">{{ __('Biens immobiliers') }}</a>
+        <a href="{{ route('actualites.index') }}">{{ __('Actualités') }}</a>
         <a href="{{ route('contact.index') }}">{{ __('Contact') }}</a>
       </p>
     </div>
