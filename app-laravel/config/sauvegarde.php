@@ -22,6 +22,9 @@ return [
     /** Heure UTC. 3 h 20 : entre l'agregation (3 h 10) et la purge (3 h 40) du planificateur existant, sans les croiser. */
     'heure' => env('SAUVEGARDE_HEURE', '03:20'),
 
+    /** Essais locaux seulement : autorise a sauvegarder sans surveillance externe. */
+    'sans_surveillance' => filter_var(env('SAUVEGARDE_SANS_SURVEILLANCE', false), FILTER_VALIDATE_BOOLEAN),
+
     /** Adresse de surveillance « dead man's switch » : prevenir quand le signal n'arrive plus. */
     'url_surveillance' => env('SAUVEGARDE_PING_URL'),
 

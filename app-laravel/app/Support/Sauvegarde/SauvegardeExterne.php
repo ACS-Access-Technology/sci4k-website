@@ -48,6 +48,8 @@ final class SauvegardeExterne
         private readonly string $prefixe = 'sci4k',
         private readonly ?string $urlSurveillance = null,
         private readonly ?string $dossierTemporaire = null,
+        private readonly int $tentatives = 3,
+        private readonly int $attenteEnSecondes = 5,
     ) {}
 
     /** Construit la sauvegarde avec la configuration de l'application. */
@@ -57,6 +59,13 @@ final class SauvegardeExterne
 
         if ($cle === '' || ! config('sauvegarde.bucket')) {
             throw new RuntimeException('Sauvegarde non configuree : SAUVEGARDE_CLE et SAUVEGARDE_S3_BUCKET sont requis.');
+        }
+
+        // Une sauvegarde sans alerte echoue en silence : si le conteneur
+        // s'arrete, personne ne le sait. La surveillance est donc exigee, sauf
+        // choix explicite (essais locaux).
+        if (! config('sauvegarde.url_surveillance') && ! config('sauvegarde.sans_surveillance')) {
+            throw new RuntimeException('Sauvegarde refusee : SAUVEGARDE_PING_URL est requis (surveillance externe). SAUVEGARDE_SANS_SURVEILLANCE=true le desactive, pour des essais seulement.');
         }
 
         return new self(
@@ -134,6 +143,7 @@ final class SauvegardeExterne
             $chiffre = "$source.enc";
             FluxChiffre::chiffrer($source, $chiffre, $cle);
 
+            $empreinteClair = hash_file('sha256', $source);
             $empreinte = hash_file('sha256', $chiffre);
             $taille = filesize($chiffre);
             $octets += $taille;
@@ -142,12 +152,17 @@ final class SauvegardeExterne
                 $this->deposer($chiffre, $chemin, $taille);
             }
 
-            $this->verifierLeDepot($genre, $this->destinations($nom, $maintenant)[0], $cle, $dossier);
+            $this->verifierLeDepot($genre, $this->destinations($nom, $maintenant)[0], $cle, $dossier, $empreinteClair);
 
-            $manifeste['objets'][$genre] = ['nom' => $nom, 'octets' => $taille, 'sha256' => $empreinte];
+            $manifeste['objets'][$genre] = ['nom' => $nom, 'octets' => $taille, 'sha256' => $empreinte, 'sha256_clair' => $empreinteClair];
         }
 
-        $this->disque->put("{$this->prefixe}/quotidien/$jour/manifeste.json", json_encode($manifeste, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $json = json_encode($manifeste, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $this->disque->put("{$this->prefixe}/quotidien/$jour/manifeste.json", $json);
+
+        if ($maintenant->isSunday()) {
+            $this->disque->put("{$this->prefixe}/hebdomadaire/{$maintenant->format('o-\\WW')}/manifeste.json", $json);
+        }
 
         return [
             'base' => $objets['base'][0],
@@ -173,22 +188,56 @@ final class SauvegardeExterne
 
     private function deposer(string $fichier, string $chemin, int $taille): void
     {
-        $flux = fopen($fichier, 'rb');
+        // Un reseau qui flanche une nuit ne doit pas faire perdre la sauvegarde :
+        // trois essais, avec une attente croissante. Chaque essai REPART du
+        // debut du fichier (un flux partiellement lu n'est pas reutilisable).
+        $this->avecReprises(function () use ($fichier, $chemin, $taille) {
+            $flux = fopen($fichier, 'rb');
 
-        try {
-            if ($this->disque->writeStream($chemin, $flux) === false) {
-                throw new RuntimeException("Depot refuse : $chemin");
+            try {
+                if ($this->disque->writeStream($chemin, $flux) === false) {
+                    throw new RuntimeException("Depot refuse : $chemin");
+                }
+            } finally {
+                if (is_resource($flux)) {
+                    fclose($flux);
+                }
             }
-        } finally {
-            if (is_resource($flux)) {
-                fclose($flux);
+
+            $distant = $this->disque->size($chemin);
+
+            if ($distant !== $taille) {
+                throw new RuntimeException("Depot incomplet : $chemin ($distant octets au lieu de $taille).");
             }
-        }
+        }, "depot de $chemin");
+    }
 
-        $distant = $this->disque->size($chemin);
+    /**
+     * Rejoue $operation jusqu'a trois fois. La derniere erreur est relancee
+     * telle quelle : elle seule explique l'echec.
+     */
+    private function avecReprises(callable $operation, string $libelle): void
+    {
+        $tentatives = max(1, $this->tentatives);
 
-        if ($distant !== $taille) {
-            throw new RuntimeException("Depot incomplet : $chemin ($distant octets au lieu de $taille).");
+        for ($essai = 1; ; $essai++) {
+            try {
+                $operation();
+
+                return;
+            } catch (Throwable $e) {
+                if ($essai >= $tentatives) {
+                    throw $e;
+                }
+
+                Log::warning("Sauvegarde externe : $libelle, essai $essai sur $tentatives echoue, nouvel essai.", [
+                    'erreur' => class_basename($e).': '.mb_substr($e->getMessage(), 0, 200),
+                ]);
+
+                if ($this->attenteEnSecondes > 0) {
+                    sleep($this->attenteEnSecondes * $essai);
+                }
+            }
         }
     }
 
@@ -196,21 +245,29 @@ final class SauvegardeExterne
      * Retelecharge l'objet, le dechiffre et lit tout le contenu compresse. Pour
      * la base, la derniere ligne doit etre celle de fin d'export.
      */
-    private function verifierLeDepot(string $genre, string $chemin, string $cle, string $dossier): void
+    private function verifierLeDepot(string $genre, string $chemin, string $cle, string $dossier, string $empreinteClair): void
     {
         $local = "$dossier/verification-$genre.enc";
         $clair = "$dossier/verification-$genre.gz";
 
-        $flux = $this->disque->readStream($chemin);
+        $this->avecReprises(function () use ($chemin, $local) {
+            $flux = $this->disque->readStream($chemin);
 
-        if (! is_resource($flux)) {
-            throw new RuntimeException("Relecture impossible : $chemin");
-        }
+            if (! is_resource($flux)) {
+                throw new RuntimeException("Relecture impossible : $chemin");
+            }
 
-        file_put_contents($local, $flux);
-        fclose($flux);
+            file_put_contents($local, $flux);
+            fclose($flux);
+        }, "relecture de $chemin");
 
         FluxChiffre::dechiffrer($local, $clair, $cle);
+
+        // Octet pour octet : ce qui a ete relu et dechiffre est exactement ce qui
+        // a ete exporte, pas seulement « quelque chose de lisible ».
+        if (! hash_equals($empreinteClair, hash_file('sha256', $clair))) {
+            throw new RuntimeException("Le contenu relu differe de l'export ($chemin) : empreintes differentes.");
+        }
 
         $gz = gzopen($clair, 'rb');
         $derniere = '';

@@ -5,6 +5,7 @@ use App\Support\Sauvegarde\DumpSql;
 use App\Support\Sauvegarde\FluxChiffre;
 use App\Support\Sauvegarde\SauvegardeExterne;
 use Carbon\CarbonImmutable;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -89,7 +90,7 @@ it('depose une base et des fichiers chiffres, relus avec succes', function () {
 it('ajoute une copie hebdomadaire le dimanche', function () {
     sauvegarde($this)->executer(false, CarbonImmutable::parse('2026-10-11 03:20:00', 'UTC')); // un dimanche
 
-    expect(Storage::disk('sauvegardes')->allFiles('essai/hebdomadaire'))->toHaveCount(1);
+    expect(Storage::disk('sauvegardes')->allFiles('essai/hebdomadaire'))->toHaveCount(2);
 });
 
 it('compte les lignes de chaque table dans l export', function () {
@@ -140,7 +141,7 @@ it('signale l echec, sans jamais ecrire la cle dans le journal', function () {
 });
 
 it('n est pas planifiee tant que la sauvegarde n est pas activee', function () {
-    $commandes = collect(app(Illuminate\Console\Scheduling\Schedule::class)->events())
+    $commandes = collect(app(Schedule::class)->events())
         ->map(fn ($e) => $e->command)
         ->filter(fn ($c) => str_contains((string) $c, 'sauvegarde:externe'));
 
