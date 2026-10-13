@@ -137,7 +137,7 @@ personne n'a pu faire sans compte.**
    php artisan sauvegarde:verifier-config
    ```
    Attendu : écriture et lecture « ok », **« Suppression : REFUSÉE par le fournisseur »**. Si la ligne dit « LA CLE PEUT SUPPRIMER », la clé est trop puissante : **ne pas continuer**. ⚠ Confirmer aussi dans la console du fournisseur que la suppression est bien refusée, et noter que l'objet de contrôle reste sous `_essais/`.
-4. Un dépôt réel dans le bucket d'essai, sur une **copie** de la base (jamais la production) : `php artisan sauvegarde:externe`, puis la restauration du §7 avec ces objets.
+4. Un dépôt réel dans le bucket d'essai, sur une **copie** de la base (jamais la production) : **`tools/essai-b2-isole.sh`** (garde-fous, dépôt, relevé indépendant, empreintes, déchiffrement, restauration isolée ; répété en local le 13 octobre, voir `PROCEDURE_DEPLOIEMENT_PROGRESSIF.md`, §8), ou à la main : `php artisan sauvegarde:externe`, puis la restauration du §7 avec ces objets.
 5. ⚠ Vérifier la compatibilité du SDK avec B2 (options de sommes de contrôle déjà prévues dans `config/filesystems.php`) : si l'étape 4 échoue sur un refus d'en-tête, le noter avant de continuer.
 6. Créer les règles du §4 sur le bucket de production et vérifier qu'elles figurent à l'écran. ⚠ Facultatif : Object Lock sur `hebdomadaire/`, **à décider à la création du bucket**.
 7. Un contrôle sur healthchecks.io (ou équivalent) : période 1 jour, tolérance de quelques heures, alerte par courriel vers `info@acsgroupe.ci`. ⚠ Provoquer une fausse panne (pas de signal) et constater l'alerte. Le service ne reçoit rien d'autre que des signaux : jamais de donnée.
