@@ -240,7 +240,7 @@ Aucun message de contact ni abonné (supprimés avant la bascule). Les bases
 `restauration_essai`, `smoke_copie` et `sci4k_test` en sont dérivées ou jetables.
 
 **État actuel** : port publié sur `127.0.0.1:33907` seulement (inaccessible du
-réseau), mot de passe racine jetable et connu (`essai-local-jetable`), volume
+réseau), mot de passe racine jetable (non versionné ; à changer, voir §12), volume
 Docker non chiffré dans le disque virtuel de Docker Desktop.
 
 | Option | Effet | Coût / limite | Décision |
