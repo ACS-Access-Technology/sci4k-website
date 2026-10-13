@@ -290,3 +290,125 @@ l'historique.
 
 **Critère de passage vers `master`** : CI de `preprod` verte, `verifier-flux-des-branches.sh`
 au vert, sauvegarde préalable vérifiée (§4, étape 0), et votre autorisation écrite.
+
+## 11. Données de production présentes sur ce poste (inventaire du 13 octobre 2026)
+
+Rien n'a été supprimé, anonymisé, chiffré ni déplacé. Sources : `docker inspect`,
+listes de fichiers, comptes de lignes (aucun contenu lu).
+
+| Emplacement | Contenu | Données sensibles | Statut demandé |
+|---|---|---|---|
+| Volume Docker `3e0c2154…` (conteneur `sci4k-restauration`, `/var/lib/mysql`) | 4 bases : `railway` (copie de production du 12/10), `restauration_essai`, `smoke_copie`, `sci4k_test` | `users` (2 comptes, empreintes de mots de passe), `sessions` (187, IP), `password_reset_tokens` (4), `journal_activites` (254), `membres_equipe` (3, dont une adresse), `visites` (3 440, sans IP) | à conserver jusqu'aux derniers essais |
+| Volume Docker `cde5c74d…` (conteneur `sci4k-s3`, `/data`) | sauvegardes d'essai **chiffrées** de la copie | les mêmes, chiffrées ; **la clé d'essai est en clair dans `%TEMP%\cle-essai.txt`** : les deux ensemble les rendent lisibles | idem |
+| `~/sauvegardes-sci4k` | 12 exports `base-*.sql.gz` de production, copies de fichiers, notes de bascule | les mêmes, **en clair** (compressés) | **intact, par décision** |
+| `%TEMP%\full.sql`, `…\scratchpad\avant.sql` (442 281 octets chacun, 6 octobre) | export SQL de production | idem, en clair | à traiter avec le reste |
+| `…\scratchpad\jar.txt`, `jar2.txt`, `railway-up.log` | cookies de session de contrôle, journal de déploiement | jetons de session éventuels | idem |
+| `app-laravel/storage/app/public` | 3 fichiers téléversés (sur 23 en production) | images de biens | sans enjeu personnel |
+
+Les conteneurs `sci4k-dev-smoke*` (ports `127.0.0.1:8097-8099`) lisent `smoke_copie` ;
+ils sont arrêtés.
+
+## 12. Derniers essais de restauration : procédure sûre
+
+Tant que ces essais ne sont pas faits, **rien n'est supprimé**. Règles :
+
+1. **Jamais dans `railway`** : toute restauration crée une base **neuve**
+   (`restauration_<essai>_<horodatage>`) dans le conteneur jetable ; `tools/essai-b2-isole.sh`
+   le fait ainsi et supprime sa base à la fin.
+2. **Conteneur démarré seulement pendant l'essai** : `docker start sci4k-restauration`,
+   essai, puis `docker stop`. Port limité à `127.0.0.1`.
+3. **Essais restants**, dans cet ordre :
+   a. restauration depuis un **vrai bucket d'essai B2** (`tools/essai-b2-isole.sh`,
+      §8) — nécessite le compte B2, **non fait** ;
+   b. restauration de l'export le plus récent de `~/sauvegardes-sci4k` dans une base
+      neuve, comparaison des comptes de lignes avec la ligne `-- lignes:` du fichier
+      (lecture seule sur `~/sauvegardes-sci4k`) — **non fait à ce jour** ;
+   c. essai de restauration **dans un conteneur Railway** (`sci4k` en préproduction,
+      §13) — nécessite l'environnement isolé, **non fait**.
+4. À la fin de chaque essai : consigner la date, le nombre de tables et de lignes,
+   l'identité des empreintes ; ne jamais coller de contenu de table.
+5. **Fin de vie de la copie** : **je ne supprime rien sans votre confirmation
+   écrite et explicite.** Après les essais 3.a à 3.c, je vous soumettrai la liste
+   exacte (conteneurs `sci4k-restauration`, `sci4k-s3`, `sci4k-dev-smoke*`, volumes
+   `3e0c2154…` et `cde5c74d…`, `%TEMP%\full.sql`, `avant.sql`, `cle-essai.txt`,
+   `jar*.txt`), avec les commandes. `~/sauvegardes-sci4k` n'y figure pas.
+6. Entre-temps, **réduire l'exposition** sans rien détruire (à votre choix) :
+   changer le mot de passe racine du conteneur, ne le démarrer qu'à la demande,
+   déplacer `full.sql` et `avant.sql` dans `~/sauvegardes-sci4k` (même niveau de
+   protection que les autres exports).
+
+## 13. Une vraie préproduction isolée : plan et limites
+
+**Constat** : `preprod` n'est aujourd'hui qu'une **branche**. Aucune instance ne
+tourne dessus (§4, étape 2). Les essais « dans le conteneur Railway » (extension
+`sodium`, mémoire, réseau vers B2, volume, planificateur) ne peuvent donc se faire
+qu'en production, ce que la règle de prudence interdit.
+
+### Option recommandée : un environnement Railway `preprod` dans le même projet
+
+D'après la documentation de Railway (lue le 13 octobre) : un **environnement** est
+« une instance isolée de tous les services du projet » ; les changements y sont
+limités à l'environnement ; on peut en **dupliquer** un (services, variables,
+configuration), les nouveaux services étant **mis en attente** : il faut examiner
+et approuver avant tout déploiement. Un environnement persistant peut rester isolé
+de la production.
+
+| Élément | Exigence |
+|---|---|
+| Base | **nouveau service MySQL 9.7.2** dans l'environnement, volume distinct ; jamais celui de la production ; jamais de copie de production |
+| Configuration | variables propres à l'environnement : `APP_KEY` **différente**, `APP_URL` = domaine provisoire `*.up.railway.app` de l'environnement, `APP_DEBUG=false` |
+| Courrier | `MAIL_MAILER=log` ; **aucune** clé Resend ; aucun destinataire réel |
+| Indexation | case décochée (valeur par défaut d'une base neuve) ; domaine provisoire non diffusé |
+| Données | `db:seed` (structure) puis `DemonstrationSeeder` (fiches `DEMO-`) : **aucune donnée personnelle** ; aucun compte de production |
+| Sauvegarde | `SAUVEGARDE_*` absentes, sauf pendant l'essai B2, avec le **bucket d'essai** et une clé de chiffrement **d'essai** |
+| Déploiement | **manuel**, comme la production : `railway up --service sci4k --environment preprod` (jamais automatique depuis GitHub) |
+| Planificateur | actif, sans effet externe (courrier en journal, sauvegarde absente) |
+| Durée de vie | créer pour la validation, supprimer ensuite si le coût l'impose |
+
+### Limites et coûts, sans rien inventer
+
+- **Coût** : l'abonnement Hobby est de 5 $/mois avec 5 $ d'usage inclus ; au-delà,
+  la différence est facturée. Tarifs d'usage lus sur la page : mémoire 10 $/Go/mois,
+  processeur 20 $/vCPU/mois, volume 0,15 $/Go/mois, sortie réseau 0,05 $/Go.
+  **L'usage réel du site n'a pas été mesuré ici** : le coût d'un second service
+  applicatif et d'une seconde base **n'est pas chiffré** et peut dépasser le crédit
+  inclus. À estimer dans le tableau de bord Railway avant toute création.
+- **Limites du plan** : la page lue ne dit rien sur le nombre d'environnements ou de
+  services permis sur Hobby ; la limite de **5 Go par volume** s'applique, large
+  pour ce site (4,4 Mo de fichiers, 2,9 Mo de base).
+- **Région** : même région (`sfo`) que la production par défaut ; ne prouve donc
+  rien sur une migration vers l'Europe.
+- **Ce que cela ne remplace pas** : l'essai sur la production (certificat, domaine,
+  DNS, courrier réel) reste hors de portée de la préproduction.
+- **Action nécessitant votre accord** : créer un environnement, des services et des
+  variables dans le projet Railway est une modification du compte ; **non faite**.
+
+### Alternatives
+
+| Option | Avantage | Limite |
+|---|---|---|
+| Environnement `preprod` dans le projet (recommandée) | même plateforme, volume, réseau, variables | coût d'usage à estimer |
+| Environnement temporaire, créé puis supprimé après chaque campagne | coût minimal | à refaire à chaque fois |
+| Second projet Railway | isolation totale, séparation de facturation possible | gestion en double |
+| Poursuivre en local (conteneur construit par le `Dockerfile`) | gratuit, déjà pratiqué | ne prouve ni la plateforme, ni le volume, ni le réseau, ni `sodium` côté Railway |
+
+## 14. Prochaine phase de validation des sauvegardes B2 (rien n'est fait)
+
+Aucun compte créé, aucun secret saisi. Chaque ligne n'est « validée » que lorsque la
+preuve demandée a été **exécutée et constatée**.
+
+| # | Étape | Qui | Preuve exigée | État |
+|---|---|---|---|---|
+| 1 | Compte Backblaze B2 au nom de l'organisation | propriétaire | compte actif, moyens de paiement vérifiés | **non fait** |
+| 2 | Bucket **d'essai** privé, nom contenant « essai », région choisie | propriétaire | capture de la liste des buckets | **non fait** |
+| 3 | Clé limitée à ce bucket : *listFiles, readFiles, writeFiles*, **sans *deleteFiles*** | propriétaire | capacités relevées dans la console | **non fait** |
+| 4 | `sauvegarde:verifier-config` : écriture et lecture « ok », **suppression REFUSÉE** | assistant, avec les variables dans le terminal du propriétaire | sortie du contrôle ; l'objet reste sous `_essais/` | **non fait** |
+| 5 | Clé de chiffrement d'essai générée, **hors de Railway** et du dépôt | propriétaire | lieu de conservation désigné, deux accès | **non fait** |
+| 6 | Transfert et intégrité : `tools/essai-b2-isole.sh` (empreintes, déchiffrement) | assistant | « ESSAI RÉUSSI » et empreintes conformes | **répété en local seulement** |
+| 7 | Compatibilité du SDK avec B2 (en-têtes de somme de contrôle) | assistant | dépôt et relecture réels réussis | **non fait** |
+| 8 | Alerte : contrôle healthchecks (ou équivalent), puis fausse panne | propriétaire, assistant | courriel d'alerte reçu | **non fait** |
+| 9 | Restauration depuis B2 dans une base neuve isolée | assistant | tables et lignes identiques | **répétée en local seulement** |
+| 10 | Règles de cycle de vie (14 / 56 / 1 jour) | propriétaire | écran des règles | **non fait** |
+| 11 | Exécution dans le conteneur Railway de préproduction | assistant | `sauvegarde:externe` réussi à distance | **non fait** (voir §13) |
+| 12 | Premier passage à 03:20 UTC en préproduction | — | objets présents le lendemain, signal reçu | **non fait** |
+| 13 | Activation en production (`SAUVEGARDE_ACTIVE=true`, en dernier) | propriétaire | autorisation écrite | **non fait** |
