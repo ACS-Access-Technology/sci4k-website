@@ -1187,6 +1187,12 @@ html[data-theme="dark"] .article-date{ color:var(--dark-text-muted); }
 
 .field select:focus, .field input:focus{ outline:none; box-shadow:none; }
 
+/* Zone tactile des listes de /biens : la liste ne mesurait que 17 a 19 px de
+   haut dans une carte de 58 px, et seule cette bande ouvrait le menu. Le
+   remplissage agrandit la zone sensible a ~45 px, la marge negative lui
+   rend la place : la mise en page bouge de 2 px au plus. */
+.field select{ padding:14px 0; margin:-14px 0; }
+
 .search-submit{
     background:linear-gradient(135deg, var(--gold-500), var(--gold-600)); color:var(--navy-950); border:none; border-radius:14px;
     padding:14px 28px; font-weight:800; font-size:15px; cursor:pointer; font-family:inherit;
