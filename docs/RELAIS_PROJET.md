@@ -138,13 +138,22 @@ Vérifier également manuellement les vues desktop et mobile, la console JavaScr
 
 - **06/10/2026 (suite)** : règle `master` remise à zéro approbation ; demande #5 fusionnée (`d7dfa1c`) ; nouveau code déployé sur le site d'essai et vérifié (pages FR/EN, liens, Livewire, formulaires, authentification, base, journaux) ; réglages de `railway.json` reportés sur le service.
 
-## 10. Point de reprise (6 octobre 2026, après le déploiement)
+- **06/10/2026 (soir)** : mentions légales (RCCM, NCC, capital, directeur, hébergeur), adresse de réception `info@acsgroupe.ci`, Resend vérifié, rotation de `APP_KEY`, faille `shell-quote` ; demandes #10 à #13 fusionnées, `master` = `b1a8c20` déployé ; `www.sci4k.com` basculé sur Railway (phase A).
+- **07/10/2026** : redirection 301 de `sci4k.com` vers `www` par Plesk (phase B).
+- **12/10/2026** : audit post-lancement en lecture seule (disponibilité, DNS, courriel, sécurité, SEO, performance, base, CI) ; correctifs et sauvegardes externes **préparés sur des branches, non déployés** : `fix/adresses-obsoletes`, `fix/seo-ux`, `feat/sauvegardes-externes`.
+
+## 10. Point de reprise (12 octobre 2026)
 
 À relire avant toute action ; tout est vérifiable depuis le dépôt, GitHub et la CLI Railway.
 
-**État de référence :** demandes #4, #5 et #6 fusionnées ; `master` = `d7dfa1c`, déployé sur le site d'essai (déploiement Railway `60989f78`, vérifié : `PREMIER_DEPLOIEMENT.md`, §10). Base MySQL 9.7.2. Règle `master` conforme à la décision (zéro approbation, cinq checks). Réglages de `railway.json` reportés sur le service. Dernière sauvegarde : `~/sauvegardes-sci4k/base-20261006-*-avant-deploiement-d7dfa1c.sql.gz` et `fichiers-20261006-*-avant-deploiement/`.
+**État de référence :** `master` = `b1a8c20`, déployé (`b3e087cb`, redéploiement du 9 octobre du même code) sur `https://www.sci4k.com` ; base MySQL 9.7.2, 48 tables ; indexation bloquée. Suite : 1 488 tests, Pint, PHPStan, CI verts sur `master`.
 
-1. **Le lendemain** : panneau « Entretien automatique » du tableau de bord — les deux passes de nuit doivent y être en vert.
-2. **Retour arrière, si besoin** : *Rollback* Railway sur `sci4k` vers `ce4139dc` (disponible 72 h), jamais sur MySQL.
-3. **Lancement définitif** : la liste de `MISE_EN_LIGNE.md`, §6 — domaine, mentions légales, photos, accords de logos, décision sur les biens, essai de courriel, Sentry ; indexation en dernier.
-4. **Docker Desktop** ne démarre plus sur ce poste (socket `AppData\Local\Docker\run\dockerInference` bloqué) : un redémarrage de Windows le règle ; il ne sert qu'aux essais locaux.
+**Prêt, non déployé** (une branche par sujet, chacune testée) :
+
+1. `feat/sauvegardes-externes` — sauvegarde chiffrée vers un stockage S3 externe, relue après dépôt, inerte tant que `SAUVEGARDE_ACTIVE` n'est pas vrai. Essayée en local sur une copie de la production, restauration identique. **L'activation exige des décisions et des secrets** : `docs/SAUVEGARDES.md`, §6.
+2. `fix/seo-ux` — `/index.php/...` redirigé, actualités sans article, mentions légales publiables (`mentions-legales:publier`), chiffres clés à 768 px, zones tactiles.
+3. `fix/adresses-obsoletes` — migration des pages légales sans adresse inexistante, exemple de formulaire neutre.
+
+**Décisions en attente de la direction** : vrais chiffres et témoignages (ou masquage) ; ligne d'agrément des mentions légales ; adresse affichée sur la fiche de l'équipe ; compte administrateur nominatif et 2FA ; fournisseur de sauvegarde ; indexation.
+
+**Retour arrière** : `DOMAINE_ET_BASCULE.md`, §5 et §8 ; *Rollback* Railway vers le déploiement précédent (72 h) ; jamais sur MySQL.

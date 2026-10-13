@@ -1,8 +1,10 @@
 # Domaine `sci4k.com` : pré-production, bascule, retour arrière
 
-État relevé le 6 octobre 2026, en lecture seule (DNS publics, pages publiques,
-API Railway). **Rien n'a été modifié sur `sci4k.com`, son DNS ni le serveur
-Plesk.**
+**État au 12 octobre 2026 : la bascule est faite.** `https://www.sci4k.com` est
+le site Railway ; `https://sci4k.com` le redirige en 301. Les §1 à §5 ci-dessous
+décrivent l'état **avant** la bascule (relevé du 6 octobre) et se lisent comme
+un historique et comme la procédure suivie ; l'état réel est au §8 (phases A et
+B) et au §9 (points ouverts).
 
 ## 1. Ce qui existe aujourd'hui
 
@@ -267,3 +269,28 @@ l'indexation » du backoffice, puis le plan du site dans la Search Console).
 `_railway-verify.www` ; Railway, `APP_URL` sur l'adresse Railway. Effet en
 une heure au plus (TTL 3600). Le WordPress n'a pas été modifié.
 
+## 9. État au 12 octobre 2026 et points ouverts
+
+Relevé après le lancement (audit en lecture seule, puis vérifications du jour).
+
+| Élément | État |
+|---|---|
+| `www.sci4k.com` | CNAME `s1vxivt9.up.railway.app` (TTL 3600), certificat Let's Encrypt valide jusqu'au 4 janvier 2027, renouvelé par Railway |
+| `sci4k.com` | A `135.125.145.3` (Plesk), redirection **301 intégrée à Plesk** (« Domaine préféré » = `www.sci4k.com`), chemin conservé ; certificat générique `*.sci4k.com` + `sci4k.com`, Let's Encrypt, **expire le 10 décembre 2026** |
+| Messagerie | MX `smtp.google.com`, SPF `+a +mx +a:prime.kaeweb.com -all`, DKIM Google et Resend, DMARC `p=quarantine; adkim=s; aspf=s` : inchangés depuis le 6 octobre |
+| Application | `APP_URL=https://www.sci4k.com` ; déploiement courant `b3e087cb` (redéploiement du 9 octobre, même code que `b1a8c20`) |
+| Indexation | bloquée : `Disallow: /` et `noindex, nofollow` |
+
+**À surveiller ou à nettoyer**, avec l'endroit où cela se règle :
+
+| Point | Où | Remarque |
+|---|---|---|
+| Certificat de `sci4k.com` (10/12/2026) | Plesk | Générique : renouvelé par validation DNS, non par `/.well-known/` (désormais redirigé). Contrôler le renouvellement automatique dans Plesk autour du 10 novembre ; sinon `https://sci4k.com` affiche une erreur de certificat |
+| `nouveau.sci4k.com` (CNAME `6lbbuvub.up.railway.app`) et `_railway-verify.nouveau` | Plesk | Sans effet depuis le retrait du domaine de Railway : la cible répond « Application not found ». Enregistrement orphelin vers un hôte de Railway : **à retirer** (petit risque de reprise du sous-domaine) |
+| `sci4k-production.up.railway.app` | Railway | Sert encore le site, avec sa propre canonique. À rediriger vers `www` ou à retirer |
+| `ftp`, `ipv4`, SRV `_imaps/_pop3s/_smtps` | Plesk | Pointent vers le serveur Plesk. Plesk compte 5 boîtes alors que le MX va chez Google : ne rien retirer avant d'avoir établi qui les utilise |
+| `webmail.sci4k.com` | Plesk | Roundcube du serveur Plesk, indépendant de Google Workspace et de ce projet. Un 502 vu le 7 octobre pendant le changement de redirection ne s'est pas reproduit |
+| SPF sans Google ni Resend, DMARC sans `rua` | DNS | Fonctionne : le DMARC passe par l'alignement DKIM. Fragile, et sans rapports. À étudier avec soin avant toute modification |
+| Ports ouverts sur l'ancien serveur (`135.125.145.3` : 21, 22, 110, 143, 3306…) | hébergeur kaeweb | **3306 (MySQL) joignable depuis Internet** : à signaler à l'hébergeur |
+| Région Railway `sfo` (États-Unis) | Railway | Premier octet HTML de 0,9 à 1,5 s mesuré depuis ici ; une région européenne aiderait. Exige de migrer la base : opération planifiée |
+| Sauvegardes | voir `SAUVEGARDES.md` | Manuelles tant que la sauvegarde externe n'est pas activée |

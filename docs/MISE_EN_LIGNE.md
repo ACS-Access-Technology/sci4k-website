@@ -387,29 +387,28 @@ Ce clone a été retiré. La leçon vaut d'être retenue : un dépôt imbriqué
 répond aux commandes git à la place du vrai, avec ses propres références
 périmées, sans que rien ne le signale.
 
-## 6. Lancement définitif : état au 6 octobre 2026
+## 6. Lancement : état au 12 octobre 2026
 
-Le site d'essai suit la procédure de `PREMIER_DEPLOIEMENT.md`. Le lancement
-sur le domaine définitif demande en plus ce qui suit. **Aucun de ces points
-n'est du code, sauf le retrait du contenu, préparé ci-dessus.**
+Le site est **en production** sur `https://www.sci4k.com` depuis le 6 octobre
+(phase A) ; `https://sci4k.com` le redirige depuis le 7 octobre (phase B) :
+voir `DOMAINE_ET_BASCULE.md`, §8 et §9. L'indexation est volontairement
+bloquée.
 
-| Prérequis | État vérifié | Ce qui manque, et à qui le demander |
+| Prérequis | État vérifié le 12 octobre | Reste à faire, et à qui |
 |---|---|---|
-| Domaine, DNS, HTTPS | `sci4k.com` sert toujours le WordPress de SCI 4K ; **pré-production en service sur `https://nouveau.sci4k.com`** (certificat Let's Encrypt, `APP_URL` posé) ; le WordPress a 11 sauvegardes hebdomadaires Plesk, la dernière le 4 octobre | la bascule : `DOMAINE_ET_BASCULE.md`, §4 ; télécharger une sauvegarde Plesk hors du serveur juste avant |
-| Mentions légales | **complètes le 6 octobre** : RCCM CI-ABJ-03-2024-B40-00161, NCC 2606288Y, capital 10 000 000 FCFA, directeur de publication, hébergeur (FR et EN) | rien ; le brouillon de la base (non publié) reste plus ancien que la page servie |
-| Politique de confidentialité | rédigée ; à faire valider | validation juridique — la direction |
-| Six visuels provisoires | identifiés, fichier de destination compris : `maquettes-frontoffice/images/A-REMPLACER.md` | six photographies de l'agence, aux mêmes noms de fichier |
-| Logos des partenaires | 7 organismes affichés, aucun accord écrit connu | un accord écrit par organisme, ou leur retrait |
-| Courrier | Resend, expéditeur d'essai `onboarding@resend.dev` — **pas une configuration de production** ; destinataire des formulaires **vide** : aucune notification ne part ; le plan Hobby de Railway **bloque les ports SMTP 587 et 465** (`DOMAINE_ET_BASCULE.md`, §6) | **fait le 6 octobre** : `sci4k.com` vérifié dans Resend, expéditeur `noreply@sci4k.com`, réception et adresse publique `info@acsgroupe.ci` (`contact@sci4k.com` abandonnée, elle n'existait pas) ; contact et visite livrés. Reste : vérifier la boîte, nouvelle clé API Resend |
-| Sentry | aucun DSN | un projet Sentry et son DSN, posés en variable (`SENTRY_LARAVEL_DSN`, `SENTRY_ENVIRONMENT=production`) |
-| Contenu de démonstration | **retiré le 6 octobre** : 5 biens fictifs, 12 articles (et leurs 8 commentaires). Gardés à la demande de l'agence : 3 avis, 3 chiffres clés. Les 11 demandes de visite d'essai **supprimées** le 6 octobre ; la Villa F6 est passée de `/biens/villa-test` à `/biens/villa-f6`. Les 14 messages de contact d'essai (recette, équipe ACS) **supprimés** le 6 octobre, sauvegarde faite juste avant | rien |
-| Indexation | désactivée (`autoriser_indexation = 0`) — juste tant qu'on est en essai | la cocher le jour où le domaine définitif répond, pas avant |
-| Sauvegardes | `mysqldump` par `railway ssh`, éprouvé et restauré ; aucune sauvegarde Railway sur ce plan | une copie hors de ce poste (stockage de l'agence) |
-| Clé d'application | **tournée le 6 octobre** (l'ancienne était apparue dans un journal local) ; `PASSKEYS_USER_HANDLE_SECRET` désormais distinct ; l'ancienne clé reste dans `APP_PREVIOUS_KEYS` pour relire le mot de passe SMTP enregistré | retirer `APP_PREVIOUS_KEYS` une fois le mot de passe SMTP ressaisi dans *Configuration* |
-| Réglages de `railway.json` | **reportés sur le service le 6 octobre 2026** | rien ; retirer le fichier au prochain déploiement |
+| Domaine, DNS, HTTPS | en service ; certificats valides | surveiller le certificat de `sci4k.com` (10/12/2026) ; retirer les enregistrements `nouveau` (`DOMAINE_ET_BASCULE.md`, §9) |
+| Mentions légales | capital, RCCM, NCC, directeur, hébergeur renseignés dans la **page d'attente** (fichier) : sans canonique, sans lien entre langues, absente du plan du site | `php artisan mentions-legales:publier` (préparée, non déployée) la publie ; **la ligne d'agrément d'exercice est omise** : décision juridique de la direction |
+| Politique de confidentialité | publiée ; cite les cookies, la loi 2013-450, les droits | ne nomme ni Railway ni Resend, ne dit rien du traitement hors de Côte d'Ivoire : relecture juridique |
+| Courrier | Resend vérifié (`sci4k.com`), expéditeur `noreply@sci4k.com`, réception `info@acsgroupe.ci`, livraison confirmée | l'adresse `audray@sci4k.com`, affichée sur la fiche d'un membre de l'équipe, n'a pas pu être vérifiée (un sondage SMTP ne tranche pas : Google accepte tout destinataire) : à confirmer auprès de l'administrateur Google Workspace ; si elle est invalide, vider le champ plutôt que d'afficher une adresse morte. Donnée du backoffice, jamais modifiée sans accord |
+| Sentry | aucun DSN, volontairement | — |
+| Contenu | Villa F6 seule (5 photos) ; aucun bien, article, message ou abonné fictif | **3 témoignages et 3 chiffres clés (120 / 8 / 96) sont les données d'origine du 7 septembre, jamais modifiées** : à remplacer par les vrais, ou à masquer (décocher « Visible » ; rien n'est supprimé) |
+| Indexation | bloquée | décision de la direction ; voir la liste de contrôle ci-dessous |
+| Sauvegardes | manuelles, sur un poste | la sauvegarde externe chiffrée est préparée : `SAUVEGARDES.md` |
+| Comptes | un administrateur (adresse d'un stagiaire), un lecteur ; ni 2FA ni passkey | compte nominatif, 2FA, puis désactivation (jamais suppression) de l'ancien : `RELAIS_PROJET.md`, §10 |
 
-**Le jour J, dans l'ordre :** sauvegarde ; domaine posé et vérifié en HTTPS ;
-`APP_URL` sur le domaine ; contenu de démonstration retiré ; mentions légales
-et photos en place ; essai d'envoi de courriel ; Sentry reçoit l'erreur de
-`php artisan sentry:test` ; indexation cochée ; `robots.txt` et plan du site
-vérifiés sur le domaine.
+**Avant d'autoriser l'indexation**, dans cet ordre : vrais chiffres et
+témoignages (ou blocs masqués) ; mentions légales publiées ; adresse
+`audray@…` corrigée ; correctifs `fix/seo-ux` déployés (`/index.php`, actualités
+vides) ; relecture de la politique de confidentialité ; **puis** la case
+« Autoriser l'indexation » du backoffice, et le plan du site dans la Search
+Console.
