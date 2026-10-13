@@ -10,7 +10,7 @@
  * Voir docs/SAUVEGARDES.md.
  */
 
-require __DIR__.'/../app-laravel/app/Support/Sauvegarde/FluxChiffre.php';
+require_once __DIR__.'/../app-laravel/app/Support/Sauvegarde/FluxChiffre.php';
 
 use App\Support\Sauvegarde\FluxChiffre;
 
