@@ -57,7 +57,7 @@ chiffrement et le mot de passe : **0 occurrence**.
 Points relevés et traités :
 
 1. **Corrigé** : le mot de passe MySQL passait en argument (`-p…`), lisible dans
-   la liste des processus. Il passe désormais par `MYSQL_PWD` (environnement).
+   la liste des processus. **Correction en deux temps** : le premier correctif utilisait `-e MYSQL_PWD="valeur"`, qui laisse encore la valeur dans les arguments de `docker` ; le second exporte la variable et passe `-e MYSQL_PWD` **sans valeur**, de sorte que le mot de passe ne figure dans aucun argument.
 2. **Corrigé** : le test du point d'accès local (`http://127.0.0.1*`) laissait
    passer `http://127.0.0.1.exemple.com` ; il exige maintenant `:`, `/` ou la fin
    de chaîne (essai refusé constaté).
