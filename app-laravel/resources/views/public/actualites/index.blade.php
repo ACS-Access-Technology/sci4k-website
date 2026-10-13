@@ -4,6 +4,12 @@
 @section('description', $banniere?->texteBilingue('meta_description', $langue) ?: __("Conseils et actualités immobilières à Abidjan : foncier, marché, gestion locative. Les actualités de SCI4K."))
 @section('classe-page', 'page-actualites')
 
+{{-- Aucun article publie : la page n'a rien a indexer. Elle reste servie (le menu
+     y mene), mais sort des moteurs et du plan du site tant qu'elle est vide. --}}
+@if ($articles->total() === 0)
+  @section('robots', 'noindex, follow')
+@endif
+
 @section('contenu')
 
 {{--
@@ -39,6 +45,15 @@
       cote client par-dessus le rendu serveur — deux mecanismes pour un meme
       libelle.
     --}}
+    @if ($articles->total() === 0)
+      {{-- Ni recherche ni filtre quand il n'y a rien a chercher : « Aucune
+           actualite ne correspond a votre recherche » repondait a une
+           recherche que personne n'avait faite. Sans #newsGrid, main.js
+           n'installe pas le filtrage. --}}
+      <div class="news-grid">
+        <p class="news-empty">{{ $tFiltre('aucun_article', __("Aucune actualité n’est publiée pour le moment. De nouveaux articles arrivent bientôt.")) }}</p>
+      </div>
+    @else
     <form class="news-toolbar reveal" data-envoi="aucun">
       <div class="nt-field nt-search">
         <label for="newsQ">{{ $tFiltre('libelle_recherche', __('Rechercher')) }}</label>
@@ -99,6 +114,7 @@
       <nav class="news-pagination" aria-label="{{ $tFiltre('libelle_pagination', __('Pagination des actualités')) }}">
         {{ $articles->links() }}
       </nav>
+    @endif
     @endif
 
   </div>

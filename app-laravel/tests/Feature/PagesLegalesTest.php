@@ -331,3 +331,83 @@ it('porte les identifiants legaux de la societe dans les deux langues', function
     expect($script)->toContain('share capital of 10 000 000 FCFA')
         ->not->toContain('[to be completed]');
 });
+
+/**
+ * Les mentions legales, completees puis publiees par une commande a lancer une
+ * fois. Tant qu'elles sont en brouillon, la page servie est la page d'attente :
+ * « noindex », sans canonique ni lien entre langues, au titre francais en
+ * anglais, absente du plan du site.
+ */
+describe('publication des mentions legales', function () {
+    it('publie la page completee, sans case a fournir', function () {
+        $this->artisan('mentions-legales:publier')->assertSuccessful();
+
+        $page = PageStatique::where('slug', 'mentions-legales')->first();
+
+        expect($page->publie)->toBeTrue()
+            ->and($page->contenu_fr)->toContain('CI-ABJ-03-2024-B40-00161')
+            ->toContain('2606288Y')
+            ->toContain('10 000 000 FCFA')
+            ->toContain('Tiemoko Max Regis')
+            ->toContain('Railway Corporation')
+            ->not->toContain('legal-placeholder')
+            ->not->toContain('Agrément')
+            ->and($page->contenu_en)->toContain('CI-ABJ-03-2024-B40-00161')->not->toContain('legal-placeholder');
+    });
+
+    it('donne a la page publiee ce que la page d attente n a pas', function () {
+        $this->artisan('mentions-legales:publier')->assertSuccessful();
+
+        $fr = $this->get('/mentions-legales')->assertOk();
+        $en = $this->get('/en/mentions-legales')->assertOk();
+
+        expect($fr->headers->get('X-Robots-Tag'))->toBeNull();
+        $fr->assertSee('rel="canonical" href="'.url('/mentions-legales').'"', false)
+            ->assertSee('hreflang="en"', false);
+        $en->assertSee('rel="canonical" href="'.url('/en/mentions-legales').'"', false)
+            ->assertSee('hreflang="fr"', false);
+
+        // Le titre n'est plus le meme dans les deux langues.
+        expect(teteDeLaPage($fr->getContent())['titre'] ?? null)
+            ->not->toBe(teteDeLaPage($en->getContent())['titre'] ?? null);
+
+        $this->get('/sitemap.xml')->assertSee(url('/mentions-legales'), false)->assertSee(url('/en/mentions-legales'), false);
+    });
+
+    it('ne touche pas une page deja retravaillee', function () {
+        PageStatique::where('slug', 'mentions-legales')->update([
+            'contenu_fr' => '<p>Texte écrit par l\'éditeur</p>',
+            'contenu_en' => '<p>Text written by the editor</p>',
+            'publie' => false,
+        ]);
+
+        $this->artisan('mentions-legales:publier')->assertSuccessful();
+
+        $page = PageStatique::where('slug', 'mentions-legales')->first();
+        expect($page->publie)->toBeFalse()->and($page->contenu_fr)->toBe('<p>Texte écrit par l\'éditeur</p>');
+    });
+
+    it('ne republie pas une page deja publiee', function () {
+        publierLesMentions();
+        $avant = PageStatique::where('slug', 'mentions-legales')->value('contenu_fr');
+
+        $this->artisan('mentions-legales:publier')->assertSuccessful();
+
+        expect(PageStatique::where('slug', 'mentions-legales')->value('contenu_fr'))->toBe($avant);
+    });
+});
+
+/**
+ * contact@sci4k.com n'existe pas chez Google Workspace : les courriels qui lui
+ * etaient ecrits revenaient en erreur. La migration qui verse les pages
+ * legales ecrivait pourtant cette adresse — une installation neuve, ou une
+ * restauration, la republiait. L'adresse de contact est info@acsgroupe.ci.
+ */
+it('ne verse aucune adresse inexistante dans les pages legales', function () {
+    foreach (PageStatique::all() as $page) {
+        expect($page->contenu_fr.$page->contenu_en)->not->toContain('@sci4k.com');
+    }
+
+    expect(PageStatique::where('slug', 'politique-confidentialite')->value('contenu_fr'))
+        ->toContain('mailto:info@acsgroupe.ci');
+});

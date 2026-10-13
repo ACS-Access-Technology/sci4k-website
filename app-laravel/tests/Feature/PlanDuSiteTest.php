@@ -59,6 +59,9 @@ it('n annonce aucune adresse qui redirige', function () {
 });
 
 it('annonce les trois pages rendues par le serveur', function () {
+    // /actualites n'est annoncee qu'avec au moins un article publie.
+    Article::factory()->create(['categorie_id' => $this->categorie->id, 'statut' => 'publie']);
+
     $contenu = $this->get('/sitemap.xml')->assertOk()->getContent();
 
     foreach (['/services', '/faq', '/actualites'] as $chemin) {

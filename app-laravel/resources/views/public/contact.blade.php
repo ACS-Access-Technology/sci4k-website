@@ -98,7 +98,7 @@
           <div class="form-row">
             <div class="form-group">
               <label for="contactEmail">{{ $texte('libelle_email', __('Adresse Email')) }}</label>
-              <input type="email" id="contactEmail" name="email" autocomplete="email" maxlength="100" placeholder="{{ $texte('exemple_email', 'j.kouassi@email.com') }}">
+              <input type="email" id="contactEmail" name="email" autocomplete="email" maxlength="100" placeholder="{{ $texte('exemple_email', 'nom@exemple.ci') }}">
             </div>
             <div class="form-group">
               @php($libelleSujet = $texte('libelle_sujet', __('Sujet de votre demande')))

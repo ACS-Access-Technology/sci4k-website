@@ -243,6 +243,10 @@ it('ne touche pas a un slug fourni', function () {
 it('renomme une categorie et le nouveau nom apparait dans le filtre public', function () {
     $categorie = Categorie::factory()->create(['nom_fr' => 'Ancien nom']);
 
+    // Le filtre public n'existe que s'il y a un article a filtrer : sans lui,
+    // la page annonce qu'aucune actualite n'est publiee.
+    Article::factory()->create(['categorie_id' => $categorie->id, 'statut' => 'publie']);
+
     Livewire::actingAs($this->admin)->test(CategorieEnsemble::class, ['embarque' => true])
         ->set('lignes.'.$categorie->id.'.nom_fr', 'Gestion locative')
         ->set('lignes.'.$categorie->id.'.nom_en', 'Rental management')

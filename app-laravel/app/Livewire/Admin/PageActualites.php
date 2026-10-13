@@ -57,6 +57,11 @@ class PageActualites extends Component
             'defaut' => 'Aucune actualité ne correspond à votre recherche.',
             'long' => true,
         ],
+        'aucun_article' => [
+            'intitule' => 'Message quand aucun article n’est publié',
+            'defaut' => 'Aucune actualité n’est publiée pour le moment. De nouveaux articles arrivent bientôt.',
+            'long' => true,
+        ],
         'libelle_pagination' => ['intitule' => 'Libellé de la pagination (lecteurs d’écran)', 'defaut' => 'Pagination des actualités'],
     ];
 

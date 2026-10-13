@@ -108,7 +108,7 @@ return new class extends Migration
 
 <div class="legal-block">
   <h2>7. Contact</h2>
-  <p>Pour toute question relative à cette politique de confidentialité ou à vos données personnelles, contactez-nous à <a href="mailto:contact@sci4k.com">contact@sci4k.com</a> ou au +225 07 06 16 50 29.</p>
+  <p>Pour toute question relative à cette politique de confidentialité ou à vos données personnelles, contactez-nous à <a href="mailto:info@acsgroupe.ci">info@acsgroupe.ci</a> ou au +225 07 06 16 50 29.</p>
 </div>
 HTML;
     }
@@ -154,7 +154,7 @@ HTML;
 
 <div class="legal-block">
   <h2>7. Contact</h2>
-  <p>For any question about this privacy policy or your personal data, contact us at <a href="mailto:contact@sci4k.com">contact@sci4k.com</a> or on +225 07 06 16 50 29.</p>
+  <p>For any question about this privacy policy or your personal data, contact us at <a href="mailto:info@acsgroupe.ci">info@acsgroupe.ci</a> or on +225 07 06 16 50 29.</p>
 </div>
 HTML;
     }
@@ -166,7 +166,7 @@ HTML;
   <h2>1. Éditeur du site</h2>
   <p>Le présent site, accessible à l'adresse www.sci4k.com, est édité par <strong>SCI4K</strong>, Société Civile Immobilière de droit ivoirien.<br>
   Siège social : Cocody, Cité des Arts, Résidence Paon, 3ème étage — Abidjan, Côte d'Ivoire.<br>
-  Téléphone : +225 07 06 16 50 29 — Email : contact@sci4k.com</p>
+  Téléphone : +225 07 06 16 50 29 — Email : info@acsgroupe.ci</p>
 </div>
 
 <div class="legal-block">
@@ -185,7 +185,7 @@ HTML;
 <div class="legal-block">
   <h2>4. Directeur de la publication</h2>
   <p>Directeur de la publication : <span class="legal-placeholder">[à fournir — civilité, nom et prénoms, qualité exacte]</span><br>
-  Pour toute question relative au contenu éditorial du site : <a href="mailto:contact@sci4k.com">contact@sci4k.com</a></p>
+  Pour toute question relative au contenu éditorial du site : <a href="mailto:info@acsgroupe.ci">info@acsgroupe.ci</a></p>
 </div>
 
 <div class="legal-block">
@@ -230,7 +230,7 @@ HTML;
   <h2>1. Site publisher</h2>
   <p>This site, available at www.sci4k.com, is published by <strong>SCI4K</strong>, a Société Civile Immobilière under Ivorian law.<br>
   Registered office: Cocody, Cité des Arts, Résidence Paon, 3rd floor — Abidjan, Côte d'Ivoire.<br>
-  Phone: +225 07 06 16 50 29 — Email: contact@sci4k.com</p>
+  Phone: +225 07 06 16 50 29 — Email: info@acsgroupe.ci</p>
 </div>
 
 <div class="legal-block">
@@ -249,7 +249,7 @@ HTML;
 <div class="legal-block">
   <h2>4. Publication director</h2>
   <p>Publication director: <span class="legal-placeholder">[to be provided — title, full name, exact role]</span><br>
-  For any question about the site's editorial content: <a href="mailto:contact@sci4k.com">contact@sci4k.com</a></p>
+  For any question about the site's editorial content: <a href="mailto:info@acsgroupe.ci">info@acsgroupe.ci</a></p>
 </div>
 
 <div class="legal-block">

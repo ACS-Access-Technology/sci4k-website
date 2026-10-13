@@ -30,6 +30,20 @@
 	root {$SERVER_ROOT:public/}
 	encode zstd br gzip
 
+	# --- Une seule adresse par page -----------------------------------
+	#
+	# php_server execute le point d'entree de Laravel sous /index.php : toute
+	# page repondait aussi a /index.php/contact, /index.php/biens/villa-f6 —
+	# avec, chacune, sa propre balise canonique pointant sur CETTE adresse. Une
+	# copie de tout le site, que rien ne signalait. Elles redirigent (301) vers
+	# l'adresse sans le point d'entree. Verifie le 12 octobre 2026 : /index.php et
+	# /index.php/contact repondaient 200 en production.
+	@point_d_entree_seul path /index.php
+	redir @point_d_entree_seul / 301
+
+	@point_d_entree_et_chemin path_regexp point_d_entree ^/index\.php(?P<reste>/.+)$
+	redir @point_d_entree_et_chemin {http.regexp.point_d_entree.reste} 301
+
 	# --- Caches, par duree de vie reelle de l'adresse -----------------
 	#
 	# La regle est partout la meme : une adresse peut etre gardee aussi

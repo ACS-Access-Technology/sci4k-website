@@ -106,3 +106,39 @@ it('sert la page d accueil a la racine', function () {
 it('redirige l ancienne adresse de la liste vers la nouvelle', function () {
     $this->get('/actualites.html')->assertRedirect('/actualites');
 });
+
+/**
+ * Sans article publie, la page ne propose ni recherche ni filtre — le message
+ * « aucune actualite ne correspond a votre recherche » repondait a une
+ * recherche que personne n'avait faite — et elle sort des moteurs et du plan du
+ * site. Elle reste servie : le menu y mene, et la supprimer serait un
+ * changement de structure, pas une correction.
+ */
+describe('page des actualites sans article', function () {
+    it('annonce qu aucun article n est publie, sans formulaire de recherche', function () {
+        Article::factory()->create(['categorie_id' => $this->categorie->id, 'statut' => 'brouillon']);
+
+        $this->get('/actualites')->assertOk()
+            ->assertSee('Aucune actualité n’est publiée pour le moment')
+            ->assertDontSee('id="newsQ"', false)
+            ->assertDontSee('Aucune actualité ne correspond à votre recherche');
+
+        $this->get('/en/actualites')->assertOk()
+            ->assertSee('No article has been published yet');
+    });
+
+    it('est marquee noindex et absente du plan du site', function () {
+        $this->get('/actualites')->assertSee('name="robots" content="noindex', false);
+
+        $this->get('/sitemap.xml')->assertDontSee(url('/actualites'), false);
+    });
+
+    it('retrouve la recherche, l indexation et le plan du site des qu un article est publie', function () {
+        Article::factory()->create(['categorie_id' => $this->categorie->id, 'statut' => 'publie', 'titre_fr' => 'Premier article']);
+
+        $this->get('/actualites')->assertSee('id="newsQ"', false)
+            ->assertDontSee('Aucune actualité n’est publiée pour le moment');
+
+        $this->get('/sitemap.xml')->assertSee(url('/actualites'), false);
+    });
+});

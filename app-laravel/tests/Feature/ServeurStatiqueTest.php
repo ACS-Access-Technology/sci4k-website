@@ -50,3 +50,22 @@ it('n emporte pas les fichiers des tests dans l image', function () {
 
     expect($ignores)->toContain('app-laravel/storage/framework/testing/');
 });
+
+/*
+ * php_server execute le point d'entree de Laravel sous /index.php : sans cette
+ * regle, chaque page repondait aussi a /index.php/<page>, avec une balise
+ * canonique pointant sur cette copie. Les regles ont ete essayees dans un
+ * conteneur FrankenPHP : / et /contact restent servis, /index.php,
+ * /index.php?x=1 et /index.php/contact repondent 301 vers /, / et /contact.
+ */
+it('redirige /index.php et /index.php/<page> vers l adresse sans le point d entree', function () {
+    $caddy = caddyfile();
+
+    expect($caddy)->toContain('@point_d_entree_seul path /index.php')
+        ->toContain('redir @point_d_entree_seul / 301')
+        ->toMatch('/@point_d_entree_et_chemin path_regexp point_d_entree \^\/index\\\.php\(\?P<reste>\/\.\+\)\$/')
+        ->toContain('redir @point_d_entree_et_chemin {http.regexp.point_d_entree.reste} 301');
+
+    // Avant php_server, que ces adresses atteindraient sinon.
+    expect(strpos($caddy, 'redir @point_d_entree_seul'))->toBeLessThan(strrpos($caddy, "\tphp_server"));
+});
