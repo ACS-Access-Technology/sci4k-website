@@ -50,7 +50,7 @@ class PageFaq extends Component
         'libelle_nom' => ['intitule' => 'Libellé du champ « nom »', 'defaut' => 'Nom complet *'],
         'exemple_nom' => ['intitule' => 'Exemple dans le champ « nom »', 'defaut' => 'Ex: Jean Kouassi'],
         'libelle_email' => ['intitule' => 'Libellé du champ « email »', 'defaut' => 'Adresse Email *'],
-        'exemple_email' => ['intitule' => 'Exemple dans le champ « email »', 'defaut' => 'j.kouassi@email.com'],
+        'exemple_email' => ['intitule' => 'Exemple dans le champ « email »', 'defaut' => 'nom@exemple.ci'],
         'libelle_question' => ['intitule' => 'Libellé du champ « question »', 'defaut' => 'Votre question *'],
         'exemple_question' => ['intitule' => 'Exemple dans le champ « question »', 'defaut' => 'Écrivez votre question ici...'],
         'libelle_bouton' => ['intitule' => 'Libellé du bouton', 'defaut' => 'Envoyer ma question →'],

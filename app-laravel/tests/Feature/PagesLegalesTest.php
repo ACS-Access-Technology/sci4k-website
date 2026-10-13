@@ -396,3 +396,18 @@ describe('publication des mentions legales', function () {
         expect(PageStatique::where('slug', 'mentions-legales')->value('contenu_fr'))->toBe($avant);
     });
 });
+
+/**
+ * contact@sci4k.com n'existe pas chez Google Workspace : les courriels qui lui
+ * etaient ecrits revenaient en erreur. La migration qui verse les pages
+ * legales ecrivait pourtant cette adresse — une installation neuve, ou une
+ * restauration, la republiait. L'adresse de contact est info@acsgroupe.ci.
+ */
+it('ne verse aucune adresse inexistante dans les pages legales', function () {
+    foreach (PageStatique::all() as $page) {
+        expect($page->contenu_fr.$page->contenu_en)->not->toContain('@sci4k.com');
+    }
+
+    expect(PageStatique::where('slug', 'politique-confidentialite')->value('contenu_fr'))
+        ->toContain('mailto:info@acsgroupe.ci');
+});
