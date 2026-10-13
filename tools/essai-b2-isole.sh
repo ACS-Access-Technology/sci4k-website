@@ -125,7 +125,7 @@ fich="$(ls "$travail"/fichiers-*.tar.gz.enc 2>/dev/null | head -1)"
 man="$travail/manifeste.json"
 [[ -n "$base" && -n "$fich" && -f "$man" ]] || echec "objets attendus absents (base, fichiers, manifeste)."
 
-attendu() { "$php" -r '$m = json_decode(file_get_contents($argv[1]), true); echo $m["objets"][$argv[2]][$argv[3]];' "$man" "$1" "$2"; }
+attendu() { local genre="$1" champ="$2"; "$php" -r '$m = json_decode(file_get_contents($argv[1]), true); echo $m["objets"][$argv[2]][$argv[3]];' "$man" "$genre" "$champ"; }
 
 for g in base fichiers; do
     f="$base"; [[ "$g" = fichiers ]] && f="$fich"

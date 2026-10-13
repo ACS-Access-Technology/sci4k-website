@@ -12,7 +12,7 @@
  * script s'accordent sur le contenu du bucket, le depot est reel.
  */
 
-require __DIR__.'/../app-laravel/vendor/autoload.php';
+require_once __DIR__.'/../app-laravel/vendor/autoload.php';
 
 $sortie = $argv[1] ?? null;
 
@@ -58,8 +58,9 @@ $jour = dirname($objets[0]['Key']);
 
 // Le manifeste dit QUELS objets forment la sauvegarde : plusieurs essais le
 // meme jour partagent un dossier, et le manifeste le plus recent fait foi.
-$client->getObject(['Bucket' => $bucket, 'Key' => $jour.'/manifeste.json', 'SaveAs' => $sortie.'/manifeste.json']);
-$manifeste = json_decode(file_get_contents($sortie.'/manifeste.json'), true);
+$nomManifeste = '/manifeste.json';
+$client->getObject(['Bucket' => $bucket, 'Key' => $jour.$nomManifeste, 'SaveAs' => $sortie.$nomManifeste]);
+$manifeste = json_decode(file_get_contents($sortie.$nomManifeste), true);
 printf("  manifeste.json\n");
 
 foreach ($manifeste['objets'] as $genre => $o) {
