@@ -1,5 +1,7 @@
 # Sécurisation des copies locales et estimation de la préproduction — 13 octobre 2026
 
+> **Remplacé le 13 octobre 2026** : les §2 (procédure) et §3 (estimation) sont remplacés par `SECURISATION_COPIES_V2.md` (opérations séparées chiffrement / déplacement / suppression, commandes exactes, estimation basse-centrale-haute). Le §1 (inventaire) y est complété.
+
 **Rien de ce document n'est exécuté.** Aucun fichier, volume ou mot de passe n'a
 été modifié, déplacé, chiffré ni supprimé. Les relevés (§1) sont en lecture
 seule : chemins, tailles, dates, droits, empreintes. **Aucun contenu SQL, mot de
