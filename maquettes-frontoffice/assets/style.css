@@ -1663,6 +1663,15 @@ footer a{ color:rgba(255,255,255,0.75); text-decoration:none; margin:0 10px; }
 
 footer a:hover{ color:var(--gold-300); }
 
+/* Zones tactiles des pages statiques (page d'attente des mentions legales,
+   politique de repli, 404) : leurs liens ne mesuraient que 16 a 19 px de haut.
+   Le remplissage porte la zone sensible a 44 px sans changer la taille du
+   texte ; l'alignement vertical du pied est conserve par la marge negative. */
+.pied-liens{ display:flex; flex-wrap:wrap; justify-content:center; align-items:center; margin-top:0; }
+.pied-liens a{ display:inline-block; padding:13px 4px; margin:0 6px; }
+.liens-de-reprise{ display:flex; flex-direction:column; align-items:flex-start; margin:0; }
+.liens-de-reprise a{ display:inline-block; padding:12px 0; }
+
 html[data-theme="dark"] body{ background:var(--dark-bg); color:var(--dark-text); }
 
 html[data-theme="dark"] .legal-hero h1, html[data-theme="dark"] .legal-block h2{ color:var(--dark-text); }
