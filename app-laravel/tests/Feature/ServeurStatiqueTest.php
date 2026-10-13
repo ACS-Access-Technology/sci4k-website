@@ -69,3 +69,31 @@ it('redirige /index.php et /index.php/<page> vers l adresse sans le point d entr
     // Avant php_server, que ces adresses atteindraient sinon.
     expect(strpos($caddy, 'redir @point_d_entree_seul'))->toBeLessThan(strrpos($caddy, "\tphp_server"));
 });
+
+/*
+ * /index.php/ (avec la barre finale) repondait 200 et dupliquait l'accueil : le
+ * motif « /index.php » seul ne le couvrait pas, et l'expression reguliere exige
+ * au moins un caractere apres la barre.
+ */
+it('redirige aussi /index.php/ avec sa barre finale', function () {
+    expect(caddyfile())->toContain('@point_d_entree_seul path /index.php /index.php/');
+});
+
+/*
+ * Zones tactiles : les listes de /biens ne mesuraient que 17 a 19 px, et les
+ * liens des pages statiques et de la 404, 16 a 19 px. Mesure au navigateur le
+ * 13 octobre 2026 ; ce test garde les regles qui les portent a 44 px.
+ */
+it('garde les regles de zone tactile des filtres, du pied statique et de la 404', function () {
+    $css = (string) file_get_contents(base_path('../maquettes-frontoffice/assets/style.css'));
+
+    expect($css)->toContain('.field select{ padding:14px 0; margin:-14px 0; }')
+        ->toContain('.pied-liens a{ display:inline-block; padding:13px 4px;')
+        ->toContain('.liens-de-reprise a{ display:inline-block; padding:12px 0; }');
+
+    expect((string) file_get_contents(resource_path('views/errors/404.blade.php')))->toContain('class="liens-de-reprise"');
+
+    foreach (['mentions-legales', 'politique-confidentialite'] as $page) {
+        expect((string) file_get_contents(base_path("../maquettes-frontoffice/$page.html")))->toContain('class="pied-liens"');
+    }
+});
