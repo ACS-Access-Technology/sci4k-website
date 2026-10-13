@@ -38,7 +38,7 @@
 	# copie de tout le site, que rien ne signalait. Elles redirigent (301) vers
 	# l'adresse sans le point d'entree. Verifie le 12 octobre 2026 : /index.php et
 	# /index.php/contact repondaient 200 en production.
-	@point_d_entree_seul path /index.php
+	@point_d_entree_seul path /index.php /index.php/
 	redir @point_d_entree_seul / 301
 
 	@point_d_entree_et_chemin path_regexp point_d_entree ^/index\.php(?P<reste>/.+)$
