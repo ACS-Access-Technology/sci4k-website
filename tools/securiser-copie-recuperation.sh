@@ -39,7 +39,7 @@ OPTIONS_GPG=(--symmetric --cipher-algo AES256 --s2k-digest-algo SHA512 --s2k-cou
 
 echec() { echo "ARRET : $*" >&2; exit 1; }
 etape() { printf '\n== %s\n' "$*"; }
-chemin_reel() { (cd "$1" 2>/dev/null && pwd -P) || echo "$1"; }
+chemin_reel() { local dossier="$1"; (cd "$dossier" 2>/dev/null && pwd -P) || echo "$dossier"; }
 
 controles() {
     etape "Source : la copie du 12/10 est-elle identifiable sans ambiguite ?"
