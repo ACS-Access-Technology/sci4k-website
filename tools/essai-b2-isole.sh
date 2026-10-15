@@ -148,9 +148,11 @@ done
 # --- 5. restauration isolee --------------------------------------------------
 etape "5. Restauration dans une base NEUVE du conteneur jetable"
 nouvelle="restauration_b2_$(date +%Y%m%d_%H%M%S)"
-# Le mot de passe passe par l'ENVIRONNEMENT du client (MYSQL_PWD), pas par « -p… » :
-# un argument de ligne de commande se lit dans la liste des processus.
-mysql() { docker exec -i -e MYSQL_PWD="$RESTAURATION_MOT_DE_PASSE" "$RESTAURATION_CONTENEUR" mysql -uroot "$@"; }
+# Le mot de passe passe par l'ENVIRONNEMENT, jamais par un argument (« -p… » ou « -e MYSQL_PWD=valeur » :
+# un argument se lit dans la liste des processus de la machine). « -e MYSQL_PWD » sans valeur fait
+# transmettre par docker la variable exportee ici.
+export MYSQL_PWD="$RESTAURATION_MOT_DE_PASSE"
+mysql() { docker exec -i -e MYSQL_PWD "$RESTAURATION_CONTENEUR" mysql -uroot "$@"; }
 
 mysql -e "create database $nouvelle character set utf8mb4"
 zcat "$travail/base.sql.gz" | mysql "$nouvelle"

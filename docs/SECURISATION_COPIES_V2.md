@@ -120,6 +120,12 @@ la protection réelle repose alors sur BitLocker (étape 0) et sur le coffre chi
 
 ## 4. Commandes exactes — **A : chiffrement** (non exécutées)
 
+> **⚠ REMPLACÉ le 13 octobre 2026.** Les commandes ci-dessous, en particulier A5
+> (la restauration), **ne doivent pas être suivies** : l'export du 12/10 contient
+> `CREATE DATABASE` et `USE`, de sorte que la restauration écrirait dans la base
+> `railway` du conteneur persistant en écrasant la copie. Utiliser
+> `tools/securiser-copie-recuperation.sh` et `docs/OPERATIONS_SECURISATION_PREPAREES.md`.
+
 À lancer par **vous**, dans **Git Bash**, `pinentry` demandera la phrase dans une
 fenêtre. La phrase est **mise dans le gestionnaire de mots de passe de
 l'organisation avant** le premier chiffrement, avec **deux personnes** d'accès.
