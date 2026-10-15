@@ -23,14 +23,14 @@
 #   - la restauration n'a aucun reseau, aucun volume, aucun port : elle ne peut atteindre
 #     ni la production ni les conteneurs existants.
 #
-# Variables facultatives : SAUVEGARDES_DIR, COFFRE_DIR, EXPORT_SUPPLEMENTAIRE (export SQL du 6/10
-# a chiffrer aussi ; vide pour l'ignorer), GPG (essais : remplace la commande gpg).
+# Variables facultatives : SAUVEGARDES_DIR, COFFRE_DIR, EXPORT_SUPPLEMENTAIRE (chemin d'un export SQL
+# supplementaire a chiffrer aussi ; vide par defaut), GPG (essais : remplace la commande gpg).
 
 set -euo pipefail
 
 SRC="${SAUVEGARDES_DIR:-$HOME/sauvegardes-sci4k}"
 COFFRE="${COFFRE_DIR:-$HOME/coffre-sci4k}"
-EXPORT_SUPPLEMENTAIRE="${EXPORT_SUPPLEMENTAIRE-${TEMP:-/tmp}/full.sql}"
+EXPORT_SUPPLEMENTAIRE="${EXPORT_SUPPLEMENTAIRE-}"   # facultatif : chemin d'un export SQL a chiffrer en plus (vide par defaut)
 GPG="${GPG:-gpg}"
 BASE="base-20261012-1554-point-de-retour-avant-corrections.sql.gz"
 FICHIERS="fichiers-20261012-1554-point-de-retour"

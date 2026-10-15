@@ -291,3 +291,95 @@ vérifier sur la facture). Aucun service, compte, bucket, clé ni secret n'est c
 | **C** suppression | **non exécutée, non demandée** |
 | Lecture des variables de production (méthodes 2 et 3) | **non faite** ; seule une lecture des noms a eu lieu (§5) |
 | Préproduction, B2 | **rien créé** |
+
+## 8. Mise à jour du 15 octobre 2026
+
+**Ce qui a changé depuis la rédaction ci-dessus, constaté ce jour :**
+
+1. **Les copies en clair de `%TEMP%` n'existent plus.** Absents au relevé du 15/10 :
+   `full.sql`, `avant.sql`, `apres.sql` (×2), `cle-essai.txt`, `jar.txt`, `jar2.txt`,
+   `q.b64`, `railway-up.log`, les trois dossiers `tmp.*`, `serve.sh`, et les anciens
+   scripts du scratchpad. Ni dans la corbeille (0 élément), ni ailleurs dans le profil.
+   **Cause non établie.** Indice : **Storage Sense** est activé avec le nettoyage des
+   fichiers temporaires (`HKCU\…\StorageSense`, clé `04` = 1), et la coupure
+   correspond à environ 48 heures (les fichiers du 13/10 10:48 existent, ceux du 12/10
+   20:53 et antérieurs ont disparu). **Ce n'est pas une preuve.**
+   Conséquences :
+   - **`cle-essai.txt` perdue** : les objets d'essai chiffrés du volume `sci4k-s3`
+     (6,4 Mo, copie de la base jetable) sont **définitivement illisibles** ; ils n'ont
+     aucune valeur de récupération ;
+   - **l'export du 6/10 (`full.sql`) n'existe plus.** Son équivalence avec un export de
+     `~/sauvegardes-sci4k` n'ayant jamais été prouvée, **je ne peux pas dire qu'il est
+     couvert** ; les exports du 6/10 15:39 et 16:43 l'encadrent ;
+   - **la quarantaine (B) est sans objet pour ces fichiers** : il n'y a plus rien à
+     déplacer. Une suppression système n'est pas un effacement sûr (SSD) : voir BitLocker.
+2. **Ce qui existe toujours** (contrôlé le 15/10) : `~/sauvegardes-sci4k` **intact**
+   (34 éléments, 12 exports, 5 copies de fichiers, rien de plus récent que le 12/10,
+   11 empreintes `.sha256` toutes conformes, copie du 12/10 conforme) ; volumes Docker
+   `3e0c2154…` (copie `railway` du 12/10 et dérivées) et `cde5c74d…` ; conteneurs
+   `sci4k-restauration`, `sci4k-s3`, `sci4k-dev-smoke`, `-smoke2`, `-smoke3`
+   (arrêtés), dont la configuration porte encore l'ancien mot de passe jetable.
+3. **BitLocker, vérification partielle.** `manage-bde -status C:` exige un terminal
+   administrateur (« accès refusé » dans ma session). Lecture sans droits : la propriété
+   d'Explorateur `System.Volume.BitLockerProtection` vaut **1** (protection activée).
+   **Non vérifiés par moi** : le pourcentage chiffré (100 % selon vous) et les
+   protecteurs de clé. Pour les constater, dans un terminal administrateur :
+   `manage-bde -status C:` puis `manage-bde -protectors -get C:` **sans copier la clé
+   de récupération** ; relever seulement « Conversion Status », « Percentage
+   Encrypted », « Protection Status » et les **types** de protecteurs (Mot de passe
+   numérique, TPM…).
+4. **Espace libre sur `C:`** : 50,5 Go (17,6 Go le 13/10).
+5. **Dépôt** : `dev` = `4cc155b` après la fusion de la PR #20.
+
+**Corrections de cette date :** l'export supplémentaire est désormais **facultatif**
+(vide par défaut) dans `tools/securiser-copie-recuperation.sh` : le script pointait vers
+`full.sql`, qui n'existe plus, et `controles` s'arrêtait. Le script de changement de
+mot de passe est ajouté : `tools/changer-mot-de-passe-conteneur-jetable.sh` (§9).
+
+## 9. Opération D prête : `tools/changer-mot-de-passe-conteneur-jetable.sh`
+
+Essayé sur un **conteneur fictif** (mots de passe factices, réseau coupé) ; **non
+lancé sur `sci4k-restauration`**. Il lit l'ancien et le nouveau mot de passe en saisie
+masquée (ou sur l'entrée standard), exige 20 caractères au moins, refuse un nouveau
+mot de passe identique à l'ancien ou contenant des caractères qui casseraient le SQL,
+transmet le tout par l'entrée standard et par `MYSQL_PWD` (**jamais par un argument**),
+vérifie que le nouveau est accepté **et** l'ancien refusé, puis liste (sans afficher
+la valeur) les conteneurs `sci4k-*` dont la configuration contient encore l'ancien.
+
+Constaté sur le conteneur fictif : 5 refus attendus (nom hors `sci4k-*`, trop court,
+identique, caractère interdit, ancien faux ⇒ rien modifié) ; changement réussi ; nouveau
+accepté, ancien refusé ; le conteneur factice est détecté comme portant l'ancienne
+valeur. **Échantillonnage de la liste des processus pendant l'exécution** (toutes les
+~0,5 s) : aucune ligne de commande ne contenait un mot de passe, **avec un contrôle
+positif réussi** ; l'échantillonnage peut manquer un processus très bref, la garantie
+repose donc surtout sur la lecture du script (aucun argument ne porte de valeur).
+
+Dépendances de `sci4k-restauration` : plus aucun script hors dépôt ne contient le
+mot de passe (les trois fichiers du §4 ont disparu) ; `tools/essai-b2-isole.sh` le lit
+dans l'environnement ; les quatre configurations de conteneurs gardent l'ancienne
+valeur **tant qu'elles ne sont pas supprimées** (opération C, séparée).
+
+## 10. Opération A : la commande exacte
+
+À lancer **par vous**, dans Git Bash, depuis le dépôt à jour (`git checkout dev && git pull`) :
+
+```bash
+cd "/c/Users/LENOVO/Desktop/4KID - Copie"
+tools/securiser-copie-recuperation.sh controles   # lecture seule
+tools/securiser-copie-recuperation.sh chiffrer    # une fenêtre vous demande la phrase, deux fois
+tools/securiser-copie-recuperation.sh verifier    # la fenêtre la redemande, plusieurs fois
+tools/securiser-copie-recuperation.sh restaurer   # la fenêtre la redemande une fois
+```
+
+**Saisie de la phrase.** `gpg` ouvre une fenêtre **« pinentry »** (de `gpg`, au premier
+plan) : tapez la phrase **dans cette fenêtre seulement**, puis une seconde fois pour
+confirmer (`chiffrer`). Elle n'est ni dans la commande, ni dans une variable, ni dans
+un fichier, ni dans le terminal. **Avant**, enregistrez-la dans le gestionnaire de mots
+de passe de l'organisation (deux personnes d'accès) : **perdue, la copie est
+irrécupérable**. Si aucune fenêtre ne s'ouvre, arrêtez-vous et faites la répétition à
+blanc du §2.
+
+**Résultat attendu** : `~/coffre-sci4k` contient 3 fichiers (`base-….sql.gz.gpg`,
+`fichiers-….tar.gpg`, plus les fichiers d'empreintes), la source est **inchangée**,
+et `restaurer` affiche « 48 tables sur 48 attendues » dans un conteneur sans réseau.
+**Rien n'est supprimé.**
