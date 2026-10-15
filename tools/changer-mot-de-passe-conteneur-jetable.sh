@@ -28,11 +28,10 @@ command -v docker >/dev/null || echec "docker requis"
 [[ "$CONTENEUR" == sci4k-* ]] || echec "ce script ne traite que les conteneurs sci4k-* (recu : $CONTENEUR)"
 docker inspect "$CONTENEUR" >/dev/null 2>&1 || echec "conteneur $CONTENEUR introuvable"
 [[ "$(docker inspect -f '{{.Config.Image}}' "$CONTENEUR")" == mysql:* ]] || echec "$CONTENEUR n'est pas un conteneur MySQL"
-
 lire() { # variable, invite : saisie masquee, sans echo
-    local v
-    if [[ -t 0 ]]; then read -rs -p "$2" v; echo >&2; else read -r v; fi
-    printf -v "$1" '%s' "$v"
+    local cible="$1" invite="$2" v
+    if [[ -t 0 ]]; then read -rs -p "$invite" v; echo >&2; else read -r v; fi
+    printf -v "$cible" '%s' "$v"
 }
 lire ANCIEN "Ancien mot de passe : "
 lire NOUVEAU "Nouveau mot de passe (>= ${LONGUEUR_MIN} caracteres) : "
